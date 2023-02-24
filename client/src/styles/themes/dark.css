@@ -1,0 +1,50 @@
+.a-class-with-black-text-set-as-important {
+    color: #EEEEEE !important;
+    background-color: transparent !important;
+}
+
+.Maximum {
+    background-color: #d9534f !important;
+}
+
+.Medium {
+    background-color: #f0ad4e !important;
+}
+
+.Minimum {
+    background-color: #5bc0de !important;
+}
+
+#dark .customNav {
+    background-color: #141414;
+}
+
+#dark .navbar-brand {
+    background-color: #141414;
+}
+
+#dark .customCard {
+    background-color: #4c4c4c ;
+    color: #EEEEEE;
+}
+
+#dark .customButton{
+    color: #EEEEEE;
+    border-color: transparent;
+    background-color: #141414 ;
+}
+
+#dark .MuiSpeedDial-fab {
+    background-color: #141414 ;
+    color: white;
+}
+
+#dark .customDial {
+    background-color: #141414 ;
+    color: white;
+}
+
+
+#dark {
+    background-color: #333335;
+};
