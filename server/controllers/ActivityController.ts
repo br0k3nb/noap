@@ -16,25 +16,26 @@ export default {
     },
     async add(req: Request , res: Response) {
         try {
-            const {title, body, priority, userId} = req.body;
+            const {title, body, bookmark, bookmarkColor, userId} = req.body;
 
             await Activity.create({
                 title,
                 body,
-                priority,
+                bookmark,
+                bookmarkColor,
                 userId
             });
            
-            res.status(200).json('Saved susccessfuly!');
+            res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
             res.status(400).json('Internal error, please try again or later!');
         }
     },
     async edit(req: Request, res: Response) {
         try {
-            const {id, title, body, priority} = req.body;
+            const {id, title, body, bookmark, bookmarkColor} = req.body;
 
-            await Activity.findOneAndUpdate({id}, {title, body, priority});
+            await Activity.findOneAndUpdate({_id: id}, {title, body, bookmark, bookmarkColor});
 
             res.status(200).json('Note updated!');
            

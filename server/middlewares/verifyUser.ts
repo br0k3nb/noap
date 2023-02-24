@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import {Response, Request, NextFunction} from 'express'
+import {Response, Request, NextFunction} from 'express';
+import 'dotenv/config';
 
 export default (req: Request, res: Response, next: NextFunction) => {
   
@@ -7,11 +8,8 @@ export default (req: Request, res: Response, next: NextFunction) => {
 
   if(!authToken) return res.status(400).json({message: "Access denied, sign in again!"});
 
-  jwt.verify(authToken, 'ZjkyNzZjMzllMjViN2YzNmFmYjc5MmMwNzYyY2E5ZmU0Yjc2ZmM0NmQ4NTc0Y2FkMWZjZTc0OWU4YWNkNzAzYg==',(err:unknown, decoded:unknown) => {
-    if (err){
-      return res.status(400).json({ message: "Access denied, sign in again!" });
-    } 
-
-    return next();
+  jwt.verify(authToken, `${process.env.SECRET}`, err => {
+    if (err) return res.status(400).json({ message: "Access denied, sign in again!" });
+    else return next();
   });
 };

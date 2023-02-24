@@ -1,7 +1,7 @@
-import {useState, useContext, useEffect} from "react";
+import {useState, useContext, SetStateAction, Dispatch, ChangeEvent} from "react";
 import {useNavigate} from "react-router-dom";
 import {useQuery} from 'react-query';
-import {useForm} from 'react-hook-form';
+import {useForm, useFieldArray} from 'react-hook-form';
 
 import {
   Typography,
@@ -26,6 +26,9 @@ import {
 
 import {Add, Notes, Settings, MoreVert} from '@mui/icons-material';
 
+import moment from 'moment';
+import 'moment/locale/pt-br';
+
 import logo from '../../logo/icon.png';
 import {alert, toastAlert} from "../../components/Alert/Alert";
 import {DialogBody, TitleDialog, ContentDialog, ActionsDialog} from '../../components/Dialog';
@@ -41,54 +44,71 @@ import "../../styles/themes/light.css";
 
 export default function Activities () {
 
+  type Theme = {
+    setTheme: Dispatch<SetStateAction<string>>;
+    theme: string;
+  }
+
   const logoPng = <img width='8%' src={logo} alt='logo' style={{padding: 0, margin: 0}} />
 
-  const theme = useContext(ThemeContext);
+  const theme = useContext<Theme | null>(ThemeContext);
 
   const navigate = useNavigate();
 
-  const [newAc, setNewAc] = useState([]);
-  const [editId, setEditId] = useState(null);
+  const [editId, setEditId] = useState<SetStateAction<boolean>>(false);
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const [anchorEl,setAnchorEl] = useState(null);
-  const [wasSaved, setWasSaved] = useState(null);
+  const [anchorEl,setAnchorEl] = useState<SetStateAction<HTMLElement | null>>();
+  const [wasSaved, setWasSaved] = useState<SetStateAction<null | number | string>>(null);
   const [wasUpdated, setWasUpdated] = useState(false);
   const [themeVal, setThemeVal] = useState(true);
-
+  
   const defaultValues = {
     title: '',
     body: '',
-    priority: '',
     bookmark: true,
-    priorityColor: true,
+    bookmarkColor: '',
+  };
+
+  type Activity = {
+    _id?: string;
+    title: string;
+    body: string;
+    bookmark: boolean;
+    bookmarkColor: string;
+    themeSwitch?: boolean;
+    activities?: { name: string; keyName: string;}[];
   }
 
-  const {register, handleSubmit, reset, watch} = useForm({defaultValues});
+  const {register, handleSubmit, reset, watch, control} = useForm<Activity>({defaultValues});
+
+  const {fields, append} = useFieldArray({
+    name: 'activities',
+    keyName: 'idFArr',
+    control
+  });
 
   const getTheme = window.localStorage.getItem('theme');
 
-  const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token"));
+  const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || '');
 
-  const priorityVal = watch('priority');
   const bookmark = watch('bookmark', true);
+  const bookmarkColor = watch('bookmarkColor');
   const themeValue = watch('themeSwitch');
-  const showPriority = watch('priorityColor', true);
+
+  const dateFormater = (date: string) => moment(date).format('DD/MM/YYYY HH:mm');
 
   const getTk = async () => {
     try {
-      if(getTheme !== null) reset({themeSwitch: getTheme === 'light' ? false : true, priorityColor: true});
+      if(getTheme !== null) reset({themeSwitch: getTheme === 'light' ? false : true});
       else reset({themeSwitch: true})
 
-      console.log(bookmark);
-
-      if(parsedUserToken !== null && parsedUserToken !== undefined) {
+      if(parsedUserToken !== '') {
         const verifyTk = await api.get(`http://localhost:3001/activities/${parsedUserToken._id}/${parsedUserToken.token}`);
-        setNewAc(verifyTk.data);
+        append(verifyTk.data);
       }
-      
       else return navigate("/");
     } catch (err) {
         navigate("/");
@@ -98,17 +118,17 @@ export default function Activities () {
 
   const handleClose = () => {
     setOpen(false);
-    setEditId(null);
+    setEditId(false);
     reset({
       title: '',
       body: '',
-      priority: ''
+      bookmark: true,
+      bookmarkColor: ''
     });
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
-        console.log(id);
         const deleteNote = await api.delete(`http://localhost:3001/de-ac/${id}/${parsedUserToken.token}`);
         toastAlert({icon: 'success', title: `${deleteNote.data.message}`, timer: 2000});
     } catch (err) {
@@ -116,74 +136,69 @@ export default function Activities () {
     }
   };
 
-  const handleUpdate = async (id) => {
+  const handleUpdate = async (data?: Activity) => {
       try {
-        if(id) {
-          const filter = newAc.map(val => val).find(val => val._id === id);
+        if(data) {
+          console.log(data);
+          // const filter = fields.map(val => val?._id === data && val);
 
-          console.log(filter);
-
-          reset({
-            title: filter?.title,
-            body: filter?.body,
-            priority: filter?.priority
-          });
-          
-          console.log(reset({
-            title: filter?.title,
-            body: filter?.body,
-            priority: filter?.priority
-          }));
-
+          // reset({
+          //   title: filter?.title,
+          //   body: filter?.body,
+          //   bookmark: filter?.bookmark,
+          //   bookmarkColor: filter?.bookmarkColor
+          // });
+        
           setOpen(true);
 
-          const {title, body, priority} = id;
+          const {title, body} = data;
 
-          if(title !== undefined) {
-            const updateNote = await api.put(`http://localhost:3001/up-ac/${parsedUserToken.token}`, {
-              title,
-              body,
-              priority,
-              id: editId,
-              token: parsedUserToken.token
-            });
+          const updateNote = await api.put(`http://localhost:3001/up-ac/${parsedUserToken.token}`, {
+            title,
+            body,
+            bookmark,
+            bookmarkColor,
+            id: editId,
+            token: parsedUserToken.token
+          });
 
-            setWasUpdated(editId);
+          setWasUpdated(editId);
 
-            toastAlert({icon: 'success', title: `${updateNote.data}`, timer: 2000});
-          };
-        } else setOpen(true);
+          toastAlert({icon: 'success', title: `${updateNote.data}`, timer: 2000});
+        }
       } catch (err) {
-        console.log(err);
-        toastAlert({icon: 'error', title: `${err?.response?.data}`, timer: 2000});
+        toastAlert({icon: 'error', title: `${err.response.data}`, timer: 2000});
       };
   };
 
-  const handleCreate = async (data) => {
+  const handleCreate = async (data?: Activity) => {
     try {
-      setOpen(true);
+      if(data) {
+        setOpen(true);
 
-      const {title, body, priority} = data;
-
-      if(title !== undefined) {
+        const {title, body} = data;
+  
         const create = await api.post(`http://localhost:3001/new-ac/${parsedUserToken.token}`, {
           title,
           body,
-          priority, 
+          bookmark,
+          bookmarkColor,
           userId: parsedUserToken._id,
         });
   
         toastAlert({icon: 'success', title: `${create.data.message}`, timer: 2000});
   
         setWasSaved('true' + Math.random());
-
+  
         reset({
           title: '',
           body: '',
-          priority: ''
+          bookmark: true,
+          bookmarkColor: '',
         });
-      };
+      }
     } catch (err) {
+      console.log(err);
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     };
   };
@@ -193,32 +208,32 @@ export default function Activities () {
     navigate("/");
   }
 
-  const handleTheme = (e) => {
+  const handleTheme = (e: boolean) => {
     if(e === false) {
-      theme.setTheme('light');
+      theme?.setTheme('light');
       window.localStorage.setItem('theme', 'light');
     };
 
     if(e === true) {
-      theme.setTheme('dark');
+      theme?.setTheme('dark');
       window.localStorage.setItem('theme', 'dark');
     } 
   }
 
   const actions = [
     {icon: <Settings style={{marginRight: 1}} onClick={() => setOpenSettings(true)} />, name: 'Settings'},
-    {icon: <Add style={{marginRight: 1}} onClick={handleCreate} />, name: 'Add'},
+    {icon: <Add style={{marginRight: 1}} onClick={() => handleCreate()} />, name: 'Add'},
   ];
 
   useQuery(['verifyUser', editId, deleteId, wasSaved, themeValue], getTk, {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchInterval: 5000,
+    // refetchInterval: 5000,
   }); 
   
   return (
       <>
-        <Box id={theme.theme} style={{paddingTop: 6}}>
+        <Box id={theme?.theme} style={{paddingTop: 6}}>
           <Nav 
             handleCreate={handleCreate} 
             parsedUserToken={parsedUserToken}
@@ -236,7 +251,7 @@ export default function Activities () {
             direction='row' 
             spacing={3}
           >
-            {newAc.length <= 0 ? (
+            {fields.length <= 0 ? (
                 <>
                   <Box style={{margin: '0 auto'}}>
                     <Grid container justifyContent='center' mt={5} >
@@ -246,7 +261,7 @@ export default function Activities () {
                     <Typography align="center" variant='h5' mt={1} sx={{color: 'gray'}}> Your notes will appear here </Typography>
                   </Box>
                 </>
-              ) : newAc.map((val, index) => {
+              ) : fields.map((val, index) => {
                 return (
                     <Cards
                       key={index}
@@ -257,8 +272,8 @@ export default function Activities () {
                       theme={theme}
                       wasUpdated={wasUpdated}
                       val={val}
+                      dateFormater={dateFormater}
                       index={index}
-                      showPriority={showPriority}
                     />
                 );
               })}
@@ -267,11 +282,11 @@ export default function Activities () {
               <SpeedDial
                 ariaLabel="SpeedDial basic example"
                 style={{position: 'fixed', bottom: 16, right: 16}}
-                icon={<SpeedDialIcon id={theme.theme} className='customDial' style={{paddingRight: 1.5, paddingBottom: 30}}/>}
+                icon={<SpeedDialIcon id={theme?.theme} className='customDial' style={{paddingRight: 1.5, paddingBottom: 30}}/>}
               >
                 {actions.map((action) => (
                   <SpeedDialAction
-                    id={theme.theme} 
+                    id={theme?.theme} 
                     className='customDialOptions'
                     key={action.name}
                     icon={action.icon}
@@ -284,25 +299,25 @@ export default function Activities () {
           </Box>
 
           <DialogBody open={open} onClose={handleClose} >
-            <TitleDialog closeBtn={handleClose} style={theme.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <TitleDialog closeBtn={handleClose} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
               <Typography style={{letterSpacing: -1, fontSize: 22}} >
                 {editId !== null ? ('Edit note'): ('Add a new note')}
               </Typography>
             </TitleDialog>
-            <ContentDialog style={theme.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <ContentDialog style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
               <Box component='form' onSubmit={editId !== null ? (handleSubmit(handleUpdate)) : (handleSubmit(handleCreate))}>
                 <Box className="form-group mb-3">
                 <InputLabel 
                     required
                     className={
-                      theme.theme === 'dark' ? 'a-class-with-black-text-set-as-important mb-2' :
+                      theme?.theme === 'dark' ? 'a-class-with-black-text-set-as-important mb-2' :
                       'a-class-with-black-text-set-as-important-light mb-2'
                     }
                   > Title
                   </InputLabel>
                   <TextField
                     inputProps={{
-                      className: theme.theme === 'dark' ? 'a-class-with-black-text-set-as-important' : 'a-class-with-black-text-set-as-important-light',
+                      className: theme?.theme === 'dark' ? 'a-class-with-black-text-set-as-important' : 'a-class-with-black-text-set-as-important-light',
                     }}
                     type="text"
                     placeholder="Title"
@@ -317,14 +332,14 @@ export default function Activities () {
                   <InputLabel 
                     required
                     className={
-                      theme.theme === 'dark' ? 'a-class-with-black-text-set-as-important mb-2' :
+                      theme?.theme === 'dark' ? 'a-class-with-black-text-set-as-important mb-2' :
                       'a-class-with-black-text-set-as-important-light mb-2'
                     }
                   > Content
                   </InputLabel>
                   <TextField
                     inputProps={{
-                      className: theme.theme === 'dark' ? 'a-class-with-black-text-set-as-important' : 'a-class-with-black-text-set-as-important-light',
+                      className: theme?.theme === 'dark' ? 'a-class-with-black-text-set-as-important' : 'a-class-with-black-text-set-as-important-light',
                     }}
                     multiline
                     placeholder="Content"
@@ -334,47 +349,44 @@ export default function Activities () {
                   />
                 </Box>
 
-                {/* <FormGroup justifyContent='left'> */}
-                <Grid md={12}>
-                  <FormControlLabel 
-                      labelPlacement="start"
-                      align='left' 
-                      control={
-                        <Checkbox defaultChecked />
-                      } 
-                      label="Activate bookmark"
-                      {...register('bookmark')}
+                <Grid container>
+                  <Grid item md={12}>
+                    <FormControlLabel 
+                        style={{padding: 0, margin: 0}}
+                        labelPlacement="start" 
+                        control={
+                          <Checkbox defaultChecked />
+                        } 
+                        label="Activate bookmark"
+                        {...register('bookmark')}
                     />
                     {bookmark === true && (
                       <>
                         <Box>
                           <FormLabel style={{color: 'white'}}>Choose the color: </FormLabel>
-                          <input type="color" style={{transform: 'translate(10px, 10px)', borderWidth: '1px', padding: 0, width: '150px'}}/>
+                          <input 
+                            {...register('bookmarkColor')}
+                            type="color" 
+                            style={{
+                              transform: 'translate(10px, 10px)', 
+                              borderWidth: '1px',
+                              borderRadius: '4%', 
+                              padding: 0, 
+                              width: '150px'
+                            }}
+                          />
                         </Box>
                       </>
                     )}
+                  </Grid>
                 </Grid>
-                  
-                {/* </FormGroup> */}
-                
-                <FormControl style={{paddingLeft: 3, marginTop: '50px'}}>
-                  <FormLabel style={theme.theme === 'dark' ? {color: '#EEEEEE'} : null} >Priority level</FormLabel>
-                  <RadioGroup
-                    row
-                    {...register('formcontrol')}
-                  >
-                    <FormControlLabel value="Maximum" control={<Radio style={theme.theme === 'dark' ? {color: '#EEEEEE'} : null} checked={priorityVal === 'Maximum' ? true : false} {...register('priority')} required/>} label="Maximum" />
-                    <FormControlLabel value="Medium" control={<Radio style={theme.theme === 'dark' ? {color: '#EEEEEE'} : null} checked={priorityVal === 'Medium' ? true : false} {...register('priority')} required />} label="Medium" />
-                    <FormControlLabel value="Minimum" control={<Radio style={theme.theme === 'dark' ? {color: '#EEEEEE'} : null} checked={priorityVal === 'Minimum' ? true : false} {...register('priority')} required  />} label="Minimum" />
-                  </RadioGroup>
-                </FormControl>
 
                 <Button
                   type='submit'
                   variant="contained"
                   className="text-uppercase mb-2 mt-3 rounded-pill shadow"
                   fullWidth
-                  style={theme.theme === 'dark' ? {backgroundColor: '#141414', color: '#EEEEEE'} : null}
+                  style={theme?.theme === 'dark' ? {backgroundColor: '#141414', color: '#EEEEEE'} : undefined}
                 >
                   {editId !== null ? 'Edit' : 'Add'}
                 </Button>
@@ -383,12 +395,12 @@ export default function Activities () {
           </DialogBody>
 
           <DialogBody maxWidth='xs' open={openSettings} onClose={() => setOpenSettings(false)}>
-            <TitleDialog closeBtn={() => setOpenSettings(false)} style={theme.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <TitleDialog closeBtn={() => setOpenSettings(false)} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
               <Typography style={{letterSpacing: -1, fontSize: 22}} >
                 Settings
               </Typography>
             </TitleDialog>
-            <ContentDialog style={theme.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <ContentDialog style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
               <Box>
                 <Typography
                   style={{
@@ -397,20 +409,20 @@ export default function Activities () {
                 >
                   Theme
                   <MaterialUISwitch
-                    onClick={(e) => handleTheme(e.target.checked)}
-                    checked={typeof themeValue == 'Boolean' ? themeValue: Boolean(themeValue)}
+                    onClick={(e: any) => handleTheme(e.target.checked)}
+                    checked={themeValue}
                     {...register('themeSwitch')}
                   />  
                 </Typography>
 
-                <FormControlLabel
+                {/* <FormControlLabel
                   style={{marginTop: 3, marginLeft: 0}}
                   value="start"
                   
                   control={<Switch color="primary" checked={typeof showPriority == 'Boolean' ? showPriority: Boolean(showPriority)} {...register('priorityColor')} />}
                   label="Show priority colors"
                   labelPlacement="start"
-                />
+                /> */}
 
                 <Button variant="contained" style={{marginTop: 10, marginBottom: 5}}>
                   Change profile picture
@@ -419,12 +431,12 @@ export default function Activities () {
               </Box>            
                 
             </ContentDialog>
-            <ActionsDialog style={theme.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <ActionsDialog style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
                 <Button
                   variant="contained"
                   className="text-uppercase mb-2 mt-3 rounded-pill shadow"
                   fullWidth
-                  style={theme.theme === 'dark' ? {backgroundColor: '#141414', color: '#EEEEEE', fontSize: 14} : null}
+                  style={theme?.theme === 'dark' ? {backgroundColor: '#141414', color: '#EEEEEE', fontSize: 14} : undefined}
                   onClick={() => setOpenSettings(false)}
                 >
                   Save

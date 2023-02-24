@@ -9,7 +9,11 @@ export default new mongoose.Schema({
         type: String,
         required: true,
     },
-    priority: {
+    bookmark: {
+        type: Boolean,
+        required: true,
+    },
+    bookmarkColor: {
         type: String,
         required: true,
     },

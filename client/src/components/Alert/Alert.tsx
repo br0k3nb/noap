@@ -1,10 +1,23 @@
-import Swal from "sweetalert2";
+import Swal, {SweetAlertIcon, SweetAlertPosition} from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import './alert.css';
 
 const MySwal = withReactContent(Swal);
 
-export function alert ({icon, iconColor, title, text, timer, confirmButton, escape, enter, outClick}) {
+type AlertProps = {
+    icon?: SweetAlertIcon;
+    iconColor: string;
+    title: string;
+    text: string;
+    timer: number;
+    confirmButton: boolean;
+    escape: boolean;
+    enter: boolean;
+    outClick: boolean;
+    position?: SweetAlertPosition;
+}
+
+export function alert ({icon, iconColor, title, text, timer, confirmButton, escape, enter, outClick}: AlertProps) {
 
     return (
         MySwal.fire({
@@ -25,7 +38,7 @@ export function alert ({icon, iconColor, title, text, timer, confirmButton, esca
     )
 }
 
-export function toastAlert ({icon, iconColor, title, text, timer, confirmButton, position}) {
+export function toastAlert ({icon, iconColor, title, text, timer, confirmButton, position}: AlertProps) {
     return (
         MySwal.fire({
             icon: icon,
@@ -40,6 +53,6 @@ export function toastAlert ({icon, iconColor, title, text, timer, confirmButton,
             },
             timer: timer,
             timerProgressBar: true
-          })
+        })
     )
 }

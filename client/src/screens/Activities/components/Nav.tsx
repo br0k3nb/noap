@@ -1,11 +1,55 @@
+import {Dispatch, SetStateAction} from 'react';
 import {AppBar, Box, Typography, Button, MenuItem, Menu, Tooltip, Avatar, IconButton, Divider} from "@mui/material"
 import {Edit, ExitToApp, DarkMode, LightMode, SentimentSatisfiedAlt} from '@mui/icons-material';
 
-export default function Nav ({theme, handleCreate, setAnchorEl, setOpenMenu, handleSignout, parsedUserToken, anchorEl, openMenu, setOpenSettings}) {
+type Activity = {
+    _id?: string;
+    title: string;
+    body: string;
+    bookmark: boolean;
+    bookmarkColor: string;
+    themeSwitch?: boolean;
+    activities?: { name: string; keyName: string;}[];
+};
+
+type Theme = {
+    setTheme: Dispatch<SetStateAction<string>>;
+    theme: string;
+};
+
+type parsedUserTokenType = {
+    _id: string;
+    userName: string;
+    token: string;
+};
+
+type NavProps = {
+    theme: Theme | null;
+    handleCreate: (data?: Activity) => unknown;
+    setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
+    setOpenMenu: Dispatch<SetStateAction<boolean>>;
+    handleSignout: () => void;
+    parsedUserToken: parsedUserTokenType;
+    anchorEl: HTMLElement;
+    openMenu: boolean;
+    setOpenSettings: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function Nav ({
+                    theme, 
+                    handleCreate,
+                    setAnchorEl, 
+                    setOpenMenu, 
+                    handleSignout, 
+                    parsedUserToken, 
+                    anchorEl, 
+                    openMenu, 
+                    setOpenSettings
+                }: NavProps) {
     return ( 
-        <AppBar style={{padding: 13}} id={theme.theme} className="navbar navbar-expand-lg navbar-dark customNav">
+        <AppBar style={{padding: 13}} id={theme?.theme} className="navbar navbar-expand-lg navbar-dark customNav">
             <Box className="container-fluid">
-            <Typography style={{paddingBottom: 10, marginTop: 0, letterSpacing: -1}} variant='h5' id={theme.theme} className="navbar-brand">My notes <Edit/></Typography>
+            <Typography style={{paddingBottom: 10, marginTop: 0, letterSpacing: -1}} variant='h5' id={theme?.theme} className="navbar-brand">My notes <Edit/></Typography>
             <Box className="navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                     <li className="nav-item">
@@ -16,7 +60,7 @@ export default function Nav ({theme, handleCreate, setAnchorEl, setOpenMenu, han
                                 marginLeft: 30,
                                 paddingTop: 2
                             }}
-                            onClick={handleCreate}
+                            onClick={() => handleCreate()}
                             >
                             Add a new note
                         </Button>
@@ -29,7 +73,6 @@ export default function Nav ({theme, handleCreate, setAnchorEl, setOpenMenu, han
                                 marginLeft: 10,
                                 paddingTop: 2
                             }}
-                            // onClick={handleCreate}
                         >
                         Reminders
                         </Button>
@@ -42,7 +85,6 @@ export default function Nav ({theme, handleCreate, setAnchorEl, setOpenMenu, han
                                 marginLeft: 10,
                                 paddingTop: 2
                             }}
-                            // onClick={handleCreate}
                         >
                         Add labels
                         </Button>
@@ -55,7 +97,6 @@ export default function Nav ({theme, handleCreate, setAnchorEl, setOpenMenu, han
                                 marginLeft: 10,
                                 paddingTop: 2
                             }}
-                            // onClick={handleCreate}
                         >
                         Trash
                         </Button>

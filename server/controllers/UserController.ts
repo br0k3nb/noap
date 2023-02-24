@@ -2,6 +2,7 @@ import {Response, Request} from 'express'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import 'dotenv/config';
 
 export default {
     async login(req: Request , res: Response) {
@@ -28,7 +29,7 @@ export default {
 
                 const token = jwt.sign(
                     payload, 
-                    'ZjkyNzZjMzllMjViN2YzNmFmYjc5MmMwNzYyY2E5ZmU0Yjc2ZmM0NmQ4NTc0Y2FkMWZjZTc0OWU4YWNkNzAzYg==', 
+                    `${process.env.SECRET}`, 
                     {algorithm: 'HS256'}
                 );
 

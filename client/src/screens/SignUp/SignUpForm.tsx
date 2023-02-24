@@ -36,11 +36,11 @@ export default function SignUpForm () {
         password: password,
       });
 
-      alert({icon: 'success', title: `${signUp.data.message}`, timer: 2000});
+      alert({icon: 'success', title: `${signUp.data.message}`, timer: 1000});
 
       setTimeout(() => {
-        navigate("/sign-in");
-      }, 2000);
+        navigate("/");
+      }, 1000);
 
     } catch (err) {
       alert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});

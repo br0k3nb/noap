@@ -3,23 +3,32 @@ import { Typography, Box, Grid, Button, Card, CardContent, CardActions, Paper, C
 
 import { Delete, Edit, MoreVert } from '@mui/icons-material';
 
+type Activity = {
+    _id?: string;
+    title: string;
+    body: string;
+    bookmark: boolean;
+    bookmarkColor: string;
+    themeSwitch?: boolean;
+    updatedAt?: string;
+    createdAt?: string;
+    activities?: { name: string; keyName: string;}[];
+};
+
+type Theme = {
+    setTheme: Dispatch<SetStateAction<string>>;
+    theme: string;
+}
+
 type CardsProps = {
-    theme: {
-        theme: string;
-    }
-    val: {
-        title:string;
-        body: string;
-        _id: number;
-        finalHD: string;
-        priority: string;
-    };
+    theme: Theme | null;
+    val: Activity;
     wasUpdated: boolean | number;
-    handleUpdate: (_id: number) => void;
-    handleDelete: (_id: number) => void;
+    handleUpdate: (data?: Activity ) => void;
+    handleDelete: (id: string) => void;
+    dateFormater: (date: string) => string;
     setDeleteId: Dispatch<SetStateAction<number | null>>;
     setEditId: Dispatch<SetStateAction<number | null>>;
-    showPriority: boolean | string;
     index: number;
 }
 
@@ -29,23 +38,23 @@ export default function Cards ({
         handleUpdate, 
         setEditId, 
         handleDelete, 
-        setDeleteId, 
+        setDeleteId,
+        dateFormater,
         val, 
-        index, 
-        showPriority}: CardsProps) {
+        index}: CardsProps) {
     return (
         <Grid item md={2.8} ml={3} mb={3} mr={0} key={index}>
-            <Card component={Paper} elevation={10} id={theme.theme} className='customCard'>
-                <Stack direction='row' justifyContent={showPriority ? 'space-between' : 'flex-end'}>
-                    {showPriority && (
+            <Card component={Paper} elevation={10} id={theme?.theme} className='customCard'>
+                <Stack direction='row' justifyContent={val.bookmark ? 'space-between' : 'flex-end'}>
+                    {val.bookmark && (
                         <>
                             <Chip
                                 component={Paper}
                                 elevation={5}
-                                className={`${val.priority}`} 
                                 style={{
+                                    backgroundColor: val.bookmarkColor,
                                     borderRadius: 15,
-                                    marginTop: -10,
+                                    marginTop: -8,
                                     marginLeft: -10,  
                                     width: '56px',
                                     height: '60px',
@@ -54,12 +63,18 @@ export default function Cards ({
                             />
                         </>
                     )}
-                    <IconButton style={theme.theme === 'dark' ? {color: '#eeeeee'}: undefined}>
+                    <IconButton style={theme?.theme === 'dark' ? {color: '#eeeeee'}: undefined}>
                         <MoreVert style={{fontSize: 30}}/>
                     </IconButton>
                 </Stack>
-                <CardContent style={showPriority ? {marginTop: -15} : undefined}>
-                <Typography gutterBottom variant="h5" className='mt-1' align="center" component="div" mb={2}>
+                <CardContent style={val.bookmark ? {marginTop: -15} : undefined}>
+                <Typography 
+                    gutterBottom 
+                    variant="h5"
+                    align="center" 
+                    component="div" 
+                    mb={2}
+                >
                     {val.title}
                 </Typography>
                 <Typography variant="body1">
@@ -67,15 +82,15 @@ export default function Cards ({
                 </Typography>
                 <Box>
                     <Typography style={{fontFamily: 'inherit'}} className="mb-2 mt-4">
-                        {wasUpdated !== null && wasUpdated === val._id ? `Updated at' ${val.finalHD}` : `Created at ${val.finalHD}`}
+                        {!val?.updatedAt ? 'Created at: ' + dateFormater(val.createdAt) : 'Updated at: ' + dateFormater(val.updatedAt)}
                     </Typography>
-                    <Typography style={{fontFamily: 'inherit'}}>Priority: {val.priority}</Typography>
+                    {/* <Typography style={{fontFamily: 'inherit'}}>Priority: {val.priority}</Typography> */}
                 </Box>
                 </CardContent>
                 <CardActions>
                     <Box style={{width: '100%'}} pb={1} pt={1}>
                         <Button
-                            id={theme.theme}
+                            id={theme?.theme}
                             className='rounded-pill customButton'
                             style={{  
                                 fontFamily: 'inherit',
@@ -86,15 +101,15 @@ export default function Cards ({
                             }}
                             variant="outlined"
                             onClick={() => {
-                                handleUpdate(val._id); 
-                                setEditId(val._id);
+                                handleUpdate(val?._id); 
+                                setEditId(val?._id);
                             }}
                             endIcon={<Edit/>}
                         >
                             Edit
                         </Button>
                         <Button
-                            id={theme.theme}
+                            id={theme?.theme}
                             className='rounded-pill customButton'
                             style={{
                                 fontFamily: 'inherit',
