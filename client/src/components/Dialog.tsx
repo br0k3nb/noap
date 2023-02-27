@@ -1,14 +1,19 @@
-import {forwardRef} from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import { forwardRef, ReactElement, Ref } from 'react';
+import Dialog, { DialogProps }  from '@mui/material/Dialog';
+import DialogActions, { DialogActionsProps } from '@mui/material/DialogActions';
+import DialogContent, { DialogContentProps } from '@mui/material/DialogContent';
+import DialogTitle, { DialogTitleProps } from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import IconButton from '@mui/material/IconButton';
+import { TransitionProps } from '@mui/material/transitions';
 import CloseIcon from '@mui/icons-material/Close';
-import {styled} from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
-export function DialogBody(props) {
+interface ModalTitle extends DialogTitleProps {
+    closeBtn: () => void;
+}  
+
+export function DialogBody(props: DialogProps) {
     const {children, open, onClose, ...rest} = props;
 
     return (
@@ -27,7 +32,7 @@ export function DialogBody(props) {
     );
 };
 
-export function TitleDialog(props) {
+export function TitleDialog(props: ModalTitle) {
     const {children, closeBtn, ...rest} = props;
 
     return (
@@ -42,23 +47,28 @@ export function TitleDialog(props) {
     );
 };
 
-export function ContentDialog({children, ...props}) {
+export function ContentDialog(props: DialogContentProps) {
     return (
         <DialogContent {...props} dividers>
-            {children}
+            {props.children}
         </DialogContent>
     );
 };
 
-export function ActionsDialog({children, ...props}) {
+export function ActionsDialog(props: DialogActionsProps) {
     return (
         <DialogActions {...props}>
-            {children}
+            {props.children}
         </DialogActions>
     );
 };
 
-const Transition = forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(
+    props: TransitionProps & {
+      children: ReactElement<any, any>;
+    },
+    ref: Ref<unknown>,
+  ) {
     return <Slide direction="down" ref={ref} {...props} />;
 });
 

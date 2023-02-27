@@ -1,6 +1,5 @@
-import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useForm} from 'react-hook-form';
+import {useForm, FieldValues} from 'react-hook-form';
 import axios from "axios";
 import {alert} from '../../components/Alert/Alert';
 import {
@@ -26,7 +25,7 @@ export default function SignUpForm () {
 
   const navigate = useNavigate();
 
-  const handleForm = async (data) => {
+  const handleForm = async (data: FieldValues) => {
     try {
       const {name, login, password} = data;
 
@@ -42,7 +41,7 @@ export default function SignUpForm () {
         navigate("/");
       }, 1000);
 
-    } catch (err) {
+    } catch (err: any) {
       alert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     }
   };

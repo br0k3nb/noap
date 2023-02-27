@@ -2,16 +2,6 @@ import {Dispatch, SetStateAction} from 'react';
 import {AppBar, Box, Typography, Button, MenuItem, Menu, Tooltip, Avatar, IconButton, Divider} from "@mui/material"
 import {Edit, ExitToApp, DarkMode, LightMode, SentimentSatisfiedAlt} from '@mui/icons-material';
 
-type Activity = {
-    _id?: string;
-    title: string;
-    body: string;
-    bookmark: boolean;
-    bookmarkColor: string;
-    themeSwitch?: boolean;
-    activities?: { name: string; keyName: string;}[];
-};
-
 type Theme = {
     setTheme: Dispatch<SetStateAction<string>>;
     theme: string;
@@ -25,12 +15,12 @@ type parsedUserTokenType = {
 
 type NavProps = {
     theme: Theme | null;
-    handleCreate: (data?: Activity) => unknown;
+    handleCreate: () => unknown;
     setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
     setOpenMenu: Dispatch<SetStateAction<boolean>>;
     handleSignout: () => void;
     parsedUserToken: parsedUserTokenType;
-    anchorEl: HTMLElement;
+    anchorEl: Element | ((element: Element) => Element) | null;
     openMenu: boolean;
     setOpenSettings: Dispatch<SetStateAction<boolean>>;
 };

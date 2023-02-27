@@ -1,19 +1,18 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Typography, Box, Grid, Button, Card, CardContent, CardActions, Paper, Chip, IconButton, Stack } from "@mui/material";
-
 import { Delete, Edit, MoreVert } from '@mui/icons-material';
 
-type Activity = {
-    _id?: string;
-    title: string;
-    body: string;
-    bookmark: boolean;
-    bookmarkColor: string;
-    themeSwitch?: boolean;
-    updatedAt?: string;
-    createdAt?: string;
-    activities?: { name: string; keyName: string;}[];
-};
+// type Activity = {
+//     _id: string;
+//     title: string;
+//     body: string;
+//     bookmark: boolean;
+//     bookmarkColor: string;
+//     themeSwitch?: boolean;
+//     updatedAt?: string;
+//     createdAt: string;
+//     activities?: { name: string; keyName: string;}[];
+// }
 
 type Theme = {
     setTheme: Dispatch<SetStateAction<string>>;
@@ -22,26 +21,26 @@ type Theme = {
 
 type CardsProps = {
     theme: Theme | null;
-    val: Activity;
-    wasUpdated: boolean | number;
-    handleUpdate: (data?: Activity ) => void;
-    handleDelete: (id: string) => void;
+    val: any; // passing val as any ⚠ JUST FOR NOW ⚠ because i wasn't able to make it work with the FieldArrayWithId type
+    // wasUpdated: boolean | number;
+    handleUpdate: () => unknown;
+    handleDelete: (id: string) => unknown;
     dateFormater: (date: string) => string;
-    setDeleteId: Dispatch<SetStateAction<number | null>>;
-    setEditId: Dispatch<SetStateAction<number | null>>;
+    setDeleteId: Dispatch<SetStateAction<string | number | null>>;
+    // setEditId: Dispatch<SetStateAction<string>>;
     index: number;
 }
 
-export default function Cards ({
+export default function Cards({
         theme,
-        wasUpdated, 
-        handleUpdate, 
-        setEditId, 
+        handleUpdate,
         handleDelete, 
         setDeleteId,
         dateFormater,
         val, 
-        index}: CardsProps) {
+        index,
+    }: CardsProps) {
+
     return (
         <Grid item md={2.8} ml={3} mb={3} mr={0} key={index}>
             <Card component={Paper} elevation={10} id={theme?.theme} className='customCard'>
@@ -101,8 +100,7 @@ export default function Cards ({
                             }}
                             variant="outlined"
                             onClick={() => {
-                                handleUpdate(val?._id); 
-                                setEditId(val?._id);
+                                handleUpdate(); 
                             }}
                             endIcon={<Edit/>}
                         >

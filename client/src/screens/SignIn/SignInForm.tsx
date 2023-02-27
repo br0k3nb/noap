@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {
@@ -9,8 +8,8 @@ import {
   Link,
 } from "@mui/material";
 import {styled} from '@mui/system';
-import {useForm} from 'react-hook-form';
-import {useQuery} from 'react-query';
+import {useForm, FieldValues} from 'react-hook-form';
+// import {useQuery} from 'react-query';
 import {alert, toastAlert} from '../../components/Alert/Alert';
 import "./signIn.css";
 
@@ -27,7 +26,7 @@ export default function SignInForm () {
 
   const {handleSubmit, register} = useForm();
 
-  const thereIsATK = JSON.parse(window.localStorage.getItem("user_token"));
+  // const thereIsATK = JSON.parse(window.localStorage.getItem("user_token") || '{}');
 
   // const verifyUser = async () => {
   //   if(thereIsATK !== null) {
@@ -43,7 +42,7 @@ export default function SignInForm () {
   //   }
   // };
 
-  const handleForm = async (data) => {
+  const handleForm = async (data: FieldValues) => {
     try {
       const {login, password} = data;
 
@@ -52,16 +51,14 @@ export default function SignInForm () {
         password
       });
 
-      console.log(signIn);
-
       alert({icon: 'success', title: `Welcome, ${signIn.data.name}`, timer: 1000});
 
       window.localStorage.setItem("user_token", JSON.stringify(signIn.data));
 
       navigate("/activities");
 
-    } catch (err) {
-      alert({icon: 'error', title: 'ERROR', text: `${err.response.data.message}`, timer: 2000})
+    } catch (err: any) {
+      alert({icon: 'error', title: 'ERROR', text: `${err?.response.data.message}`, timer: 2000})
     } 
   };
 

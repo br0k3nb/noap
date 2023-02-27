@@ -1,7 +1,7 @@
 import {useState, useContext, SetStateAction, Dispatch, ChangeEvent} from "react";
 import {useNavigate} from "react-router-dom";
 import {useQuery} from 'react-query';
-import {useForm, useFieldArray} from 'react-hook-form';
+import {useForm, useFieldArray, FieldValues} from 'react-hook-form';
 
 import {
   Typography,
@@ -55,14 +55,14 @@ export default function Activities () {
 
   const navigate = useNavigate();
 
-  const [editId, setEditId] = useState<SetStateAction<boolean>>(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [editId, setEditId] = useState<SetStateAction<boolean | number >>(false);
+  const [deleteId, setDeleteId] = useState<SetStateAction<string | number | null>>(null);
   const [open, setOpen] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const [anchorEl,setAnchorEl] = useState<SetStateAction<HTMLElement | null>>();
+  const [anchorEl,setAnchorEl] = useState<HTMLElement | null>(null);
   const [wasSaved, setWasSaved] = useState<SetStateAction<null | number | string>>(null);
-  const [wasUpdated, setWasUpdated] = useState(false);
+  // const [wasUpdated, setWasUpdated] = useState(false);
   const [themeVal, setThemeVal] = useState(true);
   
   const defaultValues = {
@@ -89,7 +89,7 @@ export default function Activities () {
     keyName: 'idFArr',
     control
   });
-
+  
   const getTheme = window.localStorage.getItem('theme');
 
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || '');
@@ -131,15 +131,14 @@ export default function Activities () {
     try {
         const deleteNote = await api.delete(`http://localhost:3001/de-ac/${id}/${parsedUserToken.token}`);
         toastAlert({icon: 'success', title: `${deleteNote.data.message}`, timer: 2000});
-    } catch (err) {
+    } catch (err: any) {
         toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     }
   };
 
-  const handleUpdate = async (data?: Activity) => {
+  const handleUpdate = async (data?: FieldValues) => {
       try {
         if(data) {
-          console.log(data);
           // const filter = fields.map(val => val?._id === data && val);
 
           // reset({
@@ -162,16 +161,16 @@ export default function Activities () {
             token: parsedUserToken.token
           });
 
-          setWasUpdated(editId);
+          // setWasUpdated(editId);
 
           toastAlert({icon: 'success', title: `${updateNote.data}`, timer: 2000});
         }
-      } catch (err) {
+      } catch (err: any) {
         toastAlert({icon: 'error', title: `${err.response.data}`, timer: 2000});
       };
   };
 
-  const handleCreate = async (data?: Activity) => {
+  const handleCreate = async (data?: FieldValues) => {
     try {
       if(data) {
         setOpen(true);
@@ -197,8 +196,7 @@ export default function Activities () {
           bookmarkColor: '',
         });
       }
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     };
   };
@@ -268,9 +266,7 @@ export default function Activities () {
                       handleDelete={handleDelete}
                       handleUpdate={handleUpdate}
                       setDeleteId={setDeleteId}
-                      setEditId={setEditId}
                       theme={theme}
-                      wasUpdated={wasUpdated}
                       val={val}
                       dateFormater={dateFormater}
                       index={index}
@@ -299,12 +295,12 @@ export default function Activities () {
           </Box>
 
           <DialogBody open={open} onClose={handleClose} >
-            <TitleDialog closeBtn={handleClose} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <TitleDialog closeBtn={handleClose} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
               <Typography style={{letterSpacing: -1, fontSize: 22}} >
                 {editId !== null ? ('Edit note'): ('Add a new note')}
               </Typography>
             </TitleDialog>
-            <ContentDialog style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <ContentDialog style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
               <Box component='form' onSubmit={editId !== null ? (handleSubmit(handleUpdate)) : (handleSubmit(handleCreate))}>
                 <Box className="form-group mb-3">
                 <InputLabel 
@@ -395,7 +391,7 @@ export default function Activities () {
           </DialogBody>
 
           <DialogBody maxWidth='xs' open={openSettings} onClose={() => setOpenSettings(false)}>
-            <TitleDialog closeBtn={() => setOpenSettings(false)} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : null}>
+            <TitleDialog closeBtn={() => setOpenSettings(false)} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
               <Typography style={{letterSpacing: -1, fontSize: 22}} >
                 Settings
               </Typography>

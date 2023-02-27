@@ -6,14 +6,14 @@ const MySwal = withReactContent(Swal);
 
 type AlertProps = {
     icon?: SweetAlertIcon;
-    iconColor: string;
+    iconColor?: string;
     title: string;
-    text: string;
+    text?: string;
     timer: number;
-    confirmButton: boolean;
-    escape: boolean;
-    enter: boolean;
-    outClick: boolean;
+    confirmButton?: boolean;
+    escape?: boolean;
+    enter?: boolean;
+    outClick?: boolean;
     position?: SweetAlertPosition;
 }
 
@@ -38,7 +38,7 @@ export function alert ({icon, iconColor, title, text, timer, confirmButton, esca
     )
 }
 
-export function toastAlert ({icon, iconColor, title, text, timer, confirmButton, position}: AlertProps) {
+export function toastAlert ({icon, title, text, timer, confirmButton, position}: AlertProps) {
     return (
         MySwal.fire({
             icon: icon,
