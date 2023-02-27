@@ -2,17 +2,16 @@ import { Dispatch, SetStateAction } from 'react';
 import { Typography, Box, Grid, Button, Card, CardContent, CardActions, Paper, Chip, IconButton, Stack } from "@mui/material";
 import { Delete, Edit, MoreVert } from '@mui/icons-material';
 
-// type Activity = {
-//     _id: string;
-//     title: string;
-//     body: string;
-//     bookmark: boolean;
-//     bookmarkColor: string;
-//     themeSwitch?: boolean;
-//     updatedAt?: string;
-//     createdAt: string;
-//     activities?: { name: string; keyName: string;}[];
-// }
+type Activity = {
+    _id: string;
+    title: string;
+    body: string;
+    bookmark: boolean;
+    bookmarkColor: string;
+    themeSwitch?: boolean;
+    updatedAt?: string;
+    createdAt: string;
+}
 
 type Theme = {
     setTheme: Dispatch<SetStateAction<string>>;
@@ -21,13 +20,12 @@ type Theme = {
 
 type CardsProps = {
     theme: Theme | null;
-    val: any; // passing val as any ⚠ JUST FOR NOW ⚠ because i wasn't able to make it work with the FieldArrayWithId type
-    // wasUpdated: boolean | number;
-    handleUpdate: () => unknown;
+    val: Activity;
+    handleUpdate: (id: string) => unknown;
     handleDelete: (id: string) => unknown;
     dateFormater: (date: string) => string;
     setDeleteId: Dispatch<SetStateAction<string | number | null>>;
-    // setEditId: Dispatch<SetStateAction<string>>;
+    setEditId: Dispatch<SetStateAction<string | boolean>>;
     index: number;
 }
 
@@ -36,6 +34,7 @@ export default function Cards({
         handleUpdate,
         handleDelete, 
         setDeleteId,
+        setEditId,
         dateFormater,
         val, 
         index,
@@ -83,7 +82,6 @@ export default function Cards({
                     <Typography style={{fontFamily: 'inherit'}} className="mb-2 mt-4">
                         {!val?.updatedAt ? 'Created at: ' + dateFormater(val.createdAt) : 'Updated at: ' + dateFormater(val.updatedAt)}
                     </Typography>
-                    {/* <Typography style={{fontFamily: 'inherit'}}>Priority: {val.priority}</Typography> */}
                 </Box>
                 </CardContent>
                 <CardActions>
@@ -100,7 +98,8 @@ export default function Cards({
                             }}
                             variant="outlined"
                             onClick={() => {
-                                handleUpdate(); 
+                                handleUpdate(val._id); 
+                                setEditId(val._id);
                             }}
                             endIcon={<Edit/>}
                         >

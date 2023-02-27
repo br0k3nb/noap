@@ -1,7 +1,7 @@
 import {useState, useContext, SetStateAction, Dispatch, ChangeEvent} from "react";
 import {useNavigate} from "react-router-dom";
 import {useQuery} from 'react-query';
-import {useForm, useFieldArray, FieldValues} from 'react-hook-form';
+import {useForm, FieldValues} from 'react-hook-form';
 
 import {
   Typography,
@@ -55,14 +55,15 @@ export default function Activities () {
 
   const navigate = useNavigate();
 
-  const [editId, setEditId] = useState<SetStateAction<boolean | number >>(false);
+  const [activities, setAct] = useState([]);
+  const [editId, setEditId] = useState<SetStateAction<string | boolean>>(false);
   const [deleteId, setDeleteId] = useState<SetStateAction<string | number | null>>(null);
   const [open, setOpen] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [anchorEl,setAnchorEl] = useState<HTMLElement | null>(null);
   const [wasSaved, setWasSaved] = useState<SetStateAction<null | number | string>>(null);
-  // const [wasUpdated, setWasUpdated] = useState(false);
+  const [wasUpdated, setWasUpdated] = useState<SetStateAction<string | boolean>>(false);
   const [themeVal, setThemeVal] = useState(true);
   
   const defaultValues = {
@@ -73,23 +74,16 @@ export default function Activities () {
   };
 
   type Activity = {
-    _id?: string;
+    _id: string;
     title: string;
     body: string;
     bookmark: boolean;
     bookmarkColor: string;
     themeSwitch?: boolean;
-    activities?: { name: string; keyName: string;}[];
   }
 
-  const {register, handleSubmit, reset, watch, control} = useForm<Activity>({defaultValues});
+  const {register, handleSubmit, reset, watch } = useForm<Activity>({defaultValues});
 
-  const {fields, append} = useFieldArray({
-    name: 'activities',
-    keyName: 'idFArr',
-    control
-  });
-  
   const getTheme = window.localStorage.getItem('theme');
 
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || '');
@@ -107,7 +101,7 @@ export default function Activities () {
 
       if(parsedUserToken !== '') {
         const verifyTk = await api.get(`http://localhost:3001/activities/${parsedUserToken._id}/${parsedUserToken.token}`);
-        append(verifyTk.data);
+        setAct(verifyTk.data);
       }
       else return navigate("/");
     } catch (err) {
@@ -136,33 +130,34 @@ export default function Activities () {
     }
   };
 
-  const handleUpdate = async (data?: FieldValues) => {
+  const handleUpdate = async (data?: FieldValues | string) => {
       try {
-        if(data) {
-          // const filter = fields.map(val => val?._id === data && val);
-
-          // reset({
-          //   title: filter?.title,
-          //   body: filter?.body,
-          //   bookmark: filter?.bookmark,
-          //   bookmarkColor: filter?.bookmarkColor
-          // });
-        
+        if(typeof data === 'string') {
+          activities.map((val: Activity) => {
+           if (val._id === data) {
+            reset({
+              title: val?.title,
+              body: val?.body,
+              bookmark: val?.bookmark,
+              bookmarkColor: val?.bookmarkColor
+            })
+           }
+          });
+  
           setOpen(true);
-
-          const {title, body} = data;
-
+        }
+        else {
           const updateNote = await api.put(`http://localhost:3001/up-ac/${parsedUserToken.token}`, {
-            title,
-            body,
+            title: data?.title,
+            body: data?.body,
             bookmark,
             bookmarkColor,
             id: editId,
             token: parsedUserToken.token
           });
-
-          // setWasUpdated(editId);
-
+  
+          setWasUpdated(editId);
+  
           toastAlert({icon: 'success', title: `${updateNote.data}`, timer: 2000});
         }
       } catch (err: any) {
@@ -173,7 +168,6 @@ export default function Activities () {
   const handleCreate = async (data?: FieldValues) => {
     try {
       if(data) {
-        setOpen(true);
 
         const {title, body} = data;
   
@@ -196,7 +190,9 @@ export default function Activities () {
           bookmarkColor: '',
         });
       }
+      else setOpen(true);
     } catch (err: any) {
+      console.log(err);
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     };
   };
@@ -223,7 +219,7 @@ export default function Activities () {
     {icon: <Add style={{marginRight: 1}} onClick={() => handleCreate()} />, name: 'Add'},
   ];
 
-  useQuery(['verifyUser', editId, deleteId, wasSaved, themeValue], getTk, {
+  useQuery(['verifyUser', editId, deleteId, wasSaved, themeValue, wasUpdated], getTk, {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     // refetchInterval: 5000,
@@ -249,7 +245,7 @@ export default function Activities () {
             direction='row' 
             spacing={3}
           >
-            {fields.length <= 0 ? (
+            {activities.length <= 0 ? (
                 <>
                   <Box style={{margin: '0 auto'}}>
                     <Grid container justifyContent='center' mt={5} >
@@ -259,13 +255,14 @@ export default function Activities () {
                     <Typography align="center" variant='h5' mt={1} sx={{color: 'gray'}}> Your notes will appear here </Typography>
                   </Box>
                 </>
-              ) : fields.map((val, index) => {
+              ) : activities.map((val, index) => {
                 return (
                     <Cards
                       key={index}
                       handleDelete={handleDelete}
                       handleUpdate={handleUpdate}
                       setDeleteId={setDeleteId}
+                      setEditId={setEditId}
                       theme={theme}
                       val={val}
                       dateFormater={dateFormater}
@@ -297,11 +294,11 @@ export default function Activities () {
           <DialogBody open={open} onClose={handleClose} >
             <TitleDialog closeBtn={handleClose} style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
               <Typography style={{letterSpacing: -1, fontSize: 22}} >
-                {editId !== null ? ('Edit note'): ('Add a new note')}
+                {editId ? ('Edit note'): ('Add a new note')}
               </Typography>
             </TitleDialog>
             <ContentDialog style={theme?.theme === 'dark' ? {backgroundColor: '#4c4c4c', color: '#EEEEEE'} : undefined}>
-              <Box component='form' onSubmit={editId !== null ? (handleSubmit(handleUpdate)) : (handleSubmit(handleCreate))}>
+              <Box component='form' onSubmit={editId ? (handleSubmit(handleUpdate)) : (handleSubmit(handleCreate))}>
                 <Box className="form-group mb-3">
                 <InputLabel 
                     required
