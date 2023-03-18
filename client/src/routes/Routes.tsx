@@ -30,18 +30,18 @@ export default function RoutesApp () {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<SignInForm/>} />
+        <Route path="https://noap-typescript.vercel.app/" element={<SignInForm/>} />
 
         {/* <Route element={<IsSignedIn/>}> */}
           {/* <Route path="/sign-in" element={<SignInForm/>}/> */}
         {/* </Route> */}
 
         {/* <Route  element={<PrivateRoutes/>}> */}
-          <Route path="/activities" element={<Activities />} />
+          <Route path="https://noap-typescript.vercel.app/activities" element={<Activities />} />
         {/* </Route> */}
 
         <Route path="/*" element={<Page404 />} />
-        <Route path="/sign-up" element={<SignUpForm />} />
+        <Route path="https://noap-typescript.vercel.app/sign-up" element={<SignUpForm />} />
       </Routes>
     </BrowserRouter>
   );
