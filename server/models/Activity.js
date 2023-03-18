@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import ActivitySchema from '../schemas/ActivitySchema';
+import ActivitySchema from '../schemas/ActivitySchema.js';
 
-const mongooseAggregatePaginate = require('mongoose-aggregate-paginate-v2');
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 ActivitySchema.pre('findOneAndUpdate', function (next) {
     this.findOneAndUpdate({}, {updatedAt: new Date()});

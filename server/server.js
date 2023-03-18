@@ -1,15 +1,13 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import routes from './routes';
+import routes from './routes.js';
 import 'dotenv';
 
 const app = express();
 
 mongoose.set("strictQuery", true);
-mongoose.connect(`${process.env.MONGODB_URL}`), (err: unknown) => {
-    if(err) console.log(err);
-}
+mongoose.connect(`${process.env.MONGODB_URL}`), err => err && console.log(err);
 
 app.use(cors());
 app.use(express.json());

@@ -1,9 +1,7 @@
-import {Response, Request} from 'express'
-
-import Activity from '../models/Activity';
+import Activity from '../models/Activity.js';
 
 export default {
-    async view(req: Request, res: Response) {
+    async view(req, res) {
         try {
             const {userId} = req.params;
 
@@ -14,7 +12,7 @@ export default {
             res.status(400).json({message: err});
         }
     },
-    async add(req: Request , res: Response) {
+    async add(req , res) {
         try {
             const {title, body, bookmark, bookmarkColor, userId} = req.body;
 
@@ -31,7 +29,7 @@ export default {
             res.status(400).json('Internal error, please try again or later!');
         }
     },
-    async edit(req: Request, res: Response) {
+    async edit(req, res) {
         try {
             const {id, title, body, bookmark, bookmarkColor} = req.body;
 
@@ -43,7 +41,7 @@ export default {
             res.status(400).json(err);
         }
     },
-    async delete(req: Request, res: Response) {
+    async delete(req, res) {
         try {
             const {id} = req.params;
 

@@ -1,11 +1,10 @@
-import {Response, Request} from 'express'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User from '../models/User.js';
 import 'dotenv/config';
 
 export default {
-    async login(req: Request , res: Response) {
+    async login(req , res) {
         try {
            const {login, password} = req.body;
 
@@ -42,7 +41,7 @@ export default {
             res.status(400).json(err);
         }
     },
-    async add(req: Request, res: Response) {
+    async add(req, res) {
         try {
             const {name, login, password} = req.body;
 

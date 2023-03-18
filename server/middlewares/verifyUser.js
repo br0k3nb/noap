@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
-import {Response, Request, NextFunction} from 'express';
 import 'dotenv/config';
 
-export default (req: Request, res: Response, next: NextFunction) => {
+export default (req, res, next) => {
   
   const authToken = req.params.token;
 
