@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "build": "node server.ts",
     "start": "nodemon server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
