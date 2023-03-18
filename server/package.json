@@ -21,6 +21,7 @@
     "mongoose": "^6.9.0",
     "mongoose-aggregate-paginate-v2": "^1.0.6",
     "mysql2": "^2.3.3",
+    "nodemon": "^2.0.21",
     "sequelize": "^6.21.3",
     "yarn": "^1.22.19"
   },
