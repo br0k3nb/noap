@@ -2,18 +2,18 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import routes from './routes';
+import 'dotenv';
 
 const app = express();
 
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb://127.0.0.1/Noap", (err) => {
+mongoose.connect(`${process.env.MONGODB_URL}`), (err: unknown) => {
     if(err) console.log(err);
-});
+}
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(routes);
 
-app.listen(3001, () => console.log(`Server is running at http://mongodb://127.0.0.1:27017/:3001`));
-
+app.listen(3001, () => console.log(`Server is running`));
