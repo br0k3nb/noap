@@ -100,7 +100,7 @@ export default function Activities () {
       else reset({themeSwitch: true})
 
       if(parsedUserToken !== '') {
-        const verifyTk = await api.get(`http://localhost:3001/activities/${parsedUserToken._id}/${parsedUserToken.token}`);
+        const verifyTk = await api.get(`https://noap-typescript-api.vercel.app/${parsedUserToken._id}/${parsedUserToken.token}`);
         setAct(verifyTk.data);
       }
       else return navigate("/");
@@ -123,7 +123,7 @@ export default function Activities () {
 
   const handleDelete = async (id: string) => {
     try {
-        const deleteNote = await api.delete(`http://localhost:3001/de-ac/${id}/${parsedUserToken.token}`);
+        const deleteNote = await api.delete(`https://noap-typescript-api.vercel.app/de-ac/${id}/${parsedUserToken.token}`);
         toastAlert({icon: 'success', title: `${deleteNote.data.message}`, timer: 2000});
     } catch (err: any) {
         toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
@@ -147,7 +147,7 @@ export default function Activities () {
           setOpen(true);
         }
         else {
-          const updateNote = await api.put(`http://localhost:3001/up-ac/${parsedUserToken.token}`, {
+          const updateNote = await api.put(`https://noap-typescript-api.vercel.app/up-ac/${parsedUserToken.token}`, {
             title: data?.title,
             body: data?.body,
             bookmark,
@@ -171,7 +171,7 @@ export default function Activities () {
 
         const {title, body} = data;
   
-        const create = await api.post(`http://localhost:3001/new-ac/${parsedUserToken.token}`, {
+        const create = await api.post(`https://noap-typescript-api.vercel.app/new-ac/${parsedUserToken.token}`, {
           title,
           body,
           bookmark,

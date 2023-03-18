@@ -29,7 +29,7 @@ export default function SignUpForm () {
     try {
       const {name, login, password} = data;
 
-      const signUp = await axios.post("http://localhost:3001/sign-up", {
+      const signUp = await axios.post("https://noap-typescript-api.vercel.app/sign-up", {
         name: name,
         login: login,
         password: password,
