@@ -106,7 +106,7 @@ export default function SignUpForm () {
                         <Box>
                           <Typography>
                             Already have an account?
-                            <Link style={{marginLeft: 3, textDecoration: 'none'}} className="link-danger" href="/sign-in">
+                            <Link style={{marginLeft: 3, textDecoration: 'none'}} className="link-danger" href="/">
                               Sign in
                             </Link>
                           </Typography>

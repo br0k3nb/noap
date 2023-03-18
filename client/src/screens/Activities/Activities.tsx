@@ -100,7 +100,7 @@ export default function Activities () {
       else reset({themeSwitch: true})
 
       if(parsedUserToken !== '') {
-        const verifyTk = await api.get(`https://noap-typescript-api.vercel.app/${parsedUserToken._id}/${parsedUserToken.token}`);
+        const verifyTk = await api.get(`https://noap-typescript-api.vercel.app/activities/${parsedUserToken._id}/${parsedUserToken.token}`);
         setAct(verifyTk.data);
       }
       else return navigate("/");
