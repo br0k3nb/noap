@@ -46,7 +46,7 @@ export default function SignInForm () {
     try {
       const {login, password} = data;
 
-      const signIn = await axios.post("http://localhost:3001/sign-in", {
+      const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
         login,
         password
       });
