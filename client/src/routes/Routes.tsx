@@ -42,7 +42,7 @@ export default function RoutesApp () {
 
         <Route path="/sign-up" element={<SignUpForm />} />
 
-        {/* <Route path="/*" element={<Page404 />} /> */}
+        <Route path="/*" element={<Page404 />} />
       </Routes>
     </BrowserRouter>
   );
