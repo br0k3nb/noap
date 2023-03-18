@@ -40,7 +40,7 @@ export default function RoutesApp () {
           <Route path="https://noap-typescript.vercel.app/activities" element={<Activities />} />
         {/* </Route> */}
 
-        <Route path="/*" element={<Page404 />} />
+       
         <Route path="https://noap-typescript.vercel.app/sign-up" element={<SignUpForm />} />
       </Routes>
     </BrowserRouter>
