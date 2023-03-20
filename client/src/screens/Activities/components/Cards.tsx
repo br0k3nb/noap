@@ -30,103 +30,36 @@ type CardsProps = {
 }
 
 export default function Cards({
-        theme,
-        handleUpdate,
-        handleDelete, 
-        setDeleteId,
-        setEditId,
-        dateFormater,
-        val, 
-        index,
-    }: CardsProps) {
+    theme,
+    handleUpdate,
+    handleDelete,
+    setDeleteId,
+    setEditId,
+    dateFormater,
+    val,
+    index,
+}: CardsProps) {
 
     return (
-        <Grid item md={2.8} ml={3} mb={3} mr={0} key={index}>
-            <Card component={Paper} elevation={10} id={theme?.theme} className='customCard'>
-                <Stack direction='row' justifyContent={val.bookmark ? 'space-between' : 'flex-end'}>
-                    {val.bookmark && (
-                        <>
-                            <Chip
-                                component={Paper}
-                                elevation={5}
-                                style={{
-                                    backgroundColor: val.bookmarkColor,
-                                    borderRadius: 15,
-                                    marginTop: -8,
-                                    marginLeft: -10,  
-                                    width: '56px',
-                                    height: '60px',
-                                    display: 'inline-table',
-                                }}
-                            />
-                        </>
-                    )}
-                    <IconButton style={theme?.theme === 'dark' ? {color: '#eeeeee'}: undefined}>
-                        <MoreVert style={{fontSize: 30}}/>
-                    </IconButton>
-                </Stack>
-                <CardContent style={val.bookmark ? {marginTop: -15} : undefined}>
-                <Typography 
-                    gutterBottom 
-                    variant="h5"
-                    align="center" 
-                    component="div" 
-                    mb={2}
-                >
-                    {val.title}
-                </Typography>
-                <Typography variant="body1">
-                    {val.body}
-                </Typography>
-                <Box>
-                    <Typography style={{fontFamily: 'inherit'}} className="mb-2 mt-4">
+        <div className="rounded-2xl">
+            <div className="w-[28rem] xxs:max-w-xs lg:max-w-sm flex flex-col justify-between bg-gray-700 rounded-lg shadow-xl shadow-slate-900 mb-6 py-8 px-4">
+                <div>
+                    <h4 className="text-gray-100 font-semibold mb-3 text-2xl">
+                        {val.title}
+                    </h4>
+                    <p className="text-gray-100 text-md">
+                        {val.body}
+                    </p>
+                </div>
+                <div className="flex flex-row text-center justify-between text-gray-100 mt-5">
+                    <p className="text-sm pr-5 mt-1">
                         {!val?.updatedAt ? 'Created at: ' + dateFormater(val.createdAt) : 'Updated at: ' + dateFormater(val.updatedAt)}
-                    </Typography>
-                </Box>
-                </CardContent>
-                <CardActions>
-                    <Box style={{width: '100%'}} pb={1} pt={1}>
-                        <Button
-                            id={theme?.theme}
-                            className='rounded-pill customButton'
-                            style={{  
-                                fontFamily: 'inherit',
-                                fontSize: 13,
-                                borderRadius: 10,
-                                marginLeft: 10,
-                                width: "45%",
-                            }}
-                            variant="outlined"
-                            onClick={() => {
-                                handleUpdate(val._id); 
-                                setEditId(val._id);
-                            }}
-                            endIcon={<Edit/>}
-                        >
-                            Edit
-                        </Button>
-                        <Button
-                            id={theme?.theme}
-                            className='rounded-pill customButton'
-                            style={{
-                                fontFamily: 'inherit',
-                                marginLeft: 10,
-                                fontSize: 13,
-                                borderRadius: 10,
-                                width: "45%",
-                            }}
-                            variant="outlined"
-                            onClick={() => {
-                                handleDelete(val._id); 
-                                setDeleteId(val._id);
-                            }}
-                            endIcon={<Delete/>}
-                        >
-                            Delete
-                        </Button>
-                    </Box>
-                </CardActions>
-            </Card>
-        </Grid>
+                    </p>
+                    <div className="w-8 h-8 rounded-full text-white bg-gray-100 flex items-center justify-center">
+                        <Edit className="text-black" />
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }

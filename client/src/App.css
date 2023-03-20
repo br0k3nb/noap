@@ -1,6 +1,69 @@
-.login,
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .login,
 .image {
   min-height: 100vh;
+} */
+
+@layer components {
+  .links {
+    @apply px-8 
+      py-2
+      border 
+      block
+      hover:border-[#242424]
+      border-stone-800
+      rounded-full
+      uppercase
+      text-[12.5px]
+      tracking-widest
+      text-gray-100
+      transition-all
+      ease-in-out 
+      delay-75
+      hover:scale-105
+      hover:hover:text-[#fafafa] 
+      hover:border-[#fafafa]/40 
+      duration-300
+      hover:-translate-y-0
+      p-0
+      max-h-10
+      my-auto;
+  }
+  .navbar-button-mobile {
+    @apply uppercase
+      text-neutral-100
+      cursor-pointer
+      text-sm
+      text-start
+      tracking-widest
+      hover:text-[#fafafa]/40;
+  }
+  .sign-text-inputs {
+    @apply
+    transition
+    duration-300
+    bg-white 
+    border
+    border-gray-200
+    hover:border
+    hover:border-gray-400
+    text-gray-900 
+    text-[17px] 
+    w-full 
+    placeholder-gray-400
+    rounded-[30px]
+    h-[45px]
+    px-5
+    shadow-md 
+    focus:outline-none
+  }
+}
+
+* {
+  font-family: "Ubuntu";
 }
 
 .bg-image {

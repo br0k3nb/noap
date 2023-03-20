@@ -37,7 +37,7 @@ export default function RoutesApp () {
         {/* </Route> */}
 
         {/* <Route  element={<PrivateRoutes/>}> */}
-          <Route path="/activities" element={<Activities />} />
+          <Route path="/activities" element={<Activities/>}/>
         {/* </Route> */}
 
         <Route path="/sign-up" element={<SignUpForm />} />
