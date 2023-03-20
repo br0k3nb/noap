@@ -1,4 +1,4 @@
-import { useState, useContext, SetStateAction, Dispatch, ChangeEvent } from "react";
+import { useState, useContext, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from 'react-query';
 import { useForm, FieldValues } from 'react-hook-form';
@@ -29,7 +29,8 @@ import { Add, Notes, Settings, MoreVert } from '@mui/icons-material';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
-import logo from '../../logo/icon.png';
+import { motion } from 'framer-motion';
+
 import { alert, toastAlert } from "../../components/Alert/Alert";
 import { DialogBody, TitleDialog, ContentDialog, ActionsDialog } from '../../components/Dialog';
 import api from '../../services/api';
@@ -49,7 +50,7 @@ export default function Activities() {
     theme: string;
   }
 
-  const logoPng = <img width='8%' src={logo} alt='logo' style={{ padding: 0, margin: 0 }} />
+  // const logoPng = <img width='8%' src={logo} alt='logo' style={{ padding: 0, margin: 0 }} />
 
   const theme = useContext<Theme | null>(ThemeContext);
 
@@ -226,7 +227,12 @@ export default function Activities() {
   });
 
   return (
-    <div id={theme?.theme}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      id={theme?.theme}
+    >
       <Nav
         handleCreate={handleCreate}
         parsedUserToken={parsedUserToken}
@@ -435,6 +441,6 @@ export default function Activities() {
           </Button>
         </ActionsDialog>
       </DialogBody>
-    </div>
+    </motion.div>
   );
 }
