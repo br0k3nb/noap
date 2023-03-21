@@ -23,6 +23,7 @@
     "react-hook-form": "^7.43.2",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.8.1",
+    "slate-react": "^0.92.0",
     "styled-components": "^5.3.9",
     "sweetalert2": "^11.7.2",
     "sweetalert2-react-content": "^5.0.7",

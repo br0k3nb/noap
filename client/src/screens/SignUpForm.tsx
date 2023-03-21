@@ -4,7 +4,7 @@ import {useForm, FieldValues} from 'react-hook-form';
 import axios from "axios";
 import { motion } from 'framer-motion';
 
-import {alert, toastAlert} from '../../components/Alert/Alert';
+import {alert, toastAlert} from '../components/Alert/Alert';
 
 export default function SignUpForm () {
   

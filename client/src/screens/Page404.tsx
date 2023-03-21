@@ -1,4 +1,4 @@
-import error404 from '../../assets/error404.png';
+import error404 from '../assets/error404.png';
 import { motion } from 'framer-motion';
 
 export default function Page404() {

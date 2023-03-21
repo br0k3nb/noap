@@ -1,8 +1,8 @@
 import {BrowserRouter, Navigate, Route, Routes, Outlet, RouteProps} from "react-router-dom";
-import SignInForm from "../screens/SignIn/SignInForm";
-import SignUpForm from "../screens/SignUp/SignUpForm";
-import Activities from "../screens/Activities/Activities";
-import Page404 from "../screens/404 Page/Page404";
+import SignInForm from "../screens/SignInForm";
+import SignUpForm from "../screens/SignUpForm";
+import Activities from "../screens/Activities/index";
+import Page404 from "../screens/Page404";
 // import isUserAuth from "./userAuth";
 
 // const PrivateRoutes = () => {

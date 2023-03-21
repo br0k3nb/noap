@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
 // import {useQuery} from 'react-query';
-import { alert, toastAlert } from '../../components/Alert/Alert';
+import { alert, toastAlert } from '../components/Alert/Alert';
 import { motion } from 'framer-motion';
 
 export default function SignInForm() {
