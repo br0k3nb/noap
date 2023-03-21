@@ -26,9 +26,6 @@ import {
 
 import { Add, Notes, Settings, MoreVert } from '@mui/icons-material';
 
-import moment from 'moment';
-import 'moment/locale/pt-br';
-
 import { motion } from 'framer-motion';
 
 import { alert, toastAlert } from "../../components/Alert/Alert";
@@ -93,7 +90,7 @@ export default function Activities() {
   const bookmarkColor = watch('bookmarkColor');
   const themeValue = watch('themeSwitch');
 
-  const dateFormater = (date: string) => moment(date).format('DD/MM/YYYY HH:mm');
+  
 
   const getTk = async () => {
     try {
@@ -268,7 +265,6 @@ export default function Activities() {
                   setEditId={setEditId}
                   theme={theme}
                   val={val}
-                  dateFormater={dateFormater}
                   index={index}
                 />
               </div>

@@ -1,8 +1,14 @@
 import error404 from '../../assets/error404.png';
+import { motion } from 'framer-motion';
 
 export default function Page404() {
   return (
-    <div className="bg-slate-800 h-screen overflow md:py-20 md:px-14 lg:px-0 md:pt-10 items-center flex justify-center flex-col md:gap-28 gap-16">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="bg-gray-900 h-screen overflow md:py-20 md:px-14 lg:px-0 md:pt-10 items-center flex justify-center flex-col md:gap-28 gap-16"
+    >
       <div className="w-full lg:w-9/12 xxs:px-10 sm:px-16 relative text-start lg:px-0">
         <div className="flex flex-wrap">
           <img
@@ -21,13 +27,13 @@ export default function Page404() {
           <div className="flex text-md tracking-widest uppercase xl:justify-center">
             <a
               href="/activities"
-              className="sm:w-full xxs:w-full lg:w-auto border border-gray-500 rounded-[30px] py-4 sm:py-3 xxs:py-2 px-6 text-center bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50"
+              className="sm:w-full xxs:w-full lg:w-auto border border-gray-500 rounded-[30px] py-4 sm:py-3 xxs:py-2 px-6 text-center bg-red-600 text-white hover:bg-red-700 hover:-translate-y-0 hover:scale-105 transition duration-200"
             >
               Go back
             </a>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

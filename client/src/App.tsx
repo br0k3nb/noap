@@ -2,7 +2,6 @@ import RoutesApp from "./routes/Routes";
 import { createContext, useState, Dispatch, SetStateAction } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "./App.css";
-// import "bootstrap/dist/css/bootstrap.min.css";
 
 type Theme = {
   setTheme: Dispatch<SetStateAction<string>>;
