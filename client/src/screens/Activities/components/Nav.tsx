@@ -91,7 +91,7 @@ export default function Nav({
               )}
             </button>
           </div>
-          <div className="flex flex-col items-center mt-3 border-t border-gray-700">
+          <div className="flex flex-col items-center mt-3 border-t border-stone-900">
             <a
               className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
               href="#"

@@ -26,14 +26,13 @@ import {
   ContentDialog,
   ActionsDialog,
 } from "../../components/Dialog";
-import api from "../../services/api";
 import { ThemeContext } from "../../App";
-import { MaterialUISwitch } from "./components/MuiSwitch";
 import Nav from "./components/Nav";
 import Notes from "../Notes";
 import NoteDetails from "../NoteDetails";
 
-import "./activities.css";
+import api from "../../services/api";
+
 import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
@@ -283,7 +282,7 @@ export default function Activities() {
         </div>
       </div>
 
-      <DialogBody open={open} onClose={handleClose}>
+      {/* <DialogBody open={open} onClose={handleClose}>
         <TitleDialog
           closeBtn={handleClose}
           style={
@@ -443,11 +442,7 @@ export default function Activities() {
               }}
             >
               Theme
-              <MaterialUISwitch
-                onClick={(e: any) => handleTheme(e.target.checked)}
-                checked={themeValue}
-                {...register("themeSwitch")}
-              />
+             
             </Typography>
 
             <Button
@@ -479,7 +474,7 @@ export default function Activities() {
             Save
           </Button>
         </ActionsDialog>
-      </DialogBody>
+      </DialogBody> */}
     </motion.div>
   );
 }
