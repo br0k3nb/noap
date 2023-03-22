@@ -40,8 +40,6 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
   const days = (date: string) => moment(date).format("ll");
   const hours = (date: string) => moment(date).format("LT");
 
-  const junk = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
-
   return (
     <div className="w-screen lg:max-w-[380px]">
       <div className="flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
