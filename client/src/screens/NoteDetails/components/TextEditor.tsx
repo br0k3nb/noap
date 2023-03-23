@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { OpenInFull, MoreHoriz } from "@mui/icons-material";
 
-import Editor from './lexical/App.jsx';
+import Editor from './lexical/App.js';
 
 type Props = {};
 

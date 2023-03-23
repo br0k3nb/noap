@@ -77,11 +77,11 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
         </div>
       </div>
       <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen">
-        <div className="flex flex-row flex-wrap px-3 my-5 gap-y-6 gap-x-3 ">
+        <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
           {activities.map((val, idx) => (
             <div
               key={idx}
-              className={`rounded-lg h-72 w-[171px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
+              className={`rounded-lg h-72 w-[165px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
                 idx === activities.length - 1 && "mb-32 "
               }`}
             >
