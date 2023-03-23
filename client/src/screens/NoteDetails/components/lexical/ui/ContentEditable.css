@@ -1,0 +1,9 @@
+.ContentEditable__root {
+  font-size: 15px;
+  display: block;
+  position: relative;
+  outline: 0 !important;
+  outline-width: 0 !important;
+  padding: 30px 28px;
+  min-height: calc(100% - 16px);
+}

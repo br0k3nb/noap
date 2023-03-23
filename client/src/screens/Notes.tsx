@@ -40,10 +40,8 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
   const days = (date: string) => moment(date).format("ll");
   const hours = (date: string) => moment(date).format("LT");
 
-  const junk = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
-
   return (
-    <div className="w-screen lg:max-w-[380px]">
+    <div className="w-screen lg:max-w-[380px] border-r border-gray-600">
       <div className="flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
         <div className="flex flex-col mb-[4.2px]">
           <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
@@ -82,7 +80,8 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
         <div className="flex flex-row flex-wrap px-3 my-5 gap-y-6 gap-x-3 ">
           {activities.map((val, idx) => (
             <div
-              className={`rounded-lg h-72 w-[172px] xxs:w-[162px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
+              key={idx}
+              className={`rounded-lg h-72 w-[171px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
                 idx === activities.length - 1 && "mb-32 "
               }`}
             >
