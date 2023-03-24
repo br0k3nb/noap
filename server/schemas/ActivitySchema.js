@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export default new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: false, //setting to false just for testing purposes
     },
     body: {
         type: String,
@@ -11,11 +11,11 @@ export default new mongoose.Schema({
     },
     bookmark: {
         type: Boolean,
-        required: true,
+        required: false,
     },
     bookmarkColor: {
         type: String,
-        required: true,
+        required: false,
     },
     userId: {
         type: String,

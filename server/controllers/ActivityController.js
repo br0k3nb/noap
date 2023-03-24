@@ -5,9 +5,22 @@ export default {
         try {
             const {userId} = req.params;
 
+            console.log(userId);
+
             const getActivities = await Activity.find({userId}).sort({priority: 1});
 
             res.status(200).json(getActivities);
+        } catch (err) {
+            res.status(400).json({message: err});
+        }
+    },
+    async getNote(req, res) {
+        try {
+            const {id} = req.params;
+
+            const note = await Activity.findById(id);
+
+            res.status(200).json(note);
         } catch (err) {
             res.status(400).json({message: err});
         }

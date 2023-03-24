@@ -12,6 +12,7 @@ router.post("/sign-in", UserController.login);
 
 //Activities
 router.get("/activities/:userId/:token", verifyUser, ActivityController.view);
+router.get("/note/:id", verifyUser, ActivityController.getNote);
 router.post("/new-ac/:token", verifyUser, ActivityController.add);
 router.put("/up-ac/:token", verifyUser, ActivityController.edit);
 router.delete("/de-ac/:id/:token", verifyUser, ActivityController.delete);
