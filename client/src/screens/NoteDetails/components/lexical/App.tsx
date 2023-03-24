@@ -31,7 +31,7 @@ export default function App(): JSX.Element {
   };
 
   const fetchInitialData = async () => {
-    const getNote = await api.get(`/note/641d0dd64b2a0888552b3967`);
+    const getNote = await api.get(`https://noap-typescript-api.vercel.app/note/641d0dd64b2a0888552b3967`);
     currentNoteState = JSON.stringify(getNote.data);
   };
 
