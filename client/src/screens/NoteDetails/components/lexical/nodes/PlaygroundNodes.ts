@@ -44,21 +44,16 @@ const PlaygroundNodes: Array<Klass<LexicalNode>> = [
     OverflowNode,
     PollNode,
     StickyNode,
-    //@ts-ignore
     ImageNode,
     MentionNode,
     EmojiNode,
-    //@ts-ignore
     ExcalidrawNode,
-    //@ts-ignore
     EquationNode,
-    //@ts-ignore
     AutocompleteNode,
     KeywordNode,
     HorizontalRuleNode,
     TweetNode,
     YouTubeNode,
-    //@ts-ignore
     FigmaNode,
     MarkNode,
     CollapsibleContainerNode,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 
 import { useLocation } from "react-router";
 
@@ -55,17 +55,16 @@ import TwitterPlugin from "./plugins/TwitterPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
 import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 
+import { alert, toastAlert } from "../../../../components/Alert/Alert";
+import api from "../../../../services/api";
+
 import "./index.css";
 
 export default function Editor(): JSX.Element {
-  const [formIds, setFormIds] = useState([]);
-
-  const [findMentions, setFindMentions] = useState([]);
-
-  const [content, setContent] = useState("");
-
-  const location = useLocation();
-
+  const parsedUserToken = JSON.parse(
+    window.localStorage.getItem("user_token") || ""
+  );
+ 
   let [editor] = useLexicalComposerContext();
 
   const { historyState } = useSharedHistoryContext();
@@ -116,6 +115,38 @@ export default function Editor(): JSX.Element {
     };
   }, [isSmallWidthViewport]);
 
+  const handleCreate = async (data: any) => {
+    console.log(parsedUserToken.token); 
+    try {
+      if (data) {
+    
+        const create = await api.post(
+          `/new-ac/${parsedUserToken.token}`,
+          {
+            // title,
+            body: JSON.stringify(data),
+            // bookmark,
+            // bookmarkColor,
+            userId: parsedUserToken._id,
+          }
+        );
+
+        toastAlert({
+          icon: "success",
+          title: `${create.data.message}`,
+          timer: 2000,
+        });
+      } 
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({
+        icon: "error",
+        title: `${err.response.data.message}`,
+        timer: 2000,
+      });
+    }
+  };
+
   return (
     <>
       <ToolbarPlugin />
@@ -138,7 +169,7 @@ export default function Editor(): JSX.Element {
           <>
             <RichTextPlugin
               contentEditable={
-                <div className="editor h-[810px]" ref={onRef}>
+                <div className="editor h-[805px]" ref={onRef}>
                   <ContentEditable />
                 </div>
               }
@@ -177,6 +208,17 @@ export default function Editor(): JSX.Element {
         )}
 
         {isAutocomplete && <AutocompletePlugin />}
+      </div>
+      <div className="border-t border-gray-600 h-[46px] overflow-y-hidden">
+        <div className="flex flex-row justify-between px-3 pt-[1px]">
+          <button 
+            onClick={() => handleCreate(editor.getEditorState())}
+            className="text-gray-200 bg-green-600 w-28 h-[39.5px] px-2 rounded-lg my-1 hover:bg-green-700 transition duration-300 ease-in-out"
+          >
+            Save note
+          </button>
+          <span className="py-3 text-sm">Last edited in 00/00/00</span>
+        </div>
       </div>
     </>
   );

@@ -100,6 +100,7 @@ export default function Activities() {
         );
 
         setAct(verifyTk.data);
+        console.log(verifyTk.data);
       } else return navigate("/");
     } catch (err) {
       navigate("/");
