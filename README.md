@@ -32,5 +32,3 @@ Noap is being built using the MERN stack, Lexical Editor and some packages like:
 - "cd" in to the folder and run ````yarn install````
 - run ````yarn dev```` to run the application (client)
 - run ````yarn start```` to run the application (server)
-
-[⬆ Back to Top](#Table-of-contents)
