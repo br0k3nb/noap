@@ -27,13 +27,12 @@ export default {
     },
     async add(req , res) {
         try {
-            const {title, body, bookmark, bookmarkColor, userId} = req.body;
+            const {title, body, state, userId} = req.body;
 
             await Activity.create({
                 title,
                 body,
-                bookmark,
-                bookmarkColor,
+                state,
                 userId
             });
            
@@ -44,9 +43,9 @@ export default {
     },
     async edit(req, res) {
         try {
-            const {id, title, body, bookmark, bookmarkColor} = req.body;
+            const {id, title, body, state} = req.body;
 
-            await Activity.findOneAndUpdate({_id: id}, {title, body, bookmark, bookmarkColor});
+            await Activity.findOneAndUpdate({_id: id}, {title, body, state});
 
             res.status(200).json('Note updated!');
            
