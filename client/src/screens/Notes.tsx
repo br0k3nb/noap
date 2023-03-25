@@ -1,31 +1,29 @@
-import { Dispatch, SetStateAction } from "react";
+import {
+  useContext,
+  SetStateAction,
+  Dispatch,
+} from "react";
 
 import {
-  Edit,
-  ExitToApp,
-  DarkMode,
-  Event,
-  LightMode,
-  Label,
   Menu as MenuIcon,
-  Close,
-  OpenInFull,
   Search,
   Sort,
   FilterAlt,
   TextSnippet,
 } from "@mui/icons-material";
 
+import parse from "html-react-parser";
+
 import moment from "moment";
 import "moment/locale/pt-br";
+
+import { NoteContext } from "./Activities";
 
 type Activity = {
   _id: string;
   title: string;
   body: string;
-  bookmark: boolean;
-  bookmarkColor: string;
-  themeSwitch?: boolean;
+  state: string;
   updatedAt?: string;
   createdAt: string;
 };
@@ -40,6 +38,8 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
   const days = (date: string) => moment(date).format("ll");
   const hours = (date: string) => moment(date).format("LT");
 
+  const noteContext = useContext(NoteContext);
+
   return (
     <div className="w-screen lg:max-w-[380px] border-r border-gray-600">
       <div className="flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
@@ -47,15 +47,12 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
           <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
             <div className="text-center flex flex-row space-x-1 px-2">
               <span>
-                <TextSnippet
-                  sx={{ fontSize: 27 }}
-                  className="pb-[1.5px] "
-                />
+                <TextSnippet sx={{ fontSize: 27 }} className="pb-[1.5px] " />
               </span>
               <p className="text-xl">Notes</p>
             </div>
             <button className="sm:hidden" onClick={() => setNavbar(!navbar)}>
-              <MenuIcon sx={{fontSize: 26}}/>
+              <MenuIcon sx={{ fontSize: 26 }} />
             </button>
           </div>
 
@@ -78,28 +75,40 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
       </div>
       <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen">
         <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
-          {activities.map((val, idx) => (
-            <div
-              key={idx}
-              className={`rounded-lg h-72 w-[165px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
-                idx === activities.length - 1 && "mb-32 "
-              }`}
-            >
-              <p className="font-semibold">{val.title}</p>
+          {activities.map((val, idx) => {
+            const parserdHtml = parse(val.body);
 
-              <div className="h-[164px] mt-3 flex ">
-                <p className="overflow-ellipsis overflow-hidden">{val.body}</p>
-              </div>
+            const currentNote = {
+              _id: val._id,
+              state: JSON.stringify(val.state),
+            }
 
-              <div className="mt-10">
-                <p className="text-xs tracking-tighter">
-                  {!val?.updatedAt
-                    ? days(val.createdAt) + " at " + hours(val.createdAt)
-                    : days(val.updatedAt) + " at " + hours(val.updatedAt)}
-                </p>
-              </div>
-            </div>
-          ))}
+            return (
+              <a key={idx} onClick={() => noteContext?.setSelectedNote(currentNote)}>
+                <div
+                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
+                    idx === activities.length - 1 && "mb-32 "
+                  }`}
+                >
+                  <p className="font-semibold">{val.title}</p>
+
+                  <div className="h-[164px] mt-3 flex ">
+                    <div className="overflow-ellipsis overflow-hidden">
+                      {parserdHtml}
+                    </div>
+                  </div>
+
+                  <div className="mt-10">
+                    <p className="text-xs tracking-tighter">
+                      {!val?.updatedAt
+                        ? days(val.createdAt) + " at " + hours(val.createdAt)
+                        : days(val.updatedAt) + " at " + hours(val.updatedAt)}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,6 +1,4 @@
-import { useState, useEffect, forwardRef } from "react";
-
-import { useLocation } from "react-router";
+import { useState, useEffect, forwardRef, useContext } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
@@ -13,9 +11,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
-import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, $insertNodes } from "lexical";
 
 import { useSettings } from "./context/SettingsContext";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
@@ -53,99 +49,67 @@ import Placeholder from "./ui/Placeholder";
 import { CAN_USE_DOM } from "./shared/canUseDOM";
 import TwitterPlugin from "./plugins/TwitterPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
-import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 
-import { alert, toastAlert } from "../../../../components/Alert/Alert";
-import api from "../../../../services/api";
-
+import { NoteContext } from "../../../Activities";
 import "./index.css";
 
-export default function Editor(): JSX.Element {
-  const parsedUserToken = JSON.parse(
-    window.localStorage.getItem("user_token") || ""
-  );
- 
+type props = {
+  props: {
+    teste: () => void;
+  }
+}
+
+const Editor = forwardRef((props: props, ref) => {
   let [editor] = useLexicalComposerContext();
 
   const { historyState } = useSharedHistoryContext();
+  const selectedNote = useContext(NoteContext);
+
+  if(selectedNote?.selectedNote !== null) {
+    const editorState = editor.parseEditorState(JSON.parse(selectedNote?.selectedNote.state as any));
+
+    editor.setEditorState(editorState);
+  }
 
   const {
     settings: {
       isCollab,
-      isAutocomplete,
-      isMaxLength,
       isCharLimit,
       isCharLimitUtf8,
       isRichText,
       showTreeView,
-      showTableOfContents,
     },
   } = useSettings();
-  const text = isRichText
-    ? "Write something here..."
-    : "Write something here...";
+
+  const text = 'Enter some text...';
 
   const placeholder = <Placeholder>{text}</Placeholder>;
 
-  const [floatingAnchorElem, setFloatingAnchorElem] =
-    useState<HTMLDivElement | null>(null);
-  const [isSmallWidthViewport, setIsSmallWidthViewport] =
-    useState<boolean>(false);
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
+  const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
   };
-
+  
   useEffect(() => {
     const updateViewPortWidth = () => {
       const isNextSmallWidthViewport =
-        CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+        CAN_USE_DOM && window.matchMedia('(max-width: 1025px)').matches;
 
       if (isNextSmallWidthViewport !== isSmallWidthViewport) {
         setIsSmallWidthViewport(isNextSmallWidthViewport);
       }
     };
 
-    window.addEventListener("resize", updateViewPortWidth);
+    window.addEventListener('resize', updateViewPortWidth);
 
     return () => {
-      window.removeEventListener("resize", updateViewPortWidth);
+      window.removeEventListener('resize', updateViewPortWidth);
     };
   }, [isSmallWidthViewport]);
-
-  const handleCreate = async (data: any) => {
-    console.log(parsedUserToken.token); 
-    try {
-      if (data) {
-    
-        const create = await api.post(
-          `/new-ac/${parsedUserToken.token}`,
-          {
-            // title,
-            body: JSON.stringify(data),
-            // bookmark,
-            // bookmarkColor,
-            userId: parsedUserToken._id,
-          }
-        );
-
-        toastAlert({
-          icon: "success",
-          title: `${create.data.message}`,
-          timer: 2000,
-        });
-      } 
-    } catch (err: any) {
-      console.log(err);
-      toastAlert({
-        icon: "error",
-        title: `${err.response.data.message}`,
-        timer: 2000,
-      });
-    }
-  };
 
   return (
     <>
@@ -169,7 +133,8 @@ export default function Editor(): JSX.Element {
           <>
             <RichTextPlugin
               contentEditable={
-                <div className="editor h-[805px]" ref={onRef}>
+                //@ts-ignore
+                <div className="editor h-[805px]" ref={ref}>
                   <ContentEditable />
                 </div>
               }
@@ -207,12 +172,13 @@ export default function Editor(): JSX.Element {
           />
         )}
 
-        {isAutocomplete && <AutocompletePlugin />}
+        {/* {isAutocomplete && <AutocompletePlugin />} */}
       </div>
       <div className="border-t border-gray-600 h-[46px] overflow-y-hidden">
         <div className="flex flex-row justify-between px-3 pt-[1px]">
           <button 
-            onClick={() => handleCreate(editor.getEditorState())}
+            //@ts-ignore
+            onClick={() => console.log(props.props(editor.getEditorState()))}
             className="text-gray-200 bg-green-600 w-28 h-[39.5px] px-2 rounded-lg my-1 hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Save note
@@ -222,4 +188,6 @@ export default function Editor(): JSX.Element {
       </div>
     </>
   );
-}
+});
+
+export default Editor;

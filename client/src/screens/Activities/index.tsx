@@ -1,31 +1,18 @@
-import { useState, useContext, SetStateAction, Dispatch } from "react";
+import {
+  useState,
+  useContext,
+  createContext,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, FieldValues } from "react-hook-form";
 
-import {
-  Typography,
-  Box,
-  Grid,
-  Button,
-  TextField,
-  FormControlLabel,
-  InputLabel,
-  FormLabel,
-  Checkbox,
-} from "@mui/material";
-
-import { Add, Settings } from "@mui/icons-material";
-
 import { motion } from "framer-motion";
 
 import { alert, toastAlert } from "../../components/Alert/Alert";
-import {
-  DialogBody,
-  TitleDialog,
-  ContentDialog,
-  ActionsDialog,
-} from "../../components/Dialog";
+
 import { ThemeContext } from "../../App";
 import Nav from "./components/Nav";
 import Notes from "../Notes";
@@ -36,6 +23,19 @@ import api from "../../services/api";
 import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
+
+type SelectedNoteContext = {
+  selectedNote: SeletedNote | null;
+  setSelectedNote: Dispatch<SetStateAction<SeletedNote | null>>;
+};
+
+type SeletedNote = {
+  _id: string;
+  state: string;
+};
+
+export const NoteContext = createContext<SelectedNoteContext | null>(null); 
+
 export default function Activities() {
   type Theme = {
     setTheme: Dispatch<SetStateAction<string>>;
@@ -45,26 +45,27 @@ export default function Activities() {
   const theme = useContext<Theme | null>(ThemeContext);
 
   const navigate = useNavigate();
-
+  
   const [activities, setAct] = useState([]);
   const [editId, setEditId] = useState<SetStateAction<string | boolean>>(false);
   const [deleteId, setDeleteId] = useState<SetStateAction<string | number | null>>(null);
-  const [open, setOpen] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [wasSaved, setWasSaved] = useState<SetStateAction<null | number | string>>(null);
   const [wasUpdated, setWasUpdated] = useState<SetStateAction<string | boolean>>(false);
-  const [themeVal, setThemeVal] = useState(true);
+  const [selectedNote, setSelectedNote] = useState<SeletedNote | null>(null);
+  const [open, setOpen] = useState(false);
   const [navbar, setNavbar] = useState(false);
-
+  // const [themeVal, setThemeVal] = useState(true);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
+  
   const defaultValues = {
     title: "",
     body: "",
     bookmark: true,
     bookmarkColor: "",
   };
-
+  
   type Activity = {
     _id: string;
     title: string;
@@ -73,41 +74,42 @@ export default function Activities() {
     bookmarkColor: string;
     themeSwitch?: boolean;
   };
-
+  
   const { register, handleSubmit, reset, watch } = useForm<Activity>({
     defaultValues,
   });
-
+  
   const getTheme = window.localStorage.getItem("theme");
-
+  
   const parsedUserToken = JSON.parse(
     window.localStorage.getItem("user_token") || ""
-  );
-
-  const bookmark = watch("bookmark", true);
-  const bookmarkColor = watch("bookmarkColor");
-  const themeValue = watch("themeSwitch");
-
-  const getTk = async () => {
-    try {
-      if (getTheme !== null)
+    );
+    
+    const bookmark = watch("bookmark", true);
+    const bookmarkColor = watch("bookmarkColor");
+    const themeValue = watch("themeSwitch");
+    
+    
+    const getTk = async () => {
+      try {
+        if (getTheme !== null)
         reset({ themeSwitch: getTheme === "light" ? false : true });
-      else reset({ themeSwitch: true });
-
-      if (parsedUserToken !== "") {
-        const verifyTk = await api.get(
-          `https://noap-typescript-api.vercel.app/activities/${parsedUserToken._id}/${parsedUserToken.token}`
-        );
-
-        setAct(verifyTk.data);
-        console.log(verifyTk.data);
-      } else return navigate("/");
-    } catch (err) {
-      navigate("/");
-      window.localStorage.removeItem("user_token");
-    }
-  };
-
+        else reset({ themeSwitch: true });
+        
+        if (parsedUserToken !== "") {
+          const verifyTk = await api.get(
+            `https://noap-typescript-api.vercel.app/activities/${parsedUserToken._id}/${parsedUserToken.token}`
+            );
+            
+            setAct(verifyTk.data);
+            console.log(verifyTk.data);
+          } else return navigate("/");
+        } catch (err) {
+          navigate("/");
+          window.localStorage.removeItem("user_token");
+        }
+      };
+      
   const handleClose = () => {
     setOpen(false);
     setEditId(false);
@@ -248,42 +250,43 @@ export default function Activities() {
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      id={theme?.theme}
-      className="overflow-hidden"
-    >
-      <Nav
-        navbar={navbar}
-        setNavbar={setNavbar}
-        handleCreate={handleCreate}
-        setAnchorEl={setAnchorEl}
-        anchorEl={anchorEl}
-        openMenu={openMenu}
-        setOpenMenu={setOpenMenu}
-        theme={theme}
-        setOpenSettings={setOpenSettings}
-      />
+    <NoteContext.Provider value={{selectedNote, setSelectedNote}}>
       <div
-        className={`h-screen xxs:ml-0 overflow ${
-          !navbar ? "ml-[60px] xxs:ml-0" : "ml-[10rem] xxs:ml-[60px]"
-        }`}
+        // initial={{ opacity: 0 }}
+        // animate={{ opacity: 1 }}
+        // transition={{ duration: 0.5 }}
         id={theme?.theme}
+        className="overflow-hidden"
       >
-        <div className="flex flex-row">
-          <Notes
-            activities={activities}
-            navbar={navbar}
-            setNavbar={setNavbar}
-          />
+        <Nav
+          navbar={navbar}
+          setNavbar={setNavbar}
+          handleCreate={handleCreate}
+          setAnchorEl={setAnchorEl}
+          anchorEl={anchorEl}
+          openMenu={openMenu}
+          setOpenMenu={setOpenMenu}
+          theme={theme}
+          setOpenSettings={setOpenSettings}
+        />
+        <div
+          className={`h-screen xxs:ml-0 overflow ${
+            !navbar ? "ml-[60px] xxs:ml-0" : "ml-[10rem] xxs:ml-[60px]"
+          }`}
+          id={theme?.theme}
+        >
+          <div className="flex flex-row">
+            <Notes
+              activities={activities}
+              navbar={navbar}
+              setNavbar={setNavbar}
+            />
 
-          <NoteDetails />
+            <NoteDetails />
+          </div>
         </div>
-      </div>
 
-      {/* <DialogBody open={open} onClose={handleClose}>
+        {/* <DialogBody open={open} onClose={handleClose}>
         <TitleDialog
           closeBtn={handleClose}
           style={
@@ -476,6 +479,7 @@ export default function Activities() {
           </Button>
         </ActionsDialog>
       </DialogBody> */}
-    </motion.div>
+      </div>
+    </NoteContext.Provider>
   );
 }

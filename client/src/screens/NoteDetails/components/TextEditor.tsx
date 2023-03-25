@@ -9,7 +9,7 @@ export default function TextEditor({}: Props) {
 
   return (
     <div className="flex flex-col ">
-      <Editor/>
+      <Editor /> 
     </div>
   );
 }

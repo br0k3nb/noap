@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 
 import { useSettings } from "./context/SettingsContext";
@@ -9,19 +9,50 @@ import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 
 import api from "../../../../services/api";
-import { useQuery } from "react-query";
+import { alert, toastAlert } from "../../../../components/Alert/Alert";
 
 import Editor from "./Editor";
 
 export default function App(): JSX.Element {
-  let currentNoteState = '{}';
+  const editorState = useRef<any>();
 
-  const {
-    settings: { isCollab, emptyEditor },
-  } = useSettings();
+  const parsedUserToken = JSON.parse(
+    window.localStorage.getItem("user_token") || ""
+  );
+
+  const teste = async (currentState: any) => {
+    const string = editorState.current.lastElementChild.innerHTML;
+    try {
+      if (currentState) {
+        const create = await api.post(`https://noap-typescript-api.vercel.app/new-ac/${parsedUserToken.token}`, {
+          // title,
+          body: string,
+          state: JSON.stringify(currentState),
+          userId: parsedUserToken._id,
+        });
+
+        toastAlert({
+          icon: "success",
+          title: `${create.data.message}`,
+          timer: 2000,
+        });
+      }
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({
+        icon: "error",
+        title: `${err.response.data.message}`,
+        timer: 2000,
+      });
+    }
+  };
+
+  // const {
+  //   settings: { isCollab, emptyEditor },
+  // } = useSettings();
 
   const initialConfig = {
-    editorState: currentNoteState !== '{}' ? currentNoteState : isCollab ? null : emptyEditor ? undefined : undefined,
+    editorState: undefined,
     namespace: "Noap",
     nodes: [...PlaygroundNodes],
     onError: (error: Error) => {
@@ -30,26 +61,14 @@ export default function App(): JSX.Element {
     theme: PlaygroundEditorTheme,
   };
 
-  const fetchInitialData = async () => {
-    const getNote = await api.get(`https://noap-typescript-api.vercel.app/note/641d0dd64b2a0888552b3967`);
-    currentNoteState = JSON.stringify(getNote.data);
-  };
-
-  useQuery("getNote", fetchInitialData,
-    {
-      refetchOnMount: true,
-      refetchOnWindowFocus: true,
-      // refetchInterval: 5000,
-    }
-  );
-
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <SharedHistoryContext>
         <TableContext>
           <SharedAutocompleteContext>
             <div className="editor-shell">
-              <Editor />
+              {/* @ts-ignore */}
+              <Editor ref={editorState} props={teste} />
             </div>
           </SharedAutocompleteContext>
         </TableContext>
