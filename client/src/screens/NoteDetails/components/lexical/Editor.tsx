@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, useContext } from "react";
+import { useState, useEffect, forwardRef } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
@@ -12,6 +12,8 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+
+import { EditorState } from "lexical";
 
 import { useSettings } from "./context/SettingsContext";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
@@ -50,27 +52,17 @@ import { CAN_USE_DOM } from "./shared/canUseDOM";
 import TwitterPlugin from "./plugins/TwitterPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
 
-import { NoteContext } from "../../../Activities";
 import "./index.css";
 
-type props = {
-  props: {
-    teste: () => void;
-  }
-}
+type Save = {
+  save: (currentState: EditorState) => Promise<void>
+};
 
-const Editor = forwardRef((props: props, ref) => {
+const Editor = forwardRef(({save}: Save, ref) => {
   let [editor] = useLexicalComposerContext();
 
   const { historyState } = useSharedHistoryContext();
-  const selectedNote = useContext(NoteContext);
-
-  if(selectedNote?.selectedNote !== null) {
-    const editorState = editor.parseEditorState(JSON.parse(selectedNote?.selectedNote.state as any));
-
-    editor.setEditorState(editorState);
-  }
-
+  
   const {
     settings: {
       isCollab,
@@ -85,14 +77,7 @@ const Editor = forwardRef((props: props, ref) => {
 
   const placeholder = <Placeholder>{text}</Placeholder>;
 
-  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
   const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
-
-  const onRef = (_floatingAnchorElem: HTMLDivElement) => {
-    if (_floatingAnchorElem !== null) {
-      setFloatingAnchorElem(_floatingAnchorElem);
-    }
-  };
   
   useEffect(() => {
     const updateViewPortWidth = () => {
@@ -177,8 +162,7 @@ const Editor = forwardRef((props: props, ref) => {
       <div className="border-t border-gray-600 h-[46px] overflow-y-hidden">
         <div className="flex flex-row justify-between px-3 pt-[1px]">
           <button 
-            //@ts-ignore
-            onClick={() => console.log(props.props(editor.getEditorState()))}
+            onClick={() => save(editor.getEditorState())}
             className="text-gray-200 bg-green-600 w-28 h-[39.5px] px-2 rounded-lg my-1 hover:bg-green-700 transition duration-300 ease-in-out"
           >
             Save note

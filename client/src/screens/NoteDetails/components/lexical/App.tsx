@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 
-import { useSettings } from "./context/SettingsContext";
 import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
 import { SharedHistoryContext } from "./context/SharedHistoryContext";
 import PlaygroundNodes from "./nodes/PlaygroundNodes";
@@ -13,23 +12,36 @@ import { alert, toastAlert } from "../../../../components/Alert/Alert";
 
 import Editor from "./Editor";
 
-export default function App(): JSX.Element {
-  const editorState = useRef<any>();
+type currentNote = {
+  _id: string;
+  state: string;
+};
+
+export default function App({ _id, state }: currentNote): JSX.Element {
+  const editorRef = useRef<any>(null);
 
   const parsedUserToken = JSON.parse(
     window.localStorage.getItem("user_token") || ""
   );
 
-  const teste = async (currentState: any) => {
-    const string = editorState.current.lastElementChild.innerHTML;
+  const saveNote = async (currentState: any) => {
+    const string = editorRef?.current.lastElementChild.innerHTML;
+
+    //this is for react stop complaining about not being able to control the nodes
+    const removeContentEditableTrueString = string.replace('contentEditable="true"', '');
+    const finalString = removeContentEditableTrueString.replace('contentEditable="false"', '');
+
     try {
       if (currentState) {
-        const create = await api.post(`https://noap-typescript-api.vercel.app/new-ac/${parsedUserToken.token}`, {
-          // title,
-          body: string,
-          state: JSON.stringify(currentState),
-          userId: parsedUserToken._id,
-        });
+        const create = await api.post(
+          `https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
+          {
+            // title,
+            body: finalString,
+            state: JSON.stringify(currentState),
+            userId: parsedUserToken._id,
+          }
+        );
 
         toastAlert({
           icon: "success",
@@ -47,12 +59,8 @@ export default function App(): JSX.Element {
     }
   };
 
-  // const {
-  //   settings: { isCollab, emptyEditor },
-  // } = useSettings();
-
   const initialConfig = {
-    editorState: undefined,
+    editorState: JSON.parse(state),
     namespace: "Noap",
     nodes: [...PlaygroundNodes],
     onError: (error: Error) => {
@@ -68,7 +76,7 @@ export default function App(): JSX.Element {
           <SharedAutocompleteContext>
             <div className="editor-shell">
               {/* @ts-ignore */}
-              <Editor ref={editorState} props={teste} />
+              <Editor ref={editorRef} save={saveNote} />
             </div>
           </SharedAutocompleteContext>
         </TableContext>

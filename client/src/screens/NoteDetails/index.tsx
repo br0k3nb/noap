@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { OpenInFull, MoreHoriz } from "@mui/icons-material";
+import { useContext } from "react";
+import { OpenInFull, MoreHoriz, Notes } from "@mui/icons-material";
 
-import TextEditor from "./components/TextEditor";
+import TextEditor from "./components/lexical/App";
+import { NoteContext } from "../Activities";
 
-type Props = {};
+export default function NoteDetails() {
+  const selectedNote = useContext(NoteContext);
 
-export default function NoteDetails({}: Props) {
   return (
     <div className="h-screen w-screen bg-gray-700 xxs:hidden text-gray-200">
       <div className="flex flex-col text-gray-200 py-2">
@@ -17,9 +18,23 @@ export default function NoteDetails({}: Props) {
           <p className="px-4 text-sm">Last edited in Mar 20, 2023  </p>
         </div> */}
         <div className="flex flex-col ">
-          <div className="flex flex-col h-screen pb-16 overflow-scroll">
-            <TextEditor/>
-          </div>
+          {selectedNote?.selectedNote !== null ? (
+            <div className="flex flex-col h-screen pb-16 overflow-scroll">
+              <TextEditor
+                _id={selectedNote?.selectedNote._id as string}
+                state={selectedNote?.selectedNote.state as string}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col text-center">
+              <div className="mt-[20%]">
+                <Notes sx={{ fontSize: 207 }} className="text-gray-500" />
+                <p className="text-xl text-gray-500">
+                  The selected note will appear here...
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

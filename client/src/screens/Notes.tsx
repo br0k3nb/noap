@@ -4,6 +4,8 @@ import {
   Dispatch,
 } from "react";
 
+import { FieldArrayWithId } from "react-hook-form";
+
 import {
   Menu as MenuIcon,
   Search,
@@ -19,22 +21,25 @@ import "moment/locale/pt-br";
 
 import { NoteContext } from "./Activities";
 
-type Activity = {
-  _id: string;
-  title: string;
-  body: string;
-  state: string;
-  updatedAt?: string;
-  createdAt: string;
+type Notes = {
+  note: {
+    _id: string;
+    userId: string;
+    title?: string;
+    body: string;
+    state: string;
+    updatedAt?: string;
+    createdAt: string;
+  }[];
 };
 
 type Props = {
-  activities: Activity[];
+  notes: FieldArrayWithId<Notes, "note", "UseFieldArrayId">[];
   setNavbar: Dispatch<SetStateAction<boolean>>;
   navbar: boolean;
 };
 
-export default function Notes({ activities, navbar, setNavbar }: Props) {
+export default function Notes({ notes, navbar, setNavbar }: Props) {
   const days = (date: string) => moment(date).format("ll");
   const hours = (date: string) => moment(date).format("LT");
 
@@ -57,7 +62,7 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
           </div>
 
           <div className="flex flex-row flex-wrap gap-x-1 justify-between px-3 py-2 max-w-screen text-gray-200">
-            <p className="pl-3">{activities.length} notes</p>
+            <p className="pl-3">{notes.length} notes</p>
 
             <div className="flex flex-row space-x-2">
               <div className="hover:bg-stone-700 rounded ">
@@ -75,7 +80,8 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
       </div>
       <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen">
         <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
-          {activities.map((val, idx) => {
+          {notes.map((val, idx) => {
+            console.log(val);
             const parserdHtml = parse(val.body);
 
             const currentNote = {
@@ -87,7 +93,7 @@ export default function Notes({ activities, navbar, setNavbar }: Props) {
               <a key={idx} onClick={() => noteContext?.setSelectedNote(currentNote)}>
                 <div
                   className={`rounded-lg h-72 w-[165px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
-                    idx === activities.length - 1 && "mb-32 "
+                    idx === notes.length - 1 && "mb-32 "
                   }`}
                 >
                   <p className="font-semibold">{val.title}</p>

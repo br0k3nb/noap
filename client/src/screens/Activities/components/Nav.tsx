@@ -1,74 +1,79 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import {
-  AppBar,
-  Box,
-  Typography,
-  Button,
-  MenuItem,
-  Menu,
-  Tooltip,
-  Avatar,
-  IconButton,
-  Divider,
-} from "@mui/material";
+import { Dispatch, SetStateAction } from "react";
+
+import { UseFieldArrayAppend, FieldArrayWithId } from "react-hook-form";
 
 import {
-  Edit,
-  ExitToApp,
-  DarkMode,
   Event,
-  LightMode,
   Label,
   Menu as MenuIcon,
   Close,
-  OpenInFull,
   Settings,
   Add,
   Home,
   KeyboardDoubleArrowLeft,
 } from "@mui/icons-material";
 
-import { motion } from "framer-motion";
+import api from "../../../services/api";
 
-type Theme = {
-  setTheme: Dispatch<SetStateAction<string>>;
-  theme: string;
-};
+// import { motion } from "framer-motion";
 
-type parsedUserTokenType = {
-  _id: string;
-  userName: string;
-  token: string;
+type Notes = {
+  note: {
+    _id: string;
+    userId: string;
+    title?: string;
+    body: string;
+    state: string;
+    updatedAt?: string;
+    createdAt: string;
+  }[];
 };
 
 type NavProps = {
-  theme: Theme | null;
-  handleCreate: () => unknown;
-  setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
-  setOpenMenu: Dispatch<SetStateAction<boolean>>;
   // handleSignout: () => void;
   // parsedUserToken: parsedUserTokenType;
-  anchorEl: Element | ((element: Element) => Element) | null;
-  openMenu: boolean;
-  setOpenSettings: Dispatch<SetStateAction<boolean>>;
   setNavbar: Dispatch<SetStateAction<boolean>>;
   navbar: boolean | string;
+  append: UseFieldArrayAppend<Notes, "note">;
+  notes: FieldArrayWithId<Notes, "note", "UseFieldArrayId">[];
 };
 
-export default function Nav({
-  theme,
-  handleCreate,
-  setAnchorEl,
-  setOpenMenu,
-  anchorEl,
-  openMenu,
-  setOpenSettings,
-  navbar,
-  setNavbar,
-}: NavProps) {
+export default function Nav({ navbar, setNavbar, append, notes }: NavProps) {
+  const defaultState = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
+
+  const parsedUserToken = JSON.parse(
+    window.localStorage.getItem("user_token") || ""
+  );
+
+  const addNewNote = async () => {
+    try {
+      await api.post(`https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
+      {
+        // title,
+        body: '',
+        state: defaultState,
+        userId: parsedUserToken._id,
+      });  
+
+      append({
+        // title,
+        _id: String(notes.length), //setting a temporary _id for now. the real _id will be fetched from the db
+        body: '',
+        state: defaultState,
+        userId: parsedUserToken._id as string,
+        createdAt: new Date().toISOString(),
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div>
-      <div className={`fixed ${!navbar ? "flex xxs:hidden" : "hidden xxs:flex"}`}>
+      <div
+        className={`fixed ${!navbar ? "flex xxs:hidden" : "hidden xxs:flex"}`}
+      >
         <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900">
           <div className="flex items-center justify-center mt-3 rounded-full border border-gray-600 px-2 h-10 w-10">
             <p className="text-2xl py-1 px-1">N</p>
@@ -100,7 +105,7 @@ export default function Nav({
             </a>
             <a
               className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-              href="#"
+              onClick={() => addNewNote()}
             >
               <Add className="text-gray-300" sx={{ fontSize: 27 }} />
             </a>
