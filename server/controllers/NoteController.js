@@ -1,4 +1,4 @@
-import Activity from '../models/Activity.js';
+import Note from '../models/Note.js';
 
 export default {
     async view(req, res) {
@@ -7,7 +7,7 @@ export default {
 
             console.log(userId);
 
-            const getActivities = await Activity.find({userId}).sort({priority: 1});
+            const getActivities = await Note.find({userId}).sort({priority: 1});
 
             res.status(200).json(getActivities);
         } catch (err) {
@@ -18,7 +18,7 @@ export default {
         try {
             const {id} = req.params;
 
-            const note = await Activity.findById(id);
+            const note = await Note.findById(id);
 
             res.status(200).json(note);
         } catch (err) {
@@ -29,8 +29,8 @@ export default {
         try {
             const {title, body, state, userId} = req.body;
 
-            await Activity.create({
-                title,
+            await Note.create({
+                // title,
                 body,
                 state,
                 userId
@@ -38,6 +38,7 @@ export default {
            
             res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
+            console.log(err);
             res.status(400).json('Internal error, please try again or later!');
         }
     },
@@ -45,7 +46,7 @@ export default {
         try {
             const {id, title, body, state} = req.body;
 
-            await Activity.findOneAndUpdate({_id: id}, {title, body, state});
+            await Note.findOneAndUpdate({_id: id}, {title, body, state});
 
             res.status(200).json('Note updated!');
            
@@ -57,7 +58,7 @@ export default {
         try {
             const {id} = req.params;
 
-            await Activity.findByIdAndDelete(id);
+            await Note.findByIdAndDelete(id);
             
             res.status(200).json({message: 'Note deleted!'});
         } catch (err) {

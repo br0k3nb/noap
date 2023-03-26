@@ -7,11 +7,11 @@ export default new mongoose.Schema({
     },
     body: {
         type: String,
-        required: true,
+        required: false,
     },
     state: {
         type: String,
-        required: false,
+        required: true,
     },
     userId: {
         type: String,

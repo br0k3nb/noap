@@ -1,6 +1,6 @@
 import express from 'express'
 import UserController from './controllers/UserController.js';
-import ActivityController from './controllers/ActivityController.js';
+import NoteController from './controllers/NoteController.js';
 
 import verifyUser from './middlewares/verifyUser.js';
 
@@ -11,10 +11,10 @@ router.post("/sign-up", UserController.add);
 router.post("/sign-in", UserController.login);
 
 //Activities
-router.get("/activities/:userId/:token", verifyUser, ActivityController.view);
-router.get("/note/:id/:token", verifyUser, ActivityController.getNote);
-router.post("/new-ac/:token", verifyUser, ActivityController.add);
-router.put("/up-ac/:token", verifyUser, ActivityController.edit);
-router.delete("/de-ac/:id/:token", verifyUser, ActivityController.delete);
+router.get("/notes/:userId/:token", verifyUser, NoteController.view);
+router.get("/note/:id/:token", verifyUser, NoteController.getNote);
+router.post("/add/:token", verifyUser, NoteController.add);
+router.put("/update/:token", verifyUser, NoteController.edit);
+router.delete("/delete/:id/:token", verifyUser, NoteController.delete);
 
 export default router;
