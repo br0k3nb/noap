@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useContext, Dispatch, SetStateAction } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 
 import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
@@ -8,22 +8,29 @@ import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 
 import api from "../../../../services/api";
-import { alert, toastAlert } from "../../../../components/Alert/Alert";
+import { NoteWasSaved } from "../../../Home";
+import { toastAlert } from "../../../../components/Alert/Alert";
+
 
 import Editor from "./Editor";
 
 type currentNote = {
-  _id: string;
   state: string;
 };
 
-export default function App({ _id, state }: currentNote): JSX.Element {
+type NoteWasSavedContext = {
+  wasSaved: boolean;
+  setWasSaved: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function App({ state }: currentNote): JSX.Element {
   const editorRef = useRef<any>(null);
+  const noteWasSavedContext = useContext<NoteWasSavedContext | null>(NoteWasSaved);
 
   const parsedUserToken = JSON.parse(
     window.localStorage.getItem("user_token") || ""
   );
-
+  
   const saveNote = async (currentState: any) => {
     const string = editorRef?.current.lastElementChild.innerHTML;
 
@@ -43,6 +50,8 @@ export default function App({ _id, state }: currentNote): JSX.Element {
           }
         );
 
+        noteWasSavedContext?.setWasSaved(!noteWasSavedContext.wasSaved);
+
         toastAlert({
           icon: "success",
           title: `${create.data.message}`,
@@ -51,6 +60,7 @@ export default function App({ _id, state }: currentNote): JSX.Element {
       }
     } catch (err: any) {
       console.log(err);
+
       toastAlert({
         icon: "error",
         title: `${err.response.data.message}`,

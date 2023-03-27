@@ -1,7 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { UseFieldArrayAppend, FieldArrayWithId } from "react-hook-form";
-
 import {
   Event,
   Label,
@@ -12,8 +10,6 @@ import {
   Home,
   KeyboardDoubleArrowLeft,
 } from "@mui/icons-material";
-
-import api from "../../../services/api";
 
 // import { motion } from "framer-motion";
 
@@ -30,49 +26,18 @@ type Notes = {
 };
 
 type NavProps = {
-  // handleSignout: () => void;
-  // parsedUserToken: parsedUserTokenType;
   setNavbar: Dispatch<SetStateAction<boolean>>;
   navbar: boolean | string;
-  append: UseFieldArrayAppend<Notes, "note">;
-  notes: FieldArrayWithId<Notes, "note", "UseFieldArrayId">[];
+  addNewNote: () => Promise<void>
 };
 
-export default function Nav({ navbar, setNavbar, append, notes }: NavProps) {
-  const defaultState = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
-
-  const parsedUserToken = JSON.parse(
-    window.localStorage.getItem("user_token") || ""
-  );
-
-  const addNewNote = async () => {
-    try {
-      await api.post(`https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
-      {
-        // title,
-        body: '',
-        state: defaultState,
-        userId: parsedUserToken._id,
-      });  
-
-      append({
-        // title,
-        _id: String(notes.length), //setting a temporary _id for now. the real _id will be fetched from the db
-        body: '',
-        state: defaultState,
-        userId: parsedUserToken._id as string,
-        createdAt: new Date().toISOString(),
-      });
-
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
+export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
   return (
     <div>
       <div
-        className={`fixed ${!navbar ? "flex xxs:hidden" : "hidden xxs:flex"}`}
+        className={`fixed z-50 ${
+          !navbar ? "flex xxs:hidden" : "hidden xxs:flex"
+        }`}
       >
         <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900">
           <div className="flex items-center justify-center mt-3 rounded-full border border-gray-600 px-2 h-10 w-10">
@@ -97,36 +62,46 @@ export default function Nav({ navbar, setNavbar, append, notes }: NavProps) {
             </button>
           </div>
           <div className="flex flex-col items-center mt-3 border-t border-stone-900">
-            <a
-              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-              href="#"
-            >
-              <Home className="text-gray-300" sx={{ fontSize: 27 }} />
-            </a>
-            <a
-              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-              onClick={() => addNewNote()}
-            >
-              <Add className="text-gray-300" sx={{ fontSize: 27 }} />
-            </a>
-            <a
-              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-              href="#"
-            >
-              <Label className="text-gray-300" sx={{ fontSize: 27 }} />
-            </a>
-            <a
-              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-              href="#"
-            >
-              <Event className="text-gray-300" sx={{ fontSize: 27 }} />
-            </a>
-            <a
-              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-              href="#"
-            >
-              <Settings className="text-gray-300" sx={{ fontSize: 27 }} />
-            </a>
+            <div className="tooltip text-gray-300" data-tip="Home">
+              <a
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                href="#"
+              >
+                <Home className="text-gray-300" sx={{ fontSize: 27 }} />
+              </a>
+            </div>
+            <div className="tooltip text-gray-100 !px-36" data-tip="New note">
+              <a
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                onClick={() => addNewNote()}
+              >
+                <Add className="text-gray-300" sx={{ fontSize: 27 }} />
+              </a>
+            </div>
+            <div className="tooltip text-gray-300" data-tip="Labels">
+              <a
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                href="#"
+              >
+                <Label className="text-gray-300" sx={{ fontSize: 27 }} />
+              </a>
+            </div>
+            <div className="tooltip text-gray-300" data-tip="Events">
+              <a
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                href="#"
+              >
+                <Event className="text-gray-300" sx={{ fontSize: 27 }} />
+              </a>
+            </div>
+            <div className="tooltip text-gray-300" data-tip="Settings">
+              <a
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                href="#"
+              >
+                <Settings className="text-gray-300" sx={{ fontSize: 27 }} />
+              </a>
+            </div>
           </div>
           <a
             className="flex items-center justify-center w-16 h-16 mt-auto bg-gray-700 hover:bg-gray-600 hover:text-gray-300"

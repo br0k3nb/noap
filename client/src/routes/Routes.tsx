@@ -1,7 +1,7 @@
 import {BrowserRouter, Navigate, Route, Routes, Outlet, RouteProps} from "react-router-dom";
 import SignInForm from "../screens/SignInForm";
 import SignUpForm from "../screens/SignUpForm";
-import Activities from "../screens/Activities/index";
+import Home from "../screens/Home/index";
 import Page404 from "../screens/Page404";
 // import isUserAuth from "./userAuth";
 
@@ -37,7 +37,7 @@ export default function RoutesApp () {
         {/* </Route> */}
 
         {/* <Route  element={<PrivateRoutes/>}> */}
-          <Route path="/activities" element={<Activities/>}/>
+          <Route path="/activities" element={<Home/>}/>
         {/* </Route> */}
 
         <Route path="/sign-up" element={<SignUpForm />} />

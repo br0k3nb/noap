@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { OpenInFull, MoreHoriz, Notes } from "@mui/icons-material";
 
 import TextEditor from "./components/lexical/App";
-import { NoteContext } from "../Activities";
+import { NoteContext } from "../Home";
 
 export default function NoteDetails() {
   const selectedNote = useContext(NoteContext);
@@ -21,9 +21,8 @@ export default function NoteDetails() {
           {selectedNote?.selectedNote !== null ? (
             <div className="flex flex-col h-screen pb-16 overflow-scroll">
               <TextEditor
-                _id={selectedNote?.selectedNote._id as string}
                 state={selectedNote?.selectedNote.state as string}
-              />
+              /> 
             </div>
           ) : (
             <div className="flex flex-col text-center">

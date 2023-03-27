@@ -19,7 +19,7 @@ import parse from "html-react-parser";
 import moment from "moment";
 import "moment/locale/pt-br";
 
-import { NoteContext } from "./Activities";
+import { NoteContext } from "./Home";
 
 type Notes = {
   note: {
@@ -34,7 +34,7 @@ type Notes = {
 };
 
 type Props = {
-  notes: FieldArrayWithId<Notes, "note", "UseFieldArrayId">[];
+  notes: FieldArrayWithId<Notes, "note", "id">[];
   setNavbar: Dispatch<SetStateAction<boolean>>;
   navbar: boolean;
 };
@@ -81,7 +81,6 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
       <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen">
         <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
           {notes.map((val, idx) => {
-            console.log(val);
             const parserdHtml = parse(val.body);
 
             const currentNote = {
@@ -90,9 +89,9 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
             }
 
             return (
-              <a key={idx} onClick={() => noteContext?.setSelectedNote(currentNote)}>
+              <a className='mx-auto' key={idx} onClick={() => noteContext?.setSelectedNote(currentNote)}>
                 <div
-                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] mx-auto border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
+                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
                     idx === notes.length - 1 && "mb-32 "
                   }`}
                 >
