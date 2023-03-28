@@ -14,7 +14,7 @@ router.post("/sign-in", UserController.login);
 router.get("/notes/:userId/:token", verifyUser, NoteController.view);
 router.get("/note/:id/:token", verifyUser, NoteController.getNote);
 router.post("/add/:token", verifyUser, NoteController.add);
-router.put("/update/:token", verifyUser, NoteController.edit);
+router.patch("/edit/:token", verifyUser, NoteController.edit);
 router.delete("/delete/:id/:token", verifyUser, NoteController.delete);
 
 export default router;

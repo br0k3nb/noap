@@ -44,13 +44,14 @@ export default {
     },
     async edit(req, res) {
         try {
-            const {id, title, body, state} = req.body;
+            const {_id, title, body, state} = req.body;
 
-            await Note.findOneAndUpdate({_id: id}, {title, body, state});
+            await Note.findOneAndUpdate({_id}, {body, state});
 
-            res.status(200).json('Note updated!');
+            res.status(200).json({message: 'Note updated!'});
            
         } catch (err) {
+            console.log(err);
             res.status(400).json(err);
         }
     },
