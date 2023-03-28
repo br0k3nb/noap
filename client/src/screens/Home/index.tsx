@@ -1,10 +1,4 @@
-import {
-  useState,
-  useContext,
-  createContext,
-  SetStateAction,
-  Dispatch,
-} from "react";
+import { useState, createContext, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, FieldValues, useFieldArray } from "react-hook-form";
@@ -23,8 +17,8 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 type SelectedNoteContext = {
-  selectedNote: SeletedNote | null;
-  setSelectedNote: Dispatch<SetStateAction<SeletedNote | null>>;
+  selectedNote: number;
+  setSelectedNote: Dispatch<SetStateAction<number | null>>;
 };
 
 type NoteWasSavedContext = {
@@ -32,9 +26,27 @@ type NoteWasSavedContext = {
   setWasSaved: Dispatch<SetStateAction<boolean>>;
 };
 
-type SeletedNote = {
+type Notes = {
+  note: {
+    _id: string;
+    userId: string;
+    title?: string;
+    body: string;
+    state: string;
+    updatedAt?: string;
+    createdAt: string;
+  }[];
+};
+
+type Note = {
   _id: string;
+  userId: string;
+  title?: string;
+  body: string;
   state: string;
+  updatedAt?: string;
+  createdAt: string;
+  id: string;
 };
 
 export const NoteContext = createContext<SelectedNoteContext | null>(null);
@@ -45,32 +57,9 @@ export default function Activities(): JSX.Element {
   const defaultLexicalState =
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
-  const [selectedNote, setSelectedNote] = useState<SeletedNote | null>(null);
+  const [selectedNote, setSelectedNote] = useState<number | null>(null);
   const [wasSaved, setWasSaved] = useState(false);
   const [navbar, setNavbar] = useState(false);
-
-  type Notes = {
-    note: {
-      _id: string;
-      userId: string;
-      title?: string;
-      body: string;
-      state: string;
-      updatedAt?: string;
-      createdAt: string;
-    }[];
-  };
-
-  type Note = {
-    _id: string;
-    userId: string;
-    title?: string;
-    body: string;
-    state: string;
-    updatedAt?: string;
-    createdAt: string;
-    id: string;
-  };
 
   const { control } = useForm<Notes>();
 
@@ -94,7 +83,7 @@ export default function Activities(): JSX.Element {
       if (fields.length === 0) append(notes.data);
       else if (fields.length >= 1) {
         notes.data.map((value: Note, index: number) => {
-
+          
           //creating a condition checker by "hand" because i can't
           //just use value === fields[index], since useFieldArray
           //inserts it's own id into the array.
@@ -103,9 +92,11 @@ export default function Activities(): JSX.Element {
             value.createdAt === fields[index]?.createdAt &&
             value.state === fields[index]?.state;
 
-          if (notes.data.length >= fields.length && fields.length - 1 < index) append(value);
+          if (notes.data.length >= fields.length && fields.length - 1 < index)
+            append(value);
           else if (notes.data.length < fields.length) replace(notes.data);
-          else if (value._id === fields[index]._id && !noteIsTheSame) update(index, value);
+          else if (value._id === fields[index]._id && !noteIsTheSame)
+            update(index, value);
           else if (value._id === fields[index]._id && noteIsTheSame) return;
         });
       }
@@ -127,7 +118,6 @@ export default function Activities(): JSX.Element {
           userId: parsedUserToken._id,
         }
       );
-
 
       setWasSaved(!wasSaved);
 
@@ -205,8 +195,6 @@ export default function Activities(): JSX.Element {
     navigate("/");
   };
 
-  console.log(wasSaved);
-
   useQuery(["verifyUser", wasSaved], fetchNotes, {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -214,6 +202,7 @@ export default function Activities(): JSX.Element {
 
   return (
     <NoteWasSaved.Provider value={{ wasSaved, setWasSaved }}>
+      {/* @ts-ignore */}
       <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
         <div
           // initial={{ opacity: 0 }}
@@ -232,7 +221,7 @@ export default function Activities(): JSX.Element {
             <div className="flex flex-row">
               <Notes notes={fields} navbar={navbar} setNavbar={setNavbar} />
 
-              <NoteDetails />
+              <NoteDetails notes={fields}/>
             </div>
           </div>
         </div>

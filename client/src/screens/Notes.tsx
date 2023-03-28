@@ -83,16 +83,15 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
           {notes.map((val, idx) => {
             const parserdHtml = parse(val.body);
 
-            const currentNote = {
-              _id: val._id,
-              state: JSON.stringify(val.state),
-            }
-
             return (
-              <a className='mx-auto' key={idx} onClick={() => noteContext?.setSelectedNote(currentNote)}>
+              <a 
+                key={idx} 
+                className={`mx-auto ${idx === notes.length - 1 && "mb-32"}`} 
+                onClick={() => noteContext?.setSelectedNote(idx)}
+              >
                 <div
                   className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
-                    idx === notes.length - 1 && "mb-32 "
+                    noteContext?.selectedNote === idx && 'border border-gray-300'
                   }`}
                 >
                   <p className="font-semibold">{val.title}</p>

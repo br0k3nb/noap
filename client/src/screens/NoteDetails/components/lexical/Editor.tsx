@@ -12,7 +12,6 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-
 import { EditorState } from "lexical";
 
 import { useSettings } from "./context/SettingsContext";
@@ -59,8 +58,7 @@ type Save = {
 };
 
 const Editor = forwardRef(({save}: Save, ref) => {
-  let [editor] = useLexicalComposerContext();
-
+  const [editor] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
   
   const {
@@ -72,7 +70,7 @@ const Editor = forwardRef(({save}: Save, ref) => {
       showTreeView,
     },
   } = useSettings();
-
+  
   const text = 'Enter some text...';
 
   const placeholder = <Placeholder>{text}</Placeholder>;
