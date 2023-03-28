@@ -5,8 +5,6 @@ export default {
         try {
             const {userId} = req.params;
 
-            console.log(userId);
-
             const getActivities = await Note.find({userId}).sort({priority: 1});
 
             res.status(200).json(getActivities);
