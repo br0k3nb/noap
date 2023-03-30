@@ -39,7 +39,7 @@ export default {
             res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
             console.log(err);
-            res.status(400).json('Internal error, please try again or later!');
+            res.status(400).json({message: 'Error, please try again later!'});
         }
     },
     async edit(req, res) {
@@ -52,7 +52,7 @@ export default {
            
         } catch (err) {
             console.log(err);
-            res.status(400).json(err);
+            res.status(400).json({message: 'Error, please try again later!'});
         }
     },
     async delete(req, res) {
@@ -64,7 +64,7 @@ export default {
             res.status(200).json({message: 'Note deleted!'});
         } catch (err) {
             console.log(err);
-            res.status(400).json({message: err});
+            res.status(400).json({message: 'Error, please try again later!'});
         }
     }
 }
