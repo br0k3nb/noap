@@ -8,7 +8,6 @@ import {
   BsFillGearFill,
   BsXLg,
   BsList,
-  BsChatLeftQuoteFill
 } from "react-icons/bs";
 
 // import { motion } from "framer-motion";
@@ -27,8 +26,9 @@ type Notes = {
 
 type NavProps = {
   setNavbar: Dispatch<SetStateAction<boolean>>;
-  navbar: boolean | string;
   addNewNote: () => Promise<void>;
+  expanded: boolean;
+  navbar: boolean;
 };
 
 export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
@@ -65,7 +65,7 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
                 <BsFillHouseDoorFill className="text-gray-300" size={23} />
               </a>
             </div>
-            <div className="tooltip text-gray-100 !px-36" data-tip="New note">
+            <div className="tooltip text-gray-100 before:text-[12px]" data-tip="New note">
               <a
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 onClick={() => addNewNote()}
@@ -125,8 +125,8 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
             href="#"
           >
             <div className="flex flex-row">
+              {/* <span className="pt-2 pr-2" ><BsChatLeftQuoteFill/></span> */}
               <span className="text-xl">Noap</span>
-              <span className="pt-2 pl-2" ><BsChatLeftQuoteFill/></span>
             </div>
             <BsXLg
               className="text-gray-300 mt-1"
@@ -136,13 +136,18 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
           </a>
           <div className="w-full ">
             <div className="flex flex-col items-center w-full mt-3 border-t border-gray-700 space-y-1">
-              <button className="flex items-center w-full h-12 px-3 mt-2 hover:bg-gray-700">
+              <button 
+                className="flex items-center w-full h-12 px-3 mt-2 hover:bg-gray-700"
+              >
                 <BsFillHouseDoorFill className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">Home</span>
               </button>
-              <button className="flex items-center w-full h-12 px-3 hover:bg-gray-700">
+              <button 
+                className="flex items-center w-full h-12 px-3 hover:bg-gray-700"
+                onClick={() => addNewNote()}
+              >
                 <BsJournalPlus className="text-gray-300" size={23} />
-                <span className="ml-2 text-sm font-medium">New note</span>
+                <span className="ml-2 text-sm font-medium">Add a new note</span>
               </button>
               <button className="flex items-center w-full h-12 px-3 hover:bg-gray-700">
                 <BsTagFill className="text-gray-300" size={23} />

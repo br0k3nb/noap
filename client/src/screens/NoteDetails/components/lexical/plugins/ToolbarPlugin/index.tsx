@@ -17,7 +17,7 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   ListNode,
   REMOVE_LIST_COMMAND,
-} from "@lexical/list";
+} from '@lexical/list';
 
 import { INSERT_EMBED_COMMAND } from "@lexical/react/LexicalAutoEmbedPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -173,7 +173,6 @@ function BlockFormatDropDown({
           $isRangeSelection(selection) ||
           DEPRECATED_$isGridSelection(selection)
         ) {
-          //@ts-ignore
           $setBlocksType(selection, () => $createHeadingNode(headingSize));
         }
       });
@@ -228,7 +227,6 @@ function BlockFormatDropDown({
           DEPRECATED_$isGridSelection(selection)
         ) {
           if (selection.isCollapsed()) {
-            //@ts-ignore
             $setBlocksType(selection, () => $createCodeNode());
           } else {
             const textContent = selection.getTextContent();
@@ -319,7 +317,7 @@ function BlockFormatDropDown({
 }
 
 function Divider(): JSX.Element {
-  return <div className="divider !my-auto !py-2" />;
+  return <div className="divider !my-auto" />;
 }
 
 function FontDropDown({

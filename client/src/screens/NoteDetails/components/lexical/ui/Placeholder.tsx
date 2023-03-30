@@ -1,12 +1,15 @@
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
+import { NavbarContext } from "../../../../Home";
+
 import "./Placeholder.css";
 
-export default function Placeholder({
-  children,
-  className,
-}: {
+type Props = {
   children: ReactNode;
   className?: string;
-}): JSX.Element {
-  return <div className={className || "Placeholder__root"}>{children}</div>;
+};
+
+export default function Placeholder({ children, className }: Props): JSX.Element {
+  const navContext = useContext(NavbarContext);
+
+  return <div className={className || `Placeholder__root ${navContext?.navbar && '!left-[570px]'}`}>{children}</div>;
 }

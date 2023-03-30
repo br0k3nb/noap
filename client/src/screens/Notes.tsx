@@ -1,20 +1,16 @@
-import {
-  useContext,
-  SetStateAction,
-  Dispatch,
-} from "react";
+import { useContext, SetStateAction, Dispatch } from "react";
 
 import { FieldArrayWithId } from "react-hook-form";
 
 import {
-  Menu as MenuIcon,
-  Search,
-  Sort,
-  FilterAlt,
-  TextSnippet,
-} from "@mui/icons-material";
-
-import { BsChatLeftText, BsChatLeftQuoteFill, BsJournalText } from 'react-icons/bs';
+  BsChatLeftText,
+  BsChatLeftQuoteFill,
+  BsJournalText,
+  BsSearch,
+  BsFilter,
+  BsXLg,
+  BsList
+} from "react-icons/bs";
 
 import parse from "html-react-parser";
 
@@ -38,12 +34,13 @@ type Notes = {
 type Props = {
   notes: FieldArrayWithId<Notes, "note", "id">[];
   setNavbar: Dispatch<SetStateAction<boolean>>;
+  expanded: boolean;
   navbar: boolean;
 };
 
-export default function Notes({ notes, navbar, setNavbar }: Props) {
-  const days = (date: string) => moment(date).format("ll");
+export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
   const hours = (date: string) => moment(date).format("LT");
+  const days = (date: string) => moment(date).format("ll");
 
   const noteContext = useContext(NoteContext);
 
@@ -59,7 +56,11 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
               <p className="text-xl">Notes</p>
             </div>
             <button className="sm:hidden" onClick={() => setNavbar(!navbar)}>
-              <MenuIcon sx={{ fontSize: 26 }} />
+              {!navbar ? (
+                <BsList size={29} />
+              ) : (
+                <BsXLg size={24} />
+              )}
             </button>
           </div>
 
@@ -67,14 +68,11 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
             <p className="pl-3">{notes.length} notes</p>
 
             <div className="flex flex-row space-x-2">
-              <div className="hover:bg-stone-700 rounded ">
-                <Sort />
+              <div className="hover:bg-stone-700 px-1 py-1 rounded">
+                <BsFilter size={25}/>
               </div>
-              <div className="hover:bg-stone-700 rounded">
-                <FilterAlt />
-              </div>
-              <div className="hover:bg-stone-700">
-                <Search />
+              <div className="hover:bg-stone-700 px-1 py-1 rounded">
+                <BsSearch size={25} className='py-1'/>
               </div>
             </div>
           </div>
@@ -86,14 +84,14 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
             const parserdHtml = parse(val.body);
 
             return (
-              <a 
-                key={idx} 
-                className={`mx-auto ${idx === notes.length - 1 && "mb-32"}`} 
+              <a
+                key={idx}
+                className={`mx-auto ${idx === notes.length - 1 && "mb-32"}`}
                 onClick={() => noteContext?.setSelectedNote(idx)}
               >
                 <div
                   className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${
-                    noteContext?.selectedNote === idx && '!border-gray-300'
+                    noteContext?.selectedNote === idx && "!border-gray-300"
                   }`}
                 >
                   <p className="font-semibold">{val.title}</p>

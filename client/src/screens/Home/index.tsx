@@ -1,11 +1,11 @@
 import { useState, createContext, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useForm, FieldValues, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 
 // import { motion } from "framer-motion";
 
-import { alert, toastAlert } from "../../components/Alert/Alert";
+import { toastAlert } from "../../components/Alert/Alert";
 
 import Nav from "./components/Nav";
 import Notes from "../Notes";
@@ -24,6 +24,11 @@ type SelectedNoteContext = {
 type NoteWasChangedContext = {
   wasChanged: boolean;
   setWasChanged: Dispatch<SetStateAction<boolean>>;
+};
+
+type NavContext = {
+  navbar: boolean;
+  setNavbar: Dispatch<SetStateAction<boolean>>;
 };
 
 type Notes = {
@@ -49,17 +54,17 @@ type Note = {
   id: string;
 };
 
-export const NoteContext = createContext<SelectedNoteContext | null>(null);
 export const NoteWasChanged = createContext<NoteWasChangedContext | null>(null);
+export const NoteContext = createContext<SelectedNoteContext | null>(null);
+export const NavbarContext = createContext<NavContext | null>(null);
 
 export default function Activities(): JSX.Element {
-  const navigate = useNavigate();
-  const defaultLexicalState =
-    '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
-
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
   const [wasChanged, setWasChanged] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [navbar, setNavbar] = useState(false);
+  
+  const navigate = useNavigate();
 
   const { control } = useForm<Notes>();
 
@@ -108,6 +113,9 @@ export default function Activities(): JSX.Element {
   };
 
   const addNewNote = async () => {
+    const defaultLexicalState =
+      '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
+
     try {
       await api.post(
         `https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
@@ -158,43 +166,6 @@ export default function Activities(): JSX.Element {
     }
   };
 
-  // const handleUpdate = async (data?: FieldValues | string) => {
-  //   try {
-  //     if (typeof data === "string") {
-  //       activities.map((val: Notes) => {
-  //         if (val._id === data) {
-  //           reset({
-  //             title: val?.title,
-  //             body: val?.body,
-  //           });
-  //         }
-  //       });
-
-  //       setOpen(true);
-  //     } else {
-  //       const updateNote = await api.put(
-  //         `https://noap-typescript-api.vercel.app/update/${parsedUserToken.token}`,
-  //         {
-  //           title: data?.title,
-  //           body: data?.body,
-  //           id: editId,
-  //           token: parsedUserToken.token,
-  //         }
-  //       );
-
-  //       setWasUpdated(editId);
-
-  //       toastAlert({
-  //         icon: "success",
-  //         title: `${updateNote.data}`,
-  //         timer: 2000,
-  //       });
-  //     }
-  //   } catch (err: any) {
-  //     toastAlert({ icon: "error", title: `${err.response.data}`, timer: 2000 });
-  //   }
-  // };
-
   const handleSignout = () => {
     window.localStorage.removeItem("user_token");
     navigate("/");
@@ -216,7 +187,12 @@ export default function Activities(): JSX.Element {
           id="dark"
           className="overflow-hidden"
         >
-          <Nav navbar={navbar} setNavbar={setNavbar} addNewNote={addNewNote} />
+          <Nav 
+            navbar={navbar} 
+            setNavbar={setNavbar} 
+            addNewNote={addNewNote} 
+            expanded={expanded}
+          />
           <div
             className={`h-screen xxs:ml-0 overflow ${
               !navbar ? "ml-[60px] xxs:ml-0" : "ml-[10rem] xxs:ml-[60px]"
@@ -224,9 +200,22 @@ export default function Activities(): JSX.Element {
             id="dark"
           >
             <div className="flex flex-row">
-              <Notes notes={fields} navbar={navbar} setNavbar={setNavbar} />
-
-              <NoteDetails notes={fields} deleteNote={deleteNote} remove={remove}/>
+              <Notes 
+                notes={fields} 
+                navbar={navbar} 
+                setNavbar={setNavbar} 
+                expanded={expanded}
+              />
+        
+              <NavbarContext.Provider value={{ navbar, setNavbar }}>          
+                <NoteDetails 
+                  notes={fields} 
+                  deleteNote={deleteNote} 
+                  remove={remove}
+                  expanded={expanded}
+                  setExpanded={setExpanded}
+                />
+              </NavbarContext.Provider>
             </div>
           </div>
         </div>

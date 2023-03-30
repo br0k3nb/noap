@@ -298,6 +298,8 @@ pre::-webkit-scrollbar-thumb {
   margin-right: 8px;
   line-height: 16px;
   background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .component-picker-menu {
@@ -652,7 +654,7 @@ i.prettier-error {
   color: red;
 }
 
-.dropdown {
+.dropdown-lexical {
   z-index: 10;
   display: block;
   position: fixed;
@@ -663,7 +665,7 @@ i.prettier-error {
   background-color: #fff;
 }
 
-.dropdown .item {
+.dropdown-lexical .item {
   margin: 0 8px 0 8px;
   padding: 8px;
   color: #050505;
@@ -682,38 +684,38 @@ i.prettier-error {
   min-width: 100px;
 }
 
-.dropdown .item.fontsize-item,
-.dropdown .item.fontsize-item .text {
+.dropdown-lexical .item.fontsize-item,
+.dropdown-lexical .item.fontsize-item .text {
   min-width: unset;
 }
 
-.dropdown .item .active {
+.dropdown-lexical .item .active {
   display: flex;
   width: 20px;
   height: 20px;
   background-size: contain;
 }
 
-.dropdown .item:first-child {
+.dropdown-lexical .item:first-child {
   margin-top: 8px;
 }
 
-.dropdown .item:last-child {
+.dropdown-lexical .item:last-child {
   margin-bottom: 8px;
 }
 
-.dropdown .item:hover {
+.dropdown-lexical .item:hover {
   background-color: #eee;
 }
 
-.dropdown .item .text {
+.dropdown-lexical .item .text {
   display: flex;
   line-height: 20px;
   flex-grow: 1;
   min-width: 150px;
 }
 
-.dropdown .item .icon {
+.dropdown-lexical .item .icon {
   display: flex;
   width: 20px;
   height: 20px;
@@ -725,7 +727,7 @@ i.prettier-error {
   background-repeat: no-repeat;
 }
 
-.dropdown .divider {
+.dropdown-lexical .divider {
   width: auto;
   background-color: #eee;
   margin: 4px 8px;

@@ -42,7 +42,6 @@ import MentionsPlugin from "./plugins/MentionsPlugin";
 import PollPlugin from "./plugins/PollPlugin";
 import TabFocusPlugin from "./plugins/TabFocusPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
-import StickyPlugin from "./plugins/StickyPlugin";
 import FigmaPlugin from "./plugins/FigmaPlugin";
 import ExcalidrawPlugin from "./plugins/ExcalidrawPlugin";
 import ContentEditable from "./ui/ContentEditable";
@@ -63,7 +62,6 @@ const Editor = forwardRef(({save}: Save, ref) => {
   
   const {
     settings: {
-      isCollab,
       isCharLimit,
       isCharLimitUtf8,
       isRichText,
@@ -112,11 +110,12 @@ const Editor = forwardRef(({save}: Save, ref) => {
         <AutoLinkPlugin />
         <EmojisPlugin />
         <EmojiPickerPlugin />
+        <ListPlugin />
         {isRichText && (
           <>
             <RichTextPlugin
               contentEditable={
-                //@ts-ignore
+                // @ts-ignore
                 <div className="editor h-[805px]" ref={ref}>
                   <ContentEditable />
                 </div>
@@ -125,16 +124,18 @@ const Editor = forwardRef(({save}: Save, ref) => {
               ErrorBoundary={LexicalErrorBoundary}
             />
             <FloatingTextFormatToolbarPlugin />
-            <CodeHighlightPlugin />
             <CodeActionMenuPlugin />
-            <ListPlugin />
             <CheckListPlugin />
             <ImagesPlugin captionsEnabled={true} />
             <HistoryPlugin externalHistoryState={historyState} />
             <LinkPlugin />
+            <AutocompletePlugin/>
             <PollPlugin />
             <LinkPlugin />
             <PollPlugin />
+            <MarkdownShortcutPlugin />
+            <CodeHighlightPlugin />
+            <ListMaxIndentLevelPlugin maxDepth={7} />
             <TwitterPlugin />
             <YouTubePlugin />
             <FigmaPlugin />
