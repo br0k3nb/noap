@@ -21,9 +21,9 @@ type SelectedNoteContext = {
   setSelectedNote: Dispatch<SetStateAction<number | null>>;
 };
 
-type NoteWasSavedContext = {
-  wasSaved: boolean;
-  setWasSaved: Dispatch<SetStateAction<boolean>>;
+type NoteWasChangedContext = {
+  wasChanged: boolean;
+  setWasChanged: Dispatch<SetStateAction<boolean>>;
 };
 
 type Notes = {
@@ -50,7 +50,7 @@ type Note = {
 };
 
 export const NoteContext = createContext<SelectedNoteContext | null>(null);
-export const NoteWasSaved = createContext<NoteWasSavedContext | null>(null);
+export const NoteWasChanged = createContext<NoteWasChangedContext | null>(null);
 
 export default function Activities(): JSX.Element {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export default function Activities(): JSX.Element {
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
-  const [wasSaved, setWasSaved] = useState(false);
+  const [wasChanged, setWasChanged] = useState(false);
   const [navbar, setNavbar] = useState(false);
 
   const { control } = useForm<Notes>();
@@ -119,7 +119,7 @@ export default function Activities(): JSX.Element {
         }
       );
 
-      setWasSaved(!wasSaved);
+      setWasChanged(!wasChanged);
 
       append({
         // title,
@@ -129,29 +129,34 @@ export default function Activities(): JSX.Element {
         userId: parsedUserToken._id as string,
         createdAt: new Date().toISOString(),
       });
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      toastAlert({
+        icon: "error",
+        title: `${err.response.data.message}`,
+        timer: 2000,
+      });
     }
   };
 
-  // const handleDelete = async (id: string) => {
-  //   try {
-  //     const deleteNote = await api.delete(
-  //       `https://noap-typescript-api.vercel.app/delete/${id}/${parsedUserToken.token}`
-  //     );
-  //     toastAlert({
-  //       icon: "success",
-  //       title: `${deleteNote.data.message}`,
-  //       timer: 2000,
-  //     });
-  //   } catch (err: any) {
-  //     toastAlert({
-  //       icon: "error",
-  //       title: `${err.response.data.message}`,
-  //       timer: 2000,
-  //     });
-  //   }
-  // };
+  const deleteNote = async (_id: string) => {
+    try {
+      const deleteNote = await api.delete(
+        `https://noap-typescript-api.vercel.app/delete/${_id}/${parsedUserToken.token}`
+      );
+      toastAlert({
+        icon: "success",
+        title: `${deleteNote.data.message}`,
+        timer: 2000,
+      });
+    } catch (err: any) {
+      toastAlert({
+        icon: "error",
+        title: `${err.response.data.message}`,
+        timer: 2000,
+      });
+    }
+  };
 
   // const handleUpdate = async (data?: FieldValues | string) => {
   //   try {
@@ -195,13 +200,13 @@ export default function Activities(): JSX.Element {
     navigate("/");
   };
 
-  useQuery(["verifyUser", wasSaved], fetchNotes, {
+  useQuery(["verifyUser", wasChanged], fetchNotes, {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
 
   return (
-    <NoteWasSaved.Provider value={{ wasSaved, setWasSaved }}>
+    <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
       {/* @ts-ignore */}
       <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
         <div
@@ -221,11 +226,11 @@ export default function Activities(): JSX.Element {
             <div className="flex flex-row">
               <Notes notes={fields} navbar={navbar} setNavbar={setNavbar} />
 
-              <NoteDetails notes={fields}/>
+              <NoteDetails notes={fields} deleteNote={deleteNote} remove={remove}/>
             </div>
           </div>
         </div>
       </NoteContext.Provider>
-    </NoteWasSaved.Provider>
+    </NoteWasChanged.Provider>
   );
 }

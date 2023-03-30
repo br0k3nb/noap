@@ -11,7 +11,8 @@ import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 
 import api from "../../../../services/api";
-import { NoteWasSaved } from "../../../Home";
+import { NoteWasChanged } from "../../../Home";
+import { NoteContext } from "../../../Home";
 import { toastAlert } from "../../../../components/Alert/Alert";
 
 import Editor from "./Editor";
@@ -28,19 +29,19 @@ type Notes = {
   }[];
 };
 
-type currentNote = {
-  index: number;
+type Props = {
   notes: FieldArrayWithId<Notes, "note", "id">[];
 };
 
-type NoteWasSavedContext = {
-  wasSaved: boolean;
-  setWasSaved: Dispatch<SetStateAction<boolean>>;
+type NoteWasChangedContext = {
+  wasChanged: boolean;
+  setWasChanged: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function App({ index, notes }: currentNote): JSX.Element {
+export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
-  const noteWasSavedContext = useContext<NoteWasSavedContext | null>(NoteWasSaved);
+  const noteWasChangedContext = useContext<NoteWasChangedContext | null>(NoteWasChanged);
+  const noteContext = useContext(NoteContext);
 
   const parsedUserToken = JSON.parse(
     window.localStorage.getItem("user_token") || ""
@@ -67,11 +68,11 @@ export default function App({ index, notes }: currentNote): JSX.Element {
             // title,
             body: finalString,
             state: JSON.stringify(currentState),
-            _id: notes[index]._id 
+            _id: notes[(noteContext?.selectedNote as number)]._id 
           }
         );
 
-        noteWasSavedContext?.setWasSaved(!noteWasSavedContext.wasSaved);
+        noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
 
         toastAlert({
           icon: "success",
@@ -104,10 +105,10 @@ export default function App({ index, notes }: currentNote): JSX.Element {
     const [editor] = useLexicalComposerContext();
   
     setTimeout(() => {
-      const editorState = editor.parseEditorState(JSON.parse(notes[index].state));
+      const editorState = editor.parseEditorState(JSON.parse(notes[(noteContext?.selectedNote as number)].state));
       editor.setEditorState(editorState);
       editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);  
-    }, 50);
+    }, 0);
   };
 
   return (

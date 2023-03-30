@@ -1,15 +1,15 @@
 import { Dispatch, SetStateAction } from "react";
 
 import {
-  Event,
-  Label,
-  Menu as MenuIcon,
-  Close,
-  Settings,
-  Add,
-  Home,
-  KeyboardDoubleArrowLeft,
-} from "@mui/icons-material";
+  BsFillHouseDoorFill,
+  BsJournalPlus,
+  BsTagFill,
+  BsFillCalendarEventFill,
+  BsFillGearFill,
+  BsXLg,
+  BsList,
+  BsChatLeftQuoteFill
+} from "react-icons/bs";
 
 // import { motion } from "framer-motion";
 
@@ -28,7 +28,7 @@ type Notes = {
 type NavProps = {
   setNavbar: Dispatch<SetStateAction<boolean>>;
   navbar: boolean | string;
-  addNewNote: () => Promise<void>
+  addNewNote: () => Promise<void>;
 };
 
 export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
@@ -40,34 +40,29 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
         }`}
       >
         <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900">
-          <div className="flex items-center justify-center mt-3 rounded-full border border-gray-600 px-2 h-10 w-10">
+          <div className="flex items-center justify-center mt-3 rounded-full border border-gray-600 px-2 h-10 w-10 xxs:mt-5 sm:mt-3">
             <p className="text-2xl py-1 px-1">N</p>
           </div>
 
-          <div className="pt-3 pb-1">
+          <div className="pt-0 sm:pt-3">
             <button onClick={() => setNavbar(!navbar)}>
               {!navbar ? (
-                <MenuIcon
-                  className="text-gray-300 mt-1"
-                  sx={{ fontSize: 30 }}
-                />
-              ) : navbar === "mobile-true" ? (
-                <KeyboardDoubleArrowLeft
-                  className="text-gray-300 mt-1"
-                  sx={{ fontSize: 30 }}
-                />
+                <BsList className="text-gray-300 mt-1" size={30} />
               ) : (
-                <Close className="text-gray-300 mt-1" sx={{ fontSize: 30 }} />
+                <BsXLg
+                  className="text-gray-300 mt-1 hidden md:flex"
+                  size={23}
+                />
               )}
             </button>
           </div>
-          <div className="flex flex-col items-center mt-3 border-t border-stone-900">
+          <div className="flex flex-col items-center mt-0 md:mt-3 border-t border-stone-900">
             <div className="tooltip text-gray-300" data-tip="Home">
               <a
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 href="#"
               >
-                <Home className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsFillHouseDoorFill className="text-gray-300" size={23} />
               </a>
             </div>
             <div className="tooltip text-gray-100 !px-36" data-tip="New note">
@@ -75,7 +70,7 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 onClick={() => addNewNote()}
               >
-                <Add className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsJournalPlus className="text-gray-300" size={23} />
               </a>
             </div>
             <div className="tooltip text-gray-300" data-tip="Labels">
@@ -83,7 +78,7 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 href="#"
               >
-                <Label className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsTagFill className="text-gray-300" size={23} />
               </a>
             </div>
             <div className="tooltip text-gray-300" data-tip="Events">
@@ -91,7 +86,7 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 href="#"
               >
-                <Event className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsFillCalendarEventFill className="text-gray-300" size={22} />
               </a>
             </div>
             <div className="tooltip text-gray-300" data-tip="Settings">
@@ -99,7 +94,7 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 href="#"
               >
-                <Settings className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsFillGearFill className="text-gray-300" size={23} />
               </a>
             </div>
           </div>
@@ -129,33 +124,36 @@ export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
             className="flex flex-row justify-between items-center w-full px-3 mt-3"
             href="#"
           >
-            <span className="text-xl">Noap</span>
-            <Close
+            <div className="flex flex-row">
+              <span className="text-xl">Noap</span>
+              <span className="pt-2 pl-2" ><BsChatLeftQuoteFill/></span>
+            </div>
+            <BsXLg
               className="text-gray-300 mt-1"
               onClick={() => setNavbar(!navbar)}
-              sx={{ fontSize: 30 }}
+              size={22}
             />
           </a>
           <div className="w-full ">
             <div className="flex flex-col items-center w-full mt-3 border-t border-gray-700 space-y-1">
               <button className="flex items-center w-full h-12 px-3 mt-2 hover:bg-gray-700">
-                <Home className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsFillHouseDoorFill className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">Home</span>
               </button>
               <button className="flex items-center w-full h-12 px-3 hover:bg-gray-700">
-                <Add className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsJournalPlus className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">New note</span>
               </button>
               <button className="flex items-center w-full h-12 px-3 hover:bg-gray-700">
-                <Label className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsTagFill className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">Labels</span>
               </button>
               <button className="flex items-center w-full h-12 px-3 hover:bg-gray-700 ">
-                <Event className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsFillCalendarEventFill className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">Reminders</span>
               </button>
               <button className="flex items-center w-full h-12 px-3 hover:bg-gray-700">
-                <Settings className="text-gray-300" sx={{ fontSize: 27 }} />
+                <BsFillGearFill className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">Settings</span>
               </button>
             </div>

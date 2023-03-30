@@ -14,6 +14,8 @@ import {
   TextSnippet,
 } from "@mui/icons-material";
 
+import { BsChatLeftText, BsChatLeftQuoteFill, BsJournalText } from 'react-icons/bs';
+
 import parse from "html-react-parser";
 
 import moment from "moment";
@@ -52,7 +54,7 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
           <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
             <div className="text-center flex flex-row space-x-1 px-2">
               <span>
-                <TextSnippet sx={{ fontSize: 27 }} className="pb-[1.5px] " />
+                <BsJournalText size={23} className="pt-1" />
               </span>
               <p className="text-xl">Notes</p>
             </div>
@@ -90,8 +92,8 @@ export default function Notes({ notes, navbar, setNavbar }: Props) {
                 onClick={() => noteContext?.setSelectedNote(idx)}
               >
                 <div
-                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-400 ${
-                    noteContext?.selectedNote === idx && 'border border-gray-300'
+                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${
+                    noteContext?.selectedNote === idx && '!border-gray-300'
                   }`}
                 >
                   <p className="font-semibold">{val.title}</p>
