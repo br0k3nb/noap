@@ -3,8 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
 // import {useQuery} from 'react-query';
-import { alert, toastAlert } from '../components/Alert/Alert';
+import { toastAlert } from '../components/Alert/Alert';
 import { motion } from 'framer-motion';
+
+import { BsFillPencilFill } from 'react-icons/bs';
+
+import note from '../assets/main.svg';
 
 export default function SignInForm() {
 
@@ -31,28 +35,26 @@ export default function SignInForm() {
 
   const handleForm = async (data: FieldValues) => {
     setWasSubmitted(true);
-
+    
     try {
       const { login, password } = data;
-
+      
       console.log(login, password);
-
+      
       const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
         login,
         password
       });
 
       setWasSubmitted(false);
-
-      // alert({ icon: 'success', title: `Welcome, ${signIn.data.name}`, timer: 1000 });
-
+      
       window.localStorage.setItem("user_token", JSON.stringify(signIn.data));
-
+      
       navigate("/activities");
-
+      
     } catch (err: any) {
       setWasSubmitted(false);
-      alert({ icon: 'error', title: 'ERROR', text: `${err?.response.data.message}`, timer: 2000 })
+      toastAlert({ icon: 'error', title: 'Error', text: `${err?.response.data.message}`, timer: 2500 })
     }
   };
 
@@ -66,15 +68,23 @@ export default function SignInForm() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-row bg-gray-50 h-screen"
-    >
-      <div className="hidden w-1/2 bg-image object-cover lg:flex lg:w-[66%]" />
-      <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[45%] lg:mx-auto">
-        <div className="flex flex-row h-screen bg-gray-50">
-          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full">
-            <div className="flex flex-col w-[80%] xxs:w-[85%]">
-              <p className="text-center text-5xl font-light py-2" style={{ fontFamily: 'Montserrat' }} >
+      transition={{ duration: 0.3 }}
+      className="flex flex-row h-screen bg-slate-800"
+    >     
+      <img className="hidden object-cover lg:flex lg:w-[70%] w-1/2  bg-slate-800 opacity-90" src={note} draggable={false}/>
+      <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
+        <div className="flex flex-row h-screen bg-slate-800">
+          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full shadow-inner shadow-gray-900">
+            <div className="flex flex-col w-[70%] xxs:w-[85%]">
+              
+              <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
+                <div className="flex flex-row gap-x-4">
+                  Noap 
+                  <BsFillPencilFill size={29} className="mt-3"/>
+                </div>  
+              </span>
+
+              <p className="text-center text-2xl font-light mt-5 text-gray-100" style={{ fontFamily: 'Montserrat' }} >
                 Sign in
               </p>
 
@@ -82,7 +92,7 @@ export default function SignInForm() {
                 <div className="mb-2 mt-10">
                   <input
                     type="text"
-                    className="sign-text-inputs"
+                    className="sign-text-inputs bg-gray-100"
                     placeholder="Email"
                     required
                     {...register("login")}
@@ -92,7 +102,7 @@ export default function SignInForm() {
                 <div className="mb-7 mt-3">
                   <input
                     type="password"
-                    className="sign-text-inputs"
+                    className="sign-text-inputs bg-gray-100"
                     placeholder="Password"
                     required
                     {...register("password")}
@@ -102,7 +112,7 @@ export default function SignInForm() {
                 <div className="text-center">
                   <button
                     type="submit"
-                    className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full shadow-lg shadow-slate-400/50 hover:shadow-gray-400 text-sm w-full bg-red-600 text-white py-2"
+                    className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-600 text-white py-2"
                   >
                     <div className={`${!wasSubmited && 'hidden'} flex flex-row justify-center`}>
                       <svg aria-hidden="true" role="status" className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
