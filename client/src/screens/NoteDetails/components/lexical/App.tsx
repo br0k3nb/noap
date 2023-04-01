@@ -1,5 +1,5 @@
-import { useRef, useContext, Dispatch, SetStateAction } from "react";
-import { FieldArrayWithId } from "react-hook-form";
+import { useRef, useEffect, useContext, Dispatch, SetStateAction } from "react";
+import { FieldArrayWithId, useForm } from "react-hook-form";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { CLEAR_HISTORY_COMMAND } from "lexical";
@@ -23,6 +23,7 @@ type Notes = {
     userId: string;
     title?: string;
     body: string;
+    image?: string;
     state: string;
     updatedAt?: string;
     createdAt: string;
@@ -40,33 +41,50 @@ type NoteWasChangedContext = {
 
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
+  const lastSelectedNotes = useRef<number | undefined>(undefined);
+
   const noteWasChangedContext = useContext<NoteWasChangedContext | null>(NoteWasChanged);
   const noteContext = useContext(NoteContext);
+  
+  useEffect(() => {
+    lastSelectedNotes.current = noteContext?.selectedNote;
+  }, [noteContext?.selectedNote]);
+
+  const { reset, register } = useForm({});
 
   const parsedUserToken = JSON.parse(
     window.localStorage.getItem("user_token") || ""
   );
 
   const saveNote = async (currentState: any) => {
-    const string = editorRef?.current.lastElementChild.innerHTML;
+    const title = editorRef?.current.firstChild.firstChild?.value;
+    const body = editorRef?.current.lastElementChild.innerHTML;
 
-    //this is for react stop complaining about not being able to control the nodes
-    const removeContentEditableTrueString = string.replace(
-      'contentEditable="true"',
-      ""
-    );
-    const finalString = removeContentEditableTrueString.replace(
-      'contentEditable="false"',
-      ""
-    );
+    const removeClasses = body.replace(/class="[^"]+"/gm, '');
+    const removeLowerCaseContentEditable = removeClasses.replace(/contenteditable="[^"]+"/gm, '');
+    const removeCamelCaseContentEditable = removeLowerCaseContentEditable.replace(/contentEditable="[^"]+"/gm, '');
+    const findImages = removeCamelCaseContentEditable.match(/<img[^>]+>/gm);
+    const removeImages = findImages && removeCamelCaseContentEditable.replace(/<img[^>]+>/gm, '');
+
+    const finalHTMLString =
+    removeImages ? removeImages.replace(/<[^/>][^>]*><\/[^>]+>/gm, '') 
+    : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
+
+    const getImage = () => {
+      if(findImages && findImages.length !== 0) {
+        return findImages[0].replace(/>/, ' className="rounded-b-lg object-cover">');
+      }
+      else return 'no image attached';
+    }
 
     try {
       if (currentState) {
         const create = await api.patch(
           `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
           {
-            // title,
-            body: finalString,
+            title,
+            body: finalHTMLString,
+            image: getImage(),
             state: JSON.stringify(currentState),
             _id: notes[(noteContext?.selectedNote as number)]._id 
           }
@@ -103,12 +121,18 @@ export default function App({ notes }: Props): JSX.Element {
 
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
-  
-    setTimeout(() => {
-      const editorState = editor.parseEditorState(JSON.parse(notes[(noteContext?.selectedNote as number)].state));
-      editor.setEditorState(editorState);
-      editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);  
-    }, 0);
+    
+    if(lastSelectedNotes.current !== noteContext?.selectedNote) {
+      setTimeout(() => {
+        reset({
+          title: notes[noteContext?.selectedNote as number].title,
+        });
+
+        const editorState = editor.parseEditorState(JSON.parse(notes[noteContext?.selectedNote as number].state));
+        editor.setEditorState(editorState);
+        editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);  
+      }, 0); 
+    }
   };
 
   return (
@@ -119,7 +143,11 @@ export default function App({ notes }: Props): JSX.Element {
             <div className="editor-shell">
               {/* @ts-ignore */}
               <UpdatePlugin/>
-              <Editor ref={editorRef} save={saveNote} />
+              <Editor 
+                ref={editorRef} 
+                save={saveNote} 
+                register={register}
+              />
             </div>
           </SharedAutocompleteContext>
         </TableContext>

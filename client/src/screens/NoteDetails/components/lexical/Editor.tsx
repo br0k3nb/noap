@@ -48,12 +48,18 @@ import { CAN_USE_DOM } from "./shared/canUseDOM";
 import TwitterPlugin from "./plugins/TwitterPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
 
-import { AiFillSave } from 'react-icons/ai';
+import { AiFillSave } from "react-icons/ai";
+import { UseFormRegister, FieldValues } from "react-hook-form";
 
 import "./index.css";
 
-type Save = {
-  save: (currentState: EditorState) => Promise<void>
+type Props = {
+  save: (currentState: EditorState) => Promise<void>;
+  register: UseFormRegister<FieldValues>;
+};
+
+type TitleProps = {
+  register: UseFormRegister<FieldValues>;
 };
 
 type CustomSaveComp = {
@@ -61,49 +67,38 @@ type CustomSaveComp = {
   editor: LexicalEditor;
 };
 
-const Editor = forwardRef(({save}: Save, ref) => {
+const Editor = forwardRef(({ save, register }: Props, ref) => {
   const [editor] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
-  
+
   const {
-    settings: {
-      isCharLimit,
-      isCharLimitUtf8,
-      isRichText
-    },
+    settings: { isCharLimit, isCharLimitUtf8, isRichText },
   } = useSettings();
-  
-  const text = 'Enter some text...';
+
+  const text = "Enter some text";
 
   const placeholder = <Placeholder>{text}</Placeholder>;
 
   const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
-  
+
   useEffect(() => {
     const updateViewPortWidth = () => {
-      const isNextSmallWidthViewport =
-        CAN_USE_DOM && window.matchMedia('(max-width: 1025px)').matches;
+      const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
 
-      if (isNextSmallWidthViewport !== isSmallWidthViewport) {
-        setIsSmallWidthViewport(isNextSmallWidthViewport);
-      }
+      if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);  
     };
 
-    window.addEventListener('resize', updateViewPortWidth);
+    window.addEventListener("resize", updateViewPortWidth);
 
     return () => {
-      window.removeEventListener('resize', updateViewPortWidth);
+      window.removeEventListener("resize", updateViewPortWidth);
     };
   }, [isSmallWidthViewport]);
 
   return (
     <>
       <ToolbarPlugin />
-      <div
-        className={`editor-container ${
-          !isRichText ? "plain-text" : ""
-        }`}
-      >
+      <div className={`editor-container ${!isRichText ? "plain-text" : ""}`}>
         <DragDropPaste />
         <ClearEditorPlugin />
         <AutoFocusPlugin />
@@ -117,25 +112,30 @@ const Editor = forwardRef(({save}: Save, ref) => {
         <ListPlugin />
         {isRichText && (
           <>
-          {/* <span className="py-3 text-sm">Last edited in 00/00/00</span> */}
+            {/* <span className="py-3 text-sm">Last edited in 00/00/00</span> */}
             <RichTextPlugin
               contentEditable={
                 // @ts-ignore
                 <div className="editor h-[852px] overflow-hidden" ref={ref}>
-                  <ContentEditable />      
+                  <div className="h-[830px] overflow-auto ">
+                    <TitleInput 
+                      register={register}
+                    />
+                    <ContentEditable />
+                  </div>
                 </div>
               }
               placeholder={placeholder}
               ErrorBoundary={LexicalErrorBoundary}
             />
             <FloatingTextFormatToolbarPlugin />
-            <FloatingSaveButton save={save} editor={editor}/>
+            <FloatingSaveButton save={save} editor={editor} />
             <CodeActionMenuPlugin />
             <CheckListPlugin />
             <ImagesPlugin captionsEnabled={true} />
             <HistoryPlugin externalHistoryState={historyState} />
             <LinkPlugin />
-            <AutocompletePlugin/>
+            <AutocompletePlugin />
             <PollPlugin />
             <LinkPlugin />
             <PollPlugin />
@@ -161,29 +161,41 @@ const Editor = forwardRef(({save}: Save, ref) => {
             maxLength={5}
           />
         )}
-        
       </div>
     </>
   );
 });
 
-export function FloatingSaveButton({save, editor}: CustomSaveComp) {
+export function TitleInput({register}: TitleProps) {
+  return (
+    <div className="text-2xl mt-8 px-6 !overflow-auto">
+      <input
+        type="text"
+        className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none"
+        placeholder=" Enter a title"
+        {...register("title")}
+      />
+    </div>
+  );
+}
+
+export function FloatingSaveButton({ save, editor }: CustomSaveComp) {
   return (
     <div className="relative">
       <div className="z-50 !w-30 fixed bottom-1 right-1">
         <div className="tooltip tooltip-top text-gray-300" data-tip="Save">
           <div className="pt-[5px]">
-            <button 
+            <button
               onClick={() => save(editor.getEditorState())}
               className="text-gray-200 bg-gray-800 py-3 px-3 rounded-full mx-1 mb-1 hover:bg-green-700 transition duration-300 ease-in-out"
             >
-              <AiFillSave size={28}/>
+              <AiFillSave size={28} />
             </button>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
-  )
-};
+  );
+}
 
 export default Editor;

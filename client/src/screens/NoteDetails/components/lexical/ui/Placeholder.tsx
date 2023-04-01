@@ -19,7 +19,8 @@ export default function Placeholder({
   return (
     <div
       className={
-        `Placeholder__root 
+        className ||
+        `Placeholder__root text-gray-400
         ${navContext?.navbar && !expandedCtx?.expanded ? "!left-[570px]" :
         expandedCtx?.expanded && "!left-[30px]"}
         `

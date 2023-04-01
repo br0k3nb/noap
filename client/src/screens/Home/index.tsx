@@ -37,6 +37,7 @@ type Notes = {
     userId: string;
     title?: string;
     body: string;
+    image?: string;
     state: string;
     updatedAt?: string;
     createdAt: string;
@@ -48,6 +49,7 @@ type Note = {
   userId: string;
   title?: string;
   body: string;
+  image?: string;
   state: string;
   updatedAt?: string;
   createdAt: string;
@@ -94,14 +96,13 @@ export default function Activities(): JSX.Element {
           //inserts it's own id into the array.
           const noteIsTheSame =
             value.body === fields[index]?.body &&
+            value.title === fields[index].title &&
             value.createdAt === fields[index]?.createdAt &&
             value.state === fields[index]?.state;
 
-          if (notes.data.length >= fields.length && fields.length - 1 < index)
-            append(value);
+          if (notes.data.length >= fields.length && fields.length - 1 < index) append(value);
           else if (notes.data.length < fields.length) replace(notes.data);
-          else if (value._id === fields[index]._id && !noteIsTheSame)
-            update(index, value);
+          else if (value._id === fields[index]._id && !noteIsTheSame) update(index, value);
           else if (value._id === fields[index]._id && noteIsTheSame) return;
         });
       }
@@ -120,8 +121,9 @@ export default function Activities(): JSX.Element {
       await api.post(
         `https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
         {
-          // title,
+          title: "Untitled",
           body: "",
+          image: "no image attached",
           state: defaultLexicalState,
           userId: parsedUserToken._id,
         }
@@ -130,9 +132,10 @@ export default function Activities(): JSX.Element {
       setWasChanged(!wasChanged);
 
       append({
-        // title,
         _id: String(fields.length), //setting a temporary _id for now. the real _id will be fetched from the db
+        title: "Untitled",
         body: "",
+        image: "no image attached",
         state: defaultLexicalState,
         userId: parsedUserToken._id as string,
         createdAt: new Date().toISOString(),

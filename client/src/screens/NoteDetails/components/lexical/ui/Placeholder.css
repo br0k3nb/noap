@@ -1,10 +1,10 @@
 .Placeholder__root {
     font-size: 15px;
-    color: #a1a1a1;
     position: absolute;
     text-overflow: ellipsis;
-    top: 130px;
-    left: 471px;
+    width: 123px;
+    top: 196px;
+    left: 474px;
     right: 28px;
   }
   

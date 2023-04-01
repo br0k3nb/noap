@@ -12,6 +12,7 @@ type Notes = {
     userId: string;
     title?: string;
     body: string;
+    image?: string;
     state: string;
     updatedAt?: string;
     createdAt: string;

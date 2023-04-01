@@ -25,6 +25,7 @@ type Notes = {
     userId: string;
     title?: string;
     body: string;
+    image?: string;
     state: string;
     updatedAt?: string;
     createdAt: string;
@@ -83,34 +84,40 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
           {notes.map((val, idx) => {
             const parserdHtml = parse(val.body);
 
-            console.log(val.body);
-
+            const parsedImage =
+              val.image !== "no image attached"
+                ? parse(val.image as string)
+                : false;
+                
             return (
               <a
                 key={idx}
-                className={`mx-auto ${idx === notes.length - 1 && "mb-32"}`}
+                className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-32"}`}
                 onClick={() => noteContext?.setSelectedNote(idx)}
               >
                 <div
-                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 px-4 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${
+                  className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${
                     noteContext?.selectedNote === idx && "!border-gray-300"
                   }`}
                 >
-                  <p className="font-semibold">{val.title}</p>
+                  <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
 
-                  <div className="h-[164px] mt-3 flex ">
+                  <div className={`h-[164px] text-gray-300 flex px-4 ${parsedImage && "h-[126px]"}`}>
                     <div className="overflow-ellipsis overflow-hidden">
                       {parserdHtml}
                     </div>
                   </div>
 
-                  <div className="mt-10">
+                  <div className="mt-5 px-4">
                     <p className="text-xs tracking-tighter">
                       {!val?.updatedAt
                         ? days(val.createdAt) + " at " + hours(val.createdAt)
                         : days(val.updatedAt) + " at " + hours(val.updatedAt)}
                     </p>
                   </div>
+                  {parsedImage && (
+                    <div className="h-[56px] mt-4 w-full ">{parsedImage}</div>
+                  )}
                 </div>
               </a>
             );
