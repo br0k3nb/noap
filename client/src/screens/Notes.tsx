@@ -9,7 +9,7 @@ import {
   BsSearch,
   BsFilter,
   BsXLg,
-  BsList
+  BsList,
 } from "react-icons/bs";
 
 import parse from "html-react-parser";
@@ -45,7 +45,11 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
   const noteContext = useContext(NoteContext);
 
   return (
-    <div className="w-screen lg:max-w-[380px] border-r border-gray-600">
+    <div
+      className={`w-screen lg:max-w-[380px] border-r border-gray-600 ${
+        expanded && "hidden"
+      }`}
+    >
       <div className="flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
         <div className="flex flex-col mb-[4.2px]">
           <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
@@ -56,11 +60,7 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
               <p className="text-xl">Notes</p>
             </div>
             <button className="sm:hidden" onClick={() => setNavbar(!navbar)}>
-              {!navbar ? (
-                <BsList size={29} />
-              ) : (
-                <BsXLg size={24} />
-              )}
+              {!navbar ? <BsList size={29} /> : <BsXLg size={24} />}
             </button>
           </div>
 
@@ -69,19 +69,21 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
 
             <div className="flex flex-row space-x-2">
               <div className="hover:bg-stone-700 px-1 py-1 rounded">
-                <BsFilter size={25}/>
+                <BsFilter size={25} />
               </div>
               <div className="hover:bg-stone-700 px-1 py-1 rounded">
-                <BsSearch size={25} className='py-1'/>
+                <BsSearch size={25} className="py-1" />
               </div>
             </div>
           </div>
         </div>
       </div>
       <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen">
-        <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
+        <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3">
           {notes.map((val, idx) => {
             const parserdHtml = parse(val.body);
+
+            console.log(val.body);
 
             return (
               <a

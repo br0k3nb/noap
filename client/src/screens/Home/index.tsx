@@ -180,43 +180,37 @@ export default function Activities(): JSX.Element {
     <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
       {/* @ts-ignore */}
       <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
+        <Nav 
+          navbar={navbar} 
+          setNavbar={setNavbar} 
+          addNewNote={addNewNote} 
+          expanded={expanded}
+        />
         <div
-          // initial={{ opacity: 0 }}
-          // animate={{ opacity: 1 }}
-          // transition={{ duration: 0.5 }}
+          className={`h-screen xxs:ml-0 overflow ${
+            !navbar && !expanded ? "ml-[60px] xxs:ml-0" : 
+            navbar && !expanded ? "ml-[10rem] xxs:ml-[60px]" :
+            expanded && 'ml-0'
+          }`}
           id="dark"
-          className="overflow-hidden"
         >
-          <Nav 
-            navbar={navbar} 
-            setNavbar={setNavbar} 
-            addNewNote={addNewNote} 
-            expanded={expanded}
-          />
-          <div
-            className={`h-screen xxs:ml-0 overflow ${
-              !navbar ? "ml-[60px] xxs:ml-0" : "ml-[10rem] xxs:ml-[60px]"
-            }`}
-            id="dark"
-          >
-            <div className="flex flex-row">
-              <Notes 
+          <div className="flex flex-row overflow-hidden h-screen">
+            <Notes 
+              notes={fields} 
+              navbar={navbar} 
+              setNavbar={setNavbar} 
+              expanded={expanded}
+            />
+      
+            <NavbarContext.Provider value={{ navbar, setNavbar }}>          
+              <NoteDetails 
                 notes={fields} 
-                navbar={navbar} 
-                setNavbar={setNavbar} 
+                deleteNote={deleteNote} 
+                remove={remove}
                 expanded={expanded}
+                setExpanded={setExpanded}
               />
-        
-              <NavbarContext.Provider value={{ navbar, setNavbar }}>          
-                <NoteDetails 
-                  notes={fields} 
-                  deleteNote={deleteNote} 
-                  remove={remove}
-                  expanded={expanded}
-                  setExpanded={setExpanded}
-                />
-              </NavbarContext.Provider>
-            </div>
+            </NavbarContext.Provider>
           </div>
         </div>
       </NoteContext.Provider>

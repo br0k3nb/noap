@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* .login,
-.image {
-  min-height: 100vh;
-} */
-
 @layer components {
   .links {
     @apply px-8 

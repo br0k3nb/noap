@@ -1,5 +1,6 @@
 import { ReactNode, useContext } from "react";
 import { NavbarContext } from "../../../../Home";
+import { ExpandedContext } from "../../..";
 
 import "./Placeholder.css";
 
@@ -8,8 +9,23 @@ type Props = {
   className?: string;
 };
 
-export default function Placeholder({ children, className }: Props): JSX.Element {
+export default function Placeholder({
+  children,
+  className,
+}: Props): JSX.Element {
   const navContext = useContext(NavbarContext);
+  const expandedCtx = useContext(ExpandedContext);
 
-  return <div className={className || `Placeholder__root ${navContext?.navbar && '!left-[570px]'}`}>{children}</div>;
+  return (
+    <div
+      className={
+        `Placeholder__root 
+        ${navContext?.navbar && !expandedCtx?.expanded ? "!left-[570px]" :
+        expandedCtx?.expanded && "!left-[30px]"}
+        `
+      }
+    >
+      {children}
+    </div>
+  );
 }

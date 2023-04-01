@@ -71,10 +71,10 @@ export default function SignInForm() {
       transition={{ duration: 0.3 }}
       className="flex flex-row h-screen bg-slate-800"
     >     
-      <img className="hidden object-cover lg:flex lg:w-[70%] w-1/2  bg-slate-800 opacity-90" src={note} draggable={false}/>
+      <img className="hidden object-cover lg:flex lg:w-[70%] w-1/2 bg-slate-800 opacity-90" src={note} draggable={false}/>
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
         <div className="flex flex-row h-screen bg-slate-800">
-          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full shadow-inner shadow-gray-900">
+          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full lg:shadow-inner lg:shadow-gray-900">
             <div className="flex flex-col w-[70%] xxs:w-[85%]">
               
               <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
@@ -89,7 +89,7 @@ export default function SignInForm() {
               </p>
 
               <form onSubmit={handleSubmit(handleForm)} className='w-full'>
-                <div className="mb-2 mt-10">
+                <div className="mb-2 mt-5">
                   <input
                     type="text"
                     className="sign-text-inputs bg-gray-100"

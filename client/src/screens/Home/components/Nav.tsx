@@ -12,18 +12,6 @@ import {
 
 // import { motion } from "framer-motion";
 
-type Notes = {
-  note: {
-    _id: string;
-    userId: string;
-    title?: string;
-    body: string;
-    state: string;
-    updatedAt?: string;
-    createdAt: string;
-  }[];
-};
-
 type NavProps = {
   setNavbar: Dispatch<SetStateAction<boolean>>;
   addNewNote: () => Promise<void>;
@@ -31,9 +19,11 @@ type NavProps = {
   navbar: boolean;
 };
 
-export default function Nav({ navbar, setNavbar, addNewNote }: NavProps) {
+export default function Nav({ navbar, setNavbar, addNewNote, expanded }: NavProps) {
   return (
-    <div>
+    <div 
+      className={`${expanded && "hidden"}`}
+    >
       <div
         className={`fixed z-50 ${
           !navbar ? "flex xxs:hidden" : "hidden xxs:flex"

@@ -1,6 +1,6 @@
-import { useContext, Dispatch, SetStateAction } from "react";
+import { createContext, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
-import { AiOutlineExpandAlt, AiOutlineDelete } from 'react-icons/ai';
+import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiOutlineDelete } from 'react-icons/ai';
 import { BsJournalRichtext } from 'react-icons/bs';
 
 import TextEditor from "./components/lexical/App";
@@ -26,6 +26,11 @@ type Props = {
   expanded: boolean;
 };
 
+type ExpandedContextProps = {
+  expanded: boolean;
+  setExpanded: Dispatch<SetStateAction<boolean>>;
+};
+
 export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded }: Props) {
   const selectedNote = useContext(NoteContext);
   // const noteWasChangedContext = useContext(NoteWasChanged);
@@ -43,14 +48,19 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
       <div className="flex flex-col text-gray-200 pt-1">
         {selectedNote?.selectedNote !== null && (
           <div className="flex flex-row justify-between mt-1 py-[7.2px] px-4 mb-[4.8px]">
-            <div className="tooltip tooltip-right !text-gray-200" data-tip="Expand note">
+            <div className="tooltip tooltip-right !text-gray-200" data-tip={`${!expanded ? 'Expand note' : 'Minimize note'}`}>
               <button
                 className="hover:bg-stone-600 px-1 py-1 rounded"
                 onClick={() => setExpanded(!expanded)}
               >
-                <AiOutlineExpandAlt size={23} />
+                {expanded ? (
+                  <AiOutlineFullscreenExit size={23} />
+                ): (
+                  <AiOutlineFullscreen size={23} />
+                )}
               </button>
             </div>
+            
             <div className="tooltip tooltip-left !text-gray-200" data-tip="Delete note">
               <button 
                 className="hover:bg-stone-600 px-1 py-1 rounded transition duration-200 ease-in-out"
@@ -67,7 +77,9 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
         <div className="flex flex-col ">
           {selectedNote?.selectedNote !== null ? (
             <div className="flex flex-col h-screen pb-16 overflow-scroll">
-              <TextEditor notes={notes} />
+              <ExpandedContext.Provider value={{expanded, setExpanded}}>
+                <TextEditor notes={notes} />
+              </ExpandedContext.Provider>
             </div>
           ) : (
             <div className="flex flex-col text-center items-center">
@@ -86,3 +98,5 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     </div>
   );
 }
+
+export const ExpandedContext = createContext<ExpandedContextProps | null>(null);

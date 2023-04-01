@@ -12,12 +12,10 @@ import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { EditorState } from "lexical";
+import { EditorState, LexicalEditor } from "lexical";
 
 import { useSettings } from "./context/SettingsContext";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
-import TableCellNodes from "./nodes/TableCellNodes";
-import ActionsPlugin from "./plugins/ActionsPlugin";
 import AutocompletePlugin from "./plugins/AutocompletePlugin";
 import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
@@ -50,10 +48,17 @@ import { CAN_USE_DOM } from "./shared/canUseDOM";
 import TwitterPlugin from "./plugins/TwitterPlugin";
 import YouTubePlugin from "./plugins/YouTubePlugin";
 
+import { AiFillSave } from 'react-icons/ai';
+
 import "./index.css";
 
 type Save = {
   save: (currentState: EditorState) => Promise<void>
+};
+
+type CustomSaveComp = {
+  save: (currentState: EditorState) => Promise<void>;
+  editor: LexicalEditor;
 };
 
 const Editor = forwardRef(({save}: Save, ref) => {
@@ -64,8 +69,7 @@ const Editor = forwardRef(({save}: Save, ref) => {
     settings: {
       isCharLimit,
       isCharLimitUtf8,
-      isRichText,
-      showTreeView,
+      isRichText
     },
   } = useSettings();
   
@@ -96,7 +100,7 @@ const Editor = forwardRef(({save}: Save, ref) => {
     <>
       <ToolbarPlugin />
       <div
-        className={`editor-container ${showTreeView ? "tree-view" : ""} ${
+        className={`editor-container ${
           !isRichText ? "plain-text" : ""
         }`}
       >
@@ -113,17 +117,19 @@ const Editor = forwardRef(({save}: Save, ref) => {
         <ListPlugin />
         {isRichText && (
           <>
+          {/* <span className="py-3 text-sm">Last edited in 00/00/00</span> */}
             <RichTextPlugin
               contentEditable={
                 // @ts-ignore
-                <div className="editor h-[805px]" ref={ref}>
-                  <ContentEditable />
+                <div className="editor h-[852px] overflow-hidden" ref={ref}>
+                  <ContentEditable />      
                 </div>
               }
               placeholder={placeholder}
               ErrorBoundary={LexicalErrorBoundary}
             />
             <FloatingTextFormatToolbarPlugin />
+            <FloatingSaveButton save={save} editor={editor}/>
             <CodeActionMenuPlugin />
             <CheckListPlugin />
             <ImagesPlugin captionsEnabled={true} />
@@ -155,22 +161,29 @@ const Editor = forwardRef(({save}: Save, ref) => {
             maxLength={5}
           />
         )}
-
-        {/* {isAutocomplete && <AutocompletePlugin />} */}
-      </div>
-      <div className="border-t border-gray-600 h-[46px] overflow-y-hidden">
-        <div className="flex flex-row justify-between px-3 pt-[1px]">
-          <button 
-            onClick={() => save(editor.getEditorState())}
-            className="text-gray-200 bg-green-600 w-28 h-[39.5px] px-2 rounded-lg my-1 hover:bg-green-700 transition duration-300 ease-in-out"
-          >
-            Save note
-          </button>
-          <span className="py-3 text-sm">Last edited in 00/00/00</span>
-        </div>
+        
       </div>
     </>
   );
 });
+
+export function FloatingSaveButton({save, editor}: CustomSaveComp) {
+  return (
+    <div className="relative">
+      <div className="z-50 !w-30 fixed bottom-1 right-1">
+        <div className="tooltip tooltip-top text-gray-300" data-tip="Save">
+          <div className="pt-[5px]">
+            <button 
+              onClick={() => save(editor.getEditorState())}
+              className="text-gray-200 bg-gray-800 py-3 px-3 rounded-full mx-1 mb-1 hover:bg-green-700 transition duration-300 ease-in-out"
+            >
+              <AiFillSave size={28}/>
+            </button>
+          </div>
+        </div>
+      </div> 
+    </div>
+  )
+};
 
 export default Editor;
