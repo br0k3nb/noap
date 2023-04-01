@@ -25,11 +25,12 @@ export default {
     },
     async add(req , res) {
         try {
-            const {title, body, state, userId} = req.body;
+            const {title, body, image, state, userId} = req.body;
 
             await Note.create({
-                // title,
+                title,
                 body,
+                image,
                 state,
                 userId
             });
@@ -42,12 +43,11 @@ export default {
     },
     async edit(req, res) {
         try {
-            const {_id, title, body, state} = req.body;
+            const {_id, title, body, image, state} = req.body;
 
-            await Note.findOneAndUpdate({_id}, {body, state});
+            await Note.findOneAndUpdate({_id}, {title, body, image, state});
 
             res.status(200).json({message: 'Note updated!'});
-           
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});

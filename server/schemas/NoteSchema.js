@@ -3,11 +3,15 @@ import mongoose from 'mongoose';
 export default new mongoose.Schema({
     title: {
         type: String,
-        required: false, //setting to false just for testing purposes
+        required: false,
     },
     body: {
         type: String,
         required: false,
+    },
+    image: {
+        type: String,
+        required: true,
     },
     state: {
         type: String,
