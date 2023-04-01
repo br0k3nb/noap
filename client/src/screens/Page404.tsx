@@ -26,7 +26,7 @@ export default function Page404() {
           </p>
           <div className="flex text-md tracking-widest uppercase xl:justify-center">
             <a
-              href="/activities"
+              href="/home"
               className="sm:w-full xxs:w-full lg:w-auto border border-gray-500 rounded-[30px] py-4 sm:py-3 xxs:py-2 px-6 text-center bg-red-600 text-white hover:bg-red-700 hover:-translate-y-0 hover:scale-105 transition duration-200"
             >
               Go back

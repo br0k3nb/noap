@@ -84,7 +84,7 @@ function LazyImage({
   useSuspenseImage(src);
   return (
     <img
-      className={className || undefined}
+      className={className || 'xxs:!max-w-[100%]'}
       src={src}
       alt={altText}
       ref={imageRef}
@@ -322,6 +322,7 @@ export default function ImageComponent({
         <div draggable={draggable}>
           <LazyImage
             className={
+              window.innerWidth > 640 &&
               isFocused
                 ? `focused ${$isNodeSelection(selection) ? "draggable" : ""}`
                 : null
@@ -367,7 +368,7 @@ export default function ImageComponent({
             </LexicalNestedComposer>
           </div>
         )}
-        {resizable && $isNodeSelection(selection) && isFocused && (
+        {resizable && $isNodeSelection(selection) && isFocused && window.innerWidth > 640 && (
           <ImageResizer
             showCaption={showCaption}
             setShowCaption={setShowCaption}

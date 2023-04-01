@@ -79,8 +79,10 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
           </div>
         </div>
       </div>
-      <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen">
-        <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3">
+      <div 
+        className="bg-gray-800 text-gray-100 overflow-scroll h-full scrollbar-thin scrollbar-thumb-gray-900"
+      >
+        <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
           {notes.map((val, idx) => {
             const parserdHtml = parse(val.body);
 

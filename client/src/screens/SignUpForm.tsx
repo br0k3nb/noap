@@ -49,7 +49,7 @@ export default function SignUpForm () {
     transition={{ duration: 0.5 }}
     className="flex flex-row h-screen bg-slate-800"
   >
-    <img className="hidden object-cover lg:flex lg:w-[70%] w-1/2 bg-slate-800 opacity-90" src={note} draggable={false}/>
+    <img className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-slate-800 opacity-90" src={note} draggable={false}/>
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
         <div className="flex flex-row h-screen bg-slate-800">
           <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full lg:shadow-inner lg:shadow-gray-900">
@@ -62,9 +62,9 @@ export default function SignUpForm () {
                 </div>  
               </span>
 
-            <p className="text-center text-2xl font-light mt-5 text-gray-100" style={{ fontFamily: 'Montserrat' }} >
+            {/* <p className="text-center text-2xl font-light mt-5 text-gray-100" style={{ fontFamily: 'Montserrat' }} >
               Sign up
-            </p>
+            </p> */}
 
             <form onSubmit={handleSubmit(handleForm)} className='w-full'>
             <div className="mb-2 mt-5">

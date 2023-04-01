@@ -60,7 +60,7 @@ export const NoteWasChanged = createContext<NoteWasChangedContext | null>(null);
 export const NoteContext = createContext<SelectedNoteContext | null>(null);
 export const NavbarContext = createContext<NavContext | null>(null);
 
-export default function Activities(): JSX.Element {
+export default function Home(): JSX.Element {
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
   const [wasChanged, setWasChanged] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -190,7 +190,7 @@ export default function Activities(): JSX.Element {
           expanded={expanded}
         />
         <div
-          className={`h-screen xxs:ml-0 overflow ${
+          className={`h-screen ${
             !navbar && !expanded ? "ml-[60px] xxs:ml-0" : 
             navbar && !expanded ? "ml-[10rem] xxs:ml-[60px]" :
             expanded && 'ml-0'

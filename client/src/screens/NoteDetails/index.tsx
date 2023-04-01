@@ -1,4 +1,4 @@
-import { createContext, useContext, Dispatch, SetStateAction } from "react";
+import { useEffect, createContext, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiOutlineDelete } from 'react-icons/ai';
 import { BsJournalRichtext } from 'react-icons/bs';
@@ -36,6 +36,12 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   const selectedNote = useContext(NoteContext);
   // const noteWasChangedContext = useContext(NoteWasChanged);
 
+  useEffect(() => {
+    if(window.innerWidth <= 640 && selectedNote?.selectedNote !== null) {
+      setExpanded(!expanded); 
+    }
+  }, [selectedNote?.selectedNote]);
+
   const removeNote = () => {
     if((selectedNote?.selectedNote as number) > 0) selectedNote?.setSelectedNote(selectedNote?.selectedNote -1);
     else selectedNote?.setSelectedNote(null);
@@ -45,7 +51,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   }
 
   return (
-    <div className="h-screen w-screen bg-gray-700 xxs:hidden text-gray-200">
+    <div className={`h-screen w-screen bg-gray-700 text-gray-200 ${expanded ? "!xxs:flex" : "xxs:hidden"}`}>
       <div className="flex flex-col text-gray-200 pt-1">
         {selectedNote?.selectedNote !== null && (
           <div className="flex flex-row justify-between mt-1 py-[7.2px] px-4 mb-[4.8px]">
@@ -77,7 +83,9 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
         </div> */}
         <div className="flex flex-col ">
           {selectedNote?.selectedNote !== null ? (
-            <div className="flex flex-col h-screen pb-16 overflow-scroll">
+            <div 
+              className="flex flex-col h-screen pb-16 overflow-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent xxs:ml-0 overflow"
+            >
               <ExpandedContext.Provider value={{expanded, setExpanded}}>
                 <TextEditor notes={notes} />
               </ExpandedContext.Provider>

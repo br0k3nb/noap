@@ -116,11 +116,9 @@ const Editor = forwardRef(({ save, register }: Props, ref) => {
             <RichTextPlugin
               contentEditable={
                 // @ts-ignore
-                <div className="editor h-[852px] overflow-hidden" ref={ref}>
-                  <div className="h-[830px] overflow-auto ">
-                    <TitleInput 
-                      register={register}
-                    />
+                <div className="editor overflow-hidden" ref={ref}>
+                  <div className="h-[900px] xxs:!max-w-fit xxs:flex-wrap overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
+                    <TitleInput register={register} />
                     <ContentEditable />
                   </div>
                 </div>
@@ -168,7 +166,7 @@ const Editor = forwardRef(({ save, register }: Props, ref) => {
 
 export function TitleInput({register}: TitleProps) {
   return (
-    <div className="text-2xl mt-8 px-6 !overflow-auto">
+    <div className="text-2xl mt-8 px-6">
       <input
         type="text"
         className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none"
