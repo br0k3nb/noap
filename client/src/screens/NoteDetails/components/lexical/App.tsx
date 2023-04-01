@@ -71,8 +71,11 @@ export default function App({ notes }: Props): JSX.Element {
     : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
 
     const getImage = () => {
+      console.log('i was executed');
+      // console.log(findImages);
       if(findImages && findImages.length !== 0) {
-        return findImages[0].replace(/>/, ' className="rounded-b-lg object-cover">');
+        const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
+        return removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[55.5px] w-[163px] xxs:w-[159px]">');
       }
       else return 'no image attached';
     }

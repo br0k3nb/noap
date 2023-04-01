@@ -118,7 +118,7 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
                     </p>
                   </div>
                   {parsedImage && (
-                    <div className="h-[56px] mt-4 w-full ">{parsedImage}</div>
+                    <div className="h-[56px] mt-4 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>
                   )}
                 </div>
               </a>
