@@ -102,7 +102,7 @@ export default function Notes({ notes, navbar, setNavbar, expanded }: Props) {
                 >
                   <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
 
-                  <div className={`h-[164px] text-gray-300 flex px-4 ${parsedImage && "h-[126px]"}`}>
+                  <div className={`h-[164px] text-gray-300 flex px-4 ${parsedImage && "!h-[126px]"}`}>
                     <div className="overflow-ellipsis overflow-hidden">
                       {parserdHtml}
                     </div>
