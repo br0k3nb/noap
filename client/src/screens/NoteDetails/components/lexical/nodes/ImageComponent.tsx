@@ -368,7 +368,7 @@ export default function ImageComponent({
             </LexicalNestedComposer>
           </div>
         )}
-        {resizable && $isNodeSelection(selection) && isFocused && window.innerWidth > 640 && (
+        {resizable && $isNodeSelection(selection) && isFocused && (
           <ImageResizer
             showCaption={showCaption}
             setShowCaption={setShowCaption}

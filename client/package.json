@@ -42,6 +42,7 @@
     "styled-components": "^5.3.9",
     "sweetalert2": "^11.7.2",
     "sweetalert2-react-content": "^5.0.7",
+    "vite-plugin-swc-react-refresh": "^2.2.1",
     "y-websocket": "^1.4.5",
     "yjs": "^13.5.42",
     "yup": "^1.0.0"

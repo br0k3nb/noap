@@ -98,6 +98,7 @@ export default function Home(): JSX.Element {
             value.body === fields[index]?.body &&
             value.title === fields[index].title &&
             value.createdAt === fields[index]?.createdAt &&
+            value.updatedAt === fields[index]?.updatedAt &&
             value.state === fields[index]?.state;
 
           if (notes.data.length >= fields.length && fields.length - 1 < index) append(value);
@@ -174,9 +175,8 @@ export default function Home(): JSX.Element {
     navigate("/");
   };
 
-  useQuery(["verifyUser", wasChanged], fetchNotes, {
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+  const {isFetching} = useQuery(["verifyUser", wasChanged], fetchNotes, {
+    refetchOnMount: true
   });
 
   return (
@@ -200,7 +200,8 @@ export default function Home(): JSX.Element {
           <div className="flex flex-row overflow-hidden h-screen">
             <Notes 
               notes={fields} 
-              navbar={navbar} 
+              isFetching={isFetching}
+              navbar={navbar}
               setNavbar={setNavbar} 
               expanded={expanded}
             />

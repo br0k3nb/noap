@@ -1,4 +1,4 @@
-import { useRef, useEffect, useContext, Dispatch, SetStateAction } from "react";
+import { useRef, useEffect, useState, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, useForm } from "react-hook-form";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -43,9 +43,11 @@ export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
   const lastSelectedNotes = useRef<number | undefined>(undefined);
 
+  const [ saveSpinner, setSaveSpinner ] = useState(false);
+
   const noteWasChangedContext = useContext<NoteWasChangedContext | null>(NoteWasChanged);
   const noteContext = useContext(NoteContext);
-  
+
   useEffect(() => {
     lastSelectedNotes.current = noteContext?.selectedNote;
   }, [noteContext?.selectedNote]);
@@ -57,29 +59,29 @@ export default function App({ notes }: Props): JSX.Element {
   );
 
   const saveNote = async (currentState: any) => {
+    setSaveSpinner(true);
+    
     const title = editorRef?.current.firstChild.firstChild?.value;
     const body = editorRef?.current.lastElementChild.innerHTML;
-
+    
     const removeClasses = body.replace(/class="[^"]+"/gm, '');
     const removeLowerCaseContentEditable = removeClasses.replace(/contenteditable="[^"]+"/gm, '');
     const removeCamelCaseContentEditable = removeLowerCaseContentEditable.replace(/contentEditable="[^"]+"/gm, '');
     const findImages = removeCamelCaseContentEditable.match(/<img[^>]+>/gm);
     const removeImages = findImages && removeCamelCaseContentEditable.replace(/<img[^>]+>/gm, '');
-
+    
     const finalHTMLString =
     removeImages ? removeImages.replace(/<[^/>][^>]*><\/[^>]+>/gm, '') 
     : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
-
+    
     const getImage = () => {
-      console.log('i was executed');
-      // console.log(findImages);
       if(findImages && findImages.length !== 0) {
         const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
         return removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[55.5px] w-[163px] xxs:w-[159px]">');
       }
       else return 'no image attached';
     }
-
+    
     try {
       if (currentState) {
         const create = await api.patch(
@@ -92,9 +94,10 @@ export default function App({ notes }: Props): JSX.Element {
             _id: notes[(noteContext?.selectedNote as number)]._id 
           }
         );
-
+        
         noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
-
+        setSaveSpinner(false);
+        
         toastAlert({
           icon: "success",
           title: `${create.data.message}`,
@@ -146,10 +149,11 @@ export default function App({ notes }: Props): JSX.Element {
             <div className="editor-shell">
               {/* @ts-ignore */}
               <UpdatePlugin/>
-              <Editor 
-                ref={editorRef} 
-                save={saveNote} 
+              <Editor
+                ref={editorRef}
+                save={saveNote}
                 register={register}
+                saveSpinner={saveSpinner}
               />
             </div>
           </SharedAutocompleteContext>

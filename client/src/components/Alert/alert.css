@@ -1,9 +1,9 @@
 .colored-toast.swal2-icon-success {
-    background-color: #399106 !important;
+    background-color: rgb(41, 165, 86) !important;
 }
 
 .colored-toast.swal2-icon-error {
-    background-color: #a32626 !important;
+    background-color: rgb(185 28 28) !important;
 }
 
 .colored-toast.swal2-icon-warning {

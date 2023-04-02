@@ -1,10 +1,13 @@
 import { useEffect, createContext, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
-import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiOutlineDelete } from 'react-icons/ai';
+import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillSetting, AiOutlineEllipsis } from 'react-icons/ai';
 import { BsJournalRichtext } from 'react-icons/bs';
 
 import TextEditor from "./components/lexical/App";
 import { NoteContext } from "../Home";
+
+import moment from "moment";
+import "moment/locale/pt-br";
 
 type Notes = {
   note: {
@@ -50,41 +53,61 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     remove(selectedNote?.selectedNote);
   }
 
+  const handleExpanded = () => {
+    if(window.innerWidth <= 640) {
+      selectedNote?.setSelectedNote(null);
+      setExpanded(!expanded);
+    }
+    else setExpanded(!expanded);
+  }
+
+  const hours = (date: string) => moment(date).format("LT");
+  const days = (date: string) => moment(date).format("ll");
+
+  const lastUpdated = () => { 
+    if(!notes[selectedNote?.selectedNote as number].updatedAt) return notes[selectedNote?.selectedNote as number].createdAt;
+    else return notes[selectedNote?.selectedNote as number].updatedAt;
+  }
+
+
   return (
     <div className={`h-screen w-screen bg-gray-700 text-gray-200 ${expanded ? "!xxs:flex" : "xxs:hidden"}`}>
       <div className="flex flex-col text-gray-200 pt-1">
         {selectedNote?.selectedNote !== null && (
           <div className="flex flex-row justify-between mt-1 py-[7.2px] px-4 mb-[4.8px]">
-            <div className="tooltip tooltip-right !text-gray-200" data-tip={`${!expanded ? 'Expand note' : 'Minimize note'}`}>
-              <button
-                className="hover:bg-stone-600 px-1 py-1 rounded"
-                onClick={() => setExpanded(!expanded)}
-              >
-                {expanded ? (
-                  <AiOutlineFullscreenExit size={23} />
-                ): (
-                  <AiOutlineFullscreen size={23} />
-                )}
-              </button>
+            <div>
+              <div className="mr-2 tooltip tooltip-right !text-gray-200" data-tip={`${!expanded ? 'Expand note' : 'Minimize note'}`}>
+                <button
+                  className="hover:bg-stone-600 px-1 py-1 rounded"
+                  onClick={() => handleExpanded()}
+                >
+                  {expanded ? (
+                    <AiOutlineFullscreenExit size={22} />
+                  ): (
+                    <AiOutlineFullscreen size={22} />
+                  )}
+                </button>
+              </div>
+              <div className="tooltip tooltip-right !text-gray-200" data-tip="More settings">
+                <button 
+                  className="hover:bg-stone-600 px-1 py-1 rounded transition duration-200 ease-in-out"
+                  // onClick={() => removeNote()}
+                >
+                  <AiOutlineEllipsis size={23} />
+                </button>
+              </div>
             </div>
-            
-            <div className="tooltip tooltip-left !text-gray-200" data-tip="Delete note">
-              <button 
-                className="hover:bg-stone-600 px-1 py-1 rounded transition duration-200 ease-in-out"
-                onClick={() => removeNote()}
-              >
-                <AiOutlineDelete size={23} />
-              </button>
+                
+            <div className="flex flex-row justify-start mr-2 py-2">
+              <p className="px-2 text-sm xxs:text-[12px] xxs:px-0">Last updated on {days(lastUpdated() as string)} at {hours(lastUpdated() as string)}</p>
             </div>
           </div>
         )}
-        {/* <div className="flex flex-row justify-start pb-[16px] pt-2">
-          <p className="px-4 text-sm">Last edited in Mar 20, 2023  </p>
-        </div> */}
-        <div className="flex flex-col ">
+        
+        <div className="flex flex-col">
           {selectedNote?.selectedNote !== null ? (
             <div 
-              className="flex flex-col h-screen pb-16 overflow-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent xxs:ml-0 overflow"
+              className="flex flex-col h-screen overflow-hidden pb-16 xxs:ml-0 overflow scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
             >
               <ExpandedContext.Provider value={{expanded, setExpanded}}>
                 <TextEditor notes={notes} />

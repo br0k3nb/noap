@@ -112,7 +112,7 @@ export default function SignInForm() {
                 <div className="text-center">
                   <button
                     type="submit"
-                    className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-600 text-white py-2"
+                    className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-700 text-white py-2"
                   >
                     <div className={`${!wasSubmited && 'hidden'} flex flex-row justify-center`}>
                       <svg aria-hidden="true" role="status" className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -128,9 +128,9 @@ export default function SignInForm() {
                   </button>
 
                   <div>
-                    <p className="text-md">
+                    <p className="text-md xxs:text-sm text-gray-300">
                       Doesn't have an account?
-                      <a href="/sign-up" className="text-red-600 ml-1">
+                      <a href="/sign-up" className="text-red-700 ml-1">
                         Sign Up
                       </a>
                     </p>
