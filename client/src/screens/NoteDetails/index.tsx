@@ -1,6 +1,6 @@
-import { useEffect, createContext, useContext, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
-import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillSetting, AiOutlineEllipsis } from 'react-icons/ai';
+import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillDelete, AiOutlineEllipsis } from 'react-icons/ai';
 import { BsJournalRichtext } from 'react-icons/bs';
 
 import TextEditor from "./components/lexical/App";
@@ -37,7 +37,7 @@ type ExpandedContextProps = {
 
 export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded }: Props) {
   const selectedNote = useContext(NoteContext);
-  // const noteWasChangedContext = useContext(NoteWasChanged);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     if(window.innerWidth <= 640 && selectedNote?.selectedNote !== null) {
@@ -46,6 +46,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   }, [selectedNote?.selectedNote]);
 
   const removeNote = () => {
+    setChecked(!checked);
     if((selectedNote?.selectedNote as number) > 0) selectedNote?.setSelectedNote(selectedNote?.selectedNote -1);
     else selectedNote?.setSelectedNote(null);
 
@@ -88,18 +89,80 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                   )}
                 </button>
               </div>
-              <div className="tooltip tooltip-right !text-gray-200" data-tip="More settings">
-                <button 
-                  className="hover:bg-stone-600 px-1 py-1 rounded transition duration-200 ease-in-out"
-                  // onClick={() => removeNote()}
-                >
-                  <AiOutlineEllipsis size={23} />
-                </button>
+
+              <div 
+                className="dropdown hover:bg-stone-600 rounded transition duration-200 ease-in-out !inline !pt-[11px] pb-[1.28px] px-1"
+              >
+                <label tabIndex={0}>
+                  <div className="tooltip tooltip-right !text-gray-200" data-tip="Actions">      
+                    <AiOutlineEllipsis size={23} />
+                  </div>
+                </label> 
+                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                  <li>
+                    <a 
+                      className="active:!bg-gray-600"
+                      onClick={() => setChecked(!checked)}
+                    >
+                      <label 
+                        htmlFor="my-modal-4"
+                        className="text-red-600"
+                      >
+                        <div className="flex flex-row space-x-2">
+                          <p>
+                            Delete note 
+                          </p>
+                          <AiFillDelete size={20} className="pt-1"/>
+                        </div>
+                      </label>
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
+
+            <input
+              checked={checked}
+              type="checkbox"
+              id="add-new-phone-number"
+              className="modal-toggle"
+            />
+            <label htmlFor="my-modal-4" className="modal cursor-pointer">
+              <label className="modal-box relative" htmlFor="">
+                <h3 className="text-xl">Are you sure about that ?</h3>
+                <p className="py-4"> 
+                  Be aware that once deleted, <span className="text-red-600">there is no way to recover it!</span>
+                </p>
+                <label 
+                  htmlFor="my-modal-4" 
+                  className="btn btn-sm btn-circle absolute right-0 top-0"
+                  onClick={() => setChecked(false)}
+                >
+                  ✕
+                </label>
+                <div className="mt-3 flex flex-row justify-evenly">
+                    <button
+                      className="bg-gray-800 hover:bg-gray-900 text-gray-100 px-4 py-3 rounded-lg"
+                      onClick={() => setChecked(!checked)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-3 py-3 rounded-lg"
+                      onClick={() => removeNote()}
+                    >
+                      Delete
+                    </button>
+                </div>
+              </label>
+            </label>
                 
             <div className="flex flex-row justify-start mr-2 py-2">
-              <p className="px-2 text-sm xxs:text-[12px] xxs:px-0">Last updated on {days(lastUpdated() as string)} at {hours(lastUpdated() as string)}</p>
+              <p 
+                className="px-2 text-sm xxs:text-[12px] xxs:px-0"
+              >
+                Last updated on {days(lastUpdated() as string)} at {hours(lastUpdated() as string)}
+              </p>
             </div>
           </div>
         )}

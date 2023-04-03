@@ -19,13 +19,16 @@ type NavProps = {
   navbar: boolean;
 };
 
-export default function Nav({ navbar, setNavbar, addNewNote, expanded }: NavProps) {
+export default function Nav({
+  navbar,
+  setNavbar,
+  addNewNote,
+  expanded,
+}: NavProps) {
   return (
-    <div 
-      className={`${expanded && "hidden"}`}
-    >
+    <div className={`${expanded && "hidden"}`}>
       <div
-        className={`fixed z-50 ${
+        className={`fixed ${
           !navbar ? "flex xxs:hidden" : "hidden xxs:flex"
         }`}
       >
@@ -55,7 +58,10 @@ export default function Nav({ navbar, setNavbar, addNewNote, expanded }: NavProp
                 <BsFillHouseDoorFill className="text-gray-300" size={23} />
               </a>
             </div>
-            <div className="tooltip text-gray-100 before:text-[12px]" data-tip="New note">
+            <div
+              className="tooltip text-gray-100 before:text-[12px]"
+              data-tip="New note"
+            >
               <a
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 onClick={() => addNewNote()}
@@ -84,7 +90,32 @@ export default function Nav({ navbar, setNavbar, addNewNote, expanded }: NavProp
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 href="#"
               >
-                <BsFillGearFill className="text-gray-300" size={23} />
+                {/* <div className="dropdown dropdown-open !absolute !top-0 !z-50">
+                  <label
+                    tabIndex={0}
+                    className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                  >
+                    <BsFillGearFill className="text-gray-300" size={23} />
+                  </label>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                  >
+                    <li>
+                      <a
+                        className="active:!bg-gray-600"
+                        // onClick={() => setChecked(!checked)}
+                      >
+                        <label htmlFor="my-modal-4" className="text-red-600">
+                          <div className="flex flex-row space-x-2">
+                            <p>Log out</p>
+                
+                          </div>
+                        </label>
+                      </a>
+                    </li>
+                  </ul>
+                </div> */}
               </a>
             </div>
           </div>
@@ -126,13 +157,11 @@ export default function Nav({ navbar, setNavbar, addNewNote, expanded }: NavProp
           </a>
           <div className="w-full ">
             <div className="flex flex-col items-center w-full mt-3 border-t border-gray-700 space-y-1">
-              <button 
-                className="flex items-center w-full h-12 px-3 mt-2 hover:bg-gray-700"
-              >
+              <button className="flex items-center w-full h-12 px-3 mt-2 hover:bg-gray-700">
                 <BsFillHouseDoorFill className="text-gray-300" size={23} />
                 <span className="ml-2 text-sm font-medium">Home</span>
               </button>
-              <button 
+              <button
                 className="flex items-center w-full h-12 px-3 hover:bg-gray-700"
                 onClick={() => addNewNote()}
               >
