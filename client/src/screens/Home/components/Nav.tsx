@@ -8,6 +8,7 @@ import {
   BsFillGearFill,
   BsXLg,
   BsList,
+  BsDoorOpenFill
 } from "react-icons/bs";
 
 // import { motion } from "framer-motion";
@@ -17,6 +18,7 @@ type NavProps = {
   addNewNote: () => Promise<void>;
   expanded: boolean;
   navbar: boolean;
+  handleSignout: () => void
 };
 
 export default function Nav({
@@ -24,6 +26,7 @@ export default function Nav({
   setNavbar,
   addNewNote,
   expanded,
+  handleSignout
 }: NavProps) {
   return (
     <div className={`${expanded && "hidden"}`}>
@@ -82,20 +85,16 @@ export default function Nav({
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                 href="#"
               >
-                <BsFillCalendarEventFill className="text-gray-300" size={22} />
+                <BsFillCalendarEventFill className="text-gray-300 " size={22} />
               </a>
             </div>
-            <div className="tooltip text-gray-300" data-tip="Settings">
-              <a
-                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-                href="#"
-              >
-                {/* <div className="dropdown dropdown-open !absolute !top-0 !z-50">
-                  <label
-                    tabIndex={0}
-                    className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-                  >
-                    <BsFillGearFill className="text-gray-300" size={23} />
+            <div className="absolute !bottom-[570px]">
+              <div className="flex items-center justify-center h-12 pt-1 hover:bg-gray-700 hover:text-gray-300">
+                <div className="dropdown">
+                  <label tabIndex={0} className="px-5 py-10">
+                    <div className="tooltip text-gray-300" data-tip="Settings">
+                      <BsFillGearFill className="text-gray-300" size={23} />
+                    </div>
                   </label>
                   <ul
                     tabIndex={0}
@@ -104,19 +103,19 @@ export default function Nav({
                     <li>
                       <a
                         className="active:!bg-gray-600"
-                        // onClick={() => setChecked(!checked)}
+                        onClick={() => handleSignout()}
                       >
-                        <label htmlFor="my-modal-4" className="text-red-600">
+                        <label htmlFor="my-modal-4" className="text-gray-200">
                           <div className="flex flex-row space-x-2">
                             <p>Log out</p>
-                
+                            <BsDoorOpenFill size={19} className="pt-1"/>
                           </div>
                         </label>
                       </a>
                     </li>
                   </ul>
-                </div> */}
-              </a>
+                </div>
+              </div>
             </div>
           </div>
           <a

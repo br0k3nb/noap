@@ -123,6 +123,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
 
             <input
               checked={checked}
+              readOnly
               type="checkbox"
               id="add-new-phone-number"
               className="modal-toggle"
@@ -142,13 +143,13 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                 </label>
                 <div className="mt-3 flex flex-row justify-evenly">
                     <button
-                      className="bg-gray-800 hover:bg-gray-900 text-gray-100 px-4 py-3 rounded-lg"
+                      className="bg-gray-800 hover:bg-gray-900 text-gray-100 px-8 py-3 rounded-lg"
                       onClick={() => setChecked(!checked)}
                     >
                       Cancel
                     </button>
                     <button 
-                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-3 py-3 rounded-lg"
+                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg"
                       onClick={() => removeNote()}
                     >
                       Delete

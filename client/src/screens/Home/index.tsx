@@ -176,7 +176,8 @@ export default function Home(): JSX.Element {
   };
 
   const {isFetching} = useQuery(["verifyUser", wasChanged], fetchNotes, {
-    refetchOnMount: true
+    refetchInterval: 300000,
+    refetchOnWindowFocus: true
   });
 
   return (
@@ -188,6 +189,7 @@ export default function Home(): JSX.Element {
           setNavbar={setNavbar} 
           addNewNote={addNewNote} 
           expanded={expanded}
+          handleSignout={handleSignout}
         />
         <div
           className={`h-screen ${

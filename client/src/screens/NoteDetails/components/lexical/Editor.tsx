@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, Dispatch, SetStateAction, MutableRefObject } from "react";
+import { useState, useEffect, forwardRef, Dispatch, SetStateAction } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
@@ -37,6 +37,8 @@ import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
 import { MaxLengthPlugin } from "./plugins/MaxLengthPlugin";
 import MentionsPlugin from "./plugins/MentionsPlugin";
+import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
+import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
 import PollPlugin from "./plugins/PollPlugin";
 import TabFocusPlugin from "./plugins/TabFocusPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
@@ -57,6 +59,8 @@ type Props = {
   save: (currentState: EditorState) => Promise<void>;
   register: UseFormRegister<FieldValues>;
   saveSpinner: boolean;
+  // onRef: (_floatingAnchorElem: HTMLDivElement) => void;
+  floatingAnchorElem: HTMLDivElement | null;
 };
 
 type TitleProps = {
@@ -69,18 +73,20 @@ type CustomSaveComp = {
   saveSpinner: boolean;
 };
 
-const Editor = forwardRef(({ save, register, saveSpinner }: Props, ref) => {
+const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: Props, ref) => {
   const [editor] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
 
+  console.log(floatingAnchorElem);
+  
   const {
     settings: { isCharLimit, isCharLimitUtf8, isRichText },
   } = useSettings();
   
   const placeholder = <Placeholder>Enter some text</Placeholder>;
-
-  const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
   
+  const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
+
   useEffect(() => {
     const updateViewPortWidth = () => {
       const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
@@ -100,25 +106,24 @@ const Editor = forwardRef(({ save, register, saveSpinner }: Props, ref) => {
       <ToolbarPlugin />
       <div className={`editor-container ${!isRichText ? "plain-text" : ""}`}>
         <DragDropPaste />
-        <ClearEditorPlugin />
+        {/* <ClearEditorPlugin /> */}
         <AutoFocusPlugin />
         <ComponentPickerPlugin />
         <AutoEmbedPlugin />
         <HashtagPlugin />
-        <KeywordsPlugin />
+        {/* <KeywordsPlugin /> */}
         <AutoLinkPlugin />
         <EmojisPlugin />
         <EmojiPickerPlugin />
-        <ListPlugin />
         {isRichText && (
           <>
             <RichTextPlugin
               contentEditable={
                 // @ts-ignore
-                <div className="editor overflow-hidden" ref={ref}>
-                  <div className={`overflow-scroll h-[900px] xxs:!max-h-screen xxs:!mb-96 xxs:!max-w-fit xxs:flex-wrap overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900`}>
+                <div className="editor" ref={ref}>
+                  <div className={`overflow-scroll h-[900px] xxs:!max-h-screen xxs:!mb-96 xxs:!max-w-fit xxs:flex-wrap scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900`}>
                     <TitleInput register={register} />
-                    <div className="xxs:mb-20">
+                    <div className="xxs:mb-20 max-w-[600px]">
                       <ContentEditable />
                     </div>
                   </div>
@@ -135,16 +140,15 @@ const Editor = forwardRef(({ save, register, saveSpinner }: Props, ref) => {
             />
             <CodeActionMenuPlugin />
             <CheckListPlugin />
+            <ListPlugin />
             <ImagesPlugin captionsEnabled={true} />
             <HistoryPlugin externalHistoryState={historyState} />
             <LinkPlugin />
-            <AutocompletePlugin />
+            {/* <AutocompletePlugin /> */}
             <PollPlugin />
-            <LinkPlugin />
-            <PollPlugin />
-            <MarkdownShortcutPlugin />
+            {/* <MarkdownShortcutPlugin /> */}
             <CodeHighlightPlugin />
-            <ListMaxIndentLevelPlugin maxDepth={7} />
+            {/* <ListMaxIndentLevelPlugin maxDepth={7} /> */}
             <TwitterPlugin />
             <YouTubePlugin />
             <FigmaPlugin />
@@ -155,6 +159,15 @@ const Editor = forwardRef(({ save, register, saveSpinner }: Props, ref) => {
             <TabFocusPlugin />
             <TabIndentationPlugin />
             <CollapsiblePlugin />
+
+            {floatingAnchorElem && (
+              <>
+                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
+                <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+                <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem}/>
+              </>
+            )}
           </>
         )}
 

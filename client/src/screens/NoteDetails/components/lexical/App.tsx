@@ -50,6 +50,10 @@ export default function App({ notes }: Props): JSX.Element {
 
   useEffect(() => {
     lastSelectedNotes.current = noteContext?.selectedNote;
+    
+    setTimeout(() => {
+      setFloatingAnchorElem(editorRef.current) 
+    })
   }, [noteContext?.selectedNote]);
 
   const { reset, register } = useForm({});
@@ -61,7 +65,7 @@ export default function App({ notes }: Props): JSX.Element {
   const saveNote = async (currentState: any) => {
     setSaveSpinner(true);
     
-    const title = editorRef?.current.firstChild.firstChild?.value;
+    const title = editorRef?.current.firstChild.children[0].firstChild.value;
     const body = editorRef?.current.lastElementChild.innerHTML;
     
     const removeClasses = body.replace(/class="[^"]+"/gm, '');
@@ -125,6 +129,8 @@ export default function App({ notes }: Props): JSX.Element {
     theme: PlaygroundEditorTheme,
   };
 
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
+
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
     
@@ -154,6 +160,7 @@ export default function App({ notes }: Props): JSX.Element {
                 save={saveNote}
                 register={register}
                 saveSpinner={saveSpinner}
+                floatingAnchorElem={floatingAnchorElem}
               />
             </div>
           </SharedAutocompleteContext>
