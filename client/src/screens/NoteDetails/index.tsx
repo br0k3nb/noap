@@ -40,9 +40,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    if(window.innerWidth <= 640 && selectedNote?.selectedNote !== null) {
-      setExpanded(!expanded); 
-    }
+    if(window.innerWidth <= 640 && selectedNote?.selectedNote !== null) setExpanded(!expanded);
   }, [selectedNote?.selectedNote]);
 
   const removeNote = () => {
@@ -69,7 +67,6 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     if(!notes[selectedNote?.selectedNote as number].updatedAt) return notes[selectedNote?.selectedNote as number].createdAt;
     else return notes[selectedNote?.selectedNote as number].updatedAt;
   }
-
 
   return (
     <div className={`h-screen w-screen bg-gray-700 text-gray-200 ${expanded ? "!xxs:flex" : "xxs:hidden"}`}>

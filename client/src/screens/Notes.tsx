@@ -126,7 +126,10 @@ export default function Notes({ notes, isFetching, navbar, setNavbar, expanded }
                       </p>
                     </div>
                     {parsedImage && (
-                      <div className="h-[56px] mt-4 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>
+                      <>
+                        {/* {console.log(parsedImage)} */}
+                        <div className="h-[56px] mt-4 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>
+                      </>
                     )}
                   </div>
                 </a>

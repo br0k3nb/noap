@@ -76,8 +76,6 @@ type CustomSaveComp = {
 const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: Props, ref) => {
   const [editor] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
-
-  console.log(floatingAnchorElem);
   
   const {
     settings: { isCharLimit, isCharLimitUtf8, isRichText },
@@ -159,7 +157,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
             <TabFocusPlugin />
             <TabIndentationPlugin />
             <CollapsiblePlugin />
-
+            
             {floatingAnchorElem && (
               <>
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />

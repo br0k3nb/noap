@@ -35,12 +35,8 @@ let customMargin = '';
 let prevIndex = Infinity;
 
 function getCurrentIndex(keysLength: number): number {
-  if (keysLength === 0) {
-    return Infinity;
-  }
-  if (prevIndex >= 0 && prevIndex < keysLength) {
-    return prevIndex;
-  }
+  if (keysLength === 0) return Infinity;
+  if (prevIndex >= 0 && prevIndex < keysLength) return prevIndex;
 
   return Math.floor(keysLength / 2);
 }
@@ -66,9 +62,9 @@ function getBlockElement(
     while (index >= 0 && index < topLevelNodeKeys.length) {
       const key = topLevelNodeKeys[index];
       const elem = editor.getElementByKey(key);
-      if (elem === null) {
-        break;
-      }
+
+      if (elem === null) break;
+      
       const point = new Point(event.x, event.y);
       const domRect = Rect.fromDOM(elem);
       const {marginTop, marginBottom} = window.getComputedStyle(elem);
@@ -92,14 +88,9 @@ function getBlockElement(
       }
 
       if (direction === Indeterminate) {
-        if (isOnTopSide) {
-          direction = Upward;
-        } else if (isOnBottomSide) {
-          direction = Downward;
-        } else {
-          // stop search block element
-          direction = Infinity;
-        }
+        if (isOnTopSide) direction = Upward;
+        else if (isOnBottomSide) direction = Downward
+        else direction = Infinity;
       }
       
       index += direction;
@@ -113,7 +104,7 @@ function getBlockElement(
   return blockElem;
 }
 
-console.log(customMargin);
+
 
 function isOnMenu(element: HTMLElement): boolean {
   return !!element.closest(`.${DRAGGABLE_BLOCK_MENU_CLASSNAME}`);
@@ -156,9 +147,7 @@ function setDragImage(
   draggableBlockElem.style.transform = 'translateZ(0)';
   dataTransfer.setDragImage(draggableBlockElem, 0, 0);
 
-  setTimeout(() => {
-    draggableBlockElem.style.transform = transform;
-  });
+  setTimeout(() => draggableBlockElem.style.transform = transform);
 }
 
 function setTargetLine(
@@ -175,11 +164,9 @@ function setTargetLine(
 
   let lineTop = targetBlockElemTop;
   // At the bottom of the target
-  if (mouseY - targetBlockElemTop > targetBlockElemHeight / 2) {
-    lineTop += targetBlockElemHeight + parseFloat(targetStyle.marginBottom);
-  } else {
-    lineTop -= parseFloat(targetStyle.marginTop);
-  }
+
+  if (mouseY - targetBlockElemTop > targetBlockElemHeight / 2) lineTop += targetBlockElemHeight + parseFloat(targetStyle.marginBottom);
+  else lineTop -= parseFloat(targetStyle.marginTop);
 
   const top = lineTop - anchorTop - TARGET_LINE_HALF_HEIGHT;
   const left = TEXT_BOX_HORIZONTAL_PADDING - SPACE;
@@ -308,6 +295,7 @@ function useDraggableBlockMenu(
         },
         COMMAND_PRIORITY_LOW,
       ),
+
       editor.registerCommand(
         DROP_COMMAND,
         (event) => {
@@ -327,9 +315,8 @@ function useDraggableBlockMenu(
 
     editor.update(() => {
       const node = $getNearestNodeFromDOMNode(draggableBlockElem);
-      if (node) {
-        nodeKey = node.getKey();
-      }
+
+      if (node) nodeKey = node.getKey();
     });
 
     isDraggingBlockRef.current = true;
@@ -343,7 +330,6 @@ function useDraggableBlockMenu(
 
   return createPortal(
     <>
-      {console.log(customMargin)}
       <div
         className='icon draggable-block-menu rounded-md'
         ref={menuRef}

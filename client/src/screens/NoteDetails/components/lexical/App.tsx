@@ -42,38 +42,36 @@ type NoteWasChangedContext = {
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
   const lastSelectedNotes = useRef<number | undefined>(undefined);
-
+  
   const [ saveSpinner, setSaveSpinner ] = useState(false);
+  const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
 
   const noteWasChangedContext = useContext<NoteWasChangedContext | null>(NoteWasChanged);
   const noteContext = useContext(NoteContext);
 
   useEffect(() => {
     lastSelectedNotes.current = noteContext?.selectedNote;
-    
-    setTimeout(() => {
-      setFloatingAnchorElem(editorRef.current) 
-    })
+    setTimeout(() => setFloatingAnchorElem(editorRef.current));
   }, [noteContext?.selectedNote]);
 
   const { reset, register } = useForm({});
 
   const parsedUserToken = JSON.parse(
     window.localStorage.getItem("user_token") || ""
-  );
-
-  const saveNote = async (currentState: any) => {
-    setSaveSpinner(true);
+    );
     
-    const title = editorRef?.current.firstChild.children[0].firstChild.value;
-    const body = editorRef?.current.lastElementChild.innerHTML;
-    
+    const saveNote = async (currentState: any) => {
+      setSaveSpinner(true);
+      
+      const title = editorRef?.current.firstChild.children[0].firstChild.value;
+      const body = editorRef?.current.firstChild.children[1].innerHTML;
+      
     const removeClasses = body.replace(/class="[^"]+"/gm, '');
     const removeLowerCaseContentEditable = removeClasses.replace(/contenteditable="[^"]+"/gm, '');
     const removeCamelCaseContentEditable = removeLowerCaseContentEditable.replace(/contentEditable="[^"]+"/gm, '');
     const findImages = removeCamelCaseContentEditable.match(/<img[^>]+>/gm);
     const removeImages = findImages && removeCamelCaseContentEditable.replace(/<img[^>]+>/gm, '');
-    
+
     const finalHTMLString =
     removeImages ? removeImages.replace(/<[^/>][^>]*><\/[^>]+>/gm, '') 
     : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
@@ -129,7 +127,6 @@ export default function App({ notes }: Props): JSX.Element {
     theme: PlaygroundEditorTheme,
   };
 
-  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
 
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
@@ -154,7 +151,7 @@ export default function App({ notes }: Props): JSX.Element {
           <SharedAutocompleteContext>
             <div className="editor-shell">
               {/* @ts-ignore */}
-              <UpdatePlugin/>
+              <UpdatePlugin />
               <Editor
                 ref={editorRef}
                 save={saveNote}
