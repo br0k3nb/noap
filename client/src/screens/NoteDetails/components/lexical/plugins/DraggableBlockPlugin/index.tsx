@@ -97,14 +97,19 @@ function getBlockElement(
     }
   });
 
-  if((blockElem as any)?.children[0].className === "editor-image") {
-    customMargin = `${(blockElem as any)?.children[0].clientHeight / 2 + 95}`;
+  if((blockElem as any)?.children[0].parentElement.className ===
+   "PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr") {
+    customMargin = '105';
+  }
+
+  else if ((blockElem as any)?.children[0].className.startsWith('PlaygroundEditorTheme__listItem')) {
+    customMargin = `${(blockElem as any)?.clientHeight / 2 + 95}`
   }
   
+  else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 95}`;
+
   return blockElem;
 }
-
-
 
 function isOnMenu(element: HTMLElement): boolean {
   return !!element.closest(`.${DRAGGABLE_BLOCK_MENU_CLASSNAME}`);
@@ -226,9 +231,7 @@ function useDraggableBlockMenu(
   }, [scrollerElem, anchorElem, editor]);
 
   useEffect(() => {
-    if (menuRef.current) {
-      setMenuPosition(draggableBlockElem, menuRef.current, anchorElem);
-    }
+    if (menuRef.current) setMenuPosition(draggableBlockElem, menuRef.current, anchorElem);
   }, [anchorElem, draggableBlockElem]);
 
   useEffect(() => {

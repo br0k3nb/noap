@@ -52,7 +52,7 @@ export default function Nav({
               )}
             </button>
           </div>
-          <div className="flex flex-col items-center mt-0 md:mt-3 border-t border-stone-900">
+          <div className="flex flex-col items-center mt-0 md:mt-3 border-t border-stone-900 absolute top-28">
             <div className="tooltip text-gray-300" data-tip="Home">
               <a
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
@@ -88,33 +88,31 @@ export default function Nav({
                 <BsFillCalendarEventFill className="text-gray-300 " size={22} />
               </a>
             </div>
-            <div className="absolute !bottom-[570px]">
-              <div className="flex items-center justify-center h-12 pt-1 hover:bg-gray-700 hover:text-gray-300">
-                <div className="dropdown">
-                  <label tabIndex={0} className="px-5 py-10">
-                    <div className="tooltip text-gray-300" data-tip="Settings">
-                      <BsFillGearFill className="text-gray-300" size={23} />
-                    </div>
-                  </label>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-                  >
-                    <li>
-                      <a
-                        className="active:!bg-gray-600"
-                        onClick={() => handleSignout()}
-                      >
-                        <label htmlFor="my-modal-4" className="text-gray-200">
-                          <div className="flex flex-row space-x-2">
-                            <p>Log out</p>
-                            <BsDoorOpenFill size={19} className="pt-1"/>
-                          </div>
-                        </label>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+            <div className="flex items-center justify-center h-12 pt-1 hover:bg-gray-700 hover:text-gray-300 mt-2">
+              <div className="dropdown">
+                <label tabIndex={0} className="px-5 py-10">
+                  <div className="tooltip text-gray-300" data-tip="Settings">
+                    <BsFillGearFill className="text-gray-300" size={23} />
+                  </div>
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  <li>
+                    <a
+                      className="active:!bg-gray-600"
+                      onClick={() => handleSignout()}
+                    >
+                      <label htmlFor="my-modal-4" className="text-gray-200">
+                        <div className="flex flex-row space-x-2">
+                          <p>Log out</p>
+                          <BsDoorOpenFill size={19} className="pt-1"/>
+                        </div>
+                      </label>
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

@@ -163,7 +163,6 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
                 <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
                 <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem}/>
               </>
             )}
           </>
