@@ -59,3 +59,7 @@
 * {
   font-family: "Ubuntu";
 }
+
+html {
+  overflow: hidden !important;
+}

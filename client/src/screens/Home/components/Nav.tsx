@@ -35,8 +35,10 @@ export default function Nav({
           !navbar ? "flex xxs:hidden" : "hidden xxs:flex"
         }`}
       >
-        <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900">
-          <div className="flex items-center justify-center mt-3 rounded-full border border-gray-600 px-2 h-10 w-10 xxs:mt-5 sm:mt-3">
+        <div 
+          className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900 justify-end"
+        >
+          <div className="flex items-center justify-center mt-3 rounded-full border border-gray-600 px-2 h-10 w-10 xxs:mt-5 sm:mt-3 absolute top-0">
             <p className="text-2xl py-1 px-1">N</p>
           </div>
 
@@ -52,7 +54,7 @@ export default function Nav({
               )}
             </button>
           </div>
-          <div className="flex flex-col items-center mt-0 md:mt-3 border-t border-stone-900 absolute top-28">
+          <div className="flex flex-col items-center mt-0 md:mt-3 border-t border-stone-900 absolute top-28 xxs:top-20">
             <div className="tooltip text-gray-300" data-tip="Home">
               <a
                 className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
@@ -117,7 +119,7 @@ export default function Nav({
             </div>
           </div>
           <a
-            className="flex items-center justify-center w-16 h-16 mt-auto bg-gray-700 hover:bg-gray-600 hover:text-gray-300"
+            className="flex items-center justify-center w-16 h-16 mt-auto bg-gray-700 hover:bg-gray-600 hover:text-gray-300 absolute bottom-0 xxs:bottom-[51px]"
             href="#"
           >
             <div className="rounded-full">

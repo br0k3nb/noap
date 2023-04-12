@@ -59,7 +59,6 @@ type Props = {
   save: (currentState: EditorState) => Promise<void>;
   register: UseFormRegister<FieldValues>;
   saveSpinner: boolean;
-  // onRef: (_floatingAnchorElem: HTMLDivElement) => void;
   floatingAnchorElem: HTMLDivElement | null;
 };
 
@@ -100,9 +99,9 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
   }, [isSmallWidthViewport]);
 
   return (
-    <> 
+    <div className="!h-screen !w-screen"> 
       <ToolbarPlugin />
-      <div className={`editor-container ${!isRichText ? "plain-text" : ""}`}>
+      <div className="editor-container plain-text">
         <DragDropPaste />
         {/* <ClearEditorPlugin /> */}
         <AutoFocusPlugin />
@@ -119,9 +118,22 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
               contentEditable={
                 // @ts-ignore
                 <div className="editor" ref={ref}>
-                  <div className={`overflow-scroll h-[900px] xxs:!max-h-screen xxs:!mb-96 xxs:!max-w-fit xxs:flex-wrap scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900`}>
+                 <div className={`
+                      overflow-scroll
+                      h-[900px]
+                      scrollbar-thin
+                      scrollbar-track-transparent
+                      scrollbar-thumb-gray-900
+                      `
+                    }
+                    style={window.outerWidth <= 640 ? {
+                      height: window.outerHeight - 100
+                    } : undefined}
+                  >
                     <TitleInput register={register} />
-                    <div className="xxs:mb-20 max-w-[600px]">
+                    <div 
+                      className="xxs:mb-16 mb-7 !w-3/4 xxs:!w-[100%]"
+                    >
                       <ContentEditable />
                     </div>
                   </div>
@@ -169,13 +181,13 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
         )}
 
         {(isCharLimit || isCharLimitUtf8) && (
-          <CharacterLimitPlugin
+          <CharacterLimitPlugin 
             charset={isCharLimit ? "UTF-16" : "UTF-8"}
             maxLength={5}
           />
         )}
       </div>
-    </>
+    </div>
   );
 });
 

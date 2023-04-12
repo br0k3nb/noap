@@ -181,45 +181,47 @@ export default function Home(): JSX.Element {
   });
 
   return (
-    <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
-      {/* @ts-ignore */}
-      <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
-        <Nav 
-          navbar={navbar} 
-          setNavbar={setNavbar} 
-          addNewNote={addNewNote} 
-          expanded={expanded}
-          handleSignout={handleSignout}
-        />
-        <div
-          className={`h-screen ${
-            !navbar && !expanded ? "ml-[60px] xxs:ml-0" : 
-            navbar && !expanded ? "ml-[10rem] xxs:ml-[60px]" :
-            expanded && 'ml-0'
-          }`}
-          id="dark"
-        >
-          <div className="flex flex-row overflow-hidden h-screen">
-            <Notes 
-              notes={fields} 
-              isFetching={isFetching}
-              navbar={navbar}
-              setNavbar={setNavbar} 
-              expanded={expanded}
-            />
-      
-            <NavbarContext.Provider value={{ navbar, setNavbar }}>          
-              <NoteDetails 
+    <div className="!h-screen">
+      <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
+        {/* @ts-ignore */}
+        <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
+          <Nav 
+            navbar={navbar} 
+            setNavbar={setNavbar} 
+            addNewNote={addNewNote} 
+            expanded={expanded}
+            handleSignout={handleSignout}
+          />
+          <div
+            className={`!overflow-hidden ${
+              !navbar && !expanded ? "ml-[60px] xxs:ml-0" : 
+              navbar && !expanded ? "ml-[10rem] xxs:ml-[60px]" :
+              expanded && 'ml-0'
+            }`}
+            id="dark"
+          >
+            <div className="flex flex-row h-screen">
+              <Notes 
                 notes={fields} 
-                deleteNote={deleteNote} 
-                remove={remove}
+                isFetching={isFetching}
+                navbar={navbar}
+                setNavbar={setNavbar} 
                 expanded={expanded}
-                setExpanded={setExpanded}
               />
-            </NavbarContext.Provider>
+        
+              <NavbarContext.Provider value={{ navbar, setNavbar }}>        
+                <NoteDetails 
+                  notes={fields} 
+                  deleteNote={deleteNote} 
+                  remove={remove}
+                  expanded={expanded}
+                  setExpanded={setExpanded}
+                />
+              </NavbarContext.Provider>
+            </div>
           </div>
-        </div>
-      </NoteContext.Provider>
-    </NoteWasChanged.Provider>
+        </NoteContext.Provider>
+      </NoteWasChanged.Provider>
+    </div>
   );
 }

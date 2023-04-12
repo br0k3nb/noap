@@ -40,7 +40,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    if(window.innerWidth <= 640 && selectedNote?.selectedNote !== null) setExpanded(!expanded);
+    if(window.outerWidth <= 640 && selectedNote?.selectedNote !== null) setExpanded(!expanded);
   }, [selectedNote?.selectedNote]);
 
   const removeNote = () => {
@@ -53,7 +53,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   }
 
   const handleExpanded = () => {
-    if(window.innerWidth <= 640) {
+    if(window.outerWidth <= 640) {
       selectedNote?.setSelectedNote(null);
       setExpanded(!expanded);
     }
@@ -69,10 +69,10 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   }
 
   return (
-    <div className={`h-screen w-screen bg-gray-700 text-gray-200 ${expanded ? "!xxs:flex" : "xxs:hidden"}`}>
+    <div className={`overflow-hidden w-screen h-screen bg-gray-700 text-gray-200 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 ${!expanded && "xxs:hidden"}`}>
       <div className="flex flex-col text-gray-200 pt-1">
         {selectedNote?.selectedNote !== null && (
-          <div className="flex flex-row justify-between mt-1 py-[7.2px] px-4 mb-[4.8px]">
+          <div className="flex flex-row justify-between mt-0 py-[7.2px] px-4 mb-[4.8px]">
             <div>
               <div className="mr-2 tooltip tooltip-right !text-gray-200" data-tip={`${!expanded ? 'Expand note' : 'Minimize note'}`}>
                 <button
@@ -155,9 +155,9 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               </label>
             </label>
                 
-            <div className="flex flex-row justify-start mr-2 py-2">
+            <div className="flex flex-row justify-start mr-3 py-2">
               <p 
-                className="px-2 text-sm xxs:text-[12px] xxs:px-0"
+                className="px-2 text-sm xxs:text-[10px] xxs:px-0"
               >
                 Last updated on {days(lastUpdated() as string)} at {hours(lastUpdated() as string)}
               </p>
@@ -168,7 +168,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
         <div className="flex flex-col">
           {selectedNote?.selectedNote !== null ? (
             <div 
-              className="flex flex-col h-screen overflow-hidden pb-16 xxs:ml-0 overflow scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+              className="flex flex-col xxs:ml-0 !overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
             >
               <ExpandedContext.Provider value={{expanded, setExpanded}}>
                 <TextEditor notes={notes} />

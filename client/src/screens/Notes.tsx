@@ -46,11 +46,11 @@ export default function Notes({ notes, isFetching, navbar, setNavbar, expanded }
 
   return (
     <div
-      className={`w-screen lg:max-w-[380px] border-r border-gray-600 ${
+      className={`overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-gray-600 ${
         expanded && "hidden"
       }`}
     >
-      <div className="flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
+      <div className=" overflow-hidden flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
         <div className="flex flex-col mb-[4.2px]">
           <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
             <div className="text-center flex flex-row space-x-1 px-2">
@@ -79,7 +79,7 @@ export default function Notes({ notes, isFetching, navbar, setNavbar, expanded }
         </div>
       </div>
       <div 
-        className="bg-gray-800 text-gray-100 overflow-scroll h-full scrollbar-thin scrollbar-thumb-gray-900"
+        className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900"
       >
         {isFetching ? (
           <div className="flex flex-col items-center mt-14">
@@ -90,7 +90,7 @@ export default function Notes({ notes, isFetching, navbar, setNavbar, expanded }
             <p className="mt-2 text-lg animate-pulse">Loading notes...</p>
           </div>
         ) : (
-          <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 ">
+          <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 xxs:mb-20">
             {notes.map((val, idx) => {
               const parserdHtml = parse(val.body);
 
