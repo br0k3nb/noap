@@ -194,8 +194,8 @@ export default function Home(): JSX.Element {
           />
           <div
             className={`!overflow-hidden ${
-              !navbar && !expanded ? "ml-[60px] xxs:ml-0" : 
-              navbar && !expanded ? "ml-[10rem] xxs:ml-[60px]" :
+              navbar && !expanded ? "ml-[60px] xxs:ml-[60px]" : 
+              !navbar && !expanded ? "ml-[60px] xxs:ml-0" :
               expanded && 'ml-0'
             }`}
             id="dark"
