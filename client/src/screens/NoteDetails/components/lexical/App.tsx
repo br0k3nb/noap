@@ -127,7 +127,6 @@ export default function App({ notes }: Props): JSX.Element {
     theme: PlaygroundEditorTheme,
   };
 
-
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
     
@@ -139,8 +138,8 @@ export default function App({ notes }: Props): JSX.Element {
 
         const editorState = editor.parseEditorState(JSON.parse(notes[noteContext?.selectedNote as number].state));
         editor.setEditorState(editorState);
-        editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);  
-      }, 0); 
+        editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
+      }); 
     }
   };
 

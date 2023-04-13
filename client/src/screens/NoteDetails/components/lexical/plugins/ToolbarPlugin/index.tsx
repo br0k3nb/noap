@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef, useContext } from "react";
 
 import type { LexicalEditor, NodeKey } from "lexical";
 
@@ -83,7 +83,8 @@ import {
   InsertImagePayload,
 } from '../ImagesPlugin';
 import { InsertPollDialog } from "../PollPlugin";
-import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
+
+import { ExpandedContext } from "../../../..";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -404,6 +405,8 @@ export default function ToolbarPlugin() {
   const [codeLanguage, setCodeLanguage] = useState<string>('');
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
 
+  const [screenSize, setScreenSize] = useState<number>(0);
+
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
 
@@ -602,13 +605,18 @@ export default function ToolbarPlugin() {
     [activeEditor, selectedElementKey],
   );
 
-  const insertGifOnClick = (payload: InsertImagePayload) => {
-    activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
-  };
+  const noteIsExpanded = useContext(ExpandedContext);
+
+  addEventListener(
+    "resize", () => {
+    setScreenSize(!noteIsExpanded?.expanded ? window.outerWidth - 60 - 380 : 0);
+  });
 
   return (
-    //@ts-ignore
-    <div className="toolbar !h-10 !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent">
+    <div 
+      className="toolbar !h-11 !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
+      style={screenSize !== 0 ? {width: screenSize}: undefined}
+    >
       <button
         disabled={!canUndo || !isEditable}
         onClick={() => {

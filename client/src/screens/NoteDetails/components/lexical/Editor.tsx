@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
@@ -8,7 +8,7 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+// import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -16,7 +16,7 @@ import { EditorState, LexicalEditor } from "lexical";
 
 import { useSettings } from "./context/SettingsContext";
 import { useSharedHistoryContext } from "./context/SharedHistoryContext";
-import AutocompletePlugin from "./plugins/AutocompletePlugin";
+// import AutocompletePlugin from "./plugins/AutocompletePlugin";
 import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import ClickableLinkPlugin from "./plugins/ClickableLinkPlugin";
@@ -31,7 +31,7 @@ import EquationsPlugin from "./plugins/EquationsPlugin";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
 import HorizontalRulePlugin from "./plugins/HorizontalRulePlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
-import KeywordsPlugin from "./plugins/KeywordsPlugin";
+// import KeywordsPlugin from "./plugins/KeywordsPlugin";
 import LinkPlugin from "./plugins/LinkPlugin";
 import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
@@ -75,6 +75,8 @@ type CustomSaveComp = {
 const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: Props, ref) => {
   const [editor] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
+
+  const [screenSize, setScreenSize] = useState(0);
   
   const {
     settings: { isCharLimit, isCharLimitUtf8, isRichText },
@@ -97,10 +99,16 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
       window.removeEventListener("resize", updateViewPortWidth);
     };
   }, [isSmallWidthViewport]);
+  
+  addEventListener(
+    "resize", () => {
+      setScreenSize(window.outerWidth > 1030 ? window.outerWidth - 60 - 380 : 0);
+  });
 
   return (
     <div className="!h-screen !w-screen"> 
-      <ToolbarPlugin />
+      <ToolbarPlugin/>
+
       <div className="editor-container plain-text">
         <DragDropPaste />
         {/* <ClearEditorPlugin /> */}
@@ -126,13 +134,17 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
                       scrollbar-thumb-gray-900
                       `
                     }
-                    style={window.outerWidth <= 640 ? {
-                      height: window.outerHeight - 100
-                    } : undefined}
+                    style={{
+                      height: window.outerHeight - 170
+                    }}
                   >
                     <TitleInput register={register} />
                     <div 
-                      className="xxs:mb-16 mb-7 !w-3/4 xxs:!w-[100%]"
+                      className="xxs:mb-16 mb-7 "
+                      style={screenSize !== 0 ? 
+                        {width: screenSize} : 
+                        {width: window.outerWidth > 1030 ? window.outerWidth - 60 - 380: '100%'}
+                      }
                     >
                       <ContentEditable />
                     </div>
