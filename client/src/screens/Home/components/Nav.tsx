@@ -108,7 +108,7 @@ export default function Nav({
             />
             <label htmlFor="my-modal-4" className="modal cursor-pointer">
               <label 
-                className="modal-box !px-0 !text-gray-100 relative lg:!w-[420px] max-w-none !w-96 max-h-none !h-[19rem] !bg-gray-800 !font-light" 
+                className="modal-box !px-0 !text-gray-100 relative lg:!w-[420px] max-w-none !w-80 sm:!w-96 max-h-none !h-[19rem] !bg-gray-800 !font-light" 
               >
                 <div className="flex flex-row justify-between pb-2 px-8">
                   <h3 className="text-[21.5px] tracking-tighter">Account settings</h3>
@@ -121,17 +121,17 @@ export default function Nav({
                   </label>
                 </div>
                 <div className='bg-gray-600 !h-[1px] mt-3' />
-                <div className="flex flex-col text-[17px] space-y-3 mt-5">
+                <div className="flex flex-col text-[17px] xxs:text-[14px] space-y-3 mt-5">
                   <button className='w-full'>
                     <div className="py-3 hover:bg-gray-500">
-                      <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[8rem] sm:mr-[8rem]">
+                      <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[5.5rem] sm:mr-[8rem]">
                         <BiUserCircle className='inline' size={30}/>
                         <span>Change profile picture</span>  
                       </div>
                     </div>
                   </button>
                   <button className='py-3 w-full  hover:bg-gray-500'>
-                    <div className="flex-flex-row space-x-2 lg:mr-[8.2rem] xxs:mr-[6.8rem] sm:mr-[6.8rem]">
+                    <div className="flex-flex-row space-x-2 lg:mr-[8.2rem] xxs:mr-[4.5rem] sm:mr-[6.8rem]">
                       <BiLock className='inline' size={30}/>
                       <span>Change login information</span>  
                     </div>
@@ -140,7 +140,7 @@ export default function Nav({
                     className='pt-3 pb-2 w-full  hover:bg-gray-500'
                     onClick={() => handleSignout()}
                   >
-                    <div className="flex-flex-row space-x-2 lg:mr-[16.7rem] xxs:mr-[15.5rem] sm:mr-[15.5rem]">
+                    <div className="flex-flex-row space-x-2 lg:mr-[16.7rem] xxs:mr-[11.5rem] sm:mr-[15.5rem]">
                       <BiLogIn className='inline' size={30}/>
                       <span>Sign out</span>  
                     </div>
