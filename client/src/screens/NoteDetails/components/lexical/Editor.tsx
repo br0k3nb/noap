@@ -135,12 +135,12 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
                       `
                     }
                     style={{
-                      height: window.outerHeight - 170
+                      height: window.outerWidth > 640 ? window.outerHeight - 240 : window.outerHeight - 200
                     }}
                   >
                     <TitleInput register={register} />
                     <div 
-                      className="xxs:mb-16 mb-7 "
+                      className="xxs:mb-5 mb-0"
                       style={screenSize !== 0 ? 
                         {width: screenSize} : 
                         {width: window.outerWidth > 1030 ? window.outerWidth - 60 - 380: '100%'}

@@ -64,6 +64,7 @@ export default function Home(): JSX.Element {
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
   const [wasChanged, setWasChanged] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [newNote, setNewNote] = useState(false);
   const [navbar, setNavbar] = useState(false);
   
   const navigate = useNavigate();
@@ -115,6 +116,8 @@ export default function Home(): JSX.Element {
   };
 
   const addNewNote = async () => {
+    setNewNote(true);
+
     const defaultLexicalState =
       '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
@@ -131,16 +134,7 @@ export default function Home(): JSX.Element {
       );
 
       setWasChanged(!wasChanged);
-
-      append({
-        _id: String(fields.length), //setting a temporary _id for now. the real _id will be fetched from the db
-        title: "Untitled",
-        body: "",
-        image: "no image attached",
-        state: defaultLexicalState,
-        userId: parsedUserToken._id as string,
-        createdAt: new Date().toISOString(),
-      });
+      setNewNote(false);
     } catch (err: any) {
       console.log(err);
       toastAlert({
@@ -186,10 +180,10 @@ export default function Home(): JSX.Element {
         {/* @ts-ignore */}
         <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
           <Nav 
-            navbar={navbar} 
-            setNavbar={setNavbar} 
+            navbar={navbar}
             addNewNote={addNewNote} 
             expanded={expanded}
+            newNote={newNote}
             handleSignout={handleSignout}
           />
           <div

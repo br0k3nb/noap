@@ -49,7 +49,7 @@ export function toastAlert ({icon, title, text, timer, confirmButton, position}:
             showConfirmButton: confirmButton === undefined ? (false) : confirmButton,
             position: position !== undefined ? (position): 'bottom-right',
             customClass: {
-              popup: 'colored-toast'
+                popup: 'colored-toast'
             },
             timer: timer,
             timerProgressBar: true

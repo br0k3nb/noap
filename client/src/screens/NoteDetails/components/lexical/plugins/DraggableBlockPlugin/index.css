@@ -28,11 +28,11 @@
 .draggable-block-target-line {
   pointer-events: none;
   background: deepskyblue;
-  margin-top: 100px;
+  margin-top: 46px !important;
   height: 5px;
-  width: 600px !important;
+  width: 500px !important;
   position: absolute;
-  left: 445px;
+  left: 3px;
   top: 0;
   opacity: 0;
   will-change: transform;

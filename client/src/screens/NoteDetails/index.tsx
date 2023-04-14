@@ -175,8 +175,8 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               </ExpandedContext.Provider>
             </div>
           ) : (
-            <div className="flex flex-col justify-self-center mr-96">
-              <div className="mt-[21%] mx-auto">
+            <div className="flex flex-col justify-self-center mr-[28rem]">
+              <div className="mt-[24%] mx-auto">
                 <div className="flex mx-20 mb-5">
                   <BsJournalRichtext size={166} className="text-gray-500" />
                 </div>

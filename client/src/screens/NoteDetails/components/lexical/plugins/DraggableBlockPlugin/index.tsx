@@ -99,14 +99,14 @@ function getBlockElement(
 
   if((blockElem as any)?.children[0].parentElement.className ===
    "PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr") {
-    customMargin = '105';
+    customMargin = '47';
   }
 
   else if ((blockElem as any)?.children[0].className.startsWith('PlaygroundEditorTheme__listItem')) {
-    customMargin = `${(blockElem as any)?.clientHeight / 2 + 95}`
+    customMargin = `${(blockElem as any)?.clientHeight / 2 + 25}`
   }
   
-  else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 95}`;
+  else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 30}`;
 
   return blockElem;
 }
