@@ -16,8 +16,8 @@ export default function TextInput({
   'data-test-id': dataTestId,
 }: Props): JSX.Element {
   return (
-    <div className="Input__wrapper">
-      <label className="Input__label">{label}</label>
+    <div className="Input__wrapper ">
+      <label className="Input__label !text-gray-200">{label}</label>
       <input
         type="text"
         className="Input__input"

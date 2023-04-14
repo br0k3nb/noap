@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef, useContext } from "react";
+import { useCallback, useEffect, useState, useContext } from "react";
 
 import type { LexicalEditor, NodeKey } from "lexical";
 
@@ -246,7 +246,7 @@ function BlockFormatDropDown({
     <DropDown
       disabled={disabled}
       buttonClassName="toolbar-item block-controls"
-      buttonIconClassName={"icon block-type " + blockType}
+      buttonIconClassName={"icon comp-picker block-type " + blockType}
       buttonLabel={blockTypeToBlockName[blockType]}
       buttonAriaLabel="Formatting options for text style"
     >
@@ -254,63 +254,63 @@ function BlockFormatDropDown({
         className={"item " + dropDownActiveClass(blockType === "paragraph")}
         onClick={formatParagraph}
       >
-        <i className="icon paragraph" />
+        <i className="icon paragraph comp-picker" />
         <span className="text">Normal</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "h1")}
         onClick={() => formatHeading("h1")}
       >
-        <i className="icon h1" />
+        <i className="icon h1 comp-picker" />
         <span className="text">Heading 1</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "h2")}
         onClick={() => formatHeading("h2")}
       >
-        <i className="icon h2" />
+        <i className="icon h2 comp-picker" />
         <span className="text">Heading 2</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "h3")}
         onClick={() => formatHeading("h3")}
       >
-        <i className="icon h3" />
+        <i className="icon h3 comp-picker" />
         <span className="text">Heading 3</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "bullet")}
         onClick={formatBulletList}
       >
-        <i className="icon bullet-list" />
+        <i className="icon bullet-list comp-picker" />
         <span className="text">Bullet List</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "number")}
         onClick={formatNumberedList}
       >
-        <i className="icon numbered-list" />
+        <i className="icon numbered-list comp-picker" />
         <span className="text">Numbered List</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "check")}
         onClick={formatCheckList}
       >
-        <i className="icon check-list" />
+        <i className="icon check-list comp-picker" />
         <span className="text">Check List</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "quote")}
         onClick={formatQuote}
       >
-        <i className="icon quote" />
+        <i className="icon quote comp-picker" />
         <span className="text">Quote</span>
       </DropDownItem>
       <DropDownItem
         className={"item " + dropDownActiveClass(blockType === "code")}
         onClick={formatCode}
       >
-        <i className="icon code" />
+        <i className="icon code comp-picker" />
         <span className="text">Code Block</span>
       </DropDownItem>
     </DropDown>
@@ -318,7 +318,7 @@ function BlockFormatDropDown({
 }
 
 function Divider(): JSX.Element {
-  return <div className="divider !my-auto" />;
+  return <div className="divider !my-auto !bg-gray-500" />;
 }
 
 function FontDropDown({
@@ -357,14 +357,14 @@ function FontDropDown({
       buttonClassName={"toolbar-item " + style}
       buttonLabel={value}
       buttonIconClassName={
-        style === "font-family" ? "icon block-type font-family" : ""
+        style === "font-family" ? "icon block-type font-family comp-picker" : ""
       }
       buttonAriaLabel={buttonAriaLabel}
     >
       {(style === "font-family" ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
         ([option, text]) => (
           <DropDownItem
-            className={`item ${dropDownActiveClass(value === option)} ${
+            className={`bg-gray-800 hover:!bg-gray-600 item ${dropDownActiveClass(value === option)} ${
               style === "font-size" ? "fontsize-item" : ""
             }`}
             onClick={() => handleClick(option)}
@@ -760,7 +760,7 @@ export default function ToolbarPlugin() {
             disabled={!isEditable}
             buttonClassName="toolbar-item color-picker"
             buttonAriaLabel="Formatting background color"
-            buttonIconClassName="icon bg-color"
+            buttonIconClassName="icon bg-color comp-picker"
             color={bgColor}
             onChange={onBgColorSelect}
             title="bg color"
@@ -770,7 +770,7 @@ export default function ToolbarPlugin() {
             buttonClassName="toolbar-item spaced"
             buttonLabel=""
             buttonAriaLabel="Formatting options for additional text styles"
-            buttonIconClassName="icon dropdown-more"
+            buttonIconClassName="icon dropdown-more comp-picker"
           >
             <DropDownItem
               onClick={() => {
@@ -783,7 +783,7 @@ export default function ToolbarPlugin() {
               title="Strikethrough"
               aria-label="Format text with a strikethrough"
             >
-              <i className="icon strikethrough" />
+              <i className="icon strikethrough comp-picker" />
               <span className="text">Strikethrough</span>
             </DropDownItem>
             <DropDownItem
@@ -794,7 +794,7 @@ export default function ToolbarPlugin() {
               title="Subscript"
               aria-label="Format text with a subscript"
             >
-              <i className="icon subscript" />
+              <i className="icon subscript comp-picker" />
               <span className="text">Subscript</span>
             </DropDownItem>
             <DropDownItem
@@ -808,7 +808,7 @@ export default function ToolbarPlugin() {
               title="Superscript"
               aria-label="Format text with a superscript"
             >
-              <i className="icon superscript" />
+              <i className="icon superscript comp-picker" />
               <span className="text">Superscript</span>
             </DropDownItem>
             <DropDownItem
@@ -817,7 +817,7 @@ export default function ToolbarPlugin() {
               title="Clear text formatting"
               aria-label="Clear all text formatting"
             >
-              <i className="icon clear" />
+              <i className="icon clear comp-picker" />
               <span className="text">Clear Formatting</span>
             </DropDownItem>
           </DropDown>
@@ -827,7 +827,7 @@ export default function ToolbarPlugin() {
             buttonClassName="toolbar-item spaced"
             buttonLabel="Insert"
             buttonAriaLabel="Insert specialized editor node"
-            buttonIconClassName="icon plus"
+            buttonIconClassName="icon plus comp-picker"
           >
             <DropDownItem
               onClick={() => {
@@ -838,7 +838,7 @@ export default function ToolbarPlugin() {
               }}
               className="item"
             >
-              <i className="icon horizontal-rule" />
+              <i className="icon horizontal-rule comp-picker" />
               <span className="text">Horizontal Rule</span>
             </DropDownItem>
             <DropDownItem
@@ -849,7 +849,7 @@ export default function ToolbarPlugin() {
                 );
               }}
               className="item">
-              <i className="icon diagram-2" />
+              <i className="icon diagram-2 comp-picker" />
               <span className="text">Excalidraw</span>
             </DropDownItem>
             <DropDownItem
@@ -862,7 +862,7 @@ export default function ToolbarPlugin() {
                 ));
               }}
               className="item">
-              <i className="icon image" />
+              <i className="icon image comp-picker" />
               <span className="text">Image</span>
             </DropDownItem>
             <DropDownItem
@@ -876,7 +876,7 @@ export default function ToolbarPlugin() {
               }}
               className="item"
             >
-              <i className="icon poll" />
+              <i className="icon poll comp-picker" />
               <span className="text">Poll</span>
             </DropDownItem>
             <DropDownItem
@@ -890,7 +890,7 @@ export default function ToolbarPlugin() {
               }}
               className="item"
             >
-              <i className="icon equation" />
+              <i className="icon equation comp-picker" />
               <span className="text">Equation</span>
             </DropDownItem>
             <DropDownItem
@@ -903,7 +903,7 @@ export default function ToolbarPlugin() {
                 });
               }}
               className="item">
-              <i className="icon sticky" />
+              <i className="icon sticky comp-picker" />
               <span className="text">Sticky Note</span>
             </DropDownItem>
             <DropDownItem
@@ -912,7 +912,7 @@ export default function ToolbarPlugin() {
               }}
               className="item"
             >
-              <i className="icon caret-right" />
+              <i className="icon caret-right comp-picker" />
               <span className="text">Collapsible container</span>
             </DropDownItem>
             {EmbedConfigs.map((embedConfig) => (
@@ -937,7 +937,7 @@ export default function ToolbarPlugin() {
       <DropDown
         disabled={!isEditable}
         buttonLabel="Align"
-        buttonIconClassName="icon left-align"
+        buttonIconClassName="icon left-align comp-picker"
         buttonClassName="toolbar-item spaced alignment"
         buttonAriaLabel="Formatting options for text alignment"
       >
@@ -947,7 +947,7 @@ export default function ToolbarPlugin() {
           }}
           className="item"
         >
-          <i className="icon left-align" />
+          <i className="icon left-align comp-picker" />
           <span className="text">Left Align</span>
         </DropDownItem>
         <DropDownItem
@@ -956,7 +956,7 @@ export default function ToolbarPlugin() {
           }}
           className="item"
         >
-          <i className="icon center-align" />
+          <i className="icon center-align comp-picker" />
           <span className="text">Center Align</span>
         </DropDownItem>
         <DropDownItem
@@ -965,7 +965,7 @@ export default function ToolbarPlugin() {
           }}
           className="item"
         >
-          <i className="icon right-align" />
+          <i className="icon right-align comp-picker" />
           <span className="text">Right Align</span>
         </DropDownItem>
         <DropDownItem
@@ -974,17 +974,19 @@ export default function ToolbarPlugin() {
           }}
           className="item"
         >
-          <i className="icon justify-align" />
+          <i className="icon justify-align comp-picker" />
           <span className="text">Justify Align</span>
         </DropDownItem>
-        <Divider />
+        <div className="my-2 px-1">
+          <Divider />
+        </div>
         <DropDownItem
           onClick={() => {
             activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
           }}
           className="item"
         >
-          <i className={"icon " + (isRTL ? "indent" : "outdent")} />
+          <i className={"icon comp-picker " + (isRTL ? "indent" : "outdent")} />
           <span className="text">Outdent</span>
         </DropDownItem>
         <DropDownItem
@@ -993,7 +995,7 @@ export default function ToolbarPlugin() {
           }}
           className="item"
         >
-          <i className={"icon " + (isRTL ? "outdent" : "indent")} />
+          <i className={"icon comp-picker " + (isRTL ? "outdent" : "indent")} />
           <span className="text">Indent</span>
         </DropDownItem>
       </DropDown>

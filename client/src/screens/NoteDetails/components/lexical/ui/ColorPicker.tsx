@@ -113,7 +113,7 @@ export default function ColorPicker({
   return (
     <DropDown {...rest} disabled={disabled} stopCloseOnClickSelf={true}>
       <div
-        className="color-picker-wrapper"
+        className="color-picker-wrapper !text-gray-200"
         style={{ width: WIDTH }}
         ref={innerDivRef}
       >

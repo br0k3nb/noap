@@ -1,40 +1,40 @@
 .colored-toast.swal2-icon-success {
     background-color: rgb(31 41 55) !important;
     @media only screen and (max-device-width: 640px) {
-      width: 170px !important;
-      font-size: 11px;
+      width: 200px !important;
+      font-size: 12px;
     };
 }
 
 .colored-toast.swal2-icon-error {
     background-color: rgb(172, 8, 8) !important;
     @media only screen and (max-device-width: 640px) {
-        width: 170px !important;
-        font-size: 11px;
+        width: 200px !important;
+        font-size: 12px;
     };
 }
 
 .colored-toast.swal2-icon-warning {
     background-color: #f8bb86 !important;
     @media only screen and (max-device-width: 640px) {
-        width: 170px !important;
-        font-size: 11px;
+        width: 200px !important;
+        font-size: 12px;
     };
 }
 
 .colored-toast.swal2-icon-info {
     background-color: #3fc3ee !important;
     @media only screen and (max-device-width: 640px) {
-        width: 170px !important;
-        font-size: 11px;
+        width: 200px !important;
+        font-size: 12px;
     };
 }
 
 .colored-toast.swal2-icon-question {
     background-color: #87adbd !important;
     @media only screen and (max-device-width: 640px) {
-        width: 170px !important;
-        font-size: 11px;
+        width: 200px !important;
+        font-size: 12px;
     };
 }
 

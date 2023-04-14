@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import type {LexicalEditor} from 'lexical';
+import type { LexicalEditor } from 'lexical';
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -69,15 +69,15 @@ export default function ImageResizer({
     ? maxWidth
     : editorRootElement !== null
     ? editorRootElement.getBoundingClientRect().width - 20
-    : 100;
+    : 200;
 
   const maxHeightContainer =
     editorRootElement !== null
       ? editorRootElement.getBoundingClientRect().height - 20
-      : 100;
+      : 200;
 
-  const minWidth = 100;
-  const minHeight = 100;
+  const minWidth = 200;
+  const minHeight = 200;
 
   const setStartCursor = (direction: number) => {
     const ew = direction === Direction.east || direction === Direction.west;
@@ -259,49 +259,49 @@ export default function ImageResizer({
         </button>
       )}
       <div
-        className="image-resizer image-resizer-n"
+        className="image-resizer image-resizer-n xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north);
         }}
       />
       <div
-        className="image-resizer image-resizer-ne"
+        className="image-resizer image-resizer-ne xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north | Direction.east);
         }}
       />
       <div
-        className="image-resizer image-resizer-e"
+        className="image-resizer image-resizer-e xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.east);
         }}
       />
       <div
-        className="image-resizer image-resizer-se"
+        className="image-resizer image-resizer-se xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south | Direction.east);
         }}
       />
       <div
-        className="image-resizer image-resizer-s"
+        className="image-resizer image-resizer-s xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south);
         }}
       />
       <div
-        className="image-resizer image-resizer-sw"
+        className="image-resizer image-resizer-sw xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.south | Direction.west);
         }}
       />
       <div
-        className="image-resizer image-resizer-w"
+        className="image-resizer image-resizer-w xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.west);
         }}
       />
       <div
-        className="image-resizer image-resizer-nw"
+        className="image-resizer image-resizer-nw xxs:!w-3 xxs:!h-3 xxs:rounded-full"
         onPointerDown={(event) => {
           handlePointerDown(event, Direction.north | Direction.west);
         }}

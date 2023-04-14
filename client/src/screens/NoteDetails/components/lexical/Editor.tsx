@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef, forwardRef } from "react";
+import { useState, useEffect, forwardRef, useContext } from "react";
 
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
+// import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+// import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
+// import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+// import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 // import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
@@ -33,13 +33,13 @@ import HorizontalRulePlugin from "./plugins/HorizontalRulePlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 // import KeywordsPlugin from "./plugins/KeywordsPlugin";
 import LinkPlugin from "./plugins/LinkPlugin";
-import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
-import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
-import { MaxLengthPlugin } from "./plugins/MaxLengthPlugin";
-import MentionsPlugin from "./plugins/MentionsPlugin";
+// import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
+// import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
+// import { MaxLengthPlugin } from "./plugins/MaxLengthPlugin";
+// import MentionsPlugin from "./plugins/MentionsPlugin";
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
 import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
-import PollPlugin from "./plugins/PollPlugin";
+// import PollPlugin from "./plugins/PollPlugin";
 import TabFocusPlugin from "./plugins/TabFocusPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import FigmaPlugin from "./plugins/FigmaPlugin";
@@ -52,6 +52,7 @@ import YouTubePlugin from "./plugins/YouTubePlugin";
 
 import { AiFillSave } from "react-icons/ai";
 import { UseFormRegister, FieldValues } from "react-hook-form";
+import { ExpandedContext } from "../..";
 
 import "./index.css";
 
@@ -64,6 +65,8 @@ type Props = {
 
 type TitleProps = {
   register: UseFormRegister<FieldValues>;
+  screenSize: number;
+  noteCtx: any;
 };
 
 type CustomSaveComp = {
@@ -75,13 +78,14 @@ type CustomSaveComp = {
 const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: Props, ref) => {
   const [editor] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
-
+  
+  const noteExpanded = useContext(ExpandedContext);
   const [screenSize, setScreenSize] = useState(0);
   
   const {
-    settings: { isCharLimit, isCharLimitUtf8, isRichText },
+    settings: { isRichText },
   } = useSettings();
-  
+
   const placeholder = <Placeholder>Enter some text</Placeholder>;
   
   const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
@@ -100,6 +104,10 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
     };
   }, [isSmallWidthViewport]);
   
+  useEffect(() => {
+    setScreenSize(window.outerWidth > 1030 && noteExpanded?.expanded ? window.outerWidth - 20 : 0);
+  }, [noteExpanded?.expanded]);
+
   addEventListener(
     "resize", () => {
       setScreenSize(window.outerWidth > 1030 ? window.outerWidth - 60 - 380 : 0);
@@ -108,18 +116,18 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
   return (
     <div className="!h-screen !w-screen"> 
       <ToolbarPlugin/>
-
       <div className="editor-container plain-text">
         <DragDropPaste />
         {/* <ClearEditorPlugin /> */}
-        <AutoFocusPlugin />
+        {/* <AutoFocusPlugin /> */}
         <ComponentPickerPlugin />
         <AutoEmbedPlugin />
         <HashtagPlugin />
-        {/* <KeywordsPlugin /> */}
-        <AutoLinkPlugin />
         <EmojisPlugin />
         <EmojiPickerPlugin />
+        <AutoLinkPlugin />
+        {/* <ListPlugin /> */}
+        {/* <ListMaxIndentLevelPlugin maxDepth={7} /> */}
         {isRichText && (
           <>
             <RichTextPlugin
@@ -138,12 +146,16 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
                       height: window.outerWidth > 640 ? window.outerHeight - 240 : window.outerHeight - 200
                     }}
                   >
-                    <TitleInput register={register} />
+                    <TitleInput 
+                      register={register} 
+                      noteCtx={noteExpanded} 
+                      screenSize={screenSize}                   
+                    />
                     <div 
                       className="xxs:mb-5 mb-0"
                       style={screenSize !== 0 ? 
                         {width: screenSize} : 
-                        {width: window.outerWidth > 1030 ? window.outerWidth - 60 - 380: '100%'}
+                        {width: window.outerWidth > 1030 ? window.outerWidth - 455: '100%'}
                       }
                     >
                       <ContentEditable />
@@ -153,7 +165,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
               }
               placeholder={placeholder}
               ErrorBoundary={LexicalErrorBoundary}
-              />
+            />
             <FloatingTextFormatToolbarPlugin />
             <FloatingSaveButton 
               save={save} 
@@ -162,15 +174,13 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
             />
             <CodeActionMenuPlugin />
             <CheckListPlugin />
-            <ListPlugin />
             <ImagesPlugin captionsEnabled={true} />
             <HistoryPlugin externalHistoryState={historyState} />
             <LinkPlugin />
             {/* <AutocompletePlugin /> */}
-            <PollPlugin />
+            {/* <PollPlugin /> */} 
             {/* <MarkdownShortcutPlugin /> */}
             <CodeHighlightPlugin />
-            {/* <ListMaxIndentLevelPlugin maxDepth={7} /> */}
             <TwitterPlugin />
             <YouTubePlugin />
             <FigmaPlugin />
@@ -184,31 +194,30 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
             
             {floatingAnchorElem && (
               <>
-                <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                {window.outerWidth > 640 && (
+                  <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
+                )}
                 <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
               </>
             )}
           </>
         )}
-
-        {(isCharLimit || isCharLimitUtf8) && (
-          <CharacterLimitPlugin 
-            charset={isCharLimit ? "UTF-16" : "UTF-8"}
-            maxLength={5}
-          />
-        )}
       </div>
     </div>
   );
 });
 
-export function TitleInput({register}: TitleProps) {
+export function TitleInput({register, noteCtx, screenSize}: TitleProps) {
   return (
-    <div className="text-2xl mt-8 px-6">
-      <input
-        type="text"
-        className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none"
+    <div 
+      className="text-2xl mt-10 px-6 flex flex-wrap"
+      style={noteCtx?.expanded ? { width: screenSize } : { width: window.outerWidth - 455 }}
+    >
+      <textarea
+        rows={2}
+        wrap="hard"
+        className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none resize-none"
         placeholder=" Enter a title"
         {...register("title")}
       />

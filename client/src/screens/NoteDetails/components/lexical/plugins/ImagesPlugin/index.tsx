@@ -189,7 +189,6 @@ export default function ImagesPlugin({
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    //@ts-ignore
     if (!editor.hasNodes([ImageNode])) {
       throw new Error("ImagesPlugin: ImageNode not registered on editor");
     }
@@ -198,7 +197,6 @@ export default function ImagesPlugin({
       editor.registerCommand<InsertImagePayload>(
         INSERT_IMAGE_COMMAND,
         (payload) => {
-          //@ts-ignore
           const imageNode = $createImageNode(payload);
           $insertNodes([imageNode]);
           if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
@@ -256,22 +254,14 @@ function onDragStart(event: DragEvent): boolean {
     "application/x-lexical-drag",
     JSON.stringify({
       data: {
-        //@ts-ignore
         altText: node.__altText,
-        //@ts-ignore
         caption: node.__caption,
-        //@ts-ignore
         height: node.__height,
-        //@ts-ignore
         key: node.getKey(),
-        //@ts-ignore
         maxWidth: node.__maxWidth,
-        //@ts-ignore
         showCaption: node.__showCaption,
-        //@ts-ignore
         src: node.__src,
-        //@ts-ignore
-        width: 1000,
+        width: node.__width,
       },
       type: "image",
     })
@@ -303,7 +293,6 @@ function onDrop(event: DragEvent, editor: LexicalEditor): boolean {
   event.preventDefault();
   if (canDropImage(event)) {
     const range = getDragSelection(event);
-    //@ts-ignore
     node.remove();
     const rangeSelection = $createRangeSelection();
     if (range !== null && range !== undefined) {
@@ -322,7 +311,6 @@ function getImageNodeInSelection(): ImageNode | null {
   }
   const nodes = selection.getNodes();
   const node = nodes[0];
-  //@ts-ignore
   return $isImageNode(node) ? node : null;
 }
 

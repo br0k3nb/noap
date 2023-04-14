@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -20,11 +12,9 @@ import type {
 } from "lexical";
 
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
-import * as React from "react";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 
-const ImageComponent = React.lazy(
-  // @ts-ignore
+const ImageComponent = lazy(
   () => import("./ImageComponent")
 );
 
@@ -69,7 +59,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   __altText: string;
   __width: "inherit" | number;
   __height: "inherit" | number;
-  __maxWidth: number;
   __showCaption: boolean;
   __caption: LexicalEditor;
   // Captions cannot yet be used within editor cells
@@ -94,8 +83,9 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, width, maxWidth, caption, src, showCaption } =
-      serializedNode;
+    const { altText, height, width, maxWidth, caption, src, showCaption } = 
+    serializedNode;
+
     const node = $createImageNode({
       altText,
       height,
@@ -104,11 +94,12 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       src,
       width,
     });
+
     const nestedEditor = node.__caption;
     const editorState = nestedEditor.parseEditorState(caption.editorState);
-    if (!editorState.isEmpty()) {
-      nestedEditor.setEditorState(editorState);
-    }
+
+    if (!editorState.isEmpty()) nestedEditor.setEditorState(editorState);
+
     return node;
   }
 
@@ -144,7 +135,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     super(key);
     this.__src = src;
     this.__altText = altText;
-    this.__maxWidth = maxWidth;
     this.__width = width || "inherit";
     this.__height = height || "inherit";
     this.__showCaption = showCaption || false;
@@ -181,7 +171,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   // View
-
   createDOM(config: EditorConfig): HTMLElement {
     const span = document.createElement("span");
     const theme = config.theme;
@@ -205,21 +194,24 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   decorate(): JSX.Element {
+  
     return (
-      <Suspense fallback={null}>
-        <ImageComponent
-          src={this.__src}
-          altText={this.__altText}
-          width={this.__width}
-          height={this.__height}
-          maxWidth={this.__maxWidth}
-          nodeKey={this.getKey()}
-          showCaption={this.__showCaption}
-          caption={this.__caption}
-          captionsEnabled={this.__captionsEnabled}
-          resizable={true}
-        />
-      </Suspense>
+     <>
+        <Suspense fallback={null}>
+          {/* @ts-ignore */}
+          <ImageComponent
+            src={this.__src}
+            altText={this.__altText}
+            width={this.__width}
+            height={this.__height}
+            nodeKey={this.getKey()}
+            showCaption={this.__showCaption}
+            caption={this.__caption}
+            captionsEnabled={this.__captionsEnabled}
+            resizable={true}
+          />
+        </Suspense>
+      </>
     );
   }
 }
@@ -227,7 +219,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 export function $createImageNode({
   altText,
   height,
-  maxWidth = 500,
+  maxWidth,
   captionsEnabled,
   src,
   width,
@@ -239,6 +231,7 @@ export function $createImageNode({
     new ImageNode(
       src,
       altText,
+      //@ts-ignore
       maxWidth,
       width,
       height,

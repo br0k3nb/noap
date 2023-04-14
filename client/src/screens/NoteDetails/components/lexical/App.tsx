@@ -10,10 +10,11 @@ import PlaygroundNodes from "./nodes/PlaygroundNodes";
 import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 
-import api from "../../../../services/api";
+import { toastAlert } from "../../../../components/Alert/Alert";
 import { NoteWasChanged } from "../../../Home";
 import { NoteContext } from "../../../Home";
-import { toastAlert } from "../../../../components/Alert/Alert";
+import api from "../../../../services/api";
+import { ExpandedContext } from "../..";
 
 import Editor from "./Editor";
 
@@ -41,18 +42,24 @@ type NoteWasChangedContext = {
 
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
+  const lastExpanded = useRef<boolean | undefined>(false);
   const lastSelectedNotes = useRef<number | undefined>(undefined);
-  
+
   const [ saveSpinner, setSaveSpinner ] = useState(false);
   const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
 
   const noteWasChangedContext = useContext<NoteWasChangedContext | null>(NoteWasChanged);
   const noteContext = useContext(NoteContext);
+  const noteExpanded = useContext(ExpandedContext);
 
   useEffect(() => {
     lastSelectedNotes.current = noteContext?.selectedNote;
     setTimeout(() => setFloatingAnchorElem(editorRef.current));
   }, [noteContext?.selectedNote]);
+
+  useEffect(() => {
+    lastExpanded.current = noteExpanded?.expanded;
+  }, [noteExpanded?.expanded]);
 
   const { reset, register } = useForm({});
 
@@ -130,7 +137,7 @@ export default function App({ notes }: Props): JSX.Element {
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
     
-    if(lastSelectedNotes.current !== noteContext?.selectedNote) {
+    if(lastSelectedNotes.current !== noteContext?.selectedNote || noteExpanded?.expanded !== lastExpanded.current) {
       setTimeout(() => {
         reset({
           title: notes[noteContext?.selectedNote as number].title,
