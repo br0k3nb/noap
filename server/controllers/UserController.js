@@ -23,7 +23,7 @@ export default {
                 const payload = {
                     iss: "login-form",
                     sub: {_id: getUser[0]?._id, name: getUser[0]?.name},
-                    exp: Math.floor(Date.now() / 1000 + 2000),
+                    exp: Math.floor(Date.now() / 1000 + 6.048e+8),
                 };
 
                 const token = jwt.sign(
