@@ -33,6 +33,54 @@ export default function Nav({
 
   return (
     <div className={`${expanded && "hidden"}`}>
+      <input
+        checked={checked}
+        readOnly
+        type="checkbox"
+        className="modal-toggle "
+      />
+      <label htmlFor="my-modal-4" className="modal cursor-pointer">
+        <label 
+          className="modal-box relative !px-0 !text-gray-100 lg:!w-[420px] max-w-none !w-80 sm:!w-96 max-h-none !h-[19rem] !bg-gray-800 !font-light" 
+        >
+          <div className="flex flex-row justify-between pb-2 px-8">
+            <h3 className="text-[21.5px] tracking-tighter">Account settings</h3>
+            <label 
+              htmlFor="my-modal-4" 
+              className="btn btn-sm btn-circle"
+              onClick={() => setChecked(false)}
+            >
+              ✕
+            </label>
+          </div>
+          <div className='bg-gray-600 !h-[1px] mt-3' />
+          <div className="flex flex-col text-[17px] xxs:text-[14px] space-y-3 mt-5">
+            <button className='w-full disabled:opacity-50 disabled:cursor-not-allowed' disabled={true}>
+              <div className="py-3 hover:bg-gray-500">
+                <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[5.5rem] sm:mr-[8rem]">
+                  <BiUserCircle className='inline' size={30}/>
+                  <span>Change profile picture</span>  
+                </div>
+              </div>
+            </button>
+            <button className='py-3 w-full  hover:bg-gray-500'>
+              <div className="flex-flex-row space-x-2 lg:mr-[8.2rem] xxs:mr-[4.5rem] sm:mr-[6.8rem]">
+                <BiLock className='inline' size={30}/>
+                <span>Change login information</span>  
+              </div>
+            </button>
+            <button 
+              className='pt-3 pb-2 w-full  hover:bg-gray-500'
+              onClick={() => handleSignout()}
+            >
+              <div className="flex-flex-row space-x-2 lg:mr-[16.7rem] xxs:mr-[11.5rem] sm:mr-[15.5rem]">
+                <BiLogIn className='inline' size={30}/>
+                <span>Sign out</span>  
+              </div>
+            </button>
+          </div>
+        </label>
+      </label>
       <div
         className={`fixed ${
           !navbar && "flex xxs:hidden"
@@ -99,73 +147,8 @@ export default function Nav({
                 </li>
               </ul>
             </div>
-
-            <input
-              checked={checked}
-              readOnly
-              type="checkbox"
-              className="modal-toggle "
-            />
-            <label htmlFor="my-modal-4" className="modal cursor-pointer">
-              <label 
-                className="modal-box !px-0 !text-gray-100 lg:!w-[420px] max-w-none !w-80 sm:!w-96 max-h-none !h-[19rem] !bg-gray-800 !font-light" 
-              >
-                <div className="flex flex-row justify-between pb-2 px-8">
-                  <h3 className="text-[21.5px] tracking-tighter">Account settings</h3>
-                  <label 
-                    htmlFor="my-modal-4" 
-                    className="btn btn-sm btn-circle"
-                    onClick={() => setChecked(false)}
-                  >
-                    ✕
-                  </label>
-                </div>
-                <div className='bg-gray-600 !h-[1px] mt-3' />
-                <div className="flex flex-col text-[17px] xxs:text-[14px] space-y-3 mt-5">
-                  <button className='w-full disabled:opacity-50 disabled:cursor-not-allowed' disabled={true}>
-                    <div className="py-3 hover:bg-gray-500">
-                      <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[5.5rem] sm:mr-[8rem]">
-                        <BiUserCircle className='inline' size={30}/>
-                        <span>Change profile picture</span>  
-                      </div>
-                    </div>
-                  </button>
-                  <button className='py-3 w-full  hover:bg-gray-500'>
-                    <div className="flex-flex-row space-x-2 lg:mr-[8.2rem] xxs:mr-[4.5rem] sm:mr-[6.8rem]">
-                      <BiLock className='inline' size={30}/>
-                      <span>Change login information</span>  
-                    </div>
-                  </button>
-                  <button 
-                    className='pt-3 pb-2 w-full  hover:bg-gray-500'
-                    onClick={() => handleSignout()}
-                  >
-                    <div className="flex-flex-row space-x-2 lg:mr-[16.7rem] xxs:mr-[11.5rem] sm:mr-[15.5rem]">
-                      <BiLogIn className='inline' size={30}/>
-                      <span>Sign out</span>  
-                    </div>
-                  </button>
-                </div>
-                {/* <div className="mt-3 flex flex-row justify-evenly">
-                    <button
-                      className="bg-gray-800 hover:bg-gray-900 text-gray-100 px-8 py-3 rounded-lg"
-                      onClick={() => setChecked(!checked)}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg"
-                      // onClick={() => removeNote()}
-                    >
-                      Delete
-                    </button>
-                </div> */}
-              </label>
-            </label>
           </div>
-
           <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[98px]"/>
-
           <div className="flex flex-col items-center absolute top-28">
             <div className="tooltip tooltip-right text-gray-300" data-tip="Home">
               <a
@@ -209,7 +192,7 @@ export default function Nav({
                 <BsFillCalendarEventFill className="text-gray-300 " size={22} />
               </a>
             </div>
-            <div className="flex items-center justify-center h-12 pt-1 hover:bg-gray-700 hover:text-gray-300 mt-2">
+            {/* <div className="flex items-center justify-center h-12 pt-1 hover:bg-gray-700 hover:text-gray-300 mt-2">
               <div className="dropdown">
                 <label tabIndex={0} className="px-5 py-4">
                   <div className="tooltip tooltip-right text-gray-300" data-tip="Settings">
@@ -235,7 +218,7 @@ export default function Nav({
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

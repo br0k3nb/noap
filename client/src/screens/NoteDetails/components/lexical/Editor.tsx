@@ -135,7 +135,8 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
                 // @ts-ignore
                 <div className="editor" ref={ref}>
                  <div className={`
-                      overflow-scroll
+                      !overflow-x-hidden
+                      !overflow-y-scroll
                       h-[900px]
                       scrollbar-thin
                       scrollbar-track-transparent

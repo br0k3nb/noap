@@ -99,9 +99,7 @@ function TextFormatFloatingToolbar({
     const popupCharStylesEditorElem = popupCharStylesEditorRef.current;
     const nativeSelection = window.getSelection();
 
-    if (popupCharStylesEditorElem === null) {
-      return;
-    }
+    if (popupCharStylesEditorElem === null) return;
 
     const rootElement = editor.getRootElement();
     if (
@@ -143,6 +141,7 @@ function TextFormatFloatingToolbar({
     editor.getEditorState().read(() => {
       updateTextFormatFloatingToolbar();
     });
+    
     return mergeRegister(
       editor.registerUpdateListener(({editorState}) => {
         editorState.read(() => {
@@ -231,12 +230,12 @@ function TextFormatFloatingToolbar({
           </button>
         </>
       )}
-      <button
+      {/* <button
         onClick={insertComment}
         className={'popup-item spaced insert-comment'}
         aria-label="Insert comment">
         <i className="format add-comment" />
-      </button>
+      </button> */}
     </div>
   );
 }
