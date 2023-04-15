@@ -15,7 +15,7 @@ export default function SignInForm() {
   const navigate = useNavigate();
 
   const { handleSubmit, register } = useForm();
-  const [wasSubmited, setWasSubmitted] = useState(false);
+  const [ wasSubmited, setWasSubmitted ] = useState(false);
 
   // const thereIsATK = JSON.parse(window.localStorage.getItem("user_token") || '{}');
 
@@ -38,9 +38,7 @@ export default function SignInForm() {
     
     try {
       const { login, password } = data;
-      
-      console.log(login, password);
-      
+
       const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
         login,
         password

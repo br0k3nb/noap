@@ -67,7 +67,7 @@ export default function Nav({
                   >
                     <label htmlFor="my-modal-4" className="text-gray-300">
                       <div className="flex flex-row space-x-2">
-                        <p>Account infomation</p>
+                        <p>Account settings</p>
                         <BsFillPersonLinesFill size={19} className="pt-1"/>
                       </div>
                     </label>
@@ -85,7 +85,7 @@ export default function Nav({
                   </a> */}
 
                   <div className="mx-2 border border-transparent border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                  <a
+                  {/* <a
                     className="active:!bg-gray-600 rounded-xl"
                     onClick={() => handleSignout()}
                   >
@@ -95,7 +95,7 @@ export default function Nav({
                         <BsDoorOpenFill size={19} className="pt-1"/>
                       </div>
                     </label>
-                  </a>
+                  </a> */}
                 </li>
               </ul>
             </div>
@@ -104,11 +104,11 @@ export default function Nav({
               checked={checked}
               readOnly
               type="checkbox"
-              className="modal-toggle"
+              className="modal-toggle "
             />
             <label htmlFor="my-modal-4" className="modal cursor-pointer">
               <label 
-                className="modal-box !px-0 !text-gray-100 relative lg:!w-[420px] max-w-none !w-80 sm:!w-96 max-h-none !h-[19rem] !bg-gray-800 !font-light" 
+                className="modal-box !px-0 !text-gray-100 lg:!w-[420px] max-w-none !w-80 sm:!w-96 max-h-none !h-[19rem] !bg-gray-800 !font-light" 
               >
                 <div className="flex flex-row justify-between pb-2 px-8">
                   <h3 className="text-[21.5px] tracking-tighter">Account settings</h3>
@@ -122,7 +122,7 @@ export default function Nav({
                 </div>
                 <div className='bg-gray-600 !h-[1px] mt-3' />
                 <div className="flex flex-col text-[17px] xxs:text-[14px] space-y-3 mt-5">
-                  <button className='w-full'>
+                  <button className='w-full disabled:opacity-50 disabled:cursor-not-allowed' disabled={true}>
                     <div className="py-3 hover:bg-gray-500">
                       <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[5.5rem] sm:mr-[8rem]">
                         <BiUserCircle className='inline' size={30}/>
@@ -176,7 +176,7 @@ export default function Nav({
               </a>
             </div>
             <div
-              className="tooltip tooltip-right text-gray-100 "
+              className={`tooltip tooltip-right text-gray-100 ${newNote && 'tooltip-open'}`}
               data-tip={`${newNote ? "Adding note..." : "Add new note"}`}
             >
               <a

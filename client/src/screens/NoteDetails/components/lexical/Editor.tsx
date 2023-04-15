@@ -209,10 +209,11 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
 });
 
 export function TitleInput({register, noteCtx, screenSize}: TitleProps) {
+  console.log(screenSize);
   return (
     <div 
       className="text-2xl mt-10 px-6 flex flex-wrap"
-      style={noteCtx?.expanded ? { width: screenSize } : { width: window.outerWidth - 455 }}
+      style={noteCtx?.expanded ? { width: window.outerWidth - 22 } : { width: window.outerWidth - 455 }}
     >
       <textarea
         rows={2}

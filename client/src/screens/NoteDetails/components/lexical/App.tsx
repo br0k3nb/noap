@@ -155,7 +155,7 @@ export default function App({ notes }: Props): JSX.Element {
       <SharedHistoryContext>
         <TableContext>
           <SharedAutocompleteContext>
-            <div className="editor-shell h-screen overflow-hidden w-fit !absolute">
+            <div className="editor-shell h-screen overflow-hidden w-fit !absolute z-0">
               {/* @ts-ignore */}
               <UpdatePlugin />
               <Editor
