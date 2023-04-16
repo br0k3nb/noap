@@ -85,11 +85,9 @@ export default function Home(): JSX.Element {
     if (Object.keys(parsedUserToken).length === 0) return navigate("/");
     setBlurFlag(false);
 
-    // https://noap-typescript-api.vercel.app
-
     try {
       const notes = await api.get(
-        `/notes/${parsedUserToken._id}/${parsedUserToken.token}`
+        `https://noap-typescript-api.vercel.app/notes/${parsedUserToken._id}/${parsedUserToken.token}`
       );
 
       if (fields.length === 0) append(notes.data);
