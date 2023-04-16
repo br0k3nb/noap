@@ -112,9 +112,9 @@ export default function SignUpForm () {
                   </button>
 
                   <div>
-                    <p className="text-md xxs:text-sm text-gray-300">
+                    <p className="text-md xxs:text-sm text-gray-300 text-[12px] xxs:!text-[10px] uppercase tracking-widest mt-2">
                       Already have an account ?
-                      <a href="/" className="text-red-600 ml-1">
+                      <a href="/" className="text-red-600 hover:text-red-700 ml-1">
                         Sign In
                       </a>
                     </p>

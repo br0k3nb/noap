@@ -1,5 +1,8 @@
-import noapLogo from '../assets/logo/logo-white-no-bg.png';
 import { useForm } from 'react-hook-form';
+import { motion } from 'framer-motion';
+
+import noapLogo from '../assets/logo/logo-white-no-bg.png';
+import forgotPassword from '../assets/forgot-password.svg';
 
 type Props = {}
 
@@ -11,49 +14,53 @@ export default function LoginHelp({}: Props) {
   // };
 
   return (
-    <div className="!bg-gray-800 h-screen">
-      <div className="flex flex-row justify-between w-screen bg-stone-900 pb-2">
-        <img src={noapLogo} className='w-32 pl-5 pt-2' draggable={false}/> 
+    <div className="!bg-gray-800 h-screen overflow-scroll">
+      <div className="flex flex-row justify-between w-screen bg-stone-900 pb-3 pt-1 fixed z-10">
+        <img src={noapLogo} className='w-[8rem] pl-5 pt-2' draggable={false}/> 
         <a
-          className='text-gray-200 text-sm font-light tracking-widest uppercase pt-[8.5px] px-3 mr-5 mt-[9px] h-10 rounded-lg hover:!bg-red-700 border border-gray-500 transition duration-300 ease-out'
+          className='text-gray-200 text-sm font-light tracking-widest uppercase pt-[7.5px] px-3 mr-5 mt-[9px] h-9 rounded-full hover:!bg-red-700 border border-gray-500 hover:px-[0.86rem] transition-all duration-500 ease-in-out'
           href='/'
         >
           Sign In
         </a>
       </div>
-      <div 
-        className="flex flex-col lg:!w-[82%] md:!w-[70%] xxs:w-[80%] xl:!w-[60%] absolute top-[29%] xxs:top-[13%] lg:!left-[9%] md:!left-[14%] xxs:!left-[10%] sm:!left-[12%] xl:!left-[22%]"
+      <motion.div 
+        initial={{ opacity: 0, y: -200 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}  
+        className="flex lg:flex-row flex-col space-x-5 px-6 mx-auto max-w-xl lg:!max-w-6xl mt-28 xxs:mt-12"
       >
-        <div className="text-gray-200 flex flex-col border border-gray-700 !bg-stone-900 rounded-lg shadow-2xl shadow-black">
-          <div className="px-5 py-3 border border-transparent border-b-gray-700">
-            <p className='text-xl lg:text-2xl font-light tracking-tighter'>Reset your password</p>
+        <div className="flex flex-col mt-[4.2rem] w-full text-gray-300">
+          <p className='text-3xl xxs:text-2xl font-light tracking-tight'>Forgot your password ? </p>
+          <p className='text-xl xxs:text-lg font-light tracking-tight mt-2 text-gray-400'>Don't worry, we're gonna help you!</p>
+          <div className="flex flex-col mt-10">
+            <p className='text-lg xxs:text-[15px]'>
+              To restore your password, you need to have access to the email address which you created the account with.
+              <br/>
+              <br/>
+              We will send a verification code to the email address, and you just need to copy and paste on the code text box.
+            </p>
           </div>
-          <div className="px-5 py-4 text-md flex flex-col lg:flex-row justify-between font-light">
-            <div className="my-auto">
-              <p> 
-                Please, enter the email address that you used to sign in to Noap. 
-                <br/><br/> 
-                If the email associated with an account, you will recive a email code that will allow you to reset your password!
-              </p>
-            </div>
-            <div className="flex flex-col !bg-stone-800 px-5 xl:px-7 xxs:px-0 py-5 rounded-lg mt-10 lg:mt-0 xxs:!bg-transparent xxs:!w-[100%] ml-0 lg:ml-4 xl:ml-3">
+          <div className="mt-10 xxs:mt-5">
+            <div className="flex flex-col py-5 rounded-lg mt-3 !max-w-3xl mx-auto">
               <input 
                 type="text" 
-                className='sign-text-inputs bg-stone-600 text-gray-100 border-transparent active:border focus:border-gray-400 lg:!w-[350px]'
+                className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
                 placeholder='Email address'
               />
               <button 
-                className='bg-red-700 hover:bg-red-800 rounded-full mt-4 py-2 text-sm uppercase tracking-widest '
+                className='bg-red-700 hover:bg-red-800 rounded-full mt-4 py-2 text-sm uppercase tracking-widest hover:!text-[13px] transition-all duration-500 ease-in-out'
               >
-                Send
+                Send code
               </button>
             </div>
           </div>
         </div>
-        <div className="mt-8 mx-auto">
-          <p>© 2023 Noap.</p>
-        </div>
+        <img src={forgotPassword} className='xxs:w-[90%] xxs:h-auto w-[600px] h-[620px] mt-0 xxs:mt-5 object-cover opacity-90' draggable={false}/>
+      </motion.div>
+      <div className="flex flex-row justify-center items-center mb-10 uppercase text-xs tracking-wide text-gray-300">
+        <p>© 2023 Noap.</p>
       </div>
-    </div>
+    </div> 
   )
 }

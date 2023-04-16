@@ -64,7 +64,7 @@ export default function SignInForm() {
               
               <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
                 <div className="flex flex-row gap-x-4">
-                  <img src={noapLogo} className='object-cover w-60 xxs:w-44 sm:w-52'/>
+                  <img src={noapLogo} className='object-cover !w-[190px] xxs:w-44 sm:w-52' draggable={false}/>
                 </div>  
               </span>
 
@@ -106,19 +106,19 @@ export default function SignInForm() {
 
                     <p className={`${wasSubmited && 'hidden'} text-[15px] py-[2px] tracking-wide`}>Sign in</p>
                   </button>        
-                  <div className="flex justify-between text-sm mt-2 xxs:flex-col xxs:space-y-2">
-                    <div className='lg:text-[15px]'>
-                      <a href="/help" className="text-gray-300 hover:text-red-600">
-                        Problems logging in ?
-                      </a>
-                    </div>
-                    <div className='lg:text-[15px]'>
+                  <div className="flex flex-col justify-between text-[12px] xxs:text-[10px] mt-2 space-y-2 uppercase tracking-widest">
+                    <div>
                       <p className="text-gray-300">
                         Doesn't have an account?
                         <a href="/sign-up" className="text-red-600 ml-1 hover:text-red-700">
                           Sign Up
                         </a>
                       </p>
+                    </div>
+                    <div>
+                      <a href="/help" className="text-gray-300 hover:text-red-600">
+                        Problems logging in ?
+                      </a>
                     </div>
                   </div>
                 </div>
