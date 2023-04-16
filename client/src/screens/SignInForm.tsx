@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
-// import {useQuery} from 'react-query';
 import { toastAlert } from '../components/Alert/Alert';
 import { motion } from 'framer-motion';
 
-import { BsFillPencilFill } from 'react-icons/bs';
-
 import note from '../assets/main.svg';
+import noapLogo from '../assets/logo/logo-white-no-bg.png'
 
 export default function SignInForm() {
 
@@ -17,21 +15,11 @@ export default function SignInForm() {
   const { handleSubmit, register } = useForm();
   const [ wasSubmited, setWasSubmitted ] = useState(false);
 
-  // const thereIsATK = JSON.parse(window.localStorage.getItem("user_token") || '{}');
+  const thereIsATK = JSON.parse(window.localStorage.getItem("user_token") || '{}');
 
-  // const verifyUser = async () => {
-  //   if(thereIsATK !== null) {
-  //       try {
-  //         await axios.post("http://localhost:3001/verify-user", {
-  //           userToken: thereIsATK.token,
-  //         });
-  //         navigate('/activities');
-  //     } catch (err) {
-  //         toastAlert({icon: 'error', title: `${err?.response?.data?.message}`, timer: 2000});
-  //         window.localStorage.removeItem("user_token");
-  //     }
-  //   }
-  // };
+  useEffect(() => {
+    if(Object.keys(thereIsATK).length > 0) navigate('/home');
+  },[]);
 
   const handleForm = async (data: FieldValues) => {
     setWasSubmitted(true);
@@ -39,7 +27,9 @@ export default function SignInForm() {
     try {
       const { login, password } = data;
 
-      const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
+      // https://noap-typescript-api.vercel.app/sign-in
+
+      const signIn = await axios.post("http://localhost:3001/sign-in", {
         login,
         password
       });
@@ -52,15 +42,14 @@ export default function SignInForm() {
       
     } catch (err: any) {
       setWasSubmitted(false);
-      toastAlert({ icon: 'error', title: 'Error', text: `${err?.response.data.message}`, timer: 2500 })
+      toastAlert({ 
+        icon: 'error',
+        title: 'Error', 
+        text: `${err?.response.data.message ? err?.response.data.message : 'Internal error, please try again or later!'}`,
+        timer: 2500 
+      });
     }
   };
-
-  // const userIsSigned = useQuery(['userIsSigned'], verifyUser, {
-  //   refetchInterval: 1000,
-  //   refetchOnMount: true,
-  //   refetchOnWindowFocus: true,
-  // });
 
   return (
     <motion.div
@@ -77,8 +66,7 @@ export default function SignInForm() {
               
               <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
                 <div className="flex flex-row gap-x-4">
-                  Noap 
-                  <BsFillPencilFill size={29} className="mt-3"/>
+                  <img src={noapLogo} className='object-cover w-60 xxs:w-44 sm:w-52'/>
                 </div>  
               </span>
 
@@ -119,15 +107,21 @@ export default function SignInForm() {
                     </div>
 
                     <p className={`${wasSubmited && 'hidden'} text-[15px] py-[2px] tracking-wide`}>Sign in</p>
-                  </button>
-                  
-                  <div>
-                    <p className="text-md xxs:text-sm text-gray-300">
-                      Doesn't have an account?
-                      <a href="/sign-up" className="text-red-600 ml-1">
-                        Sign Up
+                  </button>        
+                  <div className="flex justify-between text-sm mt-2 xxs:flex-col xxs:space-y-2">
+                    <div className='lg:text-[15px]'>
+                      <a href="/help" className="text-gray-300 hover:text-red-600">
+                        Problems logging in ?
                       </a>
-                    </p>
+                    </div>
+                    <div className='lg:text-[15px]'>
+                      <p className="text-gray-300">
+                        Doesn't have an account?
+                        <a href="/sign-up" className="text-red-600 ml-1 hover:text-red-700">
+                          Sign Up
+                        </a>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </form>

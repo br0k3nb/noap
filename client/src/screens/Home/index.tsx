@@ -64,6 +64,7 @@ export default function Home(): JSX.Element {
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
   const [wasChanged, setWasChanged] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [blurFlag, setBlurFlag] = useState(true);
   const [newNote, setNewNote] = useState(false);
   const [navbar, setNavbar] = useState(false);
   
@@ -77,15 +78,18 @@ export default function Home(): JSX.Element {
   });
 
   const parsedUserToken = JSON.parse(
-    window.localStorage.getItem("user_token") || ""
+    window.localStorage.getItem("user_token") || "{}"
   );
 
   const fetchNotes = async () => {
-    if (parsedUserToken === "") return navigate("/");
+    if (Object.keys(parsedUserToken).length === 0) return navigate("/");
+    setBlurFlag(false);
+
+    // https://noap-typescript-api.vercel.app
 
     try {
       const notes = await api.get(
-        `https://noap-typescript-api.vercel.app/notes/${parsedUserToken._id}/${parsedUserToken.token}`
+        `/notes/${parsedUserToken._id}/${parsedUserToken.token}`
       );
 
       if (fields.length === 0) append(notes.data);
@@ -175,7 +179,7 @@ export default function Home(): JSX.Element {
   });
 
   return (
-    <div className="!h-screen">
+    <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
       <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
         {/* @ts-ignore */}
         <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>

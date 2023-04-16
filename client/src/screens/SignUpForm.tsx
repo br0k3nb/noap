@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
 import axios from "axios";
 import { motion } from 'framer-motion';
-import { BsFillPencilFill } from 'react-icons/bs';
 
 import { toastAlert } from '../components/Alert/Alert';
 
 import note from '../assets/main.svg';
+import noapLogo from '../assets/logo/logo-white-no-bg.png'
+
 
 export default function SignUpForm () {
   
@@ -57,8 +58,7 @@ export default function SignUpForm () {
              
               <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
                 <div className="flex flex-row gap-x-4">
-                  Noap 
-                  <BsFillPencilFill size={29} className="mt-3"/>
+                  <img src={noapLogo} className='object-cover w-60 xxs:w-44 sm:w-52'/>
                 </div>  
               </span>
 
