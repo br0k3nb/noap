@@ -1,24 +1,25 @@
 import mongoose from 'mongoose';
 
 export default new mongoose.Schema({
-    email: {
+    userId: {
         type: String,
         required: true,
     },
-    name: {
+    subject: {
         type: String,
         required: true,
     },
-    profilePicture: {
-        type: String,
-        required: false 
-    },
-    password: {
+    html: {
         type: String,
         required: true,
     },
-    verified: {
-        type: Boolean,
-        required: false
-    }
+    otp: {
+        type: String,
+        required: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    expiresAt: Date,
 });
