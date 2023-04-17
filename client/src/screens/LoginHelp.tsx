@@ -24,10 +24,18 @@ export default function LoginHelp({}: Props) {
 
   const getEmail = async (data: FieldValues) => {
     setLoader(true);
-    reset({email: ''});
-    
+    // reset({email: ''});
+  
     try {
-      const findUser = await api.post('/find-user', {email: data.email});
+      const findUser = await api.post('/find-user', {
+        email: data?.email
+      }, {
+        headers: { 
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Disposition': 'form-data'
+        }
+      });
 
       setLoader(false);
       setTriggerCode(true);
@@ -36,6 +44,7 @@ export default function LoginHelp({}: Props) {
       toastAlert({icon: 'success', title: `${findUser.data.message}`, timer: 2000});
     } catch (err: any) {
       setLoader(false);
+      console.log(err);
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     }
   };
@@ -47,7 +56,13 @@ export default function LoginHelp({}: Props) {
     try {
       const verifyOTP = await api.post('/verify-otp', {
         userId: userId.current,
-        otp: data.code
+        otp: data.code,
+      }, {
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Disposition': 'form-data',
+          "Access-Control-Allow-Origin": "*",
+        }
       });
   
       setLoader(false);
@@ -65,9 +80,15 @@ export default function LoginHelp({}: Props) {
 
     try {
       if(data.password === data.confirmP) {
-        const changePassword = await api.patch('/change-pass', {
+        const changePassword = await api.patch('https://noap-typescript-api.vercel.app/change-pass', {
           userId: userId.current,
           password: data.password
+        }, {
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Disposition': 'form-data',
+            "Access-Control-Allow-Origin": "*",
+          }
         });
     
         setLoader(false);

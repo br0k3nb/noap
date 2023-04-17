@@ -319,13 +319,13 @@ export default function ImageComponent({
   return (
     <Suspense fallback={null}>
       <>
-        <div draggable={draggable}>
+        <div draggable={draggable} className="!object-cover !rounded-lg">
           <LazyImage
             className={
               window.innerWidth > 640 &&
               isFocused
-                ? `focused ${$isNodeSelection(selection) ? "draggable" : ""}`
-                : null
+                ? `focused !rounded-lg ${$isNodeSelection(selection) ? "draggable" : ""}`
+                : '!rounded-lg'
             }
             src={src}
             altText={altText}
@@ -336,7 +336,7 @@ export default function ImageComponent({
           />
         </div>
         {showCaption && (
-          <div className="image-caption-container">
+          <div className="image-caption-container !object-cover">
             <LexicalNestedComposer initialEditor={caption}>
               <AutoFocusPlugin />
               <MentionsPlugin />
@@ -355,7 +355,7 @@ export default function ImageComponent({
               )}
               <RichTextPlugin
                 contentEditable={
-                  <ContentEditable className="ImageNode__contentEditable" />
+                  <ContentEditable className="ImageNode__contentEditable !object-cover" />
                 }
                 placeholder={
                   <Placeholder className="ImageNode__placeholder">
