@@ -43,8 +43,13 @@ export default function LoginHelp() {
       toastAlert({icon: 'success', title: `${findUser.data.message}`, timer: 2000});
     } catch (err: any) {
       setLoader(false);
-      
-      setTimer(err.response.data.spam ? err.response.data.spam : 'maximum');
+      const data = err.response.data;
+
+      setTimer(data?.spam && !data?.code ? data.spam :
+        !data?.spam && data?.code == 500 ? '' :
+        'maximum'
+      );
+
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
     }
   };
