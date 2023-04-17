@@ -199,6 +199,7 @@ export default function Home(): JSX.Element {
             <div className="flex flex-row h-screen">
               <Notes 
                 notes={fields} 
+                addNewNote={addNewNote}
                 isFetching={isFetching}
                 navbar={navbar}
                 setNavbar={setNavbar} 

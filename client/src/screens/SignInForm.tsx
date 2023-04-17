@@ -42,8 +42,7 @@ export default function SignInForm() {
       setWasSubmitted(false);
       toastAlert({ 
         icon: 'error',
-        title: 'Error', 
-        text: `${err?.response.data.message ? err?.response.data.message : 'Internal error, please try again or later!'}`,
+        title:`${err?.response.data.message ? err?.response.data.message : 'Internal error, please try again or later!'}`,
         timer: 2500 
       });
     }

@@ -39,7 +39,7 @@ export default function SignUpForm () {
 
     } catch (err: any) {
       setWasSubmitted(false);
-      toastAlert({icon: 'error', title: "Error!", text: `${err.response.data.message}`, timer: 2000});
+      toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
     }
   };
 
