@@ -27,7 +27,7 @@ export default function LoginHelp({}: Props) {
     // reset({email: ''});
   
     try {
-      const findUser = await api.post('/find-user', {
+      const findUser = await api.post('https://noap-typescript-api.vercel.app/find-user', {
         email: data?.email
       }, {
         headers: { 
@@ -54,7 +54,7 @@ export default function LoginHelp({}: Props) {
     reset({code: ''});
 
     try {
-      const verifyOTP = await api.post('/verify-otp', {
+      const verifyOTP = await api.post('https://noap-typescript-api.vercel.app/verify-otp', {
         userId: userId.current,
         otp: data.code,
       }, {
