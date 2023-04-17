@@ -337,11 +337,16 @@ export default {
             
             const compareOTPs = await bcrypt.compare(
                 otp,
-                findOtp[0].otp
+                findOtp[findOtp.length - 1].otp
             );
-                
-            if(compareOTPs && findOtp[0].expiresAt > Date.now()) {
-                await Otp.findByIdAndDelete(findOtp[0]._id);
+
+            if(compareOTPs && findOtp[findOtp.length - 1].expiresAt > Date.now()) {
+                if(findOtp.length > 1) await Otp.deleteMany({
+                    userId,
+                    id: findOtp.map(val => val._id)
+                });
+                else await Otp.findByIdAndDelete(findOtp[0]._id);
+
                 return req.status(200).json({ message: "Verified!"});
             }
             else return req.status(400).json({ message: "Wrong OTP code, please try again!"});
