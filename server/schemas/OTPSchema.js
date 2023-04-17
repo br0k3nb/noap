@@ -14,4 +14,5 @@ export default new mongoose.Schema({
         default: Date.now,
     },
     expiresAt: Date,
+    spam: Date
 });
