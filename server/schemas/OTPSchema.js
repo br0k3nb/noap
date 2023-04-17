@@ -5,14 +5,6 @@ export default new mongoose.Schema({
         type: String,
         required: true,
     },
-    subject: {
-        type: String,
-        required: true,
-    },
-    html: {
-        type: String,
-        required: true,
-    },
     otp: {
         type: String,
         required: false,
