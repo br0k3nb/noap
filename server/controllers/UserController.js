@@ -7,7 +7,7 @@ import Otp from '../models/OTP.js';
 import 'dotenv/config';
 
 const transporter = nodemailer.createTransport({
-    service: "Hotmail",
+    service: "FastMail",
     auth: {
         user: process.env.HOST_MAIL,
         pass: process.env.HOST_MAIL_PASSWORD
@@ -114,13 +114,6 @@ export default {
             if(findOtp.length === 0 || (findOtp.length < 5 && findOtp[findOtp.length - 1].spam < Date.now())) {
                 const otpCode = `${Math.floor(1000 + Math.random() * 9000)}`;
                 const hashedOtp = await bcrypt.hash(otpCode, 10);
-
-                await Otp.create({
-                    userId: userExists[0]._id,
-                    otp: hashedOtp,
-                    expiresAt: Date.now() + 3600000, //expires after 1 hour
-                    spam: Date.now() + 120000 //adding spam protection of 2 minutes per email
-                });
 
                 const message = {
                     from: process.env.HOST_MAIL,
@@ -326,14 +319,24 @@ export default {
                     `
                 }
 
-                transporter.sendMail(message, (error, info) => {
-                    if(error) res.status(400).json({ message: err});
-                    console.log(info);
-                });
+                transporter.sendMail(message, async (error, info) => {
+                    if(error) res.status(500).json({
+                        message: "Internal sever error, please try again or later", code: 500
+                    });
 
-                res.status(200).json({
-                    message: 'Email sent!',
-                    userId: userExists[0]._id
+                    else {
+                        await Otp.create({
+                            userId: userExists[0]._id,
+                            otp: hashedOtp,
+                            expiresAt: Date.now() + 3600000, //expires after 1 hour
+                            spam: Date.now() + 120000 //adding spam protection of 2 minutes per email
+                        });
+
+                        res.status(200).json({
+                            message: 'Email sent!',
+                            userId: userExists[0]._id
+                        });
+                    }
                 });
             }
             else if(findOtp.length === 5) {
@@ -356,7 +359,7 @@ export default {
             const {otp, userId} = res.body;
             
             const findOtp = await Otp.find({userId});
-            
+
             if(findOtp.length === 0) return req.status(400).json({ message: "Wrong OTP code, please try again!"});
             
             const compareOTPs = await bcrypt.compare(
