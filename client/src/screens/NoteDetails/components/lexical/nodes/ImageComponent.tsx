@@ -324,8 +324,8 @@ export default function ImageComponent({
             className={
               window.innerWidth > 640 &&
               isFocused
-                ? `focused !rounded-lg ${$isNodeSelection(selection) ? "draggable" : ""}`
-                : '!rounded-lg'
+                ? `focused !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${$isNodeSelection(selection) ? "draggable" : ""}`
+                : '!rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen'
             }
             src={src}
             altText={altText}
@@ -336,7 +336,7 @@ export default function ImageComponent({
           />
         </div>
         {showCaption && (
-          <div className="image-caption-container !object-cover">
+          <div className="image-caption-container">
             <LexicalNestedComposer initialEditor={caption}>
               <AutoFocusPlugin />
               <MentionsPlugin />

@@ -57,6 +57,7 @@ export class CollapsibleContainerNode extends ElementNode {
   createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
     const dom = document.createElement('details');
     dom.classList.add('Collapsible__container');
+    dom.classList.add('!bg-gray-800');
     dom.open = this.__open;
     dom.addEventListener('toggle', () => {
       const open = editor.getEditorState().read(() => this.getOpen());

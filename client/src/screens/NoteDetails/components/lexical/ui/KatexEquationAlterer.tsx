@@ -31,7 +31,7 @@ export default function KatexEquationAlterer({
         Inline
         <input type="checkbox" checked={inline} onChange={onCheckboxChange} />
       </div>
-      <div className="KatexEquationAlterer_defaultRow">Equation </div>
+      <div className="KatexEquationAlterer_defaultRow">Equation</div>
       <div className="KatexEquationAlterer_centerRow">
         {inline ? (
           <input
@@ -39,7 +39,7 @@ export default function KatexEquationAlterer({
               setEquation(event.target.value);
             }}
             value={equation}
-            className="KatexEquationAlterer_textArea"
+            className="KatexEquationAlterer_textArea !bg-gray-700"
           />
         ) : (
           <textarea
@@ -47,7 +47,7 @@ export default function KatexEquationAlterer({
               setEquation(event.target.value);
             }}
             value={equation}
-            className="KatexEquationAlterer_textArea"
+            className="KatexEquationAlterer_textArea !bg-gray-700"
           />
         )}
       </div>
@@ -60,7 +60,12 @@ export default function KatexEquationAlterer({
         />
       </div>
       <div className="KatexEquationAlterer_dialogActions">
-        <Button onClick={onClick}>Confirm</Button>
+        <Button 
+          onClick={onClick}
+          className='!bg-gray-700'
+        >
+          Confirm
+        </Button>
       </div>
     </>
   );

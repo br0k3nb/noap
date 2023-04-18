@@ -122,7 +122,7 @@ export default function LoginHelp() {
         <button 
           className={`bg-stone-700 hover:bg-stone-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out`}
         >
-          <div className={`flex flex-row justify-center py-[4px] px-8 xl:px-0`}>
+          <div className={`flex flex-row justify-center py-[4px] xxs:px-8 xl:px-0`}>
             <span className='pt-0 xxs:pt-[2.4px]'>
               <p className='!text-xs'>
                   you can send another email in {minutes} minute(s) : {seconds} second(s)
@@ -197,9 +197,9 @@ export default function LoginHelp() {
                           autoComplete='off'
                           {...register('email')}
                         />
-                        {true ? (
+                        {timer !== 'maximum' && timer !== '' ? (
                             <Countdown 
-                              date={Date.now()+ 500000} 
+                              date={timer}
                               renderer={renderer}
                             />
                         ) : timer === 'maximum' ? (

@@ -20,7 +20,7 @@ export default function TextInput({
       <label className="Input__label !text-gray-200">{label}</label>
       <input
         type="text"
-        className="Input__input"
+        className="Input__input !bg-gray-700"
         placeholder={placeholder}
         value={value}
         onChange={(e) => {

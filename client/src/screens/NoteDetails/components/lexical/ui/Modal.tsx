@@ -64,17 +64,17 @@ function PortalImpl({
 
   return (
     <div className="Modal__overlay" role="dialog">
-      <div className="Modal__modal" tabIndex={-1} ref={modalRef}>
-        <h2 className="Modal__title">{title}</h2>
+      <div className="Modal__modal !bg-gray-800 !text-gray-200 focus:border-transparent !shadow-none xxs:!max-w-xs" tabIndex={-1} ref={modalRef}>
+        <h2 className="Modal__title !text-gray-200">{title}</h2>
         <button
-          className="Modal__closeButton"
+          className="Modal__closeButton hover:!bg-gray-700"
           aria-label="Close modal"
           type="button"
           onClick={onClose}
         >
           X
         </button>
-        <div className="Modal__content">{children}</div>
+        <div className="Modal__content xxs:!max-w-xs">{children}</div>
       </div>
     </div>
   );

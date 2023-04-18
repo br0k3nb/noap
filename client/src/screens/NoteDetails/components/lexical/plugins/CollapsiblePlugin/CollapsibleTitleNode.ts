@@ -53,6 +53,7 @@ export class CollapsibleTitleNode extends ElementNode {
   createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
     const dom = document.createElement('summary');
     dom.classList.add('Collapsible__title');
+    dom.classList.add('focus:outline-none');
     return dom;
   }
 

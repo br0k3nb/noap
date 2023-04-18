@@ -253,7 +253,7 @@ export function AutoEmbedDialog({
   };
 
   return (
-    <div style={{ width: "600px" }}>
+    <div style={{ width: "600px" }} className="xxs:!max-w-[256px]">
       <div className="Input__wrapper">
         <input
           type="text"
@@ -271,6 +271,7 @@ export function AutoEmbedDialog({
       <DialogActions>
         <Button
           disabled={!embedResult}
+          className="!bg-gray-700"
           onClick={onClick}
           data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
         >
