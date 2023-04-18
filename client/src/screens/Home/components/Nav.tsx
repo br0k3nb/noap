@@ -15,11 +15,12 @@ import { BiLogIn, BiUserCircle , BiLock } from "react-icons/bi";
 // import { motion } from "framer-motion";
 
 type NavProps = {
-  newNote: boolean;
   addNewNote: () => Promise<void>;
-  expanded: boolean;
-  navbar: boolean;
   handleSignout: () => void
+  expanded: boolean;
+  userName: string;
+  newNote: boolean;
+  navbar: boolean;
 };
 
 export default function Nav({
@@ -27,7 +28,8 @@ export default function Nav({
   newNote,
   addNewNote,
   expanded,
-  handleSignout
+  handleSignout,
+  userName
 }: NavProps) {
   const [checked, setChecked] = useState(false);
 
@@ -57,10 +59,10 @@ export default function Nav({
           <div className="flex flex-col text-[17px] xxs:text-[14px] space-y-3 mt-5">
             <button className='w-full disabled:opacity-50 disabled:cursor-not-allowed' disabled={true}>
               <div className="py-3 hover:bg-gray-500">
-                <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[5.5rem] sm:mr-[8rem]">
+                {/* <div className="flex-flex-row space-x-2 lg:mr-[9.5rem] xxs:mr-[5.5rem] sm:mr-[8rem]">
                   <BiUserCircle className='inline' size={30}/>
                   <span>Change profile picture</span>  
-                </div>
+                </div> */}
               </div>
             </button>
             <button className='py-3 w-full  hover:bg-gray-500'>
@@ -90,17 +92,15 @@ export default function Nav({
           className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900 justify-end"
         >
           <div
-            className="flex items-center justify-center w-12 h-12 mt-auto hover:text-gray-300 absolute top-6 rounded-full hover:bg-gray-600 trasition-all duration-300 ease-in-out"
+            className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6"
           >
             <div className="dropdown dropdown-right pt-[6.2px]">
               <label tabIndex={0} className="">
                 <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
-                  <div className="rounded-full">
-                    <img
-                      src="https://yt3.ggpht.com/yti/AHXOFjV0J15e7kweVnEy8NWSssTdBJL8Tb_RMOWsm76ZT4M=s88-c-k-c0x00ffffff-no-rj-mo"
-                      alt=""
-                      className="rounded-full h-10 w-10"
-                    />
+                  <div className="rounded-full border !border-gray-500 bg-stone-700 hover:bg-stone-800 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
+                    <p className='mt-[7px]'>
+                      {userName[0].toUpperCase()}
+                    </p>
                   </div>
                 </div>
               </label>

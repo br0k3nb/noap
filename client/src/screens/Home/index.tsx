@@ -187,6 +187,7 @@ export default function Home(): JSX.Element {
             expanded={expanded}
             newNote={newNote}
             handleSignout={handleSignout}
+            userName={parsedUserToken?.name}
           />
           <div
             className={`!overflow-hidden ${

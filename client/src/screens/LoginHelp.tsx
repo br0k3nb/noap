@@ -46,7 +46,7 @@ export default function LoginHelp() {
       const data = err.response.data;
 
       setTimer(data?.spam && !data?.code ? data.spam :
-        !data?.spam && data?.code == 500 ? '' :
+        !data?.spam && data?.message.startsWith('No') ? '' :
         'maximum'
       );
 

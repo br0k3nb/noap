@@ -45,7 +45,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
 
   const removeNote = () => {
     selectedNote?.setSelectedNote(null);
-    setExpanded(!expanded);
+    setExpanded(false);
     setChecked(!checked);
 
     deleteNote(notes[(selectedNote?.selectedNote as number)]._id);
