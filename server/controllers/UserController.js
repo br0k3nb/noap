@@ -52,6 +52,27 @@ export default {
             res.status(400).json(err);
         }
     },
+    async verifyUser(req, res) {
+        try {
+            const { password, _id } = req.body;
+            
+            const findUser = await User.findById({_id});
+
+            if(!findUser?._id) return res.status(400).json({ message: 'User not found!' });
+
+            const userPassDB = findUser.password;
+            const comparePass = await bcrypt.compare(
+                password,
+                userPassDB
+            );
+
+            if(comparePass) res.status(200).json({ message: 'Authenticated' });
+            else res.status(400).json({ message: 'Wrong password, please try again!' });
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({ message: 'User not authenticated' });
+        }
+    },
     async add(req, res) {
         try {
             const {name, login, password} = req.body;

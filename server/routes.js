@@ -12,6 +12,7 @@ router.post("/sign-in", UserController.login);
 router.post("/verify-otp", UserController.verifyOtp);
 router.post("/find-user", UserController.findAndSendCode);
 router.patch("/change-pass", UserController.changePassword);
+router.post("/verify-user/:token", verifyUser, UserController.verifyUser);
 
 //Notes
 router.post("/add/:token", verifyUser, NoteController.add);
