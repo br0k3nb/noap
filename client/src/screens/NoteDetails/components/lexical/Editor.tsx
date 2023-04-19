@@ -2,7 +2,7 @@ import { useState, useEffect, forwardRef, useContext } from "react";
 
 // import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 // import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
-import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 // import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
@@ -219,6 +219,7 @@ export function TitleInput({register, noteCtx, screenSize}: TitleProps) {
       <textarea
         rows={2}
         wrap="hard"
+        spellCheck='false'
         className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none resize-none"
         placeholder=" Enter a title"
         {...register("title")}

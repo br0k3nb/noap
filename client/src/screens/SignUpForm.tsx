@@ -75,7 +75,7 @@ export default function SignUpForm () {
 
               <div className="mb-2 mt-3">
                 <input
-                  type="text"
+                  type="email"
                   className="sign-text-inputs bg-gray-100"
                   placeholder="Email"
                   required
