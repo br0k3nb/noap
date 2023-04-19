@@ -8,13 +8,11 @@ import {
   BsFillCalendarEventFill,
   // BsFillGearFill,
   BsDoorOpenFill,
-  BsFillPersonLinesFill
 } from "react-icons/bs";
 
 import { BiLock } from "react-icons/bi";
 
 import api from '../../../services/api';
-import Loader from '../../../components/Loader';
 import { toastAlert } from '../../../components/Alert/Alert';
 
 // import { motion } from "framer-motion";
@@ -45,7 +43,8 @@ export default function Nav({
   const [ svgLoader, setSvgLoader ] = useState(false);
   const [ changeInfo, setChangeInfo ] = useState('');
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, formState } = useForm();
+  const { errors } = formState;
 
   const authUser = async (data: FieldValues) => {
     setSvgLoader(true);
@@ -80,9 +79,8 @@ export default function Nav({
     try {
       const { password, confirmPassword } = data;  
 
-      console.log(password, confirmPassword);
-
       if(password !== confirmPassword) {
+        setSvgLoader(false);
         return toastAlert({icon: 'error', title: "Passwords don't match!", timer: 2500});
       }
       
@@ -98,6 +96,7 @@ export default function Nav({
       });
 
       setSvgLoader(false);
+      reset({password: '', confirmPassword: ''});
       toastAlert({icon: 'success', title: `${changeP.data.message}`, timer: 2500});
     } catch (err: any) {
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
@@ -124,7 +123,7 @@ export default function Nav({
       />
       <label htmlFor="my-modal-4" className="modal cursor-pointer">
         <label 
-          className={`modal-box relative !px-0 !text-gray-100 max-w-none !w-80 sm:!w-96 max-h-none h-[23.5rem] !bg-gray-800 !font-light ${auth && '!h-[20rem]'}`} 
+          className={`modal-box relative !px-0 !text-gray-100 max-w-none !w-80 sm:!w-96 !max-h-[23.4rem] !bg-gray-800 !font-light ${auth && changeInfo === '' && '!h-[19rem]'}`} 
         >
           <div className="flex flex-row justify-between pb-2 px-6">
             <h3 className="text-2xl xxs:text-xl tracking-tighter">Change login details</h3>
@@ -137,23 +136,34 @@ export default function Nav({
             </label>
           </div>
           <div className='bg-gray-600 !h-[1px] mt-3' />
-          <div className="flex flex-col mt-7">
+          <div className="flex flex-col mt-4">
             {!auth ? (
               <div className="px-6">
                 <div className="flex flex-col space-y-2">
                   <p className='text-xl'>Confirm your identity</p>
                   <p className='text-base text-gray-400'>To change yout account information, you have to authenticate first!</p>
                 </div>
-
                 <div className="flex flex-col space-y-2 mt-10">
-                  <form onSubmit={handleSubmit(authUser)}>
-                    <input 
+                  <form onSubmit={handleSubmit(authUser)} noValidate>
+                    <p className='text-red-500 ml-1 !mb-2 uppercase text-sm tracking-widest'>
+                      {errors.password?.message as string}
+                    </p>
+                    <input
                       type="password"
-                      required 
                       className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400`}
-                      placeholder='Password'
-                      autoComplete='off'
-                      {...register('password')}
+                      placeholder="Password"
+                      required
+                      {...register("password", {
+                        required: "Password is required!",
+                        minLength: {
+                          value: 6,
+                          message: "Password is too short!"
+                        },
+                        maxLength: {
+                          value: 12,
+                          message: "Too many characters!"
+                        },
+                      })}
                     />
                     <button 
                       className={`bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out w-full`}
@@ -187,27 +197,53 @@ export default function Nav({
                   </div>
                 </div>
               ) : changeInfo === 'password' ? (
-                  <div className="flex flex-col space-y-2 px-6 mt-5 ">
-                    <form onSubmit={handleSubmit(changePassword)}>
-                      <input 
+                <form onSubmit={handleSubmit(changePassword)} noValidate>
+                    <div className="flex flex-col space-y-2 px-6 ">
+                      <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                        {errors.password?.message as string}
+                      </p>
+                      <input
                         type="password"
-                        required 
                         className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400`}
-                        placeholder='Password'
-                        autoComplete='off'
-                        {...register('password')}
+                        placeholder="Password"
+                        required
+                        {...register("password", {
+                          required: "Password is required!",
+                          minLength: {
+                            value: 6,
+                            message: "Password is too short!"
+                          },
+                          maxLength: {
+                            value: 12,
+                            message: "Too many characters!"
+                          },
+                        })}
                       />
-                      <input 
+                      <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                        {errors.confirmPassword?.message as string}
+                      </p>
+                      <input
                         type="password"
-                        required 
-                        className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 !mt-2`}
-                        placeholder='Confirm password'
                         autoComplete='off'
-                        {...register('confirmPassword')}
+                        className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400`}
+                        placeholder='Confirm password'
+                        required
+                        {...register("confirmPassword", {
+                          required: "Password is required!",
+                          minLength: {
+                            value: 6,
+                            message: "Password is too short!"
+                          },
+                          maxLength: {
+                            value: 12,
+                            message: "Too many characters!"
+                          },
+                        })}
                       />
-                      <button 
-                        className={`bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out w-full`}
-                      >
+                    </div>
+                    <button 
+                      className={`bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out w-[21rem] xxs:!w-[17rem] mx-6`}
+                    >
                       <div className={`${!svgLoader && 'hidden'} flex flex-row justify-center`}>
                         <svg aria-hidden="true" role="status" className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB" />
@@ -219,8 +255,7 @@ export default function Nav({
                       </div>
                       <p className={`${svgLoader && 'hidden'}`}>Change password</p>
                     </button>
-                  </form>
-                </div>
+                </form>
               ) : (
                   <div className="">
 

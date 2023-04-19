@@ -15,7 +15,7 @@ export default function LoginHelp() {
   const [ timer, setTimer ] = useState('');
   const [ loader, setLoader ] = useState(false);
   const [ wasChanged, setWasChanged ] = useState(false);
-  const [ triggerCode, setTriggerCode ] = useState<boolean | string>(true);
+  const [ triggerCode, setTriggerCode ] = useState<boolean | string>(false);
 
   const { handleSubmit, register, reset, formState } = useForm();
   const { errors } = formState;
