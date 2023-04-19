@@ -15,11 +15,34 @@ const transporter = nodemailer.createTransport({
 });
 
 export default {
+    async add(req, res) {
+        try {
+            const { name, email, password } = req.body;
+
+            const userExists = await User.find({email});
+
+            if(userExists.length > 0) return res.status(400).json({message: 'User already exists, please sign in!'});
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            await User.create({
+                email,
+                password: hashedPassword,
+                name
+            });
+
+            res.status(200).json({message: 'User created successfully!'});
+            
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({message: err});
+        }
+    },
     async login(req , res) {
         try {
-            const {login, password} = req.body;
+            const { email, password } = req.body;
 
-            const getUser = await User.find({email: login});
+            const getUser = await User.find({email});
 
             if(getUser.length === 0) return res.status(400).json({message: 'Wrong email or password combination!'});
 
@@ -71,29 +94,6 @@ export default {
         } catch (err) {
             console.log(err);
             res.status(400).json({ message: 'User not authenticated' });
-        }
-    },
-    async add(req, res) {
-        try {
-            const {name, login, password} = req.body;
-
-            const userExists = await User.find({email: login});
-
-            if(userExists.length > 0) return res.status(400).json({message: 'User already exists, please sign in!'});
-
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            await User.create({
-                email: login,
-                password: hashedPassword,
-                name
-            });
-
-            res.status(200).json({message: 'User created successfully!'});
-            
-        } catch (err) {
-            console.log(err);
-            res.status(400).json({message: err});
         }
     },
     async changePassword(res, req) {
