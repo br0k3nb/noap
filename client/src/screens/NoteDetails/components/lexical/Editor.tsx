@@ -65,6 +65,7 @@ type Props = {
 
 type TitleProps = {
   register: UseFormRegister<FieldValues>;
+  disableToolbar: () => void;
   screenSize: number;
   noteCtx: any;
 };
@@ -76,11 +77,12 @@ type CustomSaveComp = {
 };
 
 const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: Props, ref) => {
-  const [editor] = useLexicalComposerContext();
+  const [ editor ] = useLexicalComposerContext();
   const { historyState } = useSharedHistoryContext();
   
   const noteExpanded = useContext(ExpandedContext);
-  const [screenSize, setScreenSize] = useState(0);
+  const [ screenSize, setScreenSize ] = useState(0);
+  const [ titleFocused, setTitleFocused ] = useState(false);
   
   const {
     settings: { isRichText },
@@ -113,9 +115,12 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
       setScreenSize(window.outerWidth > 1030 ? window.outerWidth - 60 - 380 : 0);
   });
 
+  const disableToolbar = () => setTitleFocused(true);
+
   return (
     <div className="!h-screen !w-screen"> 
-      <ToolbarPlugin/>
+      {titleFocused && (<ToolbarPlugin titleFocused={titleFocused}/>)}
+      {!titleFocused && (<ToolbarPlugin titleFocused={titleFocused}/>)}
       <div className="editor-container plain-text">
         <DragDropPaste />
         {/* <ClearEditorPlugin /> */}
@@ -150,16 +155,15 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
                     <TitleInput 
                       register={register} 
                       noteCtx={noteExpanded} 
-                      screenSize={screenSize}                   
+                      screenSize={screenSize}
+                      disableToolbar={disableToolbar}                 
                     />
                     <div 
                       className="xxs:mb-5 mb-0"
-                      style={screenSize !== 0 ? 
-                        {width: screenSize} : 
-                        {width: window.outerWidth > 1030 ? window.outerWidth - 455: '100%'}
-                      }
+                      onClick={() => setTitleFocused(!titleFocused && true)}
+                      style={noteExpanded?.expanded ? { width: window.outerWidth - 22 } : { width: window.outerWidth - 455 }}
                     >
-                      <ContentEditable />
+                      <ContentEditable/>
                     </div>
                   </div>
                 </div>
@@ -209,7 +213,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, floatingAnchorElem }: 
   );
 });
 
-export function TitleInput({register, noteCtx, screenSize}: TitleProps) {
+export function TitleInput({ register, noteCtx, screenSize, disableToolbar }: TitleProps) {
   console.log(screenSize);
   return (
     <div 
@@ -217,6 +221,8 @@ export function TitleInput({register, noteCtx, screenSize}: TitleProps) {
       style={noteCtx?.expanded ? { width: window.outerWidth - 22 } : { width: window.outerWidth - 455 }}
     >
       <textarea
+        id='note-title'
+        onClick={() => disableToolbar()}
         rows={2}
         wrap="hard"
         spellCheck='false'

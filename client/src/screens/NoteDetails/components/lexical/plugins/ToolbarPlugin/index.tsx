@@ -378,7 +378,7 @@ function FontDropDown({
   );
 }
 
-export default function ToolbarPlugin() {
+export default function ToolbarPlugin({titleFocused}: any) {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [blockType, setBlockType] =
@@ -403,7 +403,7 @@ export default function ToolbarPlugin() {
   const [modal, showModal] = useModal();
   const [isRTL, setIsRTL] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState<string>('');
-  const [isEditable, setIsEditable] = useState(() => editor.isEditable());
+  const [isEditable, setIsEditable] = useState(!titleFocused ? () => editor.isEditable() : false);
 
   const [screenSize, setScreenSize] = useState<number>(0);
 
