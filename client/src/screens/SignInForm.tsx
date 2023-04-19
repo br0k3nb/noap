@@ -12,8 +12,10 @@ export default function SignInForm() {
 
   const navigate = useNavigate();
 
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, formState } = useForm();
   const [ wasSubmited, setWasSubmitted ] = useState(false);
+
+  const { errors } = formState;
 
   const thereIsATK = JSON.parse(window.localStorage.getItem("user_token") || '{}');
 
@@ -25,10 +27,10 @@ export default function SignInForm() {
     setWasSubmitted(true);
     
     try {
-      const { login, password } = data;
-
+      const { email, password } = data;
+      
       const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
-        login,
+        email,
         password
       });
 
@@ -60,34 +62,52 @@ export default function SignInForm() {
         <div className="flex flex-row h-screen bg-slate-800">
           <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full lg:shadow-inner lg:shadow-gray-900">
             <div className="flex flex-col w-[70%] xxs:w-[85%]">
-              
               <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
                 <div className="flex flex-row gap-x-4">
                   <img src={noapLogo} className='object-cover !w-[190px] xxs:w-44 sm:w-52' draggable={false}/>
                 </div>  
               </span>
-
-              <form onSubmit={handleSubmit(handleForm)} className='w-full'>
-                <div className="mb-2 mt-5">
+              <form onSubmit={handleSubmit(handleForm)} className='w-full' noValidate>
+                <div className="mb-2 mt-5 flex flex-col space-y-1">
+                  <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                    {errors.email?.message as string}
+                  </p>
                   <input
-                    type="text"
+                    type="email"
                     className="sign-text-inputs bg-gray-100"
                     placeholder="Email"
                     required
-                    {...register("login")}
+                    {...register("email", {
+                      required: "Email is required!",
+                      pattern: {
+                        value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                        message: "Invalid email!"
+                      }
+                    })}
                   />
                 </div>
-
-                <div className="mb-7 mt-3">
+                <div className="mb-7 mt-3 flex flex-col space-y-1">
+                  <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                    {errors.password?.message as string}
+                  </p>
                   <input
                     type="password"
                     className="sign-text-inputs bg-gray-100"
                     placeholder="Password"
                     required
-                    {...register("password")}
+                    {...register("password", {
+                      required: "Password is required!",
+                      minLength: {
+                        value: 6,
+                        message: "Password is too short!"
+                      },
+                      maxLength: {
+                        value: 12,
+                        message: "Too many characters!"
+                      },
+                    })}
                   />
                 </div>
-
                 <div className="text-center">
                   <button
                     type="submit"

@@ -15,9 +15,11 @@ export default function LoginHelp() {
   const [ timer, setTimer ] = useState('');
   const [ loader, setLoader ] = useState(false);
   const [ wasChanged, setWasChanged ] = useState(false);
-  const [ triggerCode, setTriggerCode ] = useState<boolean | string>(false);
+  const [ triggerCode, setTriggerCode ] = useState<boolean | string>(true);
 
-  const { handleSubmit, register, reset } = useForm();
+  const { handleSubmit, register, reset, formState } = useForm();
+  const { errors } = formState;
+
   const userId = useRef<string>('');
 
   const navigate = useNavigate();
@@ -185,17 +187,25 @@ export default function LoginHelp() {
                 </p>
               </div>
               <div className="mt-5">
-                <form action="" onSubmit={triggerCode ? handleSubmit(verifyCode) : handleSubmit(getEmail)} >
+                <form action="" onSubmit={triggerCode ? handleSubmit(verifyCode) : handleSubmit(getEmail)} noValidate>
                   <div className="flex flex-col space-y-2 py-5 rounded-lg !max-w-3xl mx-auto">
                     {!triggerCode ? (
                       <>
-                        <input 
+                        <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                          {errors.email?.message as string}
+                        </p>
+                        <input
                           type="email"
-                          required 
                           className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 ${timer === "maximum" && "border !border-red-700 hover:!border-red-800"}`}
-                          placeholder='Email address'
-                          autoComplete='off'
-                          {...register('email')}
+                          placeholder="Email"
+                          required
+                          {...register("email", {
+                            required: "Email is required!",
+                            pattern: {
+                              value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                              message: "Invalid email!"
+                            }
+                          })}
                         />
                         {timer !== 'maximum' && timer !== '' ? (
                             <Countdown 
@@ -241,13 +251,22 @@ export default function LoginHelp() {
                       </>
                     ) : (
                       <>
+                        <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                          {errors.code?.message as string}
+                        </p>
                         <input 
                           type="number"
                           required 
                           className='sign-text-inputs  bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
                           placeholder='Enter the code sent to your email'
                           autoComplete='off'
-                          {...register('code')}
+                          {...register('code', {
+                            required: "Insert a valid code!",
+                            pattern: {
+                              value: /^[0-9]{0,4}$/,
+                              message: 'Invalid code!'
+                            }
+                          })}
                         />
                         <button 
                           className='bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest hover:!text-[13px] transition-all duration-500 ease-in-out'
@@ -280,23 +299,47 @@ export default function LoginHelp() {
             <>
               <p className='text-3xl xxs:text-2xl font-light tracking-tight'>Reset your password</p>
               <div className="mt-2">
-                <form action="" onSubmit={handleSubmit(changePasssword)} >
+                <form action="" onSubmit={handleSubmit(changePasssword)} noValidate>
                   <div className="flex flex-col space-y-2 py-5 rounded-lg !max-w-3xl mx-auto">
-                    <input 
-                      type="text"
-                      required 
+                    <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                      {errors.password?.message as string}
+                    </p>
+                    <input
+                      type="password"
                       className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
-                      placeholder='Password'
-                      autoComplete='off'
-                      {...register('password')}
+                      placeholder="Password"
+                      required
+                      {...register("password", {
+                        required: "Password is required!",
+                        minLength: {
+                          value: 6,
+                          message: "Your password is too short!"
+                        },
+                        maxLength: {
+                          value: 12,
+                          message: "Too many characters!"
+                        },
+                      })}
                     />
-                    <input 
-                      type="text"
-                      required 
+                    <p className='text-red-500 ml-1 uppercase text-xs tracking-widest !mt-4'>
+                      {errors.confirmP?.message as string}
+                    </p>
+                    <input
+                      type="password"
                       className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
-                      placeholder='Confirm Password'
-                      autoComplete='off'
-                      {...register('confirmP')}
+                      placeholder="Confirm password"
+                      required
+                      {...register("confirmP", {
+                        required: "Password is required!",
+                        minLength: {
+                          value: 6,
+                          message: "Your password is too short!"
+                        },
+                        maxLength: {
+                          value: 12,
+                          message: "Too many characters!"
+                        },
+                      })}
                     />
                     <button 
                       className={`bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out`}

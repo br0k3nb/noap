@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
-import axios from "axios";
+
 import { motion } from 'framer-motion';
 
 import { toastAlert } from '../components/Alert/Alert';
 
+import api from '../services/api';
 import note from '../assets/main.svg';
-import noapLogo from '../assets/logo/logo-white-no-bg.png'
+// import { userSchema } from '../validations/User';
+import noapLogo from '../assets/logo/logo-white-no-bg.png';
 
 
 export default function SignUpForm () {
   
-  const {handleSubmit, register} = useForm();
-  const [wasSubmited, setWasSubmitted] = useState(false);
+  const { handleSubmit, register, formState } = useForm();
+  const [ wasSubmited, setWasSubmitted ] = useState(false);
+
+  const { errors } = formState;
 
   const navigate = useNavigate();
 
@@ -21,12 +25,12 @@ export default function SignUpForm () {
     setWasSubmitted(true);
 
     try {
-      const {name, login, password} = data;
+      const {name, email, password} = data;
 
-      const signUp = await axios.post("https://noap-typescript-api.vercel.app/sign-up", {
-        name: name,
-        login: login,
-        password: password,
+      const signUp = await api.post("https://noap-typescript-api.vercel.app/sign-up", {
+        name,
+        email,
+        password,
       });
 
       setWasSubmitted(false);
@@ -36,7 +40,6 @@ export default function SignUpForm () {
       setTimeout(() => {
         navigate("/");
       }, 1000);
-
     } catch (err: any) {
       setWasSubmitted(false);
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
@@ -62,37 +65,61 @@ export default function SignUpForm () {
                 </div>  
               </span>
 
-            <form onSubmit={handleSubmit(handleForm)} className='w-full'>
-            <div className="mb-2 mt-5">
+            <form onSubmit={handleSubmit(handleForm)} className='w-full' noValidate>
+            <div className="mb-2 mt-5 flex flex-col space-y-1">
+                <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                  {errors.name?.message as string}
+                </p>
                 <input
                   type="text"
                   className="sign-text-inputs bg-gray-100"
                   placeholder="Name"
                   required
-                  {...register("name")}
+                  {...register("name", {
+                    required: "Name is required!"
+                  })}
                 />
               </div>
-
-              <div className="mb-2 mt-3">
+              <div className="mb-2 mt-3 flex flex-col space-y-1">
+                <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                  {errors.email?.message as string}
+                </p>
                 <input
                   type="email"
                   className="sign-text-inputs bg-gray-100"
                   placeholder="Email"
                   required
-                  {...register("login")}
+                  {...register("email", {
+                    required: "Email is required!",
+                    pattern: {
+                      value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                      message: "Invalid email!"
+                    }
+                  })}
                 />
               </div>
-
-              <div className="mb-7 mt-3">
+              <div className="mb-7 mt-3 flex flex-col space-y-1">
+                <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                  {errors.password?.message as string}
+                </p>
                 <input
                   type="password"
                   className="sign-text-inputs bg-gray-100"
                   placeholder="Password"
                   required
-                  {...register("password")}
+                  {...register("password", {
+                    required: "Password is required!",
+                    minLength: {
+                      value: 6,
+                      message: "Your password is too short!"
+                    },
+                    maxLength: {
+                      value: 12,
+                      message: "Too many characters!"
+                    },
+                  })}
                 />
               </div>
-
               <div className="text-center">
                   <button
                     type="submit"

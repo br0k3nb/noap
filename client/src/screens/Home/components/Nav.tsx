@@ -65,6 +65,8 @@ export default function Nav({
       setAuth(true);  
       setSvgLoader(false);
 
+      reset({password: ''});
+      
       toastAlert({icon: 'success', title: `${verify.data.message}`, timer: 2500});
     } catch (err: any) {
       setSvgLoader(false);
@@ -73,6 +75,8 @@ export default function Nav({
   }
 
   const changePassword = async (data: FieldValues) => {
+    setSvgLoader(true);
+
     try {
       const { password, confirmPassword } = data;  
 
@@ -93,6 +97,7 @@ export default function Nav({
         }
       });
 
+      setSvgLoader(false);
       toastAlert({icon: 'success', title: `${changeP.data.message}`, timer: 2500});
     } catch (err: any) {
       toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
