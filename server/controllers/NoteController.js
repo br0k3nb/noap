@@ -9,7 +9,6 @@ export default {
 
             res.status(200).json(getActivities);
         } catch (err) {
-            
             res.status(400).json({message: err});
         }
     },
