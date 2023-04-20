@@ -10,22 +10,25 @@ const app = express();
 mongoose.set("strictQuery", true);
 mongoose.connect(`${process.env.MONGODB_URL}`), err => err && console.log(err);
 
-const authorizedSources = [
-    'http://localhost:5173',
-    'https://noap.vercel.app/',
-    'https://noap-typescript.vercel.app',
-];
+// const authorizedSources = [
+//     'http://localhost:5173',
+//     'https://noap.vercel.app',
+//     'https://noap-typescript.vercel.app',
+// ];
+
+// {
+//     origin: (origin, callback) => {
+//         if(!origin) return callback(null, true);
+//         if(!origin) return callback(null, true);   
+//         if(authorizedSources.indexOf(origin) === -1){
+//             return callback(new Error('Unauthorized'), false);
+//         }    
+//         return callback(null, true);
+//     }
+// }
 
 app.use(bodyParser.json({limit: '30000kb'})); //seting a high limit just for testing purposes
-app.use(cors({
-    origin: (origin, callback) => {
-        if(!origin) return callback(null, true);
-        if(!origin) return callback(null, true);    if(authorizedSources.indexOf(origin) === -1){
-            return callback(new Error('Unauthorized'), false);
-        }    
-        return callback(null, true);
-    }
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(routes);
