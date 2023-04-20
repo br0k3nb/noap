@@ -1,21 +1,32 @@
 import { useState, useEffect } from 'react';
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
-import { toastAlert } from '../components/Alert/Alert';
 import { motion } from 'framer-motion';
+import { toastAlert } from '../components/Alert/Alert';
 
+import { FcGoogle } from 'react-icons/fc';
+
+import { 
+  GoogleLogin, 
+  useGoogleOneTapLogin,
+  useGoogleLogin 
+} from '@react-oauth/google';
+
+
+import api from '../services/api';
 import note from '../assets/main.svg';
-import noapLogo from '../assets/logo/logo-white-no-bg.png'
+import noapLogo from '../assets/logo/logo-white-no-bg.png';
+
 
 export default function SignInForm() {
-
   const navigate = useNavigate();
 
   const { handleSubmit, register, formState } = useForm();
-  const [ wasSubmited, setWasSubmitted ] = useState(false);
-
   const { errors } = formState;
+
+  const [ wasSubmited, setWasSubmitted ] = useState(false);
+  
+  const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_CLIENT_SECRET } = import.meta.env; //vite env variables
 
   const thereIsATK = JSON.parse(window.localStorage.getItem("user_token") || '{}');
 
@@ -23,13 +34,46 @@ export default function SignInForm() {
     if(Object.keys(thereIsATK).length > 0) navigate('/home');
   },[]);
 
+  const [ user, setUser ] = useState<any>([]);
+  const [ profile, setProfile ] = useState([]);
+
+  const login = useGoogleLogin({
+      onSuccess: (codeResponse) => setUser(codeResponse),
+      onError: (error) => toastAlert({ 
+        icon: 'error',
+        title:`Login failed, ${error}}`,
+        timer: 2500 
+      })
+  });
+
+  useEffect(
+      () => {
+          if (user) {
+              api
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.access_token}`,
+                        Accept: 'application/json'
+                    }
+                })
+                .then((res) => {
+                    setProfile(res.data);
+                })
+                .catch((err) => console.log(err));
+          }
+      },
+      [ user ]
+  );
+
+  console.log(profile);
+
   const handleForm = async (data: FieldValues) => {
     setWasSubmitted(true);
-    
+
     try {
       const { email, password } = data;
       
-      const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
+      const signIn = await api.post("https://noap-typescript-api.vercel.app/sign-in", {
         email,
         password
       });
@@ -61,8 +105,8 @@ export default function SignInForm() {
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
         <div className="flex flex-row h-screen bg-slate-800">
           <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full lg:shadow-inner lg:shadow-gray-900">
-            <div className="flex flex-col w-[70%] xxs:w-[85%]">
-              <span className="text-center text-5xl font-light mt-5 mb-3 text-gray-100 flex justify-center tracking-tighter">
+            <div className="flex flex-col w-[70%] xxs:w-[85%] ">
+              <span className="text-center text-5xl font-light mt-5 xxs:mt-0 mb-3 text-gray-100 flex justify-center tracking-tighter">
                 <div className="flex flex-row gap-x-4">
                   <img src={noapLogo} className='object-cover !w-[190px] xxs:w-44 sm:w-52' draggable={false}/>
                 </div>  
@@ -110,8 +154,7 @@ export default function SignInForm() {
                 </div>
                 <div className="text-center">
                   <button
-                    type="submit"
-                    className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-700 text-white py-2"
+                    className="trasition-all duration-200 hover:bg-red-700/90 uppercase  rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-700 text-white py-2"
                   >
                     <div className={`${!wasSubmited && 'hidden'} flex flex-row justify-center py-[1px]`}>
                       <svg aria-hidden="true" role="status" className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -123,8 +166,21 @@ export default function SignInForm() {
                       </span>
                     </div>
 
-                    <p className={`${wasSubmited && 'hidden'} text-[15px] py-[2px] tracking-wide`}>Sign in</p>
-                  </button>        
+                    <p className={`${wasSubmited && 'hidden'} text-[15px] py-[2px] tracking-wide !text-gray-300`}>Sign in with email</p>
+                  </button>   
+                  <div className="my-3">
+                    <p className='text-sm uppercase tracking-widest text-gray-400'>OR</p>
+                  </div>
+                  <button 
+                    type='button'
+                    onClick={() => login()}
+                    className="hover:!text-gray-300 text-gray-900 border border-gray-500 mb-5 bg-gray-200 trasition-all duration-200 hover:bg-gray-600/90 uppercase rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full py-2"
+                  >
+                    <div className="flex items-center justify-center">
+                      <FcGoogle size={26} className='mr-2'/>
+                      <span className=''>Sign in with Google</span>
+                    </div>
+                  </button>
                   <div className="flex flex-col justify-between text-[12px] xxs:text-[10px] mt-2 space-y-2 uppercase tracking-widest">
                     <div>
                       <p className="text-gray-300">
