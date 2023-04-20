@@ -27,15 +27,8 @@ mongoose.connect(`${process.env.MONGODB_URL}`), err => err && console.log(err);
 //     }
 // }
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
-
 app.use(bodyParser.json({limit: '30000kb'})); //seting a high limit just for testing purposes
-app.use(cors({
-    origin: "*"
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(routes);
