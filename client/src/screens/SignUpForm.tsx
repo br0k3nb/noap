@@ -31,6 +31,12 @@ export default function SignUpForm () {
         name,
         email,
         password,
+      }, {
+        headers: { 
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Disposition': 'form-data'
+        }
       });
 
       setWasSubmitted(false);
