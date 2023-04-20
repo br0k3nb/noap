@@ -12,8 +12,8 @@ mongoose.connect(`${process.env.MONGODB_URL}`), err => err && console.log(err);
 
 const authorizedSources = [
     'http://localhost:5173',
-    'http://noap.vercel.app',
-    'http://noap-typescript.vercel.app',
+    'https://noap.vercel.app/',
+    'https://noap-typescript.vercel.app',
 ];
 
 app.use(bodyParser.json({limit: '30000kb'})); //seting a high limit just for testing purposes
