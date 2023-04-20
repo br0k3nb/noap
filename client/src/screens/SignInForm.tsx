@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from 'react-hook-form';
+
 import { toastAlert } from '../components/Alert/Alert';
 import { motion } from 'framer-motion';
 
+import api from '../services/api';
 import note from '../assets/main.svg';
 import noapLogo from '../assets/logo/logo-white-no-bg.png'
 
@@ -29,15 +30,9 @@ export default function SignInForm() {
     try {
       const { email, password } = data;
       
-      const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
+      const signIn = await api.post("/sign-in", {
         email,
         password
-      }, {
-        headers: { 
-          "Access-Control-Allow-Origin": "*",
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Disposition': 'form-data'
-        }
       });
 
       setWasSubmitted(false);
