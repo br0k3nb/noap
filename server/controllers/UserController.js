@@ -32,7 +32,6 @@ export default {
             });
 
             res.status(200).json({message: 'User created successfully!'});
-            
         } catch (err) {
             console.log(err);
             res.status(400).json({message: err});
@@ -369,7 +368,6 @@ export default {
                 message: 'Wait at least a 2 minutes to send another email!',
                 spam: findOtp[findOtp.length -1].spam
             });
-            
         } catch (err) {
             console.log(err);
             res.status(400).json({message: err});
