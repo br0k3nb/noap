@@ -32,6 +32,12 @@ export default function SignInForm() {
       const signIn = await axios.post("https://noap-typescript-api.vercel.app/sign-in", {
         email,
         password
+      }, {
+        headers: { 
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Disposition': 'form-data'
+        }
       });
 
       setWasSubmitted(false);
