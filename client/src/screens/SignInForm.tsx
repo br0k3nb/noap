@@ -6,11 +6,11 @@ import { toastAlert } from "../components/Alert/Alert";
 
 import { FcGoogle } from "react-icons/fc";
 
-// import {
-//   // GoogleLogin,
-//   // useGoogleOneTapLogin,
-//   useGoogleLogin,
-// } from "@react-oauth/google";
+import {
+  // GoogleLogin,
+  // useGoogleOneTapLogin,
+  useGoogleLogin,
+} from "@react-oauth/google";
 
 import api from "../services/api";
 import note from "../assets/main.svg";
@@ -32,17 +32,17 @@ export default function SignInForm() {
     if (Object.keys(thereIsATK).length > 0) navigate("/home");
   }, []);
 
-  // const login = useGoogleLogin({
-  //   onSuccess: (codeResponse) => {
-  //     fetchGoogleAccountData(codeResponse);
-  //   },
-  //   onError: (error) =>
-  //     toastAlert({
-  //       icon: "error",
-  //       title: `Login failed, ${error}}`,
-  //       timer: 2500,
-  //     }),
-  // });
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      fetchGoogleAccountData(codeResponse);
+    },
+    onError: (error) =>
+      toastAlert({
+        icon: "error",
+        title: `Login failed, ${error}}`,
+        timer: 2500,
+      }),
+  });
 
   const fetchGoogleAccountData = async (codeResponse: any) => {
     setSvgLoader("google");
@@ -230,7 +230,7 @@ export default function SignInForm() {
                   <button
                     type="button"
                     disabled={svgLoader === "email" && true}
-                    // onClick={() => (svgLoader === 'google' || svgLoader === "") && login()}
+                    onClick={() => (svgLoader === 'google' || svgLoader === "") && login()}
                     className={`disabled:bg-gray-200/60 disabled:cursor-not-allowed text-gray-900 mb-5 bg-gray-200 trasition-all duration-200 ease-in-out uppercase rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full py-2 ${
                       svgLoader === "email"
                         ? "hover:bg-gray-200/60"
@@ -263,7 +263,7 @@ export default function SignInForm() {
                       </svg>
                       <span className="pt-0 xxs:pt-[2.4px]">Loading...</span>
                     </div>
-                    {/* <div
+                    <div
                       className={`
                         ${(svgLoader === "email" || svgLoader === "") && "!flex"}
                         hidden items-center justify-center
@@ -271,7 +271,7 @@ export default function SignInForm() {
                     >
                       <FcGoogle size={26} className="mr-2" />
                       <span className="">Sign in with Google</span>
-                    </div> */}
+                    </div>
                   </button>
                   <div className="flex flex-col justify-between text-[12px] xxs:text-[10px] mt-2 space-y-2 uppercase tracking-widest">
                     <div>

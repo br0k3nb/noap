@@ -16,7 +16,7 @@ export const ThemeContext = createContext<Theme | null>(null);
 const queryClient = new QueryClient();
 
 export default function App() {
-  const { VITE_GOOGLE_CLIENT_ID } = import.meta.env; //vite env variables
+  const { VITE_VERCEL_GOOGLE_CLIENT_ID } = import.meta.env; //vite env variables
 
   const getTheme = window.localStorage.getItem('theme');
 
@@ -25,12 +25,12 @@ export default function App() {
   const [theme, setTheme] = useState(defaultValue);
 
   return (
-    // <GoogleOAuthProvider clientId={VITE_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={VITE_VERCEL_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <ThemeContext.Provider value={{ theme, setTheme }}>
           <RoutesApp />
         </ThemeContext.Provider>
       </QueryClientProvider>
-    // </GoogleOAuthProvider>
+    </GoogleOAuthProvider>
   )
 };
