@@ -25,12 +25,12 @@ export default function App() {
   const [theme, setTheme] = useState(defaultValue);
 
   return (
-    <GoogleOAuthProvider clientId={VITE_GOOGLE_CLIENT_ID}>
+    // <GoogleOAuthProvider clientId={VITE_GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
         <ThemeContext.Provider value={{ theme, setTheme }}>
           <RoutesApp />
         </ThemeContext.Provider>
       </QueryClientProvider>
-    </GoogleOAuthProvider>
+    // </GoogleOAuthProvider>
   )
 };
