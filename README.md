@@ -6,7 +6,7 @@
 <br>
 
 <div align="center">
-  <img width="800px" src="https://s10.gifyu.com/images/Design-sem-nome257332f968e54d27.gif">
+  <img width="800px" src="https://s12.gifyu.com/images/Design-sem-nome1.gif">
 </div>
 <br>
 <br>
