@@ -8,16 +8,13 @@ import { toastAlert } from '../components/Alert/Alert';
 
 import api from '../services/api';
 import note from '../assets/main.svg';
-// import { userSchema } from '../validations/User';
 import noapLogo from '../assets/logo/logo-white-no-bg.png';
 
-
-export default function SignUpForm () {
-  
+export default function SignUpForm () {  
   const { handleSubmit, register, formState } = useForm();
-  const [ wasSubmited, setWasSubmitted ] = useState(false);
-
   const { errors } = formState;
+  
+  const [ wasSubmited, setWasSubmitted ] = useState(false);
 
   const navigate = useNavigate();
 
@@ -31,12 +28,6 @@ export default function SignUpForm () {
         name,
         email,
         password,
-      }, {
-        headers: { 
-          "Access-Control-Allow-Origin": "*",
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Disposition': 'form-data'
-        }
       });
 
       setWasSubmitted(false);
@@ -48,7 +39,11 @@ export default function SignUpForm () {
       }, 1000);
     } catch (err: any) {
       setWasSubmitted(false);
-      toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
+      toastAlert({
+        icon: 'error', 
+        title:`${err?.response.data.message ? err?.response.data.message : 'Internal error, please try again or later!'}`, 
+        timer: 2000
+      });
     }
   };
 
