@@ -3,17 +3,17 @@ import mongoose from 'mongoose';
 export default new mongoose.Schema({
     email: {
         type: String,
-        required: true,
+        required: true
     },
     name: {
         type: String,
-        required: true,
+        required: true
     },
     password: {
         type: String,
-        required: false,
+        required: false
     },
-    googleAccount: {
+    verified: {
         type: Boolean,
         required: false
     },
@@ -21,7 +21,7 @@ export default new mongoose.Schema({
         type: String,
         required: false
     },
-    verified: {
+    googleAccount: {
         type: Boolean,
         required: false
     }
