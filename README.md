@@ -6,7 +6,7 @@
 <br>
 
 <div align="center">
-  <img width="800px" src="https://s12.gifyu.com/images/Design-sem-nome1.gif">
+  <img src="https://github.com/br0k3nb/Noap-typescript/blob/master/client/src/assets/Design%20sem%20nome(1).gif">
 </div>
 <br>
 <br>
