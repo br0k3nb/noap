@@ -6,11 +6,7 @@ import { toastAlert } from "../components/Alert/Alert";
 
 import { FcGoogle } from "react-icons/fc";
 
-import {
-  // GoogleLogin,
-  // useGoogleOneTapLogin,
-  useGoogleLogin,
-} from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 
 import api from "../services/api";
 import note from "../assets/main.svg";
