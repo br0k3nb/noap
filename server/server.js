@@ -7,11 +7,25 @@ import 'dotenv';
 
 const app = express();
 
+const authorizedSources = [
+    'http://localhost:5173',
+    'http://noap.vercel.app',
+    'http://noap-typescript.vercel.app',
+];
+
 mongoose.set("strictQuery", true);
 mongoose.connect(`${process.env.MONGODB_URL}`), err => err && console.log(err);
 
 app.use(bodyParser.json({limit: '30000kb'})); //seting a high limit just for testing purposes
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        if(!origin) return callback(null, true);
+        if(!origin) return callback(null, true);    if(authorizedSources.indexOf(origin) === -1){
+            return callback(new Error('Unauthorized'), false);
+        }    
+        return callback(null, true);
+    }
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(routes);

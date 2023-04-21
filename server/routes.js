@@ -11,6 +11,7 @@ router.post("/sign-up", UserController.add);
 router.post("/sign-in", UserController.login);
 router.post("/verify-otp", UserController.verifyOtp);
 router.post("/find-user", UserController.findAndSendCode);
+router.post("/sign-in/google", UserController.googleLogin);
 router.patch("/change-pass", UserController.changePassword);
 router.post("/verify-user/:token", verifyUser, UserController.verifyUser);
 
