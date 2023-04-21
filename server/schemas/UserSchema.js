@@ -9,13 +9,17 @@ export default new mongoose.Schema({
         type: String,
         required: true,
     },
-    profilePicture: {
-        type: String,
-        required: false 
-    },
     password: {
         type: String,
-        required: true,
+        required: false,
+    },
+    googleAccount: {
+        type: Boolean,
+        required: false
+    },
+    googleId: {
+        type: String,
+        required: false
     },
     verified: {
         type: Boolean,
