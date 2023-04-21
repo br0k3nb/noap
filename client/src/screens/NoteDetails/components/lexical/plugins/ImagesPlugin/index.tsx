@@ -71,6 +71,7 @@ export function InsertImageUriDialogBody({
         <Button
           data-test-id="image-modal-confirm-btn"
           disabled={isDisabled}
+          className="!bg-gray-700"
           onClick={() => onClick({ altText, src })}
         >
           Confirm
@@ -122,6 +123,7 @@ export function InsertImageUploadedDialogBody({
         <Button
           data-test-id="image-modal-file-upload-btn"
           disabled={isDisabled}
+          className="!bg-gray-700"
           onClick={() => onClick({ altText, src })}
         >
           Confirm

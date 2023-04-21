@@ -25,7 +25,7 @@ export default function Button({
     <button
       disabled={disabled}
       className={joinClasses(
-        "Button__root",
+        "Button__root !bg-gray-700",
         disabled && "Button__disabled",
         small && "Button__small",
         className

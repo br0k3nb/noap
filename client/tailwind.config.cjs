@@ -10,6 +10,8 @@ module.exports = {
   theme: {
     screens: {  
       'xxs': {'max': '639px', "min": "0px"},
+      'xxl': {'min': '2000px', 'max': '3000px'},
+      '3xl': {'min': '3001px'},
       ...defaultTheme.screens,
     },
     extend: {
