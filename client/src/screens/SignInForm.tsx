@@ -64,7 +64,9 @@ export default function SignInForm() {
 
         window.localStorage.setItem("user_token", JSON.stringify({
           name: createUser.data.name,
-          token: createUser.data.token 
+          token: createUser.data.token,
+          _id: createUser.data._id,
+          googleAccount: createUser.data.googleAccount
         }));
 
         navigate("/home");
@@ -72,9 +74,9 @@ export default function SignInForm() {
     } catch (err: any) {
       setSvgLoader("");
       toastAlert({
-        icon: "success",
+        icon: "error",
         title: `${err?.response.data.message}`,
-        timer: 2000,
+        timer: 3000,
       });
     }
   };
