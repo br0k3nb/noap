@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -16,6 +18,8 @@ import {
   SerializedDecoratorBlockNode,
 } from "@lexical/react/LexicalDecoratorBlockNode";
 
+import { ExpandedContext } from "../../..";
+
 type YouTubeComponentProps = Readonly<{
   className: Readonly<{
     base: string;
@@ -32,6 +36,8 @@ function YouTubeComponent({
   nodeKey,
   videoID,
 }: YouTubeComponentProps) {
+  const noteContext = useContext(ExpandedContext);
+
   return (
     <BlockWithAlignableContents
       className={className}
@@ -39,11 +45,12 @@ function YouTubeComponent({
       nodeKey={nodeKey}
     >
       <iframe
-        className="w-[700px] h-[415px] xxs:!w-full xxs:!h-44 !object-cover"
+        className="w-[700px] h-[415px] xxs:!h-44 !object-cover rounded-lg"
         src={`https://www.youtube.com/embed/${videoID}`}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}
         title="YouTube video"
+        style={{maxWidth: !noteContext?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}}
       />
     </BlockWithAlignableContents>
   );

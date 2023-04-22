@@ -33,8 +33,8 @@ import {
   KEY_ESCAPE_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import * as React from "react";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+
+import { Suspense, useCallback, useEffect, useRef, useState, useContext } from "react";
 
 import { createWebsocketProvider } from "../collaboration";
 import { useSettings } from "../context/SettingsContext";
@@ -48,6 +48,8 @@ import ContentEditable from "../ui/ContentEditable";
 import ImageResizer from "../ui/ImageResizer";
 import Placeholder from "../ui/Placeholder";
 import { $isImageNode } from "./ImageNode";
+
+import { ExpandedContext } from "../../..";
 
 const imageCache = new Set();
 
@@ -84,7 +86,7 @@ function LazyImage({
   useSuspenseImage(src);
   return (
     <img
-      className={className || 'xxs:!max-w-[100%]'}
+      className={className || ''}
       src={src}
       alt={altText}
       ref={imageRef}
@@ -316,13 +318,15 @@ export default function ImageComponent({
 
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = isSelected || isResizing;
+
+  const noteExpanded = useContext(ExpandedContext);
+
   return (
     <Suspense fallback={null}>
       <>
         <div draggable={draggable} className="!object-cover !rounded-lg">
           <LazyImage
             className={
-              window.innerWidth > 640 &&
               isFocused
                 ? `focused !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${$isNodeSelection(selection) ? "draggable" : ""}`
                 : '!rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen'
@@ -332,7 +336,7 @@ export default function ImageComponent({
             imageRef={imageRef}
             width={width}
             height={height}
-            maxWidth={maxWidth}
+            maxWidth={!noteExpanded?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}
           />
         </div>
         {showCaption && (
@@ -375,7 +379,7 @@ export default function ImageComponent({
             editor={editor}
             buttonRef={buttonRef}
             imageRef={imageRef}
-            maxWidth={maxWidth}
+            maxWidth={!noteExpanded?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}
             onResizeStart={onResizeStart}
             onResizeEnd={onResizeEnd}
             captionsEnabled={captionsEnabled}
