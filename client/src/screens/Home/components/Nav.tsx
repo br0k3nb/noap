@@ -139,6 +139,14 @@ export default function Nav({
     }
   }
 
+  // const linkGoogleAccount = () => {
+  //  try {
+    
+  //  } catch (err) {
+    
+  //  } 
+  // }
+
   const handleModalClose = () => {
     reset({
       password: '',
@@ -160,7 +168,7 @@ export default function Nav({
       />
       <label htmlFor="my-modal-4" className="modal cursor-pointer">
         <label 
-          className={`modal-box relative !px-0 !text-gray-100 max-w-none !w-80 sm:!w-96 max-h-[23.4rem] !bg-gray-800 !font-light ${auth && changeInfo === '' && '!h-[19rem]'} ${token?.googleAccount && !convertAcc ? '!max-h-[30rem] !w-[90%]' : (token?.googleAccount && convertAcc) &&'!max-h-[24rem] '} transition-all duration-500`} 
+          className={`modal-box relative !px-0 !text-gray-100 max-w-none !w-80 sm:!w-96 max-h-[23.4rem] !bg-gray-800 !font-light ${auth && changeInfo === '' && 'max-h-[23.4rem]'} ${token?.googleAccount && !convertAcc ? '!max-h-[30rem] !w-[90%]' : (token?.googleAccount && convertAcc) &&'!max-h-[24rem] '} transition-all duration-500`} 
         >
           <div className="flex flex-row justify-between pb-2 px-6">
             <h3 className="text-2xl xxs:text-xl tracking-tighter transition-all duration-500">Change login details</h3>
@@ -222,12 +230,18 @@ export default function Nav({
             ) : auth && !token?.googleAccount ? (
               <>
               {changeInfo === '' ? (
-                <div className="px-6 mt-5">
-                  <div className="flex flex-col space-y-3">
+                <div className="px-6 mt-1">
+                  <div className="flex flex-col space-y-4">
                       <button className='py-[13.5px]' onClick={() => setChangeInfo('password')}>
                         <span className='py-4 px-[5.7rem] xxs:px-[3.7rem] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest'>Change password</span>
                       </button>
-                      <p className='text-gray-500 mx-auto'>OR</p>
+                      <button className='py-[13.5px] cursor-not-allowed' disabled={true}>
+                        <span
+                          className='py-4 px-[4.2rem] xxs:px-[4.9rem] bg-gray-600 opacity-30 rounded-3xl text-sm uppercase tracking-widest'
+                        >
+                          Link a Google account
+                        </span>
+                      </button>
                       <button className='py-[13.5px] cursor-not-allowed' disabled={true}>
                         <span className='py-4 px-[6.9rem] xxs:px-[4.9rem] bg-gray-600 opacity-30 rounded-3xl text-sm uppercase tracking-widest'>Change email</span>
                       </button>
@@ -420,7 +434,7 @@ export default function Nav({
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu shadow bg-base-100 w-64 rounded-xl"
+                className="dropdown-content menu shadow w-64 rounded-xl bg-stone-800"
               >
                 <li className="">
                   {/* <a
@@ -446,7 +460,7 @@ export default function Nav({
                       </div>
                     </label>
                   </a>
-                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                  <div className="mx-2 border border-transparent !border-b-stone-900 !h-[1px] p-0 !rounded-none"/>
                   <a
                     className="active:!bg-gray-600 rounded-xl"
                     onClick={() => handleSignout()}

@@ -95,17 +95,17 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                     <AiOutlineEllipsis size={23} />
                   </div>
                 </label> 
-                <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                  <li>
+                <ul tabIndex={0} className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800">
+                  <li className="">
                     <a 
-                      className="active:!bg-gray-600"
+                      className="active:!bg-gray-600 hover:!bg-gray-700" 
                       onClick={() => setChecked(!checked)}
                     >
                       <label 
                         htmlFor="my-modal-4"
                         className="text-red-600"
                       >
-                        <div className="flex flex-row space-x-2">
+                        <div className="flex flex-row space-x-2 ">
                           <p>
                             Delete note 
                           </p>
@@ -125,22 +125,22 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               id="add-new-phone-number"
               className="modal-toggle"
             />
-            <label htmlFor="my-modal-4" className="modal cursor-pointer">
-              <label className="modal-box relative" htmlFor="">
+            <label htmlFor="my-modal-4" className="modal cursor-pointer light">
+              <label className="modal-box !bg-gray-800 relative transition-all duration-500" htmlFor="">
                 <h3 className="text-xl">Are you sure about that ?</h3>
                 <p className="py-4"> 
                   Be aware that once deleted, <span className="text-red-600">there is no way to recover it!</span>
                 </p>
                 <label 
                   htmlFor="my-modal-4" 
-                  className="btn btn-sm btn-circle absolute right-0 top-0"
+                  className="btn btn-sm btn-circle absolute right-0 top-0 bg-gray-700"
                   onClick={() => setChecked(false)}
                 >
                   ✕
                 </label>
                 <div className="mt-3 flex flex-row justify-evenly">
                     <button
-                      className="bg-gray-800 hover:bg-gray-900 text-gray-100 px-8 py-3 rounded-lg"
+                      className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg"
                       onClick={() => setChecked(!checked)}
                     >
                       Cancel
