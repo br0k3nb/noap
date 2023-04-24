@@ -142,7 +142,9 @@ const Editor = forwardRef(
                       `}
                       style={{
                         height:
-                          window.outerWidth > 640 ? window.innerHeight - 100 : window.innerHeight - 50,
+                          window.outerWidth > 640
+                            ? window.innerHeight - 100
+                            : window.innerHeight - 65,
                       }}
                     >
                       <div className="" onClick={() => setTitleFocused(true)}>
@@ -156,10 +158,14 @@ const Editor = forwardRef(
                         onClick={() => setTitleFocused(false)}
                         className="xxs:mb-5 mb-0 xxl:!mb-5 3xl:!mb-32"
                         style={
-                          noteExpanded?.expanded
-                            ? { width: window.outerWidth}
-                            : { width: window.outerWidth - 440 }
+                          !noteExpanded?.expanded
+                            ? { width: window.innerWidth - 430 }
+                            : { width: window.innerWidth }
                         }
+
+                        // noteExpanded?.expanded
+                        //   ? { width: window.outerWidth}
+                        //   : { width: window.outerWidth - 440 }
                       >
                         <ContentEditable />
                       </div>
@@ -217,9 +223,9 @@ export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
     <div
       className="text-2xl mt-10 px-6 flex flex-wrap"
       style={
-        noteCtx?.expanded
-          ? { width: window.outerWidth}
-          : { width: window.outerWidth - 455 }
+        !noteCtx?.expanded
+          ? { width: window.innerWidth - 430 }
+          : { width: window.innerWidth }
       }
     >
       <textarea
