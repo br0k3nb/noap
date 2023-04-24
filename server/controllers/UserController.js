@@ -129,7 +129,7 @@ export default {
             res.status(400).json({message: err});
         }
     },
-    async convertGoogleAccount(req , res) {
+    async convertIntoNormalAccount(req , res) {
         try {
             const { _id, password } = req.body;
 
@@ -141,6 +141,37 @@ export default {
                 const hashedPassword = await bcrypt.hash(password, 10);
                 await User.findOneAndUpdate({_id}, {password: hashedPassword, googleAccount: false});
                 res.status(200).json({message: 'Account was converted, please sign in again!'});
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({message: err});
+        }
+    },
+    async convertIntoGoogleAccount(req , res) {
+        try {
+            const { _id, email, name, id } = req.body;
+
+            const getUser = await User.find({_id});
+
+            if(getUser.length === 0) res.status(400).json({message: 'User not found!'});
+
+            else {
+                const userAlreadyExist = await User.find({email});
+
+                if(userAlreadyExist.length > 0 &&
+                    !userAlreadyExist[0].googleAccount &&
+                    userAlreadyExist[0].email !== getUser[0].email
+                ) return res.status(400).json({message: 'User already exists!'});
+
+                await User.findOneAndUpdate({_id}, {
+                    password: null,
+                    googleAccount: true,
+                    googleId: id,
+                    name,
+                    email
+                });
+
+                res.status(200).json({message: 'Google account was linked, please sign in again!'});
             }
         } catch (err) {
             console.log(err);

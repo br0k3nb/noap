@@ -14,7 +14,8 @@ router.post("/find-user", UserController.findAndSendCode);
 router.post("/sign-in/google", UserController.googleLogin);
 router.patch("/change-pass", UserController.changePassword);
 router.post("/verify-user/:token", verifyUser, UserController.verifyUser);
-router.patch("/convert/account/google/:token", UserController.convertGoogleAccount);
+router.patch("/convert/account/email/:token", UserController.convertIntoNormalAccount);
+router.patch("/convert/account/google/:token", UserController.convertIntoGoogleAccount);
 
 //Notes
 router.post("/add/:token", verifyUser, NoteController.add);
