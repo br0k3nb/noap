@@ -60,14 +60,15 @@ export default function Dialog({
 }: Props) {
   return (
     <div>
-      <input
-        checked={checked}
+      <input 
         readOnly
-        type="checkbox"
+        id="my-modal-3" 
+        type="checkbox" 
+        checked={checked}
         className="modal-toggle"
       />
-      <label htmlFor="my-modal-4" className="modal cursor-pointer">
-        <label
+      <div className="modal">
+        <div
           className={`modal-box relative !px-0 !text-gray-100 max-w-none !w-80 sm:!w-96 max-h-[23.4rem] !bg-gray-800 !font-light ${
             auth && changeInfo === "" && "max-h-[23.4rem]"
           } ${
@@ -161,26 +162,26 @@ export default function Dialog({
                   <div className="px-6 mt-1">
                     <div className="flex flex-col space-y-4">
                       <button
-                        className="py-[13.5px]"
+                        className="py-[13.5px] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest"
                         onClick={() => setChangeInfo("password")}
                       >
-                        <span className="py-4 px-[5.7rem] xxs:px-[3.7rem] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest">
+                        <span className="py-4">
                           Change password
                         </span>
                       </button>
                       <button
-                        className="py-[13.5px]"
+                        className="py-[13.5px] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest"
                         onClick={() => setChangeInfo("google")}
                       >
-                        <span className="py-4 px-[4.2rem] xxs:px-[3.7rem] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest">
+                        <span className="py-4">
                           Link a Google account
                         </span>
                       </button>
                       <button
-                        className="py-[13.5px] cursor-not-allowed"
+                        className="py-[13.5px] cursor-not-allowed bg-gray-600 opacity-30 rounded-3xl text-sm uppercase tracking-widest"
                         disabled={true}
                       >
-                        <span className="py-4 px-[6.9rem] xxs:px-[4.9rem] bg-gray-600 opacity-30 rounded-3xl text-sm uppercase tracking-widest">
+                        <span className="py-4">
                           Change email
                         </span>
                       </button>
@@ -463,8 +464,8 @@ export default function Dialog({
               </>
             )}
           </div>
-        </label>
-      </label>
+        </div>
+      </div>
     </div>
   );
 }
