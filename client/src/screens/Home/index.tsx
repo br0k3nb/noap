@@ -171,7 +171,7 @@ export default function Home(): JSX.Element {
 
   const fetchLabels = async () => {
     try {
-        const getLabels = await api.get(`/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
+        const getLabels = await api.get(`https://noap-typescript-api.vercel.app/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
 
         if (labels.length === 0) appendLabels(getLabels.data);
         else if (labels.length >= 1) {
