@@ -7,8 +7,8 @@ import { useForm, useFieldArray } from "react-hook-form";
 
 import { toastAlert } from "../../components/Alert/Alert";
 
-import Nav from "./components/Nav";
 import Notes from "../Notes";
+import Nav from "./components/nav";
 import NoteDetails from "../NoteDetails";
 
 import api from "../../services/api";

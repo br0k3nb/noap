@@ -114,10 +114,14 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                         >
                           <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
 
-                          <div className={`h-[164px] text-gray-300 flex px-4 ${parsedImage && "!h-[126px]"}`}>
+                          <div className={`h-[173px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[126px]"}`}>
                             <div className="overflow-ellipsis overflow-hidden">
                               {parserdHtml}
                             </div>
+
+                            {/* <div className="mt-1">
+                              <span className="badge !text-[11px] px-2 py-1">Badge</span>
+                            </div> */}
                           </div>
 
                           <div className="mt-5 px-4">
@@ -129,7 +133,6 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                           </div>
                           {parsedImage && (
                             <>
-                              {/* {console.log(parsedImage)} */}
                               <div className="h-[56px] mt-4 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>
                             </>
                           )}
