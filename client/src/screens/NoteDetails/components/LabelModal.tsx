@@ -49,7 +49,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
             if(selectedLabel !== null && selectedNote) {
                 const findLabel = labels[selectedLabel]
     
-                const attachLabel = await api.post(`/note/add/label/${token.token}`, { 
+                const attachLabel = await api.post(`https://noap-typescript-api.vercel.app/note/add/label/${token.token}`, { 
                     labelId: findLabel._id,
                     noteId: selectedNote 
                 });

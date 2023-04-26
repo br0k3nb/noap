@@ -6,7 +6,6 @@ import {
 } from 'react';
 
 import { useForm, FieldValues } from 'react-hook-form';
-import { useQuery } from 'react-query';
 
 import { BsFillTrashFill } from 'react-icons/bs';
 
@@ -72,7 +71,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
         try {
             const { name } = data;
 
-            const newLabel = await api.post(`/label/add/${token._id}/${token.token}`, {
+            const newLabel = await api.post(`https://noap-typescript-api.vercel.app/label/add/${token._id}/${token.token}`, {
                 color,
                 fontColor,
                 name,
@@ -94,7 +93,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
             setLoader(true);
         
             try {
-                const deleteL = await api.delete(`/label/delete/${selectedLabel}/${token.token}`)
+                const deleteL = await api.delete(`https://noap-typescript-api.vercel.app/label/delete/${selectedLabel}/${token.token}`)
 
                 toastAlert({icon: 'success', title: `${deleteL.data.message}`, timer: 3000});
                 setLoader(false);
