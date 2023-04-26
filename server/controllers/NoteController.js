@@ -48,11 +48,17 @@ export default {
 
             const label = await Label.findById(labelId);
 
-            console.log(label);
+            await Note.findOneAndUpdate({_id: noteId}, {
+                labels: {
+                    _id: label._id,
+                    name: label.name,
+                    color: label.color,
+                    fontColor: label?.fontColor,
+                    type: label.type
+                }
+            });
 
-            // await Note.findOneAndUpdate({noteId}, {labels: label});
-           
-            res.status(200).json({message: 'Label added!'});
+            res.status(200).json({message: 'Label attached!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});

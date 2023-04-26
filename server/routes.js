@@ -27,9 +27,9 @@ router.delete("/delete/:id/:token", verifyUser, NoteController.delete);
 router.post("/note/add/label/:token", verifyUser, NoteController.addLabel);
 
 //Labels
-router.post("/label/add/:token", verifyUser, LabelController.add);
-router.patch("/label/edit/:token", verifyUser, LabelController.edit);
 router.get("/labels/:userId/:token", verifyUser, LabelController.view);
+router.post("/label/add/:userId/:token", verifyUser, LabelController.add);
+router.patch("/label/edit/:userId/:token", verifyUser, LabelController.edit);
 router.delete("/label/delete/:id/:token", verifyUser, LabelController.delete);
 
 export default router;

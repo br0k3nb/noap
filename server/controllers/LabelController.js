@@ -3,7 +3,9 @@ import Label from '../models/Label.js';
 export default {
     async view(req, res) {
         try {
-            const getAllLabels = await Label.find({});
+            const { userId } = req.params;
+
+            const getAllLabels = await Label.find({userId});
             res.status(200).json(getAllLabels);
         } catch (err) {
             res.status(400).json({message: err});
@@ -11,12 +13,16 @@ export default {
     },
     async add(req , res) {
         try {
-            const { name, color, type } = req.body;
+            const { userId } = req.params;
+
+            const { name, color, fontColor, selectedStyle } = req.body;
 
             await Label.create({
                 name,
                 color,
-                type
+                userId,
+                fontColor,
+                type: selectedStyle
             });
            
             res.status(200).json({message: 'Label was created!'});
@@ -42,7 +48,6 @@ export default {
             const { id } = req.params;
 
             await Label.findByIdAndDelete(id);
-            
             res.status(200).json({message: 'Label deleted!'});
         } catch (err) {
             console.log(err);
