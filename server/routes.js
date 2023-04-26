@@ -1,6 +1,7 @@
 import express from 'express'
 import UserController from './controllers/UserController.js';
 import NoteController from './controllers/NoteController.js';
+import LabelController from './controllers/LabelController.js';
 
 import verifyUser from './middlewares/verifyUser.js';
 
@@ -23,5 +24,12 @@ router.patch("/edit/:token", verifyUser, NoteController.edit);
 router.get("/note/:id/:token", verifyUser, NoteController.getNote);
 router.get("/notes/:userId/:token", verifyUser, NoteController.view);
 router.delete("/delete/:id/:token", verifyUser, NoteController.delete);
+router.post("/note/add/label/:token", verifyUser, NoteController.addLabel);
+
+//Labels
+router.post("/label/add/:token", verifyUser, LabelController.add);
+router.patch("/label/edit/:token", verifyUser, LabelController.edit);
+router.get("/labels/:userId/:token", verifyUser, LabelController.view);
+router.delete("/label/delete/:id/:token", verifyUser, LabelController.delete);
 
 export default router;

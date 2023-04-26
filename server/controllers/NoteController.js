@@ -1,4 +1,5 @@
 import Note from '../models/Note.js';
+import Label from '../models/Label.js';
 
 export default {
     async view(req, res) {
@@ -36,6 +37,22 @@ export default {
             });
            
             res.status(200).json({message: 'Saved susccessfuly!'});
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({message: 'Error, please try again later!'});
+        }
+    },
+    async addLabel(req , res) {
+        try {
+            const { labelId, noteId } = req.body;
+
+            const label = await Label.findById(labelId);
+
+            console.log(label);
+
+            // await Note.findOneAndUpdate({noteId}, {labels: label});
+           
+            res.status(200).json({message: 'Label added!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});

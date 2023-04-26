@@ -1,27 +1,15 @@
 import mongoose from 'mongoose';
 
 export default new mongoose.Schema({
-    title: {
-        type: String,
-        required: false,
-    },
-    body: {
-        type: String,
-        required: false,
-    },
-    labels: {
-        type: mongoose.Schema.Types.Mixed,
-        required: false,
-    },
-    image: {
+    name: {
         type: String,
         required: true,
     },
-    state: {
+    color: {
         type: String,
-        required: true,
+        required: false,
     },
-    userId: {
+    type: {
         type: String,
         required: true,
     },
