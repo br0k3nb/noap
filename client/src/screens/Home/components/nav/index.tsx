@@ -16,7 +16,7 @@ import { BiLock } from "react-icons/bi";
 
 import Dialog from './components/Dialog';
 import api from '../../../../services/api';
-import LabelDialog from './components/LabelDialog';
+import LabelModal from './components/LabelModal';
 import { toastAlert } from '../../../../components/Alert/Alert';
 
 // import { motion } from "framer-motion";
@@ -232,8 +232,9 @@ export default function Nav({
         handleModalClose={handleModalClose}
         handleAccountConversion={handleAccountConversion}
       />
-      
-      <LabelDialog
+
+      <LabelModal
+        token={token}
         checked={openLabelModal}
         setChecked={setOpenLabelModal}
       />

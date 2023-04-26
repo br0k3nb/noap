@@ -1,9 +1,11 @@
 import { useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
+
 import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillDelete, AiOutlineEllipsis } from 'react-icons/ai';
-import { BsJournalRichtext } from 'react-icons/bs';
+import { BsJournalRichtext, BsTagsFill, BsPeopleFill } from 'react-icons/bs';
 
 import TextEditor from "./components/lexical/App";
+import LabelModal from "./components/LabelModal";
 import { NoteContext } from "../Home";
 
 import moment from "moment";
@@ -22,11 +24,26 @@ type Notes = {
   }[];
 };
 
+type Labels = {
+  labels: {
+    _id: string;
+    userId: string;
+    name: string;
+    color: string;
+    fontColor?: string;
+    type: string;
+    updatedAt?: string;
+    createdAt: string;
+  }[];
+};
+
 type Props = {
   notes: FieldArrayWithId<Notes, "note", "id">[];
   setExpanded: Dispatch<SetStateAction<boolean>>;
   deleteNote: (_id: string) => Promise<void>;
   remove: UseFieldArrayRemove;
+  labels: FieldArrayWithId<Labels, "labels", "id">[];
+  labelIsFetching: boolean;
   expanded: boolean;
 };
 
@@ -35,9 +52,10 @@ type ExpandedContextProps = {
   setExpanded: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded }: Props) {
+export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded, labelIsFetching, labels }: Props) {
   const selectedNote = useContext(NoteContext);
-  const [checked, setChecked] = useState(false);
+  const [ checked, setChecked ] = useState(false);
+  const [ openLabelModal, setOpenlabelModal ] = useState(false);
 
   useEffect(() => {
     if(window.outerWidth <= 1030 && selectedNote?.selectedNote !== null) setExpanded(!expanded);
@@ -68,6 +86,8 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     else return notes[selectedNote?.selectedNote as number].updatedAt;
   }
 
+  const getSeletedNoteId = selectedNote?.selectedNote !== null && notes[selectedNote?.selectedNote as number]._id;
+
   return (
     <div className={`overflow-hidden w-screen h-screen bg-gray-700 text-gray-200 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 ${!expanded && "hidden lg:flex"}`}>
       <div className="flex flex-col text-gray-200 pt-1">
@@ -88,7 +108,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               </div>
 
               <div 
-                className="dropdown hover:bg-stone-600 rounded transition duration-200 ease-in-out !inline !pt-[11px] pb-[1.28px] px-1"
+                className="dropdown hover:bg-stone-600 rounded !inline !pt-[11px] pb-[1.28px] px-1"
               >
                 <label tabIndex={0}>
                   <div className="tooltip tooltip-right !text-gray-200" data-tip="Actions">      
@@ -106,10 +126,42 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                         className="text-red-600"
                       >
                         <div className="flex flex-row space-x-2 ">
-                          <p>
+                          <p className="py-1 text-xs uppercase tracking-widest">
                             Delete note 
                           </p>
                           <AiFillDelete size={20} className="pt-1"/>
+                        </div>
+                      </label>
+                    </a>
+                    <a 
+                      className="active:!bg-gray-600 hover:!bg-gray-700" 
+                      onClick={() => setOpenlabelModal(true)}
+                    >
+                      <label 
+                        htmlFor="my-modal-4"
+                        className="text-gray-300"
+                      >
+                        <div className="flex flex-row space-x-2">
+                          <p className="py-1 text-xs uppercase tracking-widest">
+                            Attach labels
+                          </p>
+                          <BsTagsFill size={20} className="pt-[3px]"/>
+                        </div>
+                      </label>
+                    </a>
+                    <a 
+                      className="cursor-not-allowed active:!bg-transparent" 
+                      // onClick={() => setChecked(!checked)}
+                    > 
+                      <label 
+                        htmlFor="my-modal-4"
+                        className="text-gray-600"
+                      >
+                        <div className="flex flex-row space-x-2 cursor-not-allowed">
+                          <p className="py-1 text-xs uppercase tracking-widest">
+                            Share Note
+                          </p>
+                          <BsPeopleFill size={20} className="pt-[3px]"/>
                         </div>
                       </label>
                     </a>
@@ -154,7 +206,15 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                 </div>
               </label>
             </label>
-                
+
+            <LabelModal
+              checked={openLabelModal}
+              setChecked={setOpenlabelModal}
+              isFetching={labelIsFetching}
+              labels={labels}
+              selectedNote={getSeletedNoteId}
+            />
+
             <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
               <p 
                 className="px-2 text-sm xxs:text-[10px] xxs:px-0"

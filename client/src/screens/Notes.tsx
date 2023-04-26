@@ -27,6 +27,13 @@ type Notes = {
     body: string;
     image?: string;
     state: string;
+    labels?: {
+      _id: string;
+      name: string;
+      type: string;
+      color: string;
+      fontColor: string;
+    };
     updatedAt?: string;
     createdAt: string;
   }[];
@@ -119,9 +126,35 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                               {parserdHtml}
                             </div>
 
-                            {/* <div className="mt-1">
-                              <span className="badge !text-[11px] px-2 py-1">Badge</span>
-                            </div> */}
+                            <div className="mt-1">
+                              {val?.labels?.name && val?.labels?.name !== '' && (
+                                <>
+                                  {val.labels.type === "default" ? (
+                                    <span 
+                                      className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
+                                      style={{
+                                        backgroundColor: val.labels.color,
+                                        borderColor: val.labels.color,
+                                        color: val.labels.fontColor
+                                      }}
+                                    >
+                                      {val?.labels?.name}
+                                    </span>
+                                  ) : (
+                                    <div 
+                                      className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
+                                      style={{
+                                        backgroundColor: 'transparent !important',
+                                        borderColor: val.labels.color,
+                                        color: val.labels.color
+                                      }}
+                                    >
+                                      {val?.labels?.name}
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </div>
 
                           <div className="mt-5 px-4">

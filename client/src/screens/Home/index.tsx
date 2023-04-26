@@ -1,7 +1,7 @@
 import { useState, createContext, SetStateAction, Dispatch } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 
 // import { motion } from "framer-motion";
 
@@ -39,6 +39,13 @@ type Notes = {
     body: string;
     image?: string;
     state: string;
+    labels?: {
+      _id: string;
+      name: string;
+      type: string;
+      color: string;
+      fontColor: string;
+    };
     updatedAt?: string;
     createdAt: string;
   }[];
@@ -51,14 +58,47 @@ type Note = {
   body: string;
   image?: string;
   state: string;
+  labels?: {
+    _id: string;
+    name: string;
+    type: string;
+    color: string;
+    fontColor: string;
+  };
   updatedAt?: string;
   createdAt: string;
   id: string;
 };
 
+type Labels = {
+  labels: {
+    _id: string;
+    userId: string;
+    name: string;
+    color: string;
+    fontColor?: string;
+    type: string;
+    updatedAt?: string;
+    createdAt: string;
+  }[];
+};
+
+type LabelContext = {
+  isFetching: boolean;
+  fetchLabels: () => Promise<void>;
+  removeLabels: UseFieldArrayRemove; 
+  labels: FieldArrayWithId<Labels, "labels", "id">[];
+}
+
+type Refetch = {
+  fetchNotes: () => Promise<void>;
+}
+
 export const NoteWasChanged = createContext<NoteWasChangedContext | null>(null);
 export const NoteContext = createContext<SelectedNoteContext | null>(null);
 export const NavbarContext = createContext<NavContext | null>(null);
+export const LabelsContext = createContext<LabelContext | null>(null);
+export const RefetchContext = createContext<Refetch | null>(null);
 
 export default function Home(): JSX.Element {
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
@@ -72,9 +112,20 @@ export default function Home(): JSX.Element {
 
   const { control } = useForm<Notes>();
 
+  const { control: labelsControl } = useForm<Labels>();
+
   const { fields, append, update, replace, remove } = useFieldArray({
     control,
     name: "note",
+  });
+
+  const { fields: labels,
+      append: appendLabels,
+      update: updateLabels,
+      replace: replaceLabels,
+      remove: removeLabels } = useFieldArray({
+    control: labelsControl,
+    name: "labels",
   });
 
   const parsedUserToken = JSON.parse(
@@ -102,7 +153,8 @@ export default function Home(): JSX.Element {
             value.title === fields[index].title &&
             value.createdAt === fields[index]?.createdAt &&
             value.updatedAt === fields[index]?.updatedAt &&
-            value.state === fields[index]?.state;
+            value.state === fields[index]?.state &&
+            value.labels === fields[index]?.labels;
 
           if (notes.data.length >= fields.length && fields.length - 1 < index) append(value);
           else if (notes.data.length < fields.length) replace(notes.data);
@@ -116,6 +168,34 @@ export default function Home(): JSX.Element {
       window.localStorage.removeItem("user_token");
     }
   };
+
+  const fetchLabels = async () => {
+    try {
+        const getLabels = await api.get(`/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
+
+        if (labels.length === 0) appendLabels(getLabels.data);
+        else if (labels.length >= 1) {
+            getLabels.data.map((value: any, index: number) => {
+    
+            //creating a condition checker by "hand" because i can't
+            //just use value === labels[index], since useFieldArray
+            //inserts it's own id into the array.
+            const labelIsTheSame =
+                value.name === labels[index]?.name &&
+                value.color === labels[index]?.color &&
+                value?.fontColor === labels[index]?.fontColor &&
+                value.type === labels[index]?.type 
+
+            if (getLabels.data.length > labels.length && labels.length - 1 < index) appendLabels(value);
+            else if (getLabels.data.length < labels.length) replaceLabels(getLabels.data);
+            else if (getLabels.data[index]._id === labels[index]?._id && !labelIsTheSame) updateLabels(index, value);
+            else if (getLabels.data.length === labels.length && labelIsTheSame) return;
+          });
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 
   const addNewNote = async () => {
     setNewNote(true);
@@ -176,19 +256,25 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: true
   });
 
+  const { isFetching: labelIsFetching } = useQuery(["fetchLabels", wasChanged], fetchLabels, {
+    refetchOnWindowFocus: false
+  });
+
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
       <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
         {/* @ts-ignore */}
         <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
-          <Nav 
-            navbar={navbar}
-            addNewNote={addNewNote} 
-            expanded={expanded}
-            newNote={newNote}
-            handleSignout={handleSignout}
-            token={parsedUserToken}
-          />
+          <LabelsContext.Provider value={{ labels, removeLabels, fetchLabels, isFetching: labelIsFetching }}>
+            <Nav 
+              navbar={navbar}
+              addNewNote={addNewNote} 
+              expanded={expanded}
+              newNote={newNote}
+              handleSignout={handleSignout}
+              token={parsedUserToken}
+            />
+          </LabelsContext.Provider>
           <div
             className={`!overflow-hidden ${
               navbar && !expanded ? "ml-[60px] xxs:ml-[60px]" : 
@@ -207,14 +293,18 @@ export default function Home(): JSX.Element {
                 expanded={expanded}
               />
         
-              <NavbarContext.Provider value={{ navbar, setNavbar }}>        
-                <NoteDetails 
-                  notes={fields} 
-                  deleteNote={deleteNote} 
-                  remove={remove}
-                  expanded={expanded}
-                  setExpanded={setExpanded}
-                />
+              <NavbarContext.Provider value={{ navbar, setNavbar }}>
+                <RefetchContext.Provider value={{ fetchNotes }}>
+                  <NoteDetails 
+                    notes={fields} 
+                    remove={remove}
+                    labels={labels}
+                    expanded={expanded}
+                    deleteNote={deleteNote} 
+                    setExpanded={setExpanded}
+                    labelIsFetching={labelIsFetching}
+                  />
+                </RefetchContext.Provider>
               </NavbarContext.Provider>
             </div>
           </div>
