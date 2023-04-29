@@ -182,26 +182,31 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
             />
             <label htmlFor="my-modal-4" className="modal cursor-pointer light">
               <label className="modal-box !bg-gray-800 relative transition-all duration-500" htmlFor="">
-                <h3 className="text-xl">Are you sure about that ?</h3>
-                <p className="py-4"> 
-                  Be aware that once deleted, <span className="text-red-600">there is no way to recover it!</span>
+                <div className="flex flex-row justify-between pb-5">
+                    <h3 className="text-2xl tracking-tight font-light text-gray-200">Confirmation</h3>
+                    <label 
+                        htmlFor="my-modal-3" 
+                        className="btn btn-sm btn-circle bg-gray-700"
+                        onClick={() => setChecked(false)}
+                    >
+                        ✕
+                    </label>
+                </div>
+                <p className="text-sm uppercase tracking-widest text-gray-300 xxs:text-xs">
+                    Are you sure you want to delete this label? 
                 </p>
-                <label 
-                  htmlFor="my-modal-4" 
-                  className="btn btn-sm btn-circle absolute right-0 top-0 bg-gray-700"
-                  onClick={() => setChecked(false)}
-                >
-                  ✕
-                </label>
+                <p className="text-xs uppercase tracking-widest text-gray-500 xxs:mt-2 xxs:mb-7">
+                    Once deleted, there is no going back!
+                </p>
                 <div className="mt-3 flex flex-row justify-evenly">
                     <button
-                      className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg"
+                      className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg shadow-md shadow-gray-900"
                       onClick={() => setChecked(!checked)}
                     >
                       Cancel
                     </button>
                     <button 
-                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg"
+                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900"
                       onClick={() => removeNote()}
                     >
                       Delete

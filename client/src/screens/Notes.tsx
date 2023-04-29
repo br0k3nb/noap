@@ -124,12 +124,12 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                         >
                           <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
 
-                          <div className={`h-[173px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[126px]"}`}>
+                          <div className={`h-[184px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[136px]"}`}>
                             <div className="overflow-ellipsis overflow-hidden">
                               {parserdHtml}
                             </div>
 
-                            <div className="mt-1">
+                            <div className="mt-3">
                               {val?.labels?.name && val?.labels?.name !== '' && (
                                 <>
                                   {val.labels.type === "default" ? (
@@ -160,7 +160,7 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                             </div>
                           </div>
 
-                          <div className="mt-5 px-4">
+                          <div className="mt-3 px-4">
                             <p className="text-xs tracking-tighter">
                               {!val?.updatedAt
                                 ? days(val.createdAt) + " at " + hours(val.createdAt)
@@ -182,7 +182,6 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                 <div className="flex flex-col space-y-3 justify-center items-center mt-6">
                   <img src={ghost} className="w-56 opacity-30 md:w-80 lg:w-56" />
                   <p className="!text-gray-400 text-[13px] uppercase tracking-wide">Ouhh, it's quite empty here...</p>
-                  {/* <p className="!text-gray-400 text-[15px] tracking-tight">Start adding notes!</p> */}
                   <div className="mx-auto">
                     <button 
                       className="!mt-4 text-gray-200 text-xs font-light tracking-widest uppercase px-3 mr-5 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out w-full"

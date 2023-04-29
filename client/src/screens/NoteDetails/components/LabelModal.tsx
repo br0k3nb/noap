@@ -79,7 +79,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                 readOnly
             />
             <div className="modal">
-                <div className="modal-box relative !bg-gray-800 !px-0 w-[24rem] max-h-[27rem] !overflow-hidden">
+                <div className="modal-box relative !bg-gray-800 !px-0 w-[24rem] max-h-[27.6rem] !overflow-hidden">
                     <div className="flex flex-row justify-between border border-transparent border-b-gray-600 px-6 pb-5">
                         <h3 className="text-2xl tracking-tight font-light text-gray-200">Select a label</h3>
                         <label 
@@ -90,7 +90,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                             ✕
                         </label>
                     </div>
-                    <div className="">
+                    <div>
                         <div className="mb-8 mt-5 text-gray-300 px-6 ">
                             <p className='text-base uppercase tracking-widest'>Your labels</p>
                             {isFetching ? (
@@ -119,7 +119,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                     </span>
                                 </div>
                             ) : (
-                                <div className="flex flex-col space-y-2 mt-4 text-sm px-1 max-h-[12.8rem] overflow-scroll">
+                                <div className="flex flex-col space-y-2 mt-4 text-sm px-1 max-h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                                     {labels.map((chip: any, idx: number) => {
                                         return (                                        
                                             <div className="flex space-x-2 justify-between pr-2" key={idx}>
@@ -148,7 +148,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                                     <input 
                                                         type="radio"
                                                         name="radio-1" 
-                                                        className="radio"
+                                                        className="radio !bg-gray-600 border !border-gray-400"
                                                         onClick={() => setSelectedLabel(idx)}
                                                     />
                                             </div>
