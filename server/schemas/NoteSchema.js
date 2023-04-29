@@ -18,7 +18,7 @@ export default new mongoose.Schema({
         required: true,
     },
     state: {
-        type: String,
+        type: mongoose.Schema.Types.Mixed,
         required: true,
     },
     userId: {

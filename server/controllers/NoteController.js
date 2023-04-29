@@ -1,4 +1,5 @@
 import Note from '../models/Note.js';
+import NoteState from '../models/NoteState.js';
 import Label from '../models/Label.js';
 
 export default {
@@ -6,9 +7,39 @@ export default {
         try {
             const {userId} = req.params;
 
-            const getActivities = await Note.find({userId}).sort({priority: 1});
+            const aggregate = Note.aggregate(
+                [
+                    {
+                        $match: {
+                          userId
+                        }
+                    }, 
+                    {
+                        $lookup: {
+                          from: 'noteStates', 
+                          localField: 'state', 
+                          foreignField: '_id', 
+                          as: 'state'
+                        }
+                    }, 
+                    {
+                        $unwind: {
+                            path: '$state', 
+                            preserveNullAndEmptyArrays: false
+                        }
+                    }
+                ]
+            );
 
-            res.status(200).json(getActivities);
+            const notes = await Note.aggregatePaginate(aggregate);
+
+            res.status(200).json(notes.docs);
+
+            // const {userId} = req.params;
+
+            // const getActivities = await Note.find({userId}).sort({priority: 1});
+
+            // res.status(200).json(getActivities);
         } catch (err) {
             res.status(400).json({message: err});
         }
@@ -28,15 +59,31 @@ export default {
         try {
             const {title, body, image, state, userId} = req.body;
 
-            await Note.create({
+            const saveState = await NoteState.create({ state });
+
+            const saveNote = await Note.create({
                 title,
                 body,
                 image,
-                state,
+                state: saveState._id,
                 userId
             });
-           
+
+            await NoteState.findOneAndUpdate({_id: saveState._id}, { noteId: saveNote._id });
+
             res.status(200).json({message: 'Saved susccessfuly!'});
+
+            // const {title, body, image, state, userId} = req.body;
+
+            // await Note.create({
+            //     title,
+            //     body,
+            //     image,
+            //     state,
+            //     userId
+            // });
+           
+            // res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
@@ -66,11 +113,20 @@ export default {
     },
     async edit(req, res) {
         try {
-            const {_id, title, body, image, state} = req.body;
+            const { _id, title, body, image, state, stateId } = req.body;
 
-            await Note.findOneAndUpdate({_id}, {title, body, image, state});
+            await Note.findOneAndUpdate({_id}, { title, body, image });
+            const test = await NoteState.findByIdAndUpdate({_id: stateId}, { state });
+
+            console.log(test);
 
             res.status(200).json({message: 'Note updated!'});
+
+            // const {_id, title, body, image, state} = req.body;
+
+            // await Note.findOneAndUpdate({_id}, {title, body, image, state});
+
+            // res.status(200).json({message: 'Note updated!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
@@ -79,7 +135,9 @@ export default {
     async delete(req, res) {
         try {
             const {id} = req.params;
+            const getStateId = await Note.findById({ _id: id });
 
+            await NoteState.findByIdAndDelete(getStateId.state);
             await Note.findByIdAndDelete(id);
             
             res.status(200).json({message: 'Note deleted!'});
