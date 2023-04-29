@@ -119,7 +119,7 @@ export default function App({ notes }: Props): JSX.Element {
           const resultHtml = BSON.deserialize(compressHtml);
 
           const create = await api.patch(
-            `/edit/${parsedUserToken.token}`,
+            `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
             {
               title,
               body: resultHtml.finalHTMLString,

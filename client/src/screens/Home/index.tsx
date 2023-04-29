@@ -144,7 +144,7 @@ export default function Home(): JSX.Element {
 
     try {
       const notes = await api.get(
-        `/notes/${parsedUserToken._id}/${parsedUserToken.token}`
+        `https://noap-typescript-api.vercel.app/notes/${parsedUserToken._id}/${parsedUserToken.token}`
       );
 
       if (fields.length === 0) append(notes.data);
@@ -177,7 +177,7 @@ export default function Home(): JSX.Element {
   // https://noap-typescript-api.vercel.app
   const fetchLabels = async () => {
     try {
-        const getLabels = await api.get(`/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
+        const getLabels = await api.get(`https://noap-typescript-api.vercel.app/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
 
         if (labels.length === 0) appendLabels(getLabels.data);
         else if (labels.length >= 1) {
@@ -211,7 +211,7 @@ export default function Home(): JSX.Element {
 
     try {
       await api.post(
-        `/add/${parsedUserToken.token}`,
+        `https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
         {
           title: "Untitled",
           body: "",
@@ -236,7 +236,7 @@ export default function Home(): JSX.Element {
   const deleteNote = async (_id: string) => {
     try {
       const deleteNote = await api.delete(
-        `/delete/${_id}/${parsedUserToken.token}`
+        `https://noap-typescript-api.vercel.app/delete/${_id}/${parsedUserToken.token}`
       );
       toastAlert({
         icon: "success",
