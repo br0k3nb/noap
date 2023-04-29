@@ -77,7 +77,7 @@ type CustomSaveComp = {
 
 const Editor = forwardRef(
   ({ save, register, saveSpinner, floatingAnchorElem }: Props, ref) => {
-    const [editor] = useLexicalComposerContext();
+    const [ editor ] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
     const noteExpanded = useContext(ExpandedContext);

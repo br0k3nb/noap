@@ -4,6 +4,9 @@ import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { CLEAR_HISTORY_COMMAND } from "lexical";
 
+import { pack, unpack } from "msgpackr";
+import { BSON } from 'bson';
+
 import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
 import { SharedHistoryContext } from "./context/SharedHistoryContext";
 import PlaygroundNodes from "./nodes/PlaygroundNodes";
@@ -25,7 +28,17 @@ type Notes = {
     title?: string;
     body: string;
     image?: string;
-    state: string;
+    state: {
+      _id: string;
+      state: string;
+    };
+    labels?: {
+      _id: string;
+      name: string;
+      type: string;
+      color: string;
+      fontColor: string;
+    };
     updatedAt?: string;
     createdAt: string;
   }[];
@@ -69,59 +82,72 @@ export default function App({ notes }: Props): JSX.Element {
     
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
-      
+
       const title = editorRef?.current.firstChild.children[0].childNodes[0].children[0].value;
       const body = editorRef?.current.firstChild.children[1].innerHTML;
       
-    const removeClasses = body.replace(/class="[^"]+"/gm, '');
-    const removeLowerCaseContentEditable = removeClasses.replace(/contenteditable="[^"]+"/gm, '');
-    const removeCamelCaseContentEditable = removeLowerCaseContentEditable.replace(/contentEditable="[^"]+"/gm, '');
-    const findImages = removeCamelCaseContentEditable.match(/<img[^>]+>/gm);
-    const removeImages = findImages && removeCamelCaseContentEditable.replace(/<img[^>]+>/gm, '');
+      const removeClasses = body.replace(/class="[^"]+"/gm, '');
+      const removeLowerCaseContentEditable = removeClasses.replace(/contenteditable="[^"]+"/gm, '');
+      const removeCamelCaseContentEditable = removeLowerCaseContentEditable.replace(/contentEditable="[^"]+"/gm, '');
+      const findImages = removeCamelCaseContentEditable.match(/<img[^>]+>/gm);
+      const removeImages = findImages && removeCamelCaseContentEditable.replace(/<img[^>]+>/gm, '');
 
-    const finalHTMLString =
-    removeImages ? removeImages.replace(/<[^/>][^>]*><\/[^>]+>/gm, '') 
-    : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
-    
-    const getImage = () => {
+      const finalHTMLString =
+      removeImages ? removeImages.replace(/<[^/>][^>]*><\/[^>]+>/gm, '') 
+      : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
+      
+      let images = '';
+
       if(findImages && findImages.length !== 0) {
         const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
-        return removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[55.5px] w-[163px] xxs:w-[159px]">');
+        images = removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[55.5px] w-[163px] xxs:w-[159px]">');
       }
-      else return 'no image attached';
-    }
-    
-    try {
-      if (currentState) {
-        const create = await api.patch(
-          `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
-          {
-            title,
-            body: finalHTMLString,
-            image: getImage(),
-            state: JSON.stringify(currentState),
-            _id: notes[(noteContext?.selectedNote as number)]._id 
-          }
-        );
-        
-        noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
-        setSaveSpinner(false);
-        
+      else images = 'no image attached';
+      
+      try {
+        if (currentState) {
+          console.log(currentState);
+          const state = JSON.stringify(currentState);
+          
+          const compressState = pack({state});
+          const resultState = unpack(compressState);
+
+          const compressImg = BSON.serialize({images});
+          const resultImg = BSON.deserialize(compressImg);
+
+          const compressHtml = BSON.serialize({finalHTMLString});
+          const resultHtml = BSON.deserialize(compressHtml);
+
+          const create = await api.patch(
+            `/edit/${parsedUserToken.token}`,
+            {
+              title,
+              body: resultHtml.finalHTMLString,
+              image: resultImg.images,
+              state: resultState.state,
+              _id: notes[(noteContext?.selectedNote as number)]._id,
+              stateId: notes[(noteContext?.selectedNote as number)].state._id
+            }
+          );
+          
+          noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
+          setSaveSpinner(false);
+          
+          toastAlert({
+            icon: "success",
+            title: `${create.data.message}`,
+            timer: 2000,
+          });
+        }
+      } catch (err: any) {
+        console.log(err);
+
         toastAlert({
-          icon: "success",
-          title: `${create.data.message}`,
+          icon: "error",
+          title: `${err.response.data.message}`,
           timer: 2000,
         });
       }
-    } catch (err: any) {
-      console.log(err);
-
-      toastAlert({
-        icon: "error",
-        title: `${err.response.data.message}`,
-        timer: 2000,
-      });
-    }
   };
 
   const initialConfig = {
@@ -136,14 +162,14 @@ export default function App({ notes }: Props): JSX.Element {
 
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
-    
+
     if(lastSelectedNotes.current !== noteContext?.selectedNote || noteExpanded?.expanded !== lastExpanded.current) {
       setTimeout(() => {
         reset({
           title: notes[noteContext?.selectedNote as number].title,
         });
 
-        const editorState = editor.parseEditorState(JSON.parse(notes[noteContext?.selectedNote as number].state));
+        const editorState = editor.parseEditorState((notes[noteContext?.selectedNote as number].state.state));
         editor.setEditorState(editorState);
         editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
       }); 
@@ -155,16 +181,16 @@ export default function App({ notes }: Props): JSX.Element {
       <SharedHistoryContext>
         <TableContext>
           <SharedAutocompleteContext>
-            <div className="editor-shell h-screen w-fit overflow-hidden absolute">
+            <div className="editor-shell h-screen w-fit overflow-hidden absolute ">
               {/* @ts-ignore */}
               <UpdatePlugin />
-              <Editor
-                ref={editorRef}
-                save={saveNote}
-                register={register}
-                saveSpinner={saveSpinner}
-                floatingAnchorElem={floatingAnchorElem}
-              />
+                <Editor
+                  ref={editorRef}
+                  save={saveNote}
+                  register={register}
+                  saveSpinner={saveSpinner}
+                  floatingAnchorElem={floatingAnchorElem}
+                />
             </div>
           </SharedAutocompleteContext>
         </TableContext>

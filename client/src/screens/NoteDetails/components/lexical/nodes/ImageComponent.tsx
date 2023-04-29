@@ -35,6 +35,9 @@ import {
 } from "lexical";
 
 import { Suspense, useCallback, useEffect, useRef, useState, useContext } from "react";
+import { motion } from "framer-motion";
+
+import { BsSave, BsTrash, BsThreeDotsVertical } from 'react-icons/bs';
 
 import { createWebsocketProvider } from "../collaboration";
 import { useSettings } from "../context/SettingsContext";
@@ -135,6 +138,8 @@ export default function ImageComponent({
   >(null);
   const activeEditorRef = useRef<LexicalEditor | null>(null);
 
+  const [ hover, setHover ] = useState(false);
+
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
       if (isSelected && $isNodeSelection($getSelection())) {
@@ -201,6 +206,30 @@ export default function ImageComponent({
     [caption, editor, setSelected]
   );
 
+  const onMouseClick = (payload: MouseEvent) => {
+    const event = payload;
+    
+    if((event.target as any)?.id && (event.target as any)?.id === 'delete') {
+      const ev = new KeyboardEvent('keypress', { key: 'Delete', keyCode: 46 });
+      onDelete(ev);
+    }
+
+    if (isResizing) {
+      return true;
+    }
+    if (event.target === imageRef.current) {
+      if (event.shiftKey) {
+        setSelected(!isSelected);
+      } else {
+        clearSelection();
+        setSelected(true);
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   useEffect(() => {
     let isMounted = true;
     const unregister = mergeRegister(
@@ -219,24 +248,7 @@ export default function ImageComponent({
       ),
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
-        (payload) => {
-          const event = payload;
-
-          if (isResizing) {
-            return true;
-          }
-          if (event.target === imageRef.current) {
-            if (event.shiftKey) {
-              setSelected(!isSelected);
-            } else {
-              clearSelection();
-              setSelected(true);
-            }
-            return true;
-          }
-
-          return false;
-        },
+        onMouseClick,
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
@@ -278,7 +290,7 @@ export default function ImageComponent({
     onDelete,
     onEnter,
     onEscape,
-    setSelected,
+    setSelected
   ]);
 
   const setShowCaption = () => {
@@ -321,26 +333,101 @@ export default function ImageComponent({
 
   const noteExpanded = useContext(ExpandedContext);
 
+  const donwloadImage = (srcLink: string) => {
+    const a = Object.assign(document.createElement("a"), {
+      href: srcLink,
+      style:"display:none",
+      download: "image"
+    });
+
+    document.body.appendChild(a);
+    console.log(JSON.stringify(editor.getEditorState()));
+
+    a.click();
+    a.remove();
+  }
+
+  const resizeBar = typeof width === "number" && width <= 257;
+
   return (
     <Suspense fallback={null}>
-      <>
-        <div draggable={draggable} className="!object-cover !rounded-lg">
-          <LazyImage
-            className={
-              isFocused
-                ? `focused !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${$isNodeSelection(selection) ? "draggable" : ""}`
-                : '!rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen'
-            }
-            src={src}
-            altText={altText}
-            imageRef={imageRef}
-            width={width}
-            height={height}
-            maxWidth={!noteExpanded?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}
-          />
+      <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+        <div draggable={draggable} className="!object-cover !rounded-lg !relative">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.3  }}
+              className={`!absolute bottom-0 !bg-slate-900 !z-50 w-full rounded-b-lg h-8 hidden ${hover && '!inline'}`}
+            >
+              <div className="flex flex-row space-x-2 px-2 pt-1 justify-between">  
+                <a 
+                  className="flex space-x-2 bg-gray-700 rounded-full px-2 py-1 active:bg-gray-800 transition-all duration-150"
+                  onClick={() => donwloadImage(src)}
+                >
+                  <p 
+                    className={`text-[11px] uppercase tracking-widest text-gray-300`}
+                    style={resizeBar ? {
+                      fontSize: 9,
+                      paddingTop: 1
+                    }: undefined}
+                  >
+                    Download
+                  </p>
+                  <BsSave size={resizeBar ? 14 : 16} style={resizeBar ? {paddingTop: 2} : undefined} />
+                </a>
+                {/* <a className="flex space-x-2 bg-gray-700 rounded-full px-2 py-1 active:bg-gray-800 transition-all duration-150">
+                  <p className="text-[11px] uppercase tracking-widest text-gray-300">Delete</p>
+                  <BsTrash size={16} className="" />
+                </a> */}
+                <div className="dropdown dropdown-top">
+                  <label 
+                    tabIndex={0}
+                    className={`text-[11px] uppercase tracking-widest rounded-full text-gray-300`}
+                    style={resizeBar ? {
+                      fontSize: 10,
+                      paddingTop: 1
+                    }: undefined}
+                  >
+                    <div className="flex !bg-gray-700 rounded-full py-1 px-2">
+                      <p>Options</p>  
+                      <BsThreeDotsVertical size={resizeBar ? 13 : 15} style={resizeBar ? {paddingTop: 2} : undefined} />
+                    </div>
+                  </label>
+                  <ul tabIndex={0} className="dropdown-content menu shadow bg-base-100 rounded-box w-36">
+                    <li className="text-xs uppercase tracking-widest">
+                      <a className="active:!bg-gray-600">Move up</a>
+                    </li>
+                    <li className="text-xs uppercase tracking-widest">
+                      <a className="active:!bg-gray-600">Move down</a>
+                    </li>
+                    <li className="text-xs uppercase tracking-widest">
+                      <a
+                        id="delete"
+                        className="active:!bg-gray-600"
+                        onClick={() => setSelected(true)}
+                      >
+                        Delete image</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+            <LazyImage
+              className={
+                isFocused
+                  ? `z-10 focused !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${$isNodeSelection(selection) ? "draggable" : ""}`
+                  : `z-10 !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${hover && "mb-[0.365rem]"}`
+              }
+              src={src}
+              altText={altText}
+              imageRef={imageRef}
+              width={width}
+              height={height}
+              maxWidth={!noteExpanded?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}
+            />
         </div>
         {showCaption && (
-          <div className="image-caption-container">
+          <div className="image-caption-container rounded-b-lg">
             <LexicalNestedComposer initialEditor={caption}>
               <AutoFocusPlugin />
               <MentionsPlugin />
@@ -385,7 +472,7 @@ export default function ImageComponent({
             captionsEnabled={captionsEnabled}
           />
         )}
-      </>
+      </div>
     </Suspense>
   );
 }

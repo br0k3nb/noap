@@ -26,7 +26,10 @@ type Notes = {
     title?: string;
     body: string;
     image?: string;
-    state: string;
+    state: {
+      _id: string;
+      state: string;
+    };
     labels?: {
       _id: string;
       name: string;

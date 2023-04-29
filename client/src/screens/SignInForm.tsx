@@ -87,7 +87,7 @@ export default function SignInForm() {
     try {
       const { email, password } = data;
 
-      const signIn = await api.post("https://noap-typescript-api.vercel.app/sign-in", { email, password });
+      const signIn = await api.post("/sign-in", { email, password });
 
       setSvgLoader("");
 

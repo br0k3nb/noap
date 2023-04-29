@@ -18,7 +18,10 @@ type Notes = {
     title?: string;
     body: string;
     image?: string;
-    state: string;
+    state: {
+      _id: string;
+      state: string;
+    };
     updatedAt?: string;
     createdAt: string;
   }[];

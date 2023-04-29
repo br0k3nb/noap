@@ -15,7 +15,7 @@ export default function FileInput({
 }: Props): JSX.Element {
   return (
     <div className="Input__wrapper">
-      <label className="Input__label !text-gray-200">{label}</label>
+      <label className="Input__label !text-gray-200 text-xs uppercase tracking-widest">{label}</label>
       <input
         type="file"
         accept={accept}

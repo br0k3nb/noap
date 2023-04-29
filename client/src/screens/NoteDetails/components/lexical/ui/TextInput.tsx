@@ -17,10 +17,10 @@ export default function TextInput({
 }: Props): JSX.Element {
   return (
     <div className="Input__wrapper">
-      <label className="Input__label !text-gray-200">{label}</label>
+      <label className="Input__label !text-gray-200 text-xs uppercase tracking-widest">{label}</label>
       <input
         type="text"
-        className="Input__input !bg-gray-700"
+        className="Input__input !bg-gray-700 placeholder:text-xs placeholder:uppercase placeholder:tracking-widest"
         placeholder={placeholder}
         value={value}
         onChange={(e) => {

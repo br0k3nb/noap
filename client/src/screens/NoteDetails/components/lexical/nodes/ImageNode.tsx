@@ -8,7 +8,7 @@ import type {
   NodeKey,
   SerializedEditor,
   SerializedLexicalNode,
-  Spread,
+  Spread
 } from "lexical";
 
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
@@ -216,17 +216,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 }
 
-export function $createImageNode({
-  altText,
-  height,
-  maxWidth,
-  captionsEnabled,
-  src,
-  width,
-  showCaption,
-  caption,
-  key,
-}: ImagePayload): ImageNode {
+export function $createImageNode(payload: ImagePayload): ImageNode { 
+  const { src, altText, maxWidth, width, height, showCaption, caption, captionsEnabled, key } = payload;
   return $applyNodeReplacement(
     new ImageNode(
       src,
