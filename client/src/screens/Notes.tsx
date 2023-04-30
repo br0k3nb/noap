@@ -124,16 +124,16 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                         >
                           <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
 
-                          <div className={`h-[184px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[136px]"}`}>
+                          <div className={`h-[184px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[134.5px]"}`}>
                             <div className="overflow-ellipsis overflow-hidden">
                               {parserdHtml}
                             </div>
 
                             <div className="mt-3">
                               {val?.labels?.name && val?.labels?.name !== '' && (
-                                <>
+                                <div className="truncate">
                                   {val.labels.type === "default" ? (
-                                    <span 
+                                    <p 
                                       className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
                                       style={{
                                         backgroundColor: val.labels.color,
@@ -141,10 +141,10 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                                         color: val.labels.fontColor
                                       }}
                                     >
-                                      {val?.labels?.name}
-                                    </span>
+                                      {val?.labels?.name.slice(0, 13)}
+                                    </p>
                                   ) : (
-                                    <div 
+                                    <p 
                                       className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
                                       style={{
                                         backgroundColor: 'transparent !important',
@@ -153,9 +153,9 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                                       }}
                                     >
                                       {val?.labels?.name}
-                                    </div>
+                                    </p>
                                   )}
-                                </>
+                                </div>
                               )}
                             </div>
                           </div>

@@ -9,7 +9,11 @@ import {
   BsJournalPlus,
   BsTagFill,
   BsFillCalendarEventFill,
-  BsDoorOpenFill
+  BsDoorOpenFill,
+  BsPeopleFill,
+  BsGlobe2, 
+  BsGearWide,
+  BsGlobeAmericas
 } from "react-icons/bs";
 
 import { BiLock } from "react-icons/bi";
@@ -327,14 +331,22 @@ export default function Nav({
                 <BsTagFill className="text-gray-300" size={23} />
               </a>
             </div>
-            <div className="tooltip tooltip-right text-gray-300" data-tip="Events">
-              <a
-                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-                href="#"
+            {/* <div className="tooltip tooltip-right text-gray-300" data-tip="Events"> */}
+              <button
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+                disabled={true}
               >
                 <BsFillCalendarEventFill className="text-gray-300 " size={22} />
-              </a>
-            </div>
+              </button>
+            {/* </div> */}
+            {/* <div className="tooltip tooltip-right text-gray-300" data-tip="Settings"> */}
+              <button
+                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+                disabled={true}
+              >
+                <BsGearWide className="text-gray-300 " size={22} />
+              </button>
+            {/* </div> */}
           </div>
         </div>
       </div>

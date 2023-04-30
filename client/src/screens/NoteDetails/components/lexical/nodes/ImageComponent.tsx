@@ -392,12 +392,12 @@ export default function ImageComponent({
                       <BsThreeDotsVertical size={resizeBar ? 13 : 15} style={resizeBar ? {paddingTop: 2} : undefined} />
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-36 !bg-gray-700">
+                  <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-36 !bg-gray-800">
                     <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-600/70">Move up</a>
+                      <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move up</a>
                     </li>
                     <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-600/70">Move down</a>
+                      <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move down</a>
                     </li>
                     <li className="text-xs uppercase tracking-widest">
                       <a

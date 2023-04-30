@@ -79,7 +79,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                 readOnly
             />
             <div className="modal">
-                <div className="modal-box relative !bg-gray-800 !px-0 w-[24rem] max-h-[27.6rem] !overflow-hidden">
+                <div className="modal-box relative !bg-gray-800 !px-0 xxs:!w-[18rem] w-[24rem] max-h-[27.6rem] !overflow-hidden">
                     <div className="flex flex-row justify-between border border-transparent border-b-gray-600 px-6 pb-5">
                         <h3 className="text-2xl tracking-tight font-light text-gray-200">Select a label</h3>
                         <label 
@@ -91,19 +91,19 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                         </label>
                     </div>
                     <div>
-                        <div className="mb-8 mt-5 text-gray-300 px-6 ">
+                        <div className="mb-8 mt-5 text-gray-300 px-6">
                             <p className='text-base uppercase tracking-widest'>Your labels</p>
                             {isFetching ? (
                                 <div
                                     className='flex flex-row justify-center animate-pulse my-12'
                                 >
                                     <svg
-                                    aria-hidden="true"
-                                    role="status"
-                                    className="inline w-5 h-5 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]"
-                                    viewBox="0 0 100 101"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
+                                        aria-hidden="true"
+                                        role="status"
+                                        className="inline w-5 h-5 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]"
+                                        viewBox="0 0 100 101"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
                                     >
                                     <path
                                         d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -115,7 +115,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                     />
                                     </svg>
                                     <span className="pb-[2px] xxs:pt-[2.4px] uppercase tracking-widest">
-                                    Loading...
+                                        Loading...
                                     </span>
                                 </div>
                             ) : (
@@ -125,17 +125,17 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                             <div className="flex space-x-2 justify-between pr-2" key={idx}>
                                                 {chip.type === 'outlined' ? (
                                                     <div 
-                                                    className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest"
-                                                    style={{
-                                                        borderColor: chip.color,
-                                                        color: chip.color
-                                                    }}
-                                                >
-                                                    {chip.name}
-                                                </div>
+                                                        className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate"
+                                                        style={{
+                                                            borderColor: chip.color,
+                                                            color: chip.color
+                                                        }}
+                                                    >
+                                                        {chip.name}
+                                                    </div>
                                                 ) : (
                                                     <div 
-                                                        className="badge badge-accent !py-3 uppercase text-xs tracking-widest"
+                                                        className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate"
                                                         style={{
                                                             backgroundColor: chip.color,
                                                             borderColor: chip.color,
