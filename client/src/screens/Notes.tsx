@@ -104,7 +104,6 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
             {notes.length > 0 ? (
                 <>
                   {notes.map((val, idx) => {
-                    const parserdHtml = parse(val.body);
 
                     const parsedImage =
                       val.image !== "no image attached"
@@ -123,12 +122,12 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                           }`}
                         >
                           <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
-
                           <div className={`h-[184px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[134.5px]"}`}>
-                            <div className="overflow-ellipsis overflow-hidden">
-                              {parserdHtml}
+                            <div className="!w-[135px] overflow-ellipsis overflow-hidden">
+                              <p className="overflow-ellipsis overflow-hidden">
+                                {val.body}
+                              </p>
                             </div>
-
                             <div className="mt-3">
                               {val?.labels?.name && val?.labels?.name !== '' && (
                                 <div className="truncate">

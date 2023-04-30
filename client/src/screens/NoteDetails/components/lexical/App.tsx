@@ -83,20 +83,14 @@ export default function App({ notes }: Props): JSX.Element {
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
 
+      let images = ''
+
       const title = editorRef?.current.firstChild.children[0].childNodes[0].children[0].value;
       const body = editorRef?.current.firstChild.children[1].innerHTML;
       
-      const removeClasses = body.replace(/class="[^"]+"/gm, '');
-      const removeLowerCaseContentEditable = removeClasses.replace(/contenteditable="[^"]+"/gm, '');
-      const removeCamelCaseContentEditable = removeLowerCaseContentEditable.replace(/contentEditable="[^"]+"/gm, '');
-      const findImages = removeCamelCaseContentEditable.match(/<img[^>]+>/gm);
-      const removeImages = findImages && removeCamelCaseContentEditable.replace(/<img[^>]+>/gm, '');
-
-      const finalHTMLString =
-      removeImages ? removeImages.replace(/<[^/>][^>]*><\/[^>]+>/gm, '') 
-      : removeCamelCaseContentEditable.replace(/<[^/>][^>]*><\/[^>]+>/gm, '');
-      
-      let images = '';
+      const findImages = body.match(/<img[^>]+>/gm);
+      const removeAllHtmlTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
+      const finalBody = removeAllHtmlTags.replace(/DownloadDelete/gm, "");
 
       if(findImages && findImages.length !== 0) {
         const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
@@ -106,29 +100,25 @@ export default function App({ notes }: Props): JSX.Element {
       
       try {
         if (currentState) {
-          console.log(currentState);
           const state = JSON.stringify(currentState);
           
           const compressState = pack({state});
           const resultState = unpack(compressState);
 
           const compressImg = BSON.serialize({images});
-          const resultImg = BSON.deserialize(compressImg);
-
-          const compressHtml = BSON.serialize({finalHTMLString});
-          const resultHtml = BSON.deserialize(compressHtml);
+          const resultImg = BSON.deserialize(compressImg)
 
           const create = await api.patch(
             `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
             {
               title,
-              body: resultHtml.finalHTMLString,
+              body: finalBody.length > 100 ? finalBody.slice(0,100) : finalBody,
               image: resultImg.images,
               state: resultState.state,
               _id: notes[(noteContext?.selectedNote as number)]._id,
               stateId: notes[(noteContext?.selectedNote as number)].state._id
             }
-          );
+            );
           
           noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
           setSaveSpinner(false);

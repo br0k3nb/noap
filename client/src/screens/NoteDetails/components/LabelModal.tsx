@@ -131,7 +131,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                                             color: chip.color
                                                         }}
                                                     >
-                                                        {chip.name}
+                                                        {chip.name.length > 25 ? chip.name.slice(0,25) + '...' : chip.name}
                                                     </div>
                                                 ) : (
                                                     <div 
@@ -142,7 +142,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                                             color: chip.fontColor
                                                         }}
                                                     >
-                                                        {chip.name}
+                                                        {chip.name.length > 25 ? chip.name.slice(0,25) + '...' : chip.name}
                                                     </div>
                                                 )}
                                                     <input 
