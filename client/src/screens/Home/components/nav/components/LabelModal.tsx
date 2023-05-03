@@ -7,7 +7,7 @@ import {
 
 import { useForm, FieldValues } from 'react-hook-form';
 
-import { BsFillTrashFill, BsThreeDotsVertical } from 'react-icons/bs';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
 
 import { HexColorPicker } from "react-colorful";

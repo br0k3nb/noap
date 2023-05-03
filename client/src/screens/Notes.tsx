@@ -30,13 +30,13 @@ type Notes = {
       _id: string;
       state: string;
     };
-    labels?: {
+    labels?: [{
       _id: string;
       name: string;
       type: string;
       color: string;
       fontColor: string;
-    };
+    }];
     updatedAt?: string;
     createdAt: string;
   }[];
@@ -125,37 +125,57 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                           <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[148px]"}`}>
                             <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
                               <p>
-                                {val?.labels?.name && !parsedImage ? val.body.slice(0,110).concat('...') : 
-                                val?.labels?.name && parsedImage ? val.body.slice(0, 73) + '...' : val.body}
+                                {val?.labels && !parsedImage ? val.body.slice(0,110).concat('...') : 
+                                val?.labels && parsedImage ? val.body.slice(0, 73) + '...' : val.body}
                               </p>
                             </div>
                             <div className="mt-1">
-                              {val?.labels?.name && val?.labels?.name !== '' && (
-                                <div className="truncate">
-                                  {val.labels.type === "default" ? (
-                                    <p 
-                                      className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
-                                      style={{
-                                        backgroundColor: val.labels.color,
-                                        borderColor: val.labels.color,
-                                        color: val.labels.fontColor
-                                      }}
-                                    >
-                                      {val?.labels?.name.slice(0, 13)}
-                                    </p>
-                                  ) : (
-                                    <p 
-                                      className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
-                                      style={{
-                                        backgroundColor: 'transparent !important',
-                                        borderColor: val.labels.color,
-                                        color: val.labels.color
-                                      }}
-                                    >
-                                      {val?.labels?.name}
-                                    </p>
-                                  )}
-                                </div>
+                              {val?.labels && (
+                                <>
+                                  <div className="truncate">
+                                    {val.labels[0].type === "default" ? (
+                                      <div className="flex space-x-1">
+                                        <p 
+                                          className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
+                                          style={{
+                                            backgroundColor: val.labels[0].color,
+                                            borderColor: val.labels[0].color,
+                                            color: val.labels[0].fontColor
+                                          }}
+                                        >
+                                           {val.labels[0].name.length > 14 ? val.labels[0].name.slice(0, 8) + '...' : val.labels[0].name}
+                                        </p>
+                                        {val.labels.length > 1 && (
+                                          <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">
+                                              {'+ ' + val.labels.length}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div> 
+                                    ) : (
+                                      <div className="flex space-x-1">
+                                        <p 
+                                          className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
+                                          style={{
+                                            backgroundColor: 'transparent !important',
+                                            borderColor: val.labels[0].color,
+                                            color: val.labels[0].color
+                                          }}
+                                        >
+                                          {val.labels[0].name.length > 14 ? val.labels[0].name.slice(0, 14) + '...' : val.labels[0].name}
+                                        </p>
+                                        {val.labels.length > 1 && (
+                                          <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">
+                                              {'+ ' + val.labels.length}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
                               )}
                             </div>
                           </div>

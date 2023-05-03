@@ -1,11 +1,12 @@
 import {
     SetStateAction,
     Dispatch,
-    useState,
     useContext
 } from 'react';
 
 import { FieldArrayWithId, FieldValues, useForm } from 'react-hook-form';
+
+import { AiFillTags } from 'react-icons/ai';
 
 import api from '../../../services/api';
 
@@ -35,10 +36,7 @@ type Labels = {
 
 export default function LabelModal({ checked, setChecked, isFetching, labels, selectedNote }: Props) {
 
-    const { register, handleSubmit, watch } = useForm();
-
-    const [ loader, setLoader ] = useState(false);
-    const [ selectedLabel, setSelectedLabel ] = useState<number | null>(null);
+    const { register, handleSubmit} = useForm();
     
     const refetch = useContext(RefetchContext);
 
@@ -47,7 +45,6 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
     );
 
     const addLabel = async (data: FieldValues) => {
-        setLoader(true);
         try {
             const labels = [];
 
@@ -63,24 +60,9 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
             });
 
             toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
-            setLoader(false);
             refetch?.fetchNotes();
-
-            // if(selectedLabel !== null && selectedNote) {
-            //     const findLabel = labels[selectedLabel]
-    
-            //     const attachLabel = await api.post(`https://noap-typescript-api.vercel.app/note/add/label/${token.token}`, { 
-            //         labelId: findLabel._id,
-            //         noteId: selectedNote 
-            //     });
-            //     toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
-            //     setLoader(false);
-            //     refetch?.fetchNotes();
-            // }
-            // else 
         } catch (err: any) {
             console.log(err);
-            setLoader(false);
             toastAlert({
                 icon: "error",
                 title: `${err.response.data.message}`,
@@ -138,7 +120,7 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                         Loading...
                                     </span>
                                 </div>
-                            ) : (
+                            ) : labels.length > 0 ? (
                                 <div className="flex flex-col space-y-2 mt-4 text-sm px-1 max-h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                                     <form onSubmit={handleSubmit(addLabel)}>
                                         <div className="mb-7">
@@ -169,13 +151,6 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        {/* <input 
-                                                            type="radio"
-                                                            name="radio-1" 
-                                                            className="radio !bg-gray-600 border !border-gray-400"
-                                                            onClick={() => setSelectedLabel(idx)}
-                                                        /> */}
-
                                                         <div className="form-control">
                                                             <label className="label cursor-pointer">
                                                                 <input 
@@ -193,24 +168,19 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                             <button
                                                 type='submit'
                                                 className='text-[14px] hover:text-[15px] uppercase tracking-widest text-gray-300 mt-5 transition-all duration-500'
-                                                // onClick={() => addLabel()}
                                             >
                                                 Attach label
                                             </button>
                                         </div>
                                     </form>
                                 </div>    
+                            ) : (
+                                <div className="flex flex-col space-y-4 items-center justify-center mt-5 text-gray-500">
+                                    <AiFillTags size={60} className='!mt-5'/>
+                                    <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>Your labels will appear here!</p>
+                                </div>
                             )}
                         </div>
-                        {/* <div className="border border-transparent border-t-gray-400 flex items-center justify-center">
-                            <button
-                                type='submit'
-                                className='text-[14px] hover:text-[15px] uppercase tracking-widest text-gray-300 mt-5 transition-all duration-500'
-                                // onClick={() => addLabel()}
-                            >
-                                Attach label
-                            </button>
-                        </div> */}
                     </div>
                 </div>
             </div>      

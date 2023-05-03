@@ -90,6 +90,10 @@ export default function App({ notes }: Props): JSX.Element {
       const body = editorRef?.current.firstChild.children[1].innerHTML;
       
       const findImages = body.match(/<img[^>]+>/gm);
+      // const getText = body.match(/(?:<span data-lexical-text="true">)([\s\S]*)(?:<\/span>)/);
+
+      // console.log(getText);
+
       const removeAllHtmlTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
       const finalBody = removeAllHtmlTags.replace(/DownloadDelete/gm, "");
 
