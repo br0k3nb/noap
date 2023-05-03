@@ -5,7 +5,7 @@ import {
     useContext
 } from 'react';
 
-import { FieldArrayWithId } from 'react-hook-form';
+import { FieldArrayWithId, FieldValues, useForm } from 'react-hook-form';
 
 import api from '../../../services/api';
 
@@ -34,6 +34,9 @@ type Labels = {
 };
 
 export default function LabelModal({ checked, setChecked, isFetching, labels, selectedNote }: Props) {
+
+    const { register, handleSubmit, watch } = useForm();
+
     const [ loader, setLoader ] = useState(false);
     const [ selectedLabel, setSelectedLabel ] = useState<number | null>(null);
     
@@ -43,21 +46,38 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
         window.localStorage.getItem("user_token") || "{}"
     );
 
-    const addLabel = async () => {
+    const addLabel = async (data: FieldValues) => {
         setLoader(true);
         try {
-            if(selectedLabel !== null && selectedNote) {
-                const findLabel = labels[selectedLabel]
-    
-                const attachLabel = await api.post(`https://noap-typescript-api.vercel.app/note/add/label/${token.token}`, { 
-                    labelId: findLabel._id,
-                    noteId: selectedNote 
-                });
-                toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
-                setLoader(false);
-                refetch?.fetchNotes();
+            const labels = [];
+
+            for (const [key, value] of Object.entries(data)) {
+                if(value) labels.push(key);
             }
-            else return toastAlert({icon: "error", title: `Please, select a label!`, timer: 2000});
+
+            if(labels.length === 0) return toastAlert({icon: "error", title: `Please, select a label!`, timer: 2000});
+
+            const attachLabel = await api.post(`/note/add/label/${token.token}`, { 
+                labels,
+                noteId: selectedNote 
+            });
+            
+            toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
+            setLoader(false);
+            refetch?.fetchNotes();
+
+            // if(selectedLabel !== null && selectedNote) {
+            //     const findLabel = labels[selectedLabel]
+    
+            //     const attachLabel = await api.post(`https://noap-typescript-api.vercel.app/note/add/label/${token.token}`, { 
+            //         labelId: findLabel._id,
+            //         noteId: selectedNote 
+            //     });
+            //     toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
+            //     setLoader(false);
+            //     refetch?.fetchNotes();
+            // }
+            // else 
         } catch (err: any) {
             console.log(err);
             setLoader(false);
@@ -91,11 +111,11 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                         </label>
                     </div>
                     <div>
-                        <div className="mb-8 mt-5 text-gray-300 px-6">
-                            <p className='text-base uppercase tracking-widest'>Your labels</p>
+                        <div className="mb-8 mt-5 text-gray-300">
+                            <p className='text-base uppercase tracking-widest px-6'>Your labels</p>
                             {isFetching ? (
                                 <div
-                                    className='flex flex-row justify-center animate-pulse my-12'
+                                    className='flex flex-row justify-center animate-pulse my-12 px-6'
                                 >
                                     <svg
                                         aria-hidden="true"
@@ -120,52 +140,77 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
                                 </div>
                             ) : (
                                 <div className="flex flex-col space-y-2 mt-4 text-sm px-1 max-h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
-                                    {labels.map((chip: any, idx: number) => {
-                                        return (                                        
-                                            <div className="flex space-x-2 justify-between pr-2" key={idx}>
-                                                {chip.type === 'outlined' ? (
-                                                    <div 
-                                                        className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate"
-                                                        style={{
-                                                            borderColor: chip.color,
-                                                            color: chip.color
-                                                        }}
-                                                    >
-                                                        {chip.name.length > 25 ? chip.name.slice(0,25) + '...' : chip.name}
+                                    <form onSubmit={handleSubmit(addLabel)}>
+                                        <div className="mb-7">
+                                            {labels.map((chip: any, idx: number) => {
+                                                return (                                        
+                                                    <div className="flex space-x-2 justify-between px-6" key={idx}>
+                                                        <div className="my-auto">
+                                                            {chip.type === 'outlined' ? (
+                                                                <div 
+                                                                    className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate"
+                                                                    style={{
+                                                                        borderColor: chip.color,
+                                                                        color: chip.color
+                                                                    }}
+                                                                >
+                                                                    {chip.name.length > 25 ? chip.name.slice(0,25) + '...' : chip.name}
+                                                                </div>
+                                                            ) : (
+                                                                <div 
+                                                                    className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate"
+                                                                    style={{
+                                                                        backgroundColor: chip.color,
+                                                                        borderColor: chip.color,
+                                                                        color: chip.fontColor
+                                                                    }}
+                                                                >
+                                                                    {chip.name.length > 25 ? chip.name.slice(0,25) + '...' : chip.name}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {/* <input 
+                                                            type="radio"
+                                                            name="radio-1" 
+                                                            className="radio !bg-gray-600 border !border-gray-400"
+                                                            onClick={() => setSelectedLabel(idx)}
+                                                        /> */}
+
+                                                        <div className="form-control">
+                                                            <label className="label cursor-pointer">
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    className="checkbox !h-5 !w-5"
+                                                                    {...register(`${chip._id}`)}
+                                                                />
+                                                            </label>
+                                                        </div>
                                                     </div>
-                                                ) : (
-                                                    <div 
-                                                        className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate"
-                                                        style={{
-                                                            backgroundColor: chip.color,
-                                                            borderColor: chip.color,
-                                                            color: chip.fontColor
-                                                        }}
-                                                    >
-                                                        {chip.name.length > 25 ? chip.name.slice(0,25) + '...' : chip.name}
-                                                    </div>
-                                                )}
-                                                    <input 
-                                                        type="radio"
-                                                        name="radio-1" 
-                                                        className="radio !bg-gray-600 border !border-gray-400"
-                                                        onClick={() => setSelectedLabel(idx)}
-                                                    />
-                                            </div>
-                                        )
-                                    })}
+                                                )
+                                            })}
+                                        </div>
+                                        <div className="w-full border border-transparent border-t-gray-400 flex items-center justify-center fixed left-0 bottom-0 pb-5 bg-gray-800">
+                                            <button
+                                                type='submit'
+                                                className='text-[14px] hover:text-[15px] uppercase tracking-widest text-gray-300 mt-5 transition-all duration-500'
+                                                // onClick={() => addLabel()}
+                                            >
+                                                Attach label
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>    
                             )}
                         </div>
-                        <div className="border border-transparent border-t-gray-400 flex items-center justify-center">
+                        {/* <div className="border border-transparent border-t-gray-400 flex items-center justify-center">
                             <button
-                                type='button'
+                                type='submit'
                                 className='text-[14px] hover:text-[15px] uppercase tracking-widest text-gray-300 mt-5 transition-all duration-500'
-                                onClick={() => addLabel()}
+                                // onClick={() => addLabel()}
                             >
                                 Attach label
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>      

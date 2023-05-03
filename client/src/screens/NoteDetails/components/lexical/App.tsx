@@ -176,7 +176,7 @@ export default function App({ notes }: Props): JSX.Element {
               {/* @ts-ignore */}
               <UpdatePlugin />
               <Editor
-                notes={notes[noteContext?.selectedNote as number]}
+                note={notes[noteContext?.selectedNote as number]}
                 ref={editorRef}
                 save={saveNote}
                 register={register}

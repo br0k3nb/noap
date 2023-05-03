@@ -66,7 +66,7 @@ import api from "../../../../services/api";
 import "./index.css";
 
 type Props = {
-  notes: any;
+  note: any;
   saveSpinner: boolean;
   register: UseFormRegister<FieldValues>;
   floatingAnchorElem: HTMLDivElement | null;
@@ -83,11 +83,11 @@ type BottomBarProps = {
   save: (currentState: EditorState) => Promise<void>;
   editor: LexicalEditor;
   saveSpinner: boolean;
-  notes: any;
+  note: any;
 };
 
 const Editor = forwardRef(
-  ({ save, register, saveSpinner, floatingAnchorElem, notes }: Props, ref) => {
+  ({ save, register, saveSpinner, floatingAnchorElem, note }: Props, ref) => {
     const [ editor ] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
@@ -177,16 +177,14 @@ const Editor = forwardRef(
                         <div className="mb-10">
                           <ContentEditable />
                         </div>
-                        {notes?.labels && notes?.labels.length > 0 && (
-                          <div className="xxs:mt-20">
-                            <BottomBar 
-                              notes={notes}
-                              save={save}
-                              editor={editor}
-                              saveSpinner={saveSpinner}
-                            />
-                          </div>
-                        )}
+                        <div className="xxs:mt-20">
+                          <BottomBar 
+                            note={note}
+                            save={save}
+                            editor={editor}
+                            saveSpinner={saveSpinner}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -236,8 +234,6 @@ const Editor = forwardRef(
     );
   }
 );
-
-
 
 export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
   return (
@@ -311,15 +307,17 @@ export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
 //   );
 // }
 
-export function BottomBar({ save, editor, saveSpinner, notes } : BottomBarProps) {
+export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) {
   const noteExpanded = useContext(ExpandedContext);
   const refetch = useContext(RefetchContext);
+
+  const [ checked, setChecked ] = useState(false);
 
   const token = JSON.parse(
     window.localStorage.getItem("user_token") || ""
   );
 
-  const deleteLabel = async (labelId: string, note: any) => {
+  const deleteLabel = async (labelId: string) => {
     try {
       const deleteLabel = await api.delete(`https://noap-typescript-api.vercel.app/note/delete/label/${labelId}/${note._id}/${token.token}`);
 
@@ -327,6 +325,26 @@ export function BottomBar({ save, editor, saveSpinner, notes } : BottomBarProps)
       toastAlert({
         icon: "success",
         title: `${deleteLabel.data.message}`,
+        timer: 2000,
+      });
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({
+        icon: "error",
+        title: `${err.response.data.message}`,
+        timer: 2000,
+      });
+    }
+  }
+
+  const deleteAllLabels = async () => {
+    try {
+      const deleteLabels = await api.delete(`https://noap-typescript-api.vercel.app/note/delete-all/label/${token.token}/${note._id}`);
+      
+      refetch?.fetchNotes();
+      toastAlert({
+        icon: "success",
+        title: `${deleteLabels.data.message}`,
         timer: 2000,
       });
     } catch (err: any) {
@@ -352,18 +370,23 @@ export function BottomBar({ save, editor, saveSpinner, notes } : BottomBarProps)
                 <MdOutlineSettings size={30} className="px-1 rotate-180 bg-gray-600 rounded-full mt-[1px] cursor-pointer hover:bg-gray-700 transition-all duration-300 ease-in-out"/>
               </div>
               </label>
-              <ul tabIndex={0} className="dropdown-content menu shadow bg-base-100 rounded-box w-60">
+              <ul 
+                tabIndex={0} 
+                className="dropdown-content menu shadow rounded-box w-60 !bg-gray-900"
+              >
                 <li>
-                  <a
-                    className="text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 transition-all duration-500 ease-in-out"
+                  <button
+                    className="text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 transition-all duration-500 ease-in-out disabled:cursor-not-allowed disabled:!bg-gray-900"
+                    disabled={(!note?.labels || note?.labels.length === 0) && true}
+                    onClick={() => setChecked(true)}
                   >
                     <div className="flex flex-row space-x-2">
                       <p className="py-1 text-xs uppercase tracking-widest">
-                        Remove all labels
+                        Detach all labels
                       </p>
                       <MdDeleteForever size={22} className="mt-[1px]"/>
                     </div>
-                  </a>
+                  </button>
                 </li>
                 <li>
                   <a
@@ -393,58 +416,67 @@ export function BottomBar({ save, editor, saveSpinner, notes } : BottomBarProps)
                 }
             }
           >
-            {notes.labels.map((val: any, idx: number) => {
-              console.log(val);
-              return (
-                  <div className="max-w-lg">
-                    {val.type === "default" ? (
-                      <div 
-                        className="w-max rounded-full text-center px-2 py-[3px]"
-                        style={{
-                          backgroundColor: val.color,
-                          borderColor: val.color,
-                          color: val.fontColor
-                        }}
-                      >
-                        <div className="flex space-x-1">
-                          <p className="pt-[2px] !text-[11px] uppercase tracking-widest">
-                            {val.name.slice(0, 13)}
-                          </p>
-                          <div className='tooltip tooltip-right' data-tip="Remove">
-                            <BsXLg 
-                              size={20} 
-                              className="py-1 cursor-pointer hover:!bg-gray-900 rounded-full transition-all duration-500 ease-in-out"
-                              onClick={() => deleteLabel(val._id, notes)}
-                            />
+            {note?.labels && note?.labels.length > 0 ? (
+              <>
+                {note.labels.map((val: any, idx: number) => {
+                  return (
+                      <div className="max-w-lg mt-[1px]" key={idx}>
+                        {val.type === "default" ? (
+                          <div 
+                            className="w-max rounded-full text-center px-2 py-[3px]"
+                            style={{
+                              backgroundColor: val.color,
+                              borderColor: val.color,
+                              color: val.fontColor
+                            }}
+                          >
+                            <div className="flex space-x-1">
+                              <p className="pt-[2px] !text-[11px] uppercase tracking-widest">
+                                {val.name.slice(0, 13)}
+                              </p>
+                              <div className='tooltip tooltip-right' data-tip="Detach">
+                                <BsXLg 
+                                  size={20} 
+                                  className="py-1 cursor-pointer hover:!bg-gray-900 rounded-full transition-all duration-500 ease-in-out"
+                                  onClick={() => deleteLabel(val._id)}
+                                />
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div 
+                            className="w-max rounded-full text-center px-2 py-[2.5px] border"
+                            style={{
+                              backgroundColor: 'transparent !important',
+                              borderColor: val.color,
+                              color: val.color,
+                            }}
+                          >
+                            <div className="flex space-x-1">
+                              <p className="pt-[2px] !text-[11px] uppercase tracking-widest">
+                                {val.name.slice(0, 13)}
+                              </p>
+                              <div className='tooltip tooltip-right' data-tip="Remove">
+                                <BsXLg 
+                                  size={20} 
+                                  className="py-1 cursor-pointer hover:!bg-gray-900 rounded-full transition-all duration-500 ease-in-out"
+                                  onClick={() => deleteLabel(val._id)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    ) : (
-                      <p 
-                        className="w-max rounded-full text-center px-2 py-[2.5px] border"
-                        style={{
-                          backgroundColor: 'transparent !important',
-                          borderColor: val.color,
-                          color: val.color,
-                        }}
-                      >
-                        <div className="flex space-x-1">
-                          <p className="pt-[2px] !text-[11px] uppercase tracking-widest">
-                            {val.name.slice(0, 13)}
-                          </p>
-                          <div className='tooltip tooltip-right' data-tip="Remove">
-                            <BsXLg 
-                              size={20} 
-                              className="py-1 cursor-pointer hover:!bg-gray-900 rounded-full transition-all duration-500 ease-in-out"
-                              onClick={() => deleteLabel(val._id, notes)}
-                            />
-                          </div>
-                        </div>
-                      </p>
-                    )}
-                  </div>
-                )
-            })}
+                    )
+                })}
+              </>
+            ) : (
+              <div className="text-xs uppercase tracking-widest">
+                <p className="mt-[3px] px-2 py-[4px] bg-gray-900 rounded-full">
+                    No labels attached!
+                </p>
+              </div>
+            )}
           </div>
           <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
             <div className="xl:!ml-5">
@@ -485,6 +517,47 @@ export function BottomBar({ save, editor, saveSpinner, notes } : BottomBarProps)
             </div>
         </div>
       </div>
+      <input
+        checked={checked}
+        readOnly
+        type="checkbox"
+        id="add-new-phone-number"
+        className="modal-toggle"
+      />
+      <label htmlFor="my-modal-4" className="modal cursor-pointer">
+        <label className="modal-box !bg-gray-800 relative transition-all duration-500 !w-96" htmlFor="">
+          <div className="flex flex-row justify-between pb-5">
+              <h3 className="text-2xl tracking-tight font-light text-gray-200">Confirmation</h3>
+              <label 
+                htmlFor="my-modal-3" 
+                className="btn btn-sm btn-circle bg-gray-700"
+                onClick={() => setChecked(false)}
+              >
+                ✕
+              </label>
+          </div>
+          <p className="text-sm uppercase tracking-widest text-gray-300 xxs:text-xs">
+              Are you sure you want to remove all labels attached to this note? 
+          </p>
+          <p className="text-xs uppercase tracking-widest text-gray-500 xxs:mt-2 xxs:mb-7 mt-4 mb-6">
+              This action will only detach labels from this note!
+          </p>
+          <div className="mt-3 flex flex-row justify-evenly">
+              <button
+                className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg shadow-md shadow-gray-900"
+                onClick={() => setChecked(!checked)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900"
+                onClick={() => deleteAllLabels()}
+              >
+                Detach
+              </button>
+          </div>
+        </label>
+      </label>
     </div>
   )
 }
