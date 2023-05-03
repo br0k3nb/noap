@@ -117,18 +117,19 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                         onClick={() => noteContext?.setSelectedNote(idx)}
                       >
                         <div
-                          className={`rounded-lg h-72 w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${
+                          className={`rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${
                             noteContext?.selectedNote === idx && "!border-gray-300"
                           }`}
                         >
                           <p className="text-lg px-4 mb-3 truncate">{val.title}</p>
-                          <div className={`h-[184px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[134.5px]"}`}>
-                            <div className="!w-[135px] overflow-ellipsis overflow-hidden">
-                              <p className="overflow-ellipsis overflow-hidden">
-                                {val.body}
+                          <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[148px]"}`}>
+                            <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
+                              <p>
+                                {val?.labels?.name && !parsedImage ? val.body.slice(0,110).concat('...') : 
+                                val?.labels?.name && parsedImage ? val.body.slice(0, 73) + '...' : val.body}
                               </p>
                             </div>
-                            <div className="mt-3">
+                            <div className="mt-1">
                               {val?.labels?.name && val?.labels?.name !== '' && (
                                 <div className="truncate">
                                   {val.labels.type === "default" ? (
@@ -159,7 +160,7 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                             </div>
                           </div>
 
-                          <div className="mt-3 px-4">
+                          <div className="mt-2 px-4">
                             <p className="text-xs tracking-tighter">
                               {!val?.updatedAt
                                 ? days(val.createdAt) + " at " + hours(val.createdAt)
@@ -168,7 +169,7 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                           </div>
                           {parsedImage && (
                             <>
-                              <div className="h-[56px] mt-4 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>
+                              <div className="h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>
                             </>
                           )}
                         </div>

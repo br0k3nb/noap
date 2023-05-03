@@ -2,7 +2,7 @@ import { useEffect, useState, createContext, useContext, Dispatch, SetStateActio
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 
 import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillDelete, AiOutlineEllipsis } from 'react-icons/ai';
-import { BsJournalRichtext, BsTagsFill, BsPeopleFill } from 'react-icons/bs';
+import { BsJournalRichtext, BsTagsFill, BsPeopleFill, BsArrowDown, BsArrowUp } from 'react-icons/bs';
 
 import TextEditor from "./components/lexical/App";
 import LabelModal from "./components/LabelModal";
@@ -149,6 +149,22 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                             Attach labels
                           </p>
                           <BsTagsFill size={20} className="pt-[3px]"/>
+                        </div>
+                      </label>
+                    </a>
+                    <a 
+                      className="cursor-not-allowed active:!bg-transparent" 
+                      // onClick={() => setChecked(!checked)}
+                    > 
+                      <label 
+                        htmlFor="my-modal-4"
+                        className="text-gray-600"
+                      >
+                        <div className="flex flex-row space-x-2 cursor-not-allowed">
+                          <p className="py-1 text-xs uppercase tracking-widest">
+                            Hide bottom bar
+                          </p>
+                          <BsArrowDown size={20} className="pt-[3px]"/>
                         </div>
                       </label>
                     </a>

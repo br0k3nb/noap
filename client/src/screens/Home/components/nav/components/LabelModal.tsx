@@ -33,6 +33,8 @@ type Label = {
     color: string;
     fontColor: string;
     editName: string;
+    outlined: string;
+    default: string;
 }
 
 export default function LabelModal({ checked, setChecked, token }: Props) {
@@ -43,6 +45,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
     const [ selectedStyle, setSelectedStyle ] = useState('');
     const [ editId, setEditId ] = useState<string | null>(null);
     const [ showColorPicker, setShowColorPicker ] = useState('');
+    const [ resetStyle, setResetStyle ] = useState<null | boolean>(null);
     const [ showDropDown, setShowDropDown ] = useState<number | null>(null);
     const [ createLabel, setCreateLabel ] = useState<string | boolean>(false);
     const [ selectedLabel, setSelectedLabel ] = useState<string | null>(null);
@@ -127,14 +130,16 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
             }
         }
         else {
+            setLoader(false);
             toastAlert({icon: 'error', title: `Please, select a label to delete`, timer: 3000});
         }
     }
 
     const resetLabelInfoToEdit = (chip: Label) => {
-        const { _id, name, color, fontColor } : any = labels?.find(({_id}) => _id === chip._id);
+        const { _id, name, color, fontColor, type } : any = labels?.find(({_id}) => _id === chip._id);
+        
+        // setResetStyle(type)
         reset({ editName: name });
-
         setEditId(_id);
         setColor(color);
         setFontColor(fontColor);
@@ -144,20 +149,30 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
     const editLabel = async (data: FieldValues) => {
         setLoader(true);
 
-        try {
-            const editL = await api.patch(`/label/edit/${token._id}/${token.token}`, {
-                name: data.editName,
-                _id: editId,
-                color,
-                fontColor
-            });
+        if(selectedStyle) {
+            try {
+                const editL = await api.patch(`https://noap-typescript-api.vercel.app/label/edit/${token._id}/${token.token}`, {
+                    name: data.editName,
+                    _id: editId,
+                    color,
+                    fontColor
+                });
 
+                setLoader(false);
+                labelData?.fetchLabels();
+                toastAlert({icon: 'success', title: `${editL.data.message}`, timer: 3000});
+            } catch (err: any) {
+                setLoader(false);
+                toastAlert({icon: 'error', title: `${err.reponse.data.message}`, timer: 3000});
+            }
+        }
+        else {
             setLoader(false);
-            labelData?.fetchLabels();
-            toastAlert({icon: 'success', title: `${editL.data.message}`, timer: 3000});
-        } catch (err) {
-            setLoader(false);
-            toastAlert({icon: 'error', title: `Please, select a label to delete`, timer: 3000});
+            return toastAlert({
+                icon: 'error',
+                title: `Please, select a label type!`, 
+                timer: 3000
+            });
         }
     }
 
@@ -220,7 +235,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                                             <div className="flex space-x-2 justify-between pr-2" key={idx}>
                                                                 {chip.type === 'outlined' ? (
                                                                     <div 
-                                                                    className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest"
+                                                                    className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate"
                                                                     style={{
                                                                         borderColor: chip.color,
                                                                         color: chip.color
@@ -230,7 +245,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                                                 </div>
                                                                 ) : (
                                                                     <div 
-                                                                        className="badge badge-accent !py-3 uppercase text-xs tracking-widest"
+                                                                        className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate"
                                                                         style={{
                                                                             backgroundColor: chip.color,
                                                                             borderColor: chip.color,
@@ -287,7 +302,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                 ) : (
                                     <div className="flex flex-col space-y-4 items-center justify-center mt-5 text-gray-500">
                                         <AiFillTags size={60} className='!mt-5'/>
-                                        <p className='text-[13px] uppercase tracking-widest !mb-9'>Your labels will appear here!</p>
+                                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>Your labels will appear here!</p>
                                     </div>
                                 )}
                             </div>
@@ -317,9 +332,10 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                 <div className="flex">
                                     <input 
                                         type="radio" 
-                                        name="radio-1" 
                                         className="radio !bg-gray-600 !border-gray-400" 
+                                        checked={resetStyle !== null && resetStyle}
                                         onClick={() => setSelectedStyle('default')}
+                                        {...register('default')}
                                     />
                                     <div className="ml-6">
                                         <div 
@@ -337,7 +353,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                 <div className="flex">
                                     <input 
                                         type="radio" 
-                                        name="radio-1" 
+                                        {...register('outlined')}
                                         className="radio !bg-gray-600 !border-gray-400" 
                                         // checked={selectedStyle === 'outlined' && true}
                                         onClick={() => setSelectedStyle('outlined')}

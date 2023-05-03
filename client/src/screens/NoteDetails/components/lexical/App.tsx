@@ -16,8 +16,9 @@ import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
 import { toastAlert } from "../../../../components/Alert/Alert";
 import { NoteWasChanged } from "../../../Home";
 import { NoteContext } from "../../../Home";
-import api from "../../../../services/api";
 import { ExpandedContext } from "../..";
+
+import api from "../../../../services/api";
 
 import Editor from "./Editor";
 
@@ -112,13 +113,13 @@ export default function App({ notes }: Props): JSX.Element {
             `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
             {
               title,
-              body: finalBody.length > 100 ? finalBody.slice(0,100) : finalBody,
+              body: finalBody.length > 100 ? finalBody.slice(0,126) + '...' : finalBody,
               image: resultImg.images,
               state: resultState.state,
               _id: notes[(noteContext?.selectedNote as number)]._id,
               stateId: notes[(noteContext?.selectedNote as number)].state._id
             }
-            );
+          );
           
           noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
           setSaveSpinner(false);
@@ -174,13 +175,14 @@ export default function App({ notes }: Props): JSX.Element {
             <div className="editor-shell h-screen w-fit overflow-hidden absolute ">
               {/* @ts-ignore */}
               <UpdatePlugin />
-                <Editor
-                  ref={editorRef}
-                  save={saveNote}
-                  register={register}
-                  saveSpinner={saveSpinner}
-                  floatingAnchorElem={floatingAnchorElem}
-                />
+              <Editor
+                notes={notes[noteContext?.selectedNote as number]}
+                ref={editorRef}
+                save={saveNote}
+                register={register}
+                saveSpinner={saveSpinner}
+                floatingAnchorElem={floatingAnchorElem}
+              />
             </div>
           </SharedAutocompleteContext>
         </TableContext>
