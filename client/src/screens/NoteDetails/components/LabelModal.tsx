@@ -57,11 +57,11 @@ export default function LabelModal({ checked, setChecked, isFetching, labels, se
 
             if(labels.length === 0) return toastAlert({icon: "error", title: `Please, select a label!`, timer: 2000});
 
-            const attachLabel = await api.post(`/note/add/label/${token.token}`, { 
+            const attachLabel = await api.post(`https://noap-typescript-api.vercel.app/note/add/label/${token.token}`, { 
                 labels,
                 noteId: selectedNote 
             });
-            
+
             toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
             setLoader(false);
             refetch?.fetchNotes();
