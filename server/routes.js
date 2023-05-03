@@ -25,6 +25,8 @@ router.get("/note/:id/:token", verifyUser, NoteController.getNote);
 router.get("/notes/:userId/:token", verifyUser, NoteController.view);
 router.delete("/delete/:id/:token", verifyUser, NoteController.delete);
 router.post("/note/add/label/:token", verifyUser, NoteController.addLabel);
+router.delete("/note/delete/label/:id/:noteId/:token", verifyUser, NoteController.deleteLabel);
+router.delete("/note/delete-all/label/:id/:token", verifyUser, NoteController.deleteAllLabels);
 
 //Labels
 router.get("/labels/:userId/:token", verifyUser, LabelController.view);

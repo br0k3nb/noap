@@ -9,10 +9,11 @@ export default new mongoose.Schema({
         type: String,
         required: false,
     },
-    labels: {
+    labels: [{
         type: mongoose.Schema.Types.Mixed,
         required: false,
-    },
+        ref: 'Label'
+    }],
     image: {
         type: String,
         required: true,
