@@ -93,28 +93,40 @@ export default {
     },
     async addLabel(req , res) {
         try {
-            const { labelId, noteId } = req.body;
+            const { labels, noteId } = req.body;
 
-            const label = await Label.findById(labelId);
+            const findLabels = await Label.find({
+                '_id': { $in: labels}
+            });
+
+            if(findLabels.length === 0) return res.status(400).json({ message: "No labels found!" });
+
             const note = await Note.findById(noteId);
+
+            if(note?.labels.length !== 0) {
+                for(const [idx, noteLabel] of note.labels.entries()) {
+                    for(const [index, label] of findLabels.entries()) {
+                        if(noteLabel._id.toString() === label._id.toString()) {
+                            throw ({ message: "Label already attached!" });
+                        }
+                    }
+                }
+            }
+           
+            console.log('i was executed');
 
             await Note.findOneAndUpdate({_id: noteId}, {
                 labels: [
                     ...note.labels,
-                    {
-                        _id: label._id,
-                        name: label.name,
-                        color: label.color,
-                        fontColor: label?.fontColor,
-                        type: label.type
-                    }
+                    ...findLabels
                 ]
             });
 
             res.status(200).json({message: 'Label attached!'});
         } catch (err) {
             console.log(err);
-            res.status(400).json({message: 'Error, please try again later!'});
+            if(err?.message) res.status(400).json(err);
+            else res.status(400).json({message: 'Error, please try again later!'});
         }
     },
     async edit(req, res) {
@@ -169,7 +181,7 @@ export default {
                 labels: note.labels
             });
             
-            res.status(200).json({message: 'Label removed!'});
+            res.status(200).json({message: 'Label detached!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
@@ -177,13 +189,13 @@ export default {
     },
     async deleteAllLabels(req, res) {
         try {
-            // const {id} = req.params;
-            // const getStateId = await Note.findById({ _id: id });
+            const { noteId } = req.params;
 
-            // await NoteState.findByIdAndDelete(getStateId.state);
-            // await Note.findByIdAndDelete(id);
+            await Note.findByIdAndUpdate({_id: noteId}, { 
+                labels: []
+            });
             
-            // res.status(200).json({message: 'Note deleted!'});
+            res.status(200).json({message: 'Labels detached!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
