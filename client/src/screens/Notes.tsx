@@ -130,7 +130,7 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                               </p>
                             </div>
                             <div className="mt-1">
-                              {val?.labels && (
+                              {val?.labels && val?.labels.length > 0 && (
                                 <>
                                   <div className="truncate">
                                     {val.labels[0].type === "default" ? (
