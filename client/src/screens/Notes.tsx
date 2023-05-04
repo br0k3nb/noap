@@ -125,8 +125,8 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                           <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[148px]"}`}>
                             <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
                               <p>
-                                {val?.labels && !parsedImage ? val.body.slice(0,110).concat('...') : 
-                                val?.labels && parsedImage ? val.body.slice(0, 73) + '...' : val.body}
+                                {(val?.labels && val?.labels.length) && !parsedImage ? (val.body.length >= 135 ? val.body.slice(0,134).concat('...') : val.body) : 
+                                (val?.labels && val?.labels.length) && parsedImage ? val.body.slice(0, 73) + '...' : val.body}
                               </p>
                             </div>
                             <div className="mt-1">
@@ -179,7 +179,6 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                               )}
                             </div>
                           </div>
-
                           <div className="mt-2 px-4">
                             <p className="text-xs tracking-tighter">
                               {!val?.updatedAt

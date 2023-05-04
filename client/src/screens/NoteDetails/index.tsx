@@ -4,8 +4,10 @@ import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillDelete, AiOutlineEllipsis } from 'react-icons/ai';
 import { BsJournalRichtext, BsTagsFill, BsPeopleFill, BsArrowDown, BsArrowUp } from 'react-icons/bs';
 
+import ConfirmationModal from "../../components/ConfirmationModal";
+import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical/App";
-import LabelModal from "./components/LabelModal";
+
 import { NoteContext } from "../Home";
 
 import moment from "moment";
@@ -57,7 +59,7 @@ type ExpandedContextProps = {
 
 export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded, labelIsFetching, labels }: Props) {
   const selectedNote = useContext(NoteContext);
-  const [ checked, setChecked ] = useState(false);
+  const [ open, setOpen ] = useState(false);
   const [ openLabelModal, setOpenlabelModal ] = useState(false);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   const removeNote = () => {
     selectedNote?.setSelectedNote(null);
     setExpanded(false);
-    setChecked(!checked);
+    setOpen(false);
 
     deleteNote(notes[(selectedNote?.selectedNote as number)]._id);
     remove(selectedNote?.selectedNote);
@@ -122,7 +124,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                   <li className="">
                     <a 
                       className="active:!bg-gray-600 hover:!bg-gray-700" 
-                      onClick={() => setChecked(!checked)}
+                      onClick={() => setOpen(true)}
                     >
                       <label 
                         htmlFor="my-modal-4"
@@ -189,49 +191,15 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               </div>
             </div>
 
-            <input
-              checked={checked}
-              readOnly
-              type="checkbox"
-              id="add-new-phone-number"
-              className="modal-toggle"
+            <ConfirmationModal
+              open={open}
+              setOpen={setOpen}
+              deleteButtonAction={removeNote}
+              mainText="Are you sure you want to delete this note?"
+              mainTextCustomClassName="xxs:text-xs mb-5"
+              modalWrapperClassName={`!w-96`}
             />
-            <label htmlFor="my-modal-4" className="modal cursor-pointer light">
-              <label className="modal-box !bg-gray-800 relative transition-all duration-500" htmlFor="">
-                <div className="flex flex-row justify-between pb-5">
-                    <h3 className="text-2xl tracking-tight font-light text-gray-200">Confirmation</h3>
-                    <label 
-                        htmlFor="my-modal-3" 
-                        className="btn btn-sm btn-circle bg-gray-700"
-                        onClick={() => setChecked(false)}
-                    >
-                        ✕
-                    </label>
-                </div>
-                <p className="text-sm uppercase tracking-widest text-gray-300 xxs:text-xs">
-                    Are you sure you want to delete this label? 
-                </p>
-                <p className="text-xs uppercase tracking-widest text-gray-500 xxs:mt-2 xxs:mb-7">
-                    Once deleted, there is no going back!
-                </p>
-                <div className="mt-3 flex flex-row justify-evenly">
-                    <button
-                      className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg shadow-md shadow-gray-900"
-                      onClick={() => setChecked(!checked)}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900"
-                      onClick={() => removeNote()}
-                    >
-                      Delete
-                    </button>
-                </div>
-              </label>
-            </label>
-
-            <LabelModal
+            <SelectLabelModal
               checked={openLabelModal}
               setChecked={setOpenlabelModal}
               isFetching={labelIsFetching}

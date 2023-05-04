@@ -12,13 +12,17 @@ import { AiFillTags } from 'react-icons/ai';
 
 import { HexColorPicker } from "react-colorful";
 
-import { LabelsContext } from '../../..';
-import api from '../../../../../services/api';
+import Modal from '../../../../../components/Modal';
 import { toastAlert } from '../../../../../components/Alert/Alert';
+import ConfirmationModal from '../../../../../components/ConfirmationModal';
+
+import { LabelsContext } from '../../..';
+
+import api from '../../../../../services/api';
 
 type Props = {
-    checked: boolean;
-    setChecked: Dispatch<SetStateAction<boolean>>;
+    open: boolean;
+    setOpen: Dispatch<SetStateAction<boolean>>;
     token: {
         googleAccount: boolean;
         token: string;
@@ -37,7 +41,7 @@ type Label = {
     default: string;
 }
 
-export default function LabelModal({ checked, setChecked, token }: Props) {
+export default function LabelModal({ open, setOpen, token }: Props) {
     const [ loader, setLoader ] = useState(false);
     const [ color, setColor ] = useState("#0e63b9");
     const [ fontColor, setFontColor ] = useState("#ffffff");
@@ -45,7 +49,6 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
     const [ selectedStyle, setSelectedStyle ] = useState('');
     const [ editId, setEditId ] = useState<string | null>(null);
     const [ showColorPicker, setShowColorPicker ] = useState('');
-    const [ resetStyle, setResetStyle ] = useState<null | boolean>(null);
     const [ showDropDown, setShowDropDown ] = useState<number | null>(null);
     const [ createLabel, setCreateLabel ] = useState<string | boolean>(false);
     const [ selectedLabel, setSelectedLabel ] = useState<string | null>(null);
@@ -59,7 +62,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
     const labels = labelData?.labels;
     
     const closeModal = () => {
-        setChecked(false);
+        setOpen(false);
         setTimeout(() => {
             setCreateLabel(false);
         }, 500);
@@ -138,7 +141,6 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
     const resetLabelInfoToEdit = (chip: Label) => {
         const { _id, name, color, fontColor, type } : any = labels?.find(({_id}) => _id === chip._id);
         
-        // setResetStyle(type)
         reset({ editName: name });
         setEditId(_id);
         setColor(color);
@@ -178,25 +180,15 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
 
     return (
         <div>
-            <input
-                checked={checked}
-                readOnly
-                type="checkbox"
-                id="my-modal-3"
-                className="modal-toggle"
-            />
-            <div className="modal">
-                <div className={`modal-box relative !bg-gray-800 xxs:!w-[18rem] !px-0 !w-[23rem] max-h-[27.5rem] ${createLabel && '!max-h-none'}  transition-all duration-500 overflow-hidden`}>
-                    <div className="flex flex-row justify-between border border-transparent border-b-gray-600 px-6 pb-5">
-                        <h3 className="text-2xl tracking-tight font-light text-gray-200">Labels</h3>
-                        <label 
-                            htmlFor="my-modal-3" 
-                            className="btn btn-sm btn-circle bg-gray-700"
-                            onClick={() => closeModal()}
-                        >
-                            ✕
-                        </label>
-                    </div>
+            <Modal
+                open={open}
+                setOpen={setOpen}
+                onClose={closeModal}
+                title='Labels'
+                titleWrapperClasName="px-6"
+                modalWrapperClassName={`xxs:!w-[18rem] !px-0 !w-[23rem] max-h-[27.5rem] overflow-hidden ${createLabel && '!max-h-none'}`}
+            >
+                <>
                     {!createLabel ? (
                         <>
                             <div className="mb-8 mt-5 text-gray-300 px-6 ">
@@ -332,10 +324,9 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                 <div className="flex">
                                     <input 
                                         type="radio" 
+                                        name="radio-1" 
                                         className="radio !bg-gray-600 !border-gray-400" 
-                                        checked={resetStyle !== null && resetStyle}
                                         onClick={() => setSelectedStyle('default')}
-                                        {...register('default')}
                                     />
                                     <div className="ml-6">
                                         <div 
@@ -353,9 +344,8 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                 <div className="flex">
                                     <input 
                                         type="radio" 
-                                        {...register('outlined')}
-                                        className="radio !bg-gray-600 !border-gray-400" 
-                                        // checked={selectedStyle === 'outlined' && true}
+                                        name="radio-1" 
+                                        className="radio !bg-gray-600 !border-gray-400"
                                         onClick={() => setSelectedStyle('outlined')}
                                     />
                                     <div className="ml-6">
@@ -558,7 +548,7 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                         type="radio" 
                                         name="radio-1" 
                                         className="radio !bg-gray-600 !border-gray-400" 
-                                        // checked={selectedStyle === 'outlined' && true}
+                                        // open={selectedStyle === 'outlined' && true}
                                         onClick={() => setSelectedStyle('outlined')}
                                     />
                                     <div className="ml-6">
@@ -697,10 +687,6 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                                                         >
                                                             <svg
                                                                 aria-hidden="true"
-                                                                role="status"
-                                                                className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]"
-                                                                viewBox="0 0 100 101"
-                                                                fill="none"
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                             >
                                                             <path
@@ -725,80 +711,17 @@ export default function LabelModal({ checked, setChecked, token }: Props) {
                             </div>
                         </div>
                     )}   
-                </div>
-            </div>
-            <input 
-                checked={deleteModal}
-                type="checkbox" 
-                id="my-modal-3"
-                readOnly
-                className="modal-toggle" 
+                </>
+            </Modal>
+            <ConfirmationModal
+                loader={loader}
+                open={deleteModal}
+                setOpen={setDeleteModal}
+                onClose={closeDeleteModal}
+                deleteButtonAction={deleteLabel}
+                mainText='Are you sure you want to delete this label?'
+                modalWrapperClassName={`!w-96`}
             />
-            <div className="modal">
-                <div className="modal-box relative !bg-gray-800">
-                    <div className="flex flex-row justify-between pb-5">
-                        <h3 className="text-2xl tracking-tight font-light text-gray-200">Confirmation</h3>
-                        <label 
-                            htmlFor="my-modal-3" 
-                            className="btn btn-sm btn-circle bg-gray-700"
-                            onClick={() => closeDeleteModal()}
-                        >
-                            ✕
-                        </label>
-                    </div>
-                    <p className="text-sm uppercase tracking-widest text-gray-300 xxs:text-xs">
-                        Are you sure you want to delete this label? 
-                    </p>
-                    <p className="text-xs uppercase tracking-widest text-gray-500 xxs:mt-1">
-                        Once deleted, there is no going back!
-                    </p>
-                    <div className="mt-7 xxs:mt-5">
-                        <div className="mt-3 flex flex-row justify-evenly">
-                            <button
-                                className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg shadow-md shadow-gray-900"
-                                onClick={() => closeDeleteModal()}
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900"
-                                onClick={() => deleteLabel()}
-                            >
-                                {loader ? (
-                                    <div
-                                        className='flex flex-row justify-center animate-pulse'
-                                    >
-                                        <svg
-                                        aria-hidden="true"
-                                        role="status"
-                                        className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px]"
-                                        viewBox="0 0 100 101"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                        <path
-                                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                            fill="#E5E7EB"
-                                        />
-                                        <path
-                                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                            fill="currentColor"
-                                        />
-                                        </svg>
-                                        <span className="pb-[3px] xxs:pt-[2.4px] text-sm uppercase tracking-widest">
-                                            Loading...
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <p>
-                                        Delete
-                                    </p>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     )
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, forwardRef, useContext } from "react";
 
 import { AiFillSave } from "react-icons/ai";
-import { MdNewLabel, MdSettingsApplications, MdDeleteForever, MdOutlineSettings } from "react-icons/md";
+import { MdDeleteForever, MdOutlineSettings, MdNewLabel } from "react-icons/md";
 import { BsXLg } from 'react-icons/bs';
 
 // import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
@@ -60,6 +60,9 @@ import { ExpandedContext } from "../..";
 import { RefetchContext } from "../../../Home";
 
 import { toastAlert } from "../../../../components/Alert/Alert";
+import ConfirmationModal from "../../../../components/ConfirmationModal";
+
+// import LabelModal from "../../../Home/components/nav/components/LabelModal";
 
 import api from "../../../../services/api";
 
@@ -92,7 +95,7 @@ const Editor = forwardRef(
     const { historyState } = useSharedHistoryContext();
 
     const noteExpanded = useContext(ExpandedContext);
-    const [titleFocused, setTitleFocused] = useState(false);
+    const [ titleFocused, setTitleFocused ] = useState(false);
 
     const {
       settings: { isRichText },
@@ -100,8 +103,7 @@ const Editor = forwardRef(
 
     const placeholder = <Placeholder>Enter some text</Placeholder>;
 
-    const [isSmallWidthViewport, setIsSmallWidthViewport] =
-      useState<boolean>(false);
+    const [ isSmallWidthViewport, setIsSmallWidthViewport ] = useState<boolean>(false);
 
     useEffect(() => {
       const updateViewPortWidth = () => {
@@ -174,7 +176,7 @@ const Editor = forwardRef(
                             : { width: window.innerWidth }
                         }
                       >
-                        <div className="mb-10">
+                        <div className="mb-20">
                           <ContentEditable />
                         </div>
                         <div className="xxs:mt-20">
@@ -193,11 +195,6 @@ const Editor = forwardRef(
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <FloatingTextFormatToolbarPlugin />
-              {/* <FloatingSaveButton
-                save={save}
-                editor={editor}
-                saveSpinner={saveSpinner}
-              /> */}
               <CodeActionMenuPlugin />
               <CheckListPlugin />
               <ImagesPlugin captionsEnabled={true} />
@@ -248,7 +245,7 @@ export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
       <textarea
         id="note-title"
         onClick={() => disableToolbar()}
-        rows={2}
+        rows={ window.innerWidth > 640 ? 1 : 2 }
         wrap="hard"
         spellCheck="false"
         className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none resize-none"
@@ -263,7 +260,8 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
   const noteExpanded = useContext(ExpandedContext);
   const refetch = useContext(RefetchContext);
 
-  const [ checked, setChecked ] = useState(false);
+  const [ open, setOpen ] = useState(false);
+  // const [ openLabelModal, setOpenLabelModal ] = useState(false);
 
   const token = JSON.parse(
     window.localStorage.getItem("user_token") || ""
@@ -294,6 +292,7 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
       const deleteLabels = await api.delete(`https://noap-typescript-api.vercel.app/note/delete-all/label/${token.token}/${note._id}`);
       
       refetch?.fetchNotes();
+      setOpen(false);
       toastAlert({
         icon: "success",
         title: `${deleteLabels.data.message}`,
@@ -324,13 +323,13 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
               </label>
               <ul 
                 tabIndex={0} 
-                className="dropdown-content menu shadow rounded-box w-60 !bg-gray-900"
+                className="dropdown-content menu shadow rounded-box w-60 !bg-gray-900 !z-50"
               >
-                <li>
+                <li className="">
                   <button
-                    className="hover:!bg-transparent text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 transition-all duration-500 ease-in-out disabled:cursor-not-allowed disabled:!bg-gray-900"
+                    className="hover:bg-transparent text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 transition-all duration-500 ease-in-out disabled:cursor-not-allowed disabled:!bg-gray-900"
                     disabled={(!note?.labels || note?.labels.length === 0) && true}
-                    onClick={() => setChecked(true)}
+                    onClick={() => setOpen(true)}
                   >
                     <div className="flex flex-row space-x-2">
                       <p className="py-1 text-xs uppercase tracking-widest">
@@ -341,8 +340,9 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
                   </button>
                 </li>
                 {/* <li>
-                  <a
+                  <button
                     className="text-xs uppercase tracking-widest py-4 active:bg-gray-500"
+                    onClick={() => setOpenLabelModal(true)}
                   >
                   <div className="flex flex-row space-x-2 ">
                       <p className="py-1 text-xs uppercase tracking-widest">
@@ -350,21 +350,20 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
                       </p>
                       <MdNewLabel size={22} className="mt-[1px] rotate-180"/>
                     </div>
-                  </a>
+                  </button>
                 </li> */}
               </ul>
             </div>
           </div>  
           <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] !mr-2"/>
-          <p className="text-xs uppercase tracking-widest pt-[0.50rem] xxs:text-[10px] xxs:pt-0 !w-fit xxs:hidden">Labels attached:</p>
           <div 
             className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
             style={
               !noteExpanded?.expanded
-                ? { width: window.innerWidth <= 1280 ? window.innerWidth - 650 : window.innerWidth - 850} 
+                ? { width: window.innerWidth <= 1280 ? window.innerWidth - 650 : window.innerWidth - 710} 
                 : {
-                  width: window.innerWidth > 640 && window.innerWidth <= 1280 ? window.innerWidth - 250 
-                  : window.innerWidth <= 640 ? window.innerWidth - 150 : window.innerWidth - 420
+                  width: window.innerWidth > 640 && window.innerWidth <= 1280 ? window.innerWidth - 150 
+                  : window.innerWidth <= 640 ? window.innerWidth - 150 : window.innerWidth - 280
                 }
             }
           >
@@ -455,7 +454,7 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
                         fill="currentColor"
                       />
                     </svg>
-                    <p className="pt-[3px]">Loading...</p>
+                    <p className="pt-[3px] text-xs">Loading...</p>
                   </div>
                 ) : (
                   <div className="flex space-x-0 xl:space-x-2">
@@ -469,48 +468,22 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
             </div>
         </div>
       </div>
-      <input
-        checked={checked}
-        readOnly
-        type="checkbox"
-        id="add-new-phone-number"
-        className="modal-toggle"
+      {/* <LabelModal
+        open={openLabelModal}
+        setOpen={setOpenLabelModal}
+        token={token}
+      /> */}
+
+      <ConfirmationModal
+        open={open}
+        setOpen={setOpen}
+        deleteButtonAction={deleteAllLabels}
+        mainText="Are you sure you want to remove all labels attached to this note?"
+        subText="This action will only detach labels from this note!"
+        subTextCustomClassName="xxs:mt-2 xxs:mb-7 mt-4 mb-6"
+        modalWrapperClassName="!w-96"
       />
-      <label htmlFor="my-modal-4" className="modal cursor-pointer">
-        <label className="modal-box !bg-gray-800 relative transition-all duration-500 !w-96" htmlFor="">
-          <div className="flex flex-row justify-between pb-5">
-              <h3 className="text-2xl tracking-tight font-light text-gray-200">Confirmation</h3>
-              <label 
-                htmlFor="my-modal-3" 
-                className="btn btn-sm btn-circle bg-gray-700"
-                onClick={() => setChecked(false)}
-              >
-                ✕
-              </label>
-          </div>
-          <p className="text-sm uppercase tracking-widest text-gray-300 xxs:text-xs">
-              Are you sure you want to remove all labels attached to this note? 
-          </p>
-          <p className="text-xs uppercase tracking-widest text-gray-500 xxs:mt-2 xxs:mb-7 mt-4 mb-6">
-              This action will only detach labels from this note!
-          </p>
-          <div className="mt-3 flex flex-row justify-evenly">
-              <button
-                className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-3 rounded-lg shadow-md shadow-gray-900"
-                onClick={() => setChecked(!checked)}
-              >
-                Cancel
-              </button>
-              <button 
-                className="bg-red-600 hover:bg-red-700 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900"
-                onClick={() => deleteAllLabels()}
-              >
-                Detach
-              </button>
-          </div>
-        </label>
-      </label>
-    </div>
+    </div> 
   )
 }
 

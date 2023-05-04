@@ -104,10 +104,10 @@ export function InsertImageUploadedDialogBody({
       setLoader(true);
       console.log(files[0]);
       new Compressor(files[0], {      
-        quality: 1,
+        quality: 0.3,
         success: async (compressedResult) => {
           const options = {
-            maxSizeMB: 0.1,
+            maxSizeMB: 0.2,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
           }
@@ -144,7 +144,7 @@ export function InsertImageUploadedDialogBody({
 
   return (
     <>
-      <p className="text-red-500 uppercase text-xs tracking-widest">
+      <p className="text-red-500 uppercase text-xs tracking-widest xxs:mb-2">
         (Max size 5mb)
       </p>
       <FileInput

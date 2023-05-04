@@ -239,8 +239,8 @@ export default function Nav({
 
       <LabelModal
         token={token}
-        checked={openLabelModal}
-        setChecked={setOpenLabelModal}
+        open={openLabelModal}
+        setOpen={setOpenLabelModal}
       />
       <div
         className={`fixed ${

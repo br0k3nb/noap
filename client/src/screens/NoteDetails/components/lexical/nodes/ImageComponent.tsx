@@ -352,61 +352,6 @@ export default function ImageComponent({
     <Suspense fallback={null}>
       <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
         <div draggable={draggable} className="!object-cover !rounded-lg !relative">
-            {/* <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.3  }}
-              className={`!absolute bottom-0 !bg-slate-900 !z-50 w-full rounded-b-lg h-8 hidden ${hover && '!inline'}`}
-            >
-              <div className="flex flex-row space-x-2 px-2 pt-1 justify-between">  
-                <a 
-                  className="flex space-x-2 bg-gray-700 rounded-full px-2 py-1 active:bg-gray-800 transition-all duration-150"
-                  onClick={() => donwloadImage(src)}
-                >
-                  <p 
-                    className={`text-[11px] uppercase tracking-widest text-gray-300`}
-                    style={resizeBar ? {
-                      fontSize: 9,
-                      paddingTop: 1
-                    }: undefined}
-                  >
-                    Download
-                  </p>
-                  <BsSave size={resizeBar ? 14 : 16} style={resizeBar ? {paddingTop: 2} : undefined} />
-                </a>
-                <div className="dropdown dropdown-top">
-                  <label 
-                    tabIndex={0}
-                    className={`text-[11px] uppercase tracking-widest rounded-full text-gray-300`}
-                    style={resizeBar ? {
-                      fontSize: 10,
-                      paddingTop: 1
-                    }: undefined}
-                  >
-                    <div className="flex !bg-gray-700 rounded-full py-1 px-2">
-                      <p>Options</p>  
-                      <BsThreeDotsVertical size={resizeBar ? 13 : 15} style={resizeBar ? {paddingTop: 2} : undefined} />
-                    </div>
-                  </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-36 !bg-gray-800">
-                    <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move up</a>
-                    </li>
-                    <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move down</a>
-                    </li>
-                    <li className="text-xs uppercase tracking-widest">
-                      <a
-                        id="delete"
-                        className="active:!bg-gray-600"
-                        onClick={() => setSelected(true)}
-                      >
-                        Delete image</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </motion.div> */}
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}

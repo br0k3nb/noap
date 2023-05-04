@@ -88,14 +88,9 @@ export default function App({ notes }: Props): JSX.Element {
 
       const title = editorRef?.current.firstChild.children[0].childNodes[0].children[0].value;
       const body = editorRef?.current.firstChild.children[1].innerHTML;
-      
+
       const findImages = body.match(/<img[^>]+>/gm);
-      // const getText = body.match(/(?:<span data-lexical-text="true">)([\s\S]*)(?:<\/span>)/);
-
-      // console.log(getText);
-
-      const removeAllHtmlTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
-      const finalBody = removeAllHtmlTags.replace(/DownloadDelete/gm, "");
+      const getTextBettwenSpanTags = body.match(/(?<=(<span data-lexical-text="true">))(\w|\d|\n|[().,\-:;@#$%^&*\[\]"'+–/\/®°⁰!?{}|`~]| )+?(?=(<\/span>))/gm);
 
       if(findImages && findImages.length !== 0) {
         const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
@@ -117,7 +112,7 @@ export default function App({ notes }: Props): JSX.Element {
             `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
             {
               title,
-              body: finalBody.length > 100 ? finalBody.slice(0,126) + '...' : finalBody,
+              body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',
               image: resultImg.images,
               state: resultState.state,
               _id: notes[(noteContext?.selectedNote as number)]._id,
