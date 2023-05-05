@@ -1,4 +1,4 @@
-import { useContext, SetStateAction, Dispatch } from "react";
+import { useContext, SetStateAction, Dispatch, useState } from "react";
 
 import { FieldArrayWithId } from "react-hook-form";
 
@@ -8,7 +8,10 @@ import {
   BsFilter,
   BsXLg,
   BsList,
+  // BsInfoCircle
 } from "react-icons/bs";
+
+import { motion } from "framer-motion";
 
 import parse from "html-react-parser";
 
@@ -43,27 +46,45 @@ type Notes = {
 };
 
 type Props = {
-  notes: FieldArrayWithId<Notes, "note", "id">[];
-  addNewNote: () => Promise<void>;
-  isFetching: boolean;
-  setNavbar: Dispatch<SetStateAction<boolean>>;
-  expanded: boolean;
+  page: number;
+  search: string;
   navbar: boolean;
+  expanded: boolean;
+  totalDocs: number;
+  isFetching: boolean;
+  hasNextPage: boolean;
+  addNewNote: () => Promise<void>;
+  setPage: Dispatch<SetStateAction<number>>;
+  setSearch: Dispatch<SetStateAction<string>>;
+  setNavbar: Dispatch<SetStateAction<boolean>>;
+  notes: FieldArrayWithId<Notes, "note", "id">[];
 };
 
-export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar, expanded }: Props) {
+export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar, expanded, setSearch, search, page, setPage, hasNextPage, totalDocs }: Props) {
   const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
 
+  const [ showSearch, setShowSearch ] = useState(false);
+
   const noteContext = useContext(NoteContext);
+
+  const handleSearchClick = () => {
+    setShowSearch(showSearch ? false : true);
+    setSearch('');
+  }
+
+  const onInputChange = (currentTarget: HTMLInputElement) => {
+    noteContext?.selectedNote && noteContext?.setSelectedNote(null);
+    setSearch(currentTarget.value)
+  }
 
   return (
     <div
-      className={`overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-gray-600 ${
+      className={`overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-gray-600 !bg-gray-800 ${
         expanded && "hidden"
       }`}
     >
-      <div className=" overflow-hidden flex flex-col pt-2 bg-gray-800 h-[100px] border-b border-gray-600">
+      <div className=" overflow-hidden flex flex-col pt-2 bg-gray-800 h-[100px]">
         <div className="flex flex-col mb-[4.2px]">
           <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
             <div className="text-center flex flex-row space-x-1 px-2">
@@ -78,17 +99,55 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
           </div>
 
           <div className="flex flex-row flex-wrap gap-x-1 justify-between px-3 py-2 max-w-screen text-gray-200">
-            <p className="pl-3">{notes.length} notes</p>
-
+            <p className="pl-3">{totalDocs} notes</p>
             <div className="flex flex-row space-x-2">
-              <div className="hover:bg-stone-700 px-1 py-1 rounded">
+              <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500">
                 <BsFilter size={25} />
               </div>
-              <div className="hover:bg-stone-700 px-1 py-1 rounded">
-                <BsSearch size={25} className="py-1" />
+              <div className="tooltip tooltip-left" data-tip="Search">
+                <button 
+                  type="button"
+                  className="hover:bg-stone-700 px-1 py-1 rounded"
+                  onClick={() => handleSearchClick()}
+                >
+                  <BsSearch size={25} className="py-1" />
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <motion.div
+        initial={{ x: -100 }}
+        whileInView={{ x: 0 }}
+        transition={{ duration: 0.6 }}
+        className={`bg-gray-800 px-6 pb-2 hidden ${showSearch && "!grid"}`}
+      >
+        <input
+          type="text"
+          className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10`}
+          placeholder="Search for labels and titles..."
+          value={search}
+          onChange={({currentTarget}) => onInputChange(currentTarget)}
+        />
+      </motion.div>
+      <div className="!bg-gray-800 border border-transparent border-t-gray-600 border-b-gray-600 text-gray-300">
+        <div className="btn-group !bg-gray-800 flex !justify-between px-6">
+          <button 
+            className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
+            disabled={page === 1 ? true : false}
+            onClick={() => setPage(page - 1)}
+          > 
+            «
+          </button>
+          <button className="!bg-gray-800 !border-transparent uppercase tracking-widest text-sm cursor-default">Page {page}</button>
+          <button 
+            className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
+            disabled={hasNextPage ? false : true}
+            onClick={() => setPage(page + 1)}
+          >
+            »
+          </button>
         </div>
       </div>
       <div 
@@ -112,8 +171,8 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                         
                     return (
                       <a
-                        key={idx}
-                        className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-32"}`}
+                        key={val._id}
+                        className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`}
                         onClick={() => noteContext?.setSelectedNote(idx)}
                       >
                         <div

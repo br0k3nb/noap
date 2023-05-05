@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray, FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 
-// import { motion } from "framer-motion";
-
 import { toastAlert } from "../../components/Alert/Alert";
 
 import Notes from "../Notes";
@@ -12,6 +10,8 @@ import Nav from "./components/nav";
 import NoteDetails from "../NoteDetails";
 
 import api from "../../services/api";
+
+import { useDebounce } from "../../hooks/useDebounce";
 
 import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
@@ -107,13 +107,19 @@ export const LabelsContext = createContext<LabelContext | null>(null);
 export const RefetchContext = createContext<Refetch | null>(null);
 
 export default function Home(): JSX.Element {
-  const [selectedNote, setSelectedNote] = useState<number | null>(null);
-  const [wasChanged, setWasChanged] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [blurFlag, setBlurFlag] = useState(true);
-  const [newNote, setNewNote] = useState(false);
-  const [navbar, setNavbar] = useState(false);
+  const [ selectedNote, setSelectedNote ] = useState<number | null>(null);
+  const [ hasNextPage, setHasNextPage ] = useState(false);
+  const [ wasChanged, setWasChanged ] = useState(false);
+  const [ expanded, setExpanded ] = useState(false);
+  const [ blurFlag, setBlurFlag ] = useState(true);
+  const [ newNote, setNewNote ] = useState(false);
+  const [ totalDocs, setTotalDocs ] = useState(0);
+  const [ navbar, setNavbar ] = useState(false);
+  const [ search, setSearch ] = useState('');
+  const [ page, setPage ] = useState(1);
   
+  const delayedSearch = useDebounce(search, 500);
+
   const navigate = useNavigate();
 
   const { control } = useForm<Notes>();
@@ -144,37 +150,30 @@ export default function Home(): JSX.Element {
 
     try {
       const notes = await api.get(
-        `https://noap-typescript-api.vercel.app/notes/${parsedUserToken._id}/${parsedUserToken.token}`
+        `https://noap-typescript-api.vercel.app/notes/${parsedUserToken._id}/${parsedUserToken.token}`, {
+          params: {
+              search: delayedSearch,
+              page,
+              limit: 10,
+          },
+        }
       );
 
-      if (fields.length === 0) append(notes.data);
-      else if (fields.length >= 1) {
-        notes.data.map((value: Note, index: number) => {
-          
-          //creating a condition checker by "hand" because i can't
-          //just use value === fields[index], since useFieldArray
-          //inserts it's own id into the array.
-          const noteIsTheSame =
-            value.body === fields[index]?.body &&
-            value.title === fields[index].title &&
-            value.createdAt === fields[index]?.createdAt &&
-            value.updatedAt === fields[index]?.updatedAt &&
-            value.state === fields[index]?.state &&
-            value.labels === fields[index]?.labels;
+      const docs = notes.data.docs;
 
-          if (notes.data.length >= fields.length && fields.length - 1 < index) append(value);
-          else if (notes.data.length < fields.length) replace(notes.data);
-          else if (value._id === fields[index]._id && !noteIsTheSame) update(index, value);
-          else if (value._id === fields[index]._id && noteIsTheSame) return;
-        });
-      }
+      setTotalDocs(notes.data.totalDocs);
+      setHasNextPage(notes.data.hasNextPage);
+
+      if (fields.length === 0) append(docs);
+      else replace(docs);
+
     } catch (err) {
       console.log(err);
       navigate("/");
       window.localStorage.removeItem("user_token");
     }
   };
-  // https://noap-typescript-api.vercel.app
+
   const fetchLabels = async () => {
     try {
         const getLabels = await api.get(`https://noap-typescript-api.vercel.app/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
@@ -257,7 +256,7 @@ export default function Home(): JSX.Element {
     navigate("/");
   };
 
-  const {isFetching} = useQuery(["verifyUser", wasChanged], fetchNotes, {
+  const {isFetching} = useQuery([ "verifyUser", wasChanged, delayedSearch, page ], fetchNotes, {
     refetchInterval: 300000,
     refetchOnWindowFocus: true
   });
@@ -291,6 +290,12 @@ export default function Home(): JSX.Element {
           >
             <div className="flex flex-row h-screen">
               <Notes 
+                page={page}
+                search={search}
+                setPage={setPage}
+                totalDocs={totalDocs}
+                hasNextPage={hasNextPage}
+                setSearch={setSearch}
                 notes={fields} 
                 addNewNote={addNewNote}
                 isFetching={isFetching}
