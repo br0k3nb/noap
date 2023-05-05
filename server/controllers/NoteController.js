@@ -2,18 +2,24 @@ import Note from '../models/Note.js';
 import NoteState from '../models/NoteState.js';
 import Label from '../models/Label.js';
 
-// import { ObjectId } from 'mongoose';
 
 export default {
     async view(req, res) {
         try {
             const {userId} = req.params;
 
+            const {search, ...filter} = req.query;
+            const searchRegex = new RegExp(search, 'i');
+
             const aggregate = Note.aggregate(
                 [
                     {
                         $match: {
-                          userId
+                            userId,
+                            $or: [
+                                {title: searchRegex},
+                                {'labels.name': searchRegex}
+                            ],
                         }
                     }, 
                     {
@@ -33,15 +39,9 @@ export default {
                 ]
             );
 
-            const notes = await Note.aggregatePaginate(aggregate);
+            const notes = await Note.aggregatePaginate(aggregate, filter);
 
-            res.status(200).json(notes.docs);
-
-            // const {userId} = req.params;
-
-            // const getActivities = await Note.find({userId}).sort({priority: 1});
-
-            // res.status(200).json(getActivities);
+            res.status(200).json(notes);
         } catch (err) {
             res.status(400).json({message: err});
         }
@@ -74,18 +74,6 @@ export default {
             await NoteState.findOneAndUpdate({_id: saveState._id}, { noteId: saveNote._id });
 
             res.status(200).json({message: 'Saved susccessfuly!'});
-
-            // const {title, body, image, state, userId} = req.body;
-
-            // await Note.create({
-            //     title,
-            //     body,
-            //     image,
-            //     state,
-            //     userId
-            // });
-           
-            // res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
@@ -104,8 +92,8 @@ export default {
             const note = await Note.findById(noteId);
 
             if(note?.labels.length !== 0) {
-                for(const [idx, noteLabel] of note.labels.entries()) {
-                    for(const [index, label] of findLabels.entries()) {
+                for(const [_, noteLabel] of note.labels.entries()) {
+                    for(const [_, label] of findLabels.entries()) {
                         if(noteLabel._id.toString() === label._id.toString()) {
                             throw ({ message: "Label already attached!" });
                         }
@@ -113,8 +101,6 @@ export default {
                 }
             }
            
-            console.log('i was executed');
-
             await Note.findOneAndUpdate({_id: noteId}, {
                 labels: [
                     ...note.labels,
@@ -134,17 +120,9 @@ export default {
             const { _id, title, body, image, state, stateId } = req.body;
 
             await Note.findOneAndUpdate({_id}, { title, body, image });
-            const test = await NoteState.findByIdAndUpdate({_id: stateId}, { state });
-
-            console.log(test);
+            await NoteState.findByIdAndUpdate({_id: stateId}, { state });
 
             res.status(200).json({message: 'Note updated!'});
-
-            // const {_id, title, body, image, state} = req.body;
-
-            // await Note.findOneAndUpdate({_id}, {title, body, image, state});
-
-            // res.status(200).json({message: 'Note updated!'});
         } catch (err) {
             console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
