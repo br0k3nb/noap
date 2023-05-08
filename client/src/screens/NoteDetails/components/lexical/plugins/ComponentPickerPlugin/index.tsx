@@ -22,7 +22,7 @@ import {
   FORMAT_ELEMENT_COMMAND,
   TextNode,
 } from "lexical";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useContext } from "react";
 import * as ReactDOM from "react-dom";
 
 import useModal from "../../hooks/useModal";
@@ -98,9 +98,9 @@ function ComponentPickerMenuItem({
 }
 
 export default function ComponentPickerMenuPlugin(): JSX.Element {
-  const [editor] = useLexicalComposerContext();
-  const [modal, showModal] = useModal();
-  const [queryString, setQueryString] = useState<string | null>(null);
+  const [ editor ] = useLexicalComposerContext();
+  const [ modal, showModal ] = useModal();
+  const [ queryString, setQueryString ] = useState<string | null>(null);
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,

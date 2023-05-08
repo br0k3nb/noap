@@ -4,15 +4,12 @@ import { AiFillSave } from "react-icons/ai";
 import { MdDeleteForever, MdOutlineSettings, MdNewLabel } from "react-icons/md";
 import { BsXLg } from 'react-icons/bs';
 
-// import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-// import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin";
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-// import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-// import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-// import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -23,7 +20,8 @@ import { useSharedHistoryContext } from "./context/SharedHistoryContext";
 // import AutocompletePlugin from "./plugins/AutocompletePlugin";
 import AutoEmbedPlugin from "./plugins/AutoEmbedPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
-import ClickableLinkPlugin from "./plugins/ClickableLinkPlugin";
+// import LexicalClickableLinkPlugin from '@lexical/react/LexicalClickableLinkPlugin';
+// import ClickableLinkPlugin from "./plugins/ClickableLinkPlugin";
 import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import CodeActionMenuPlugin from "./plugins/CodeActionMenuPlugin";
 import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
@@ -37,7 +35,7 @@ import HorizontalRulePlugin from "./plugins/HorizontalRulePlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 // import KeywordsPlugin from "./plugins/KeywordsPlugin";
 import LinkPlugin from "./plugins/LinkPlugin";
-// import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
+import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 // import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
 // import { MaxLengthPlugin } from "./plugins/MaxLengthPlugin";
 // import MentionsPlugin from "./plugins/MentionsPlugin";
@@ -56,8 +54,8 @@ import YouTubePlugin from "./plugins/YouTubePlugin";
 
 import { UseFormRegister, FieldValues } from "react-hook-form";
 
-import { ExpandedContext } from "../..";
-import { RefetchContext } from "../../../Home";
+import { ExpandedCtx } from "../../../../context/NoteExpandedCtx";
+import { RefetchCtx } from "../../../../context/RefetchCtx";
 
 import { toastAlert } from "../../../../components/Alert/Alert";
 import ConfirmationModal from "../../../../components/ConfirmationModal";
@@ -94,7 +92,7 @@ const Editor = forwardRef(
     const [ editor ] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
-    const noteExpanded = useContext(ExpandedContext);
+    const noteExpanded = useContext(ExpandedCtx);
     const [ titleFocused, setTitleFocused ] = useState(false);
 
     const {
@@ -129,16 +127,13 @@ const Editor = forwardRef(
         {!titleFocused && <ToolbarPlugin titleFocused={titleFocused} />}
         <div className="editor-container plain-text">
           <DragDropPaste />
-          {/* <ClearEditorPlugin /> */}
-          {/* <AutoFocusPlugin /> */}
+          <AutoFocusPlugin />
           <ComponentPickerPlugin />
           <AutoEmbedPlugin />
           <HashtagPlugin />
           <EmojisPlugin />
           <EmojiPickerPlugin />
           <AutoLinkPlugin />
-          {/* <ListPlugin /> */}
-          {/* <ListMaxIndentLevelPlugin maxDepth={7} /> */}
           {isRichText && (
             <>
               <RichTextPlugin
@@ -147,11 +142,10 @@ const Editor = forwardRef(
                   <div className="editor" ref={ref}>
                     <div
                       className={`
-                      !overflow-x-hidden
-                      !overflow-y-scroll
-                      scrollbar-thin
-                      scrollbar-track-transparent
-                      scrollbar-thumb-gray-900
+                        !overflow-y-scroll
+                        scrollbar-thin
+                        scrollbar-track-transparent
+                        scrollbar-thumb-gray-900
                       `}
                       style={{
                         height:
@@ -160,7 +154,7 @@ const Editor = forwardRef(
                             : window.innerHeight - 65,
                       }}
                     >
-                      <div className="" onClick={() => setTitleFocused(true)}>
+                      <div onClick={() => setTitleFocused(true)}>
                         <TitleInput
                           register={register}
                           noteCtx={noteExpanded}
@@ -196,18 +190,21 @@ const Editor = forwardRef(
               />
               <FloatingTextFormatToolbarPlugin />
               <CodeActionMenuPlugin />
+              <ListPlugin />
               <CheckListPlugin />
+              <ListMaxIndentLevelPlugin maxDepth={7} />
               <ImagesPlugin captionsEnabled={true} />
               <HistoryPlugin externalHistoryState={historyState} />
               <LinkPlugin />
               {/* <AutocompletePlugin /> */}
               {/* <PollPlugin /> */}
               {/* <MarkdownShortcutPlugin /> */}
+              {/* <LexicalClickableLinkPlugin />
+              <ClickableLinkPlugin /> */}
               <CodeHighlightPlugin />
               <TwitterPlugin />
               <YouTubePlugin />
               <FigmaPlugin />
-              <ClickableLinkPlugin />
               <HorizontalRulePlugin />
               <EquationsPlugin />
               <ExcalidrawPlugin />
@@ -235,7 +232,7 @@ const Editor = forwardRef(
 export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
   return (
     <div
-      className="text-2xl mt-10 px-6 flex flex-wrap"
+      className="text-3xl mt-10 px-6 flex flex-wrap xxs:text-2xl"
       style={
         !noteCtx?.expanded
           ? { width: window.innerWidth - 430 }
@@ -257,8 +254,8 @@ export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
 }
 
 export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) {
-  const noteExpanded = useContext(ExpandedContext);
-  const refetch = useContext(RefetchContext);
+  const noteExpanded = useContext(ExpandedCtx);
+  const refetch = useContext(RefetchCtx);
 
   const [ open, setOpen ] = useState(false);
   // const [ openLabelModal, setOpenLabelModal ] = useState(false);

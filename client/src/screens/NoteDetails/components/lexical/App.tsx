@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useContext, Dispatch, SetStateAction } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import { FieldArrayWithId, useForm } from "react-hook-form";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -11,12 +11,12 @@ import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
 import { SharedHistoryContext } from "./context/SharedHistoryContext";
 import PlaygroundNodes from "./nodes/PlaygroundNodes";
 import { TableContext } from "./plugins/TablePlugin";
-import PlaygroundEditorTheme from "./appThemes/PlaygroundEditorTheme";
+import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 
 import { toastAlert } from "../../../../components/Alert/Alert";
-import { NoteWasChanged } from "../../../Home";
-import { NoteContext } from "../../../Home";
-import { ExpandedContext } from "../..";
+import { NoteWasChangedCtx } from "../../../../context/NoteWasChangedCtx";
+import { NoteCtx } from "../../../../context/SelectedNoteCtx";
+import { ExpandedCtx } from "../../../../context/NoteExpandedCtx";
 
 import api from "../../../../services/api";
 
@@ -49,22 +49,17 @@ type Props = {
   notes: FieldArrayWithId<Notes, "note", "id">[];
 };
 
-type NoteWasChangedContext = {
-  wasChanged: boolean;
-  setWasChanged: Dispatch<SetStateAction<boolean>>;
-};
-
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
   const lastExpanded = useRef<boolean | undefined>(false);
-  const lastSelectedNotes = useRef<number | undefined>(undefined);
+  const lastSelectedNotes = useRef<number | null | undefined>(null);
 
   const [ saveSpinner, setSaveSpinner ] = useState(false);
   const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
 
-  const noteWasChangedContext = useContext<NoteWasChangedContext | null>(NoteWasChanged);
-  const noteContext = useContext(NoteContext);
-  const noteExpanded = useContext(ExpandedContext);
+  const noteWasChangedContext = useContext(NoteWasChangedCtx);
+  const noteContext = useContext(NoteCtx);
+  const noteExpanded = useContext(ExpandedCtx);
 
   useEffect(() => {
     lastSelectedNotes.current = noteContext?.selectedNote;
@@ -94,7 +89,7 @@ export default function App({ notes }: Props): JSX.Element {
 
       if(findImages && findImages.length !== 0) {
         const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
-        images = removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[3.50rem] w-[163.5px] xxs:w-[159px]">');
+        images = removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[3.50rem] w-[162px] xxs:w-[159px]">');
       }
       else images = 'no image attached';
       
@@ -151,7 +146,7 @@ export default function App({ notes }: Props): JSX.Element {
   };
 
   const UpdatePlugin = () => {
-    const [editor] = useLexicalComposerContext();
+    const [ editor ] = useLexicalComposerContext();
 
     if(lastSelectedNotes.current !== noteContext?.selectedNote || noteExpanded?.expanded !== lastExpanded.current) {
       setTimeout(() => {

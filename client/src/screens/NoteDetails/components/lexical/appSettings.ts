@@ -31,5 +31,5 @@ export const DEFAULT_SETTINGS: Settings = {
   measureTypingPerf: false,
   showNestedEditorTreeView: false,
   showTableOfContents: false,
-  showTreeView: true,
+  showTreeView: false
 };

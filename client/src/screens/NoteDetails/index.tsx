@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext, Dispatch, SetStateAction } from "react";
+import { useState, createContext, useContext, Dispatch, SetStateAction } from "react";
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 
 import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiFillDelete, AiOutlineEllipsis } from 'react-icons/ai';
@@ -8,7 +8,8 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical/App";
 
-import { NoteContext } from "../Home";
+import { NoteCtx } from "../../context/SelectedNoteCtx";
+import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -52,19 +53,10 @@ type Props = {
   expanded: boolean;
 };
 
-type ExpandedContextProps = {
-  expanded: boolean;
-  setExpanded: Dispatch<SetStateAction<boolean>>;
-};
-
 export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded, labelIsFetching, labels }: Props) {
-  const selectedNote = useContext(NoteContext);
+  const selectedNote = useContext(NoteCtx);
   const [ open, setOpen ] = useState(false);
   const [ openLabelModal, setOpenlabelModal ] = useState(false);
-
-  useEffect(() => {
-    if(window.outerWidth <= 1030 && selectedNote?.selectedNote !== null) setExpanded(!expanded);
-  }, [selectedNote?.selectedNote]);
 
   const removeNote = () => {
     selectedNote?.setSelectedNote(null);
@@ -72,13 +64,13 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     setOpen(false);
 
     deleteNote(notes[(selectedNote?.selectedNote as number)]._id);
-    remove(selectedNote?.selectedNote);
+    remove(selectedNote?.selectedNote as number);
   }
 
-  const handleExpanded = () => {
-    if(window.outerWidth <= 1030) {
+  const handleExpand = () => {
+    if(window.outerWidth <= 1030 && selectedNote?.selectedNote !== null) {
       selectedNote?.setSelectedNote(null);
-      setExpanded(!expanded);
+      setExpanded(false);
     }
     else setExpanded(!expanded);
   }
@@ -87,11 +79,11 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
   const days = (date: string) => moment(date).format("ll");
 
   const lastUpdated = () => { 
-    if(!notes[selectedNote?.selectedNote as number].updatedAt) return notes[selectedNote?.selectedNote as number].createdAt;
-    else return notes[selectedNote?.selectedNote as number].updatedAt;
+    if(!notes[selectedNote?.selectedNote as number]?.updatedAt) return notes[selectedNote?.selectedNote as number]?.createdAt;
+    else return notes[selectedNote?.selectedNote as number]?.updatedAt;
   }
 
-  const getSeletedNoteId = selectedNote?.selectedNote !== null && notes[selectedNote?.selectedNote as number]._id;
+  const getSeletedNoteId = selectedNote?.selectedNote !== null && notes[selectedNote?.selectedNote as number]?._id;
 
   return (
     <div className={`overflow-hidden w-screen h-screen bg-gray-700 text-gray-200 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 ${!expanded && "hidden lg:flex"}`}>
@@ -102,7 +94,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               <div className="mr-2 tooltip tooltip-right !text-gray-200" data-tip={`${!expanded ? 'Expand note' : 'Minimize note'}`}>
                 <button
                   className="hover:bg-stone-600 px-1 py-1 rounded"
-                  onClick={() => handleExpanded()}
+                  onClick={() => handleExpand()}
                 >
                   {expanded ? (
                     <AiOutlineFullscreenExit size={22} />
@@ -222,9 +214,12 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
             <div 
               className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
             >
-              <ExpandedContext.Provider value={{expanded, setExpanded}}>
+              <NoteExpandedCtx 
+                expanded={expanded} 
+                setExpanded={setExpanded}
+              >
                 <TextEditor notes={notes} />
-              </ExpandedContext.Provider>
+              </NoteExpandedCtx >
             </div>
           ) : (
             <div className="flex flex-col justify-self-center mr-[28rem]">
@@ -243,5 +238,3 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     </div>
   );
 }
-
-export const ExpandedContext = createContext<ExpandedContextProps | null>(null);  

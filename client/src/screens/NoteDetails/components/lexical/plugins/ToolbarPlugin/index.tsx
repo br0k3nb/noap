@@ -84,7 +84,7 @@ import {
 } from '../ImagesPlugin';
 import { InsertPollDialog } from "../PollPlugin";
 
-import { ExpandedContext } from "../../../..";
+import { ExpandedCtx } from "../../../../../../context/NoteExpandedCtx";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -605,7 +605,7 @@ export default function ToolbarPlugin({titleFocused}: any) {
     [activeEditor, selectedElementKey],
   );
 
-  const noteIsExpanded = useContext(ExpandedContext);
+  const noteIsExpanded = useContext(ExpandedCtx);
 
   addEventListener(
     "resize", () => {

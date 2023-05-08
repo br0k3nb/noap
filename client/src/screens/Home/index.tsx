@@ -1,7 +1,7 @@
-import { useState, createContext, SetStateAction, Dispatch } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useForm, useFieldArray, FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 
 import { toastAlert } from "../../components/Alert/Alert";
 
@@ -13,23 +13,14 @@ import api from "../../services/api";
 
 import { useDebounce } from "../../hooks/useDebounce";
 
+import NoteWasChangedCtx from "../../context/NoteWasChangedCtx";
+import SelectedNoteContext from "../../context/SelectedNoteCtx";
+import LabelsCtx from "../../context/LabelCtx";
+import RefetchContext from "../../context/RefetchCtx";
+import NavbarContext from "../../context/NavbarCtx";
+
 import "../../styles/themes/dark.css";
-import "../../styles/themes/light.css";
-
-type SelectedNoteContext = {
-  selectedNote: number;
-  setSelectedNote: Dispatch<SetStateAction<number | null>>;
-};
-
-type NoteWasChangedContext = {
-  wasChanged: boolean;
-  setWasChanged: Dispatch<SetStateAction<boolean>>;
-};
-
-type NavContext = {
-  navbar: boolean;
-  setNavbar: Dispatch<SetStateAction<boolean>>;
-};
+// import "../../styles/themes/light.css";
 
 type Notes = {
   note: {
@@ -54,28 +45,6 @@ type Notes = {
   }[];
 };
 
-type Note = {
-  _id: string;
-  userId: string;
-  title?: string;
-  body: string;
-  image?: string;
-  state: {
-    _id: string;
-    state: string;
-  };
-  labels?: [{
-    _id: string;
-    name: string;
-    type: string;
-    color: string;
-    fontColor: string;
-  }];
-  updatedAt?: string;
-  createdAt: string;
-  id: string;
-};
-
 type Labels = {
   labels: {
     _id: string;
@@ -88,23 +57,6 @@ type Labels = {
     createdAt: string;
   }[];
 };
-
-type LabelContext = {
-  isFetching: boolean;
-  fetchLabels: () => Promise<void>;
-  removeLabels: UseFieldArrayRemove; 
-  labels: FieldArrayWithId<Labels, "labels", "id">[];
-}
-
-type Refetch = {
-  fetchNotes: () => Promise<void>;
-}
-
-export const NoteWasChanged = createContext<NoteWasChangedContext | null>(null);
-export const NoteContext = createContext<SelectedNoteContext | null>(null);
-export const NavbarContext = createContext<NavContext | null>(null);
-export const LabelsContext = createContext<LabelContext | null>(null);
-export const RefetchContext = createContext<Refetch | null>(null);
 
 export default function Home(): JSX.Element {
   const [ selectedNote, setSelectedNote ] = useState<number | null>(null);
@@ -126,7 +78,7 @@ export default function Home(): JSX.Element {
 
   const { control: labelsControl } = useForm<Labels>();
 
-  const { fields, append, update, replace, remove } = useFieldArray({
+  const { fields, append, replace, remove } = useFieldArray({
     control,
     name: "note",
   });
@@ -169,8 +121,7 @@ export default function Home(): JSX.Element {
 
     } catch (err) {
       console.log(err);
-      navigate("/");
-      window.localStorage.removeItem("user_token");
+      handleSignout();
     }
   };
 
@@ -198,7 +149,8 @@ export default function Home(): JSX.Element {
           });
         }
     } catch (err) {
-        console.log(err);
+      console.log(err);
+      handleSignout();
     }
 }
 
@@ -267,10 +219,20 @@ export default function Home(): JSX.Element {
 
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
-      <NoteWasChanged.Provider value={{ wasChanged, setWasChanged }}>
-        {/* @ts-ignore */}
-        <NoteContext.Provider value={{ selectedNote, setSelectedNote }}>
-          <LabelsContext.Provider value={{ labels, removeLabels, fetchLabels, isFetching: labelIsFetching }}>
+      <NoteWasChangedCtx 
+        wasChanged={wasChanged}
+        setWasChanged={setWasChanged}
+      >
+        <SelectedNoteContext 
+          selectedNote={selectedNote}
+          setSelectedNote={setSelectedNote}
+        >
+          <LabelsCtx 
+            labels={labels}
+            removeLabels={removeLabels}
+            fetchLabels={fetchLabels}
+            isFetching={labelIsFetching}
+          >
             <Nav 
               navbar={navbar}
               addNewNote={addNewNote} 
@@ -279,7 +241,7 @@ export default function Home(): JSX.Element {
               handleSignout={handleSignout}
               token={parsedUserToken}
             />
-          </LabelsContext.Provider>
+          </LabelsCtx>
           <div
             className={`!overflow-hidden ${
               navbar && !expanded ? "ml-[60px] xxs:ml-[60px]" : 
@@ -302,10 +264,16 @@ export default function Home(): JSX.Element {
                 navbar={navbar}
                 setNavbar={setNavbar} 
                 expanded={expanded}
+                setExpanded={setExpanded}
               />
         
-              <NavbarContext.Provider value={{ navbar, setNavbar }}>
-                <RefetchContext.Provider value={{ fetchNotes }}>
+              <NavbarContext 
+                navbar={navbar}
+                setNavbar={setNavbar}
+              >
+                <RefetchContext 
+                  fetchNotes={fetchNotes}
+                >
                   <NoteDetails 
                     notes={fields} 
                     remove={remove}
@@ -315,12 +283,12 @@ export default function Home(): JSX.Element {
                     setExpanded={setExpanded}
                     labelIsFetching={labelIsFetching}
                   />
-                </RefetchContext.Provider>
-              </NavbarContext.Provider>
+                </RefetchContext>
+              </NavbarContext>
             </div>
           </div>
-        </NoteContext.Provider>
-      </NoteWasChanged.Provider>
+        </SelectedNoteContext>
+      </NoteWasChangedCtx>
     </div>
   );
 }

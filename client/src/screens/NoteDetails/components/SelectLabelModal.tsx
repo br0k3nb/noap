@@ -10,7 +10,7 @@ import { AiFillTags } from 'react-icons/ai';
 
 import api from '../../../services/api';
 
-import { RefetchContext } from '../../Home';
+import { RefetchCtx } from '../../../context/RefetchCtx';
 import { toastAlert } from '../../../components/Alert/Alert';
 import Modal from '../../../components/Modal';
 
@@ -39,7 +39,7 @@ export default function SelectLabelModal({ checked, setChecked, isFetching, labe
 
     const { register, handleSubmit} = useForm();
     
-    const refetch = useContext(RefetchContext);
+    const refetch = useContext(RefetchCtx);
 
     const token = JSON.parse(
         window.localStorage.getItem("user_token") || "{}"

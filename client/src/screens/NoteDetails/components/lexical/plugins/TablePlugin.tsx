@@ -16,7 +16,6 @@ import {
   LexicalNode,
 } from "lexical";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import * as React from "react";
 import invariant from "../shared/invariant";
 import { $createTableNodeWithDimensions, TableNode } from "../nodes/TableNode";
 import Button from "../ui/Button";

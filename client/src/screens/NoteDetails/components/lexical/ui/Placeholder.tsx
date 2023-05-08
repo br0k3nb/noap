@@ -1,6 +1,6 @@
 import { ReactNode, useContext } from "react";
-import { NavbarContext } from "../../../../Home";
-import { ExpandedContext } from "../../..";
+import { NavbarCtx } from "../../../../../context/NavbarCtx";
+import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
 
 import "./Placeholder.css";
 
@@ -13,8 +13,8 @@ export default function Placeholder({
   children,
   className,
 }: Props): JSX.Element {
-  const navContext = useContext(NavbarContext);
-  const expandedCtx = useContext(ExpandedContext);
+  const navContext = useContext(NavbarCtx);
+  const expandedCtx = useContext(ExpandedCtx);
 
   return (
     <div

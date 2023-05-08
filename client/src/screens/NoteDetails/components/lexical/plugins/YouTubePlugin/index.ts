@@ -14,7 +14,6 @@ export default function YouTubePlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    //@ts-ignore
     if (!editor.hasNodes([YouTubeNode])) {
       throw new Error('YouTubePlugin: YouTubeNode not registered on editor');
     }
@@ -23,7 +22,6 @@ export default function YouTubePlugin(): JSX.Element | null {
       INSERT_YOUTUBE_COMMAND,
       (payload) => {
         const youTubeNode = $createYouTubeNode(payload);
-        //@ts-ignore
         $insertNodeToNearestRoot(youTubeNode);
 
         return true;

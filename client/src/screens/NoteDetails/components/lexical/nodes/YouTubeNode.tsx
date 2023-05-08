@@ -18,7 +18,7 @@ import {
   SerializedDecoratorBlockNode,
 } from "@lexical/react/LexicalDecoratorBlockNode";
 
-import { ExpandedContext } from "../../..";
+import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
 
 type YouTubeComponentProps = Readonly<{
   className: Readonly<{
@@ -36,7 +36,7 @@ function YouTubeComponent({
   nodeKey,
   videoID,
 }: YouTubeComponentProps) {
-  const noteContext = useContext(ExpandedContext);
+  const noteContext = useContext(ExpandedCtx);
 
   return (
     <BlockWithAlignableContents

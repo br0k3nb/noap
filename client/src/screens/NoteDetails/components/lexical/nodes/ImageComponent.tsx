@@ -37,10 +37,9 @@ import {
 import { Suspense, useCallback, useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 
-import { BsSave, BsTrash, BsThreeDotsVertical, BsDownload, BsFillFileEarmarkArrowDownFill } from 'react-icons/bs';
+import { BsTrash, BsThreeDotsVertical, BsFillFileEarmarkArrowDownFill } from 'react-icons/bs';
 
 import { createWebsocketProvider } from "../collaboration";
-import { useSettings } from "../context/SettingsContext";
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 import EmojisPlugin from "../plugins/EmojisPlugin";
 import KeywordsPlugin from "../plugins/KeywordsPlugin";
@@ -51,7 +50,7 @@ import ImageResizer from "../ui/ImageResizer";
 import Placeholder from "../ui/Placeholder";
 import { $isImageNode } from "./ImageNode";
 
-import { ExpandedContext } from "../../..";
+import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
 
 const imageCache = new Set();
 
@@ -127,12 +126,11 @@ export default function ImageComponent({
 }): JSX.Element {
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [isSelected, setSelected, clearSelection] =
-    useLexicalNodeSelection(nodeKey);
-  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [ isSelected, setSelected, clearSelection ] = useLexicalNodeSelection(nodeKey);
+  const [ isResizing, setIsResizing ] = useState<boolean>(false);
   const { isCollabActive } = useCollaborationContext();
-  const [editor] = useLexicalComposerContext();
-  const [selection, setSelection] = useState<
+  const [ editor ] = useLexicalComposerContext();
+  const [ selection, setSelection ] = useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
   const activeEditorRef = useRef<LexicalEditor | null>(null);
@@ -213,16 +211,15 @@ export default function ImageComponent({
       onDelete(ev);
     }
 
-    if (isResizing) {
-      return true;
-    }
+    if (isResizing) return true;
+
     if (event.target === imageRef.current) {
-      if (event.shiftKey) {
-        setSelected(!isSelected);
-      } else {
+      if (event.shiftKey) setSelected(!isSelected);
+      else {
         clearSelection();
         setSelected(true);
       }
+      
       return true;
     }
 
@@ -318,19 +315,14 @@ export default function ImageComponent({
     });
   };
 
-  const onResizeStart = () => {
-    setIsResizing(true);
-  };
+  const onResizeStart = () => setIsResizing(true);
 
   const { historyState } = useSharedHistoryContext();
-  const {
-    settings: { showNestedEditorTreeView },
-  } = useSettings();
 
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = isSelected || isResizing;
 
-  const noteExpanded = useContext(ExpandedContext);
+  const noteExpanded = useContext(ExpandedCtx);
 
   const donwloadImage = (srcLink: string) => {
     const a = Object.assign(document.createElement("a"), {

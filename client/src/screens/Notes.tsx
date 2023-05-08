@@ -18,7 +18,7 @@ import parse from "html-react-parser";
 import moment from "moment";
 import "moment/locale/pt-br";
 
-import { NoteContext } from "./Home";
+import { NoteCtx } from "../context/SelectedNoteCtx";
 import ghost from '../assets/ghost.png';
 import Loader from "../components/Loader";
 
@@ -57,20 +57,26 @@ type Props = {
   setPage: Dispatch<SetStateAction<number>>;
   setSearch: Dispatch<SetStateAction<string>>;
   setNavbar: Dispatch<SetStateAction<boolean>>;
+  setExpanded: Dispatch<SetStateAction<boolean>>;
   notes: FieldArrayWithId<Notes, "note", "id">[];
 };
 
-export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar, expanded, setSearch, search, page, setPage, hasNextPage, totalDocs }: Props) {
+export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar, expanded, setExpanded, setSearch, search, page, setPage, hasNextPage, totalDocs }: Props) {
   const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
 
   const [ showSearch, setShowSearch ] = useState(false);
 
-  const noteContext = useContext(NoteContext);
+  const noteContext = useContext(NoteCtx);
 
   const handleSearchClick = () => {
     setShowSearch(showSearch ? false : true);
     setSearch('');
+  }
+
+  const handleNoteClick = (idx: number) => {
+    noteContext?.setSelectedNote(idx);
+    setExpanded(window.outerWidth <= 1030 ? true : false);
   }
 
   const onInputChange = (currentTarget: HTMLInputElement) => {
@@ -173,7 +179,7 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                       <a
                         key={val._id}
                         className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`}
-                        onClick={() => noteContext?.setSelectedNote(idx)}
+                        onClick={() => handleNoteClick(idx)}
                       >
                         <div
                           className={`rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-transparent bg-gray-700 py-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${

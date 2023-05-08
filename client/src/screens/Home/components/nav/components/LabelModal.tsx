@@ -16,7 +16,7 @@ import Modal from '../../../../../components/Modal';
 import { toastAlert } from '../../../../../components/Alert/Alert';
 import ConfirmationModal from '../../../../../components/ConfirmationModal';
 
-import { LabelsContext } from '../../..';
+import { LabelsCtx } from '../../../../../context/LabelCtx';
 
 import api from '../../../../../services/api';
 
@@ -57,7 +57,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
  
     const { errors } = formState;
 
-    const labelData = useContext(LabelsContext);
+    const labelData = useContext(LabelsCtx);
 
     const labels = labelData?.labels;
     

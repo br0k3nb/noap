@@ -13,7 +13,6 @@ export default function TwitterPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    //@ts-ignore
     if (!editor.hasNodes([TweetNode])) {
       throw new Error('TwitterPlugin: TweetNode not registered on editor');
     }
@@ -22,7 +21,7 @@ export default function TwitterPlugin(): JSX.Element | null {
       INSERT_TWEET_COMMAND,
       (payload) => {
         const tweetNode = $createTweetNode(payload);
-        //@ts-ignore
+        
         $insertNodeToNearestRoot(tweetNode);
 
         return true;

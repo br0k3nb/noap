@@ -58,7 +58,7 @@ const PlaygroundNodes: Array<Klass<LexicalNode>> = [
     MarkNode,
     CollapsibleContainerNode,
     CollapsibleContentNode,
-    CollapsibleTitleNode,
+    CollapsibleTitleNode
 ];
 
 export default PlaygroundNodes;
