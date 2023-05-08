@@ -20,7 +20,7 @@ import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
 
 import "../../styles/themes/dark.css";
-// import "../../styles/themes/light.css";
+import "../../styles/themes/light.css";
 
 type Notes = {
   note: {
