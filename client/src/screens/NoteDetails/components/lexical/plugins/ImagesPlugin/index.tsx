@@ -102,7 +102,6 @@ export function InsertImageUploadedDialogBody({
   const loadImage = (files: FileList | null) => {
     if(files && files[0].size <= 5006613 && files[0].type.startsWith("image")) { //aprox 5mb
       setLoader(true);
-      console.log(files[0]);
       new Compressor(files[0], {      
         quality: 0.3,
         success: async (compressedResult) => {
@@ -208,18 +207,15 @@ export function InsertImageDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
-  const [mode, setMode] = useState<null | "url" | "file">(null);
+  const [ mode, setMode ] = useState<null | "url" | "file">(null);
   const hasModifier = useRef(false);
 
   useEffect(() => {
     hasModifier.current = false;
-    const handler = (e: KeyboardEvent) => {
-      hasModifier.current = e.altKey;
-    };
+    const handler = (e: KeyboardEvent) => hasModifier.current = e.altKey;
+
     document.addEventListener("keydown", handler);
-    return () => {
-      document.removeEventListener("keydown", handler);
-    };
+    return () => document.removeEventListener("keydown", handler);
   }, [activeEditor]);
 
   const onClick = (payload: InsertImagePayload) => {
@@ -259,12 +255,8 @@ export function InsertImageDialog({
   );
 }
 
-export default function ImagesPlugin({
-  captionsEnabled,
-}: {
-  captionsEnabled?: boolean;
-}): JSX.Element | null {
-  const [editor] = useLexicalComposerContext();
+export default function ImagesPlugin({captionsEnabled} : {captionsEnabled?: boolean}): JSX.Element | null {
+  const [ editor ] = useLexicalComposerContext();
 
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
@@ -319,13 +311,11 @@ img.src = TRANSPARENT_IMAGE;
 
 function onDragStart(event: DragEvent): boolean {
   const node = getImageNodeInSelection();
-  if (!node) {
-    return false;
-  }
+  if (!node) return false;
+
   const dataTransfer = event.dataTransfer;
-  if (!dataTransfer) {
-    return false;
-  }
+  if (!dataTransfer) return false;
+
   dataTransfer.setData("text/plain", "_");
   dataTransfer.setDragImage(img, 0, 0);
   dataTransfer.setData(
@@ -350,24 +340,19 @@ function onDragStart(event: DragEvent): boolean {
 
 function onDragover(event: DragEvent): boolean {
   const node = getImageNodeInSelection();
-  if (!node) {
-    return false;
-  }
-  if (!canDropImage(event)) {
-    event.preventDefault();
-  }
+  if (!node) return false;
+  if (!canDropImage(event)) event.preventDefault();
+
   return true;
 }
 
 function onDrop(event: DragEvent, editor: LexicalEditor): boolean {
   const node = getImageNodeInSelection();
-  if (!node) {
-    return false;
-  }
+  if (!node) return false;
+
   const data = getDragImageData(event);
-  if (!data) {
-    return false;
-  }
+  if (!data) return false;
+
   event.preventDefault();
   if (canDropImage(event)) {
     const range = getDragSelection(event);
@@ -384,9 +369,8 @@ function onDrop(event: DragEvent, editor: LexicalEditor): boolean {
 
 function getImageNodeInSelection(): ImageNode | null {
   const selection = $getSelection();
-  if (!$isNodeSelection(selection)) {
-    return null;
-  }
+  if (!$isNodeSelection(selection)) return null;
+
   const nodes = selection.getNodes();
   const node = nodes[0];
   return $isImageNode(node) ? node : null;
@@ -394,13 +378,10 @@ function getImageNodeInSelection(): ImageNode | null {
 
 function getDragImageData(event: DragEvent): null | InsertImagePayload {
   const dragData = event.dataTransfer?.getData("application/x-lexical-drag");
-  if (!dragData) {
-    return null;
-  }
+  if (!dragData) return null;
+
   const { type, data } = JSON.parse(dragData);
-  if (type !== "image") {
-    return null;
-  }
+  if (type !== "image") return null;
 
   return data;
 }
@@ -438,9 +419,8 @@ function getDragSelection(event: DragEvent): Range | null | undefined {
   } else if (event.rangeParent && domSelection !== null) {
     domSelection.collapse(event.rangeParent, event.rangeOffset || 0);
     range = domSelection.getRangeAt(0);
-  } else {
-    throw Error(`Cannot get the selection when dragging`);
-  }
+  } 
+  else throw Error(`Cannot get the selection when dragging`);
 
   return range;
 }

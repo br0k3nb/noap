@@ -14,9 +14,8 @@ import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 
 import { toastAlert } from "../../../../components/Alert/Alert";
-import { NoteWasChangedCtx } from "../../../../context/NoteWasChangedCtx";
+import { RefetchCtx } from "../../../../context/RefetchCtx";
 import { NoteCtx } from "../../../../context/SelectedNoteCtx";
-import { ExpandedCtx } from "../../../../context/NoteExpandedCtx";
 
 import api from "../../../../services/api";
 
@@ -51,30 +50,22 @@ type Props = {
 
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
-  const lastExpanded = useRef<boolean | undefined>(false);
   const lastSelectedNotes = useRef<number | null | undefined>(null);
 
   const [ saveSpinner, setSaveSpinner ] = useState(false);
-  const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
 
-  const noteWasChangedContext = useContext(NoteWasChangedCtx);
   const noteContext = useContext(NoteCtx);
-  const noteExpanded = useContext(ExpandedCtx);
+  const refetchNoteCtx = useContext(RefetchCtx);
 
   useEffect(() => {
     lastSelectedNotes.current = noteContext?.selectedNote;
-    setTimeout(() => setFloatingAnchorElem(editorRef.current));
   }, [noteContext?.selectedNote]);
-
-  useEffect(() => {
-    lastExpanded.current = noteExpanded?.expanded;
-  }, [noteExpanded?.expanded]);
 
   const { reset, register } = useForm({});
 
-  const parsedUserToken = JSON.parse(
+  const token = JSON.parse(
     window.localStorage.getItem("user_token") || ""
-    );
+  );
     
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
@@ -104,7 +95,7 @@ export default function App({ notes }: Props): JSX.Element {
           const resultImg = BSON.deserialize(compressImg)
 
           const create = await api.patch(
-            `https://noap-typescript-api.vercel.app/edit/${parsedUserToken.token}`,
+            `https://noap-typescript-api.vercel.app/edit/${token.token}`,
             {
               title,
               body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',
@@ -115,7 +106,7 @@ export default function App({ notes }: Props): JSX.Element {
             }
           );
           
-          noteWasChangedContext?.setWasChanged(!noteWasChangedContext.wasChanged);
+          refetchNoteCtx?.fetchNotes();
           setSaveSpinner(false);
           
           toastAlert({
@@ -148,7 +139,7 @@ export default function App({ notes }: Props): JSX.Element {
   const UpdatePlugin = () => {
     const [ editor ] = useLexicalComposerContext();
 
-    if(lastSelectedNotes.current !== noteContext?.selectedNote || noteExpanded?.expanded !== lastExpanded.current) {
+    if(lastSelectedNotes.current !== noteContext?.selectedNote) {
       setTimeout(() => {
         reset({
           title: notes[noteContext?.selectedNote as number].title,
@@ -175,7 +166,6 @@ export default function App({ notes }: Props): JSX.Element {
                 save={saveNote}
                 register={register}
                 saveSpinner={saveSpinner}
-                floatingAnchorElem={floatingAnchorElem}
               />
             </div>
           </SharedAutocompleteContext>

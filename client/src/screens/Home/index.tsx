@@ -13,14 +13,13 @@ import api from "../../services/api";
 
 import { useDebounce } from "../../hooks/useDebounce";
 
-import NoteWasChangedCtx from "../../context/NoteWasChangedCtx";
 import SelectedNoteContext from "../../context/SelectedNoteCtx";
 import LabelsCtx from "../../context/LabelCtx";
 import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
 
 import "../../styles/themes/dark.css";
-// import "../../styles/themes/light.css";
+import "../../styles/themes/light.css";
 
 type Notes = {
   note: {
@@ -219,76 +218,71 @@ export default function Home(): JSX.Element {
 
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
-      <NoteWasChangedCtx 
-        wasChanged={wasChanged}
-        setWasChanged={setWasChanged}
+      <SelectedNoteContext 
+        selectedNote={selectedNote}
+        setSelectedNote={setSelectedNote}
       >
-        <SelectedNoteContext 
-          selectedNote={selectedNote}
-          setSelectedNote={setSelectedNote}
+        <LabelsCtx 
+          labels={labels}
+          removeLabels={removeLabels}
+          fetchLabels={fetchLabels}
+          isFetching={labelIsFetching}
         >
-          <LabelsCtx 
-            labels={labels}
-            removeLabels={removeLabels}
-            fetchLabels={fetchLabels}
-            isFetching={labelIsFetching}
-          >
-            <Nav 
+          <Nav 
+            navbar={navbar}
+            addNewNote={addNewNote} 
+            expanded={expanded}
+            newNote={newNote}
+            handleSignout={handleSignout}
+            token={parsedUserToken}
+          />
+        </LabelsCtx>
+        <div
+          className={`!overflow-hidden ${
+            navbar && !expanded ? "ml-[60px] xxs:ml-[60px]" : 
+            !navbar && !expanded ? "ml-[60px] xxs:ml-0" :
+            expanded && 'ml-0'
+          }`}
+          id="dark"
+        >
+          <div className="flex flex-row h-screen">
+            <Notes 
+              page={page}
+              search={search}
+              setPage={setPage}
+              totalDocs={totalDocs}
+              hasNextPage={hasNextPage}
+              setSearch={setSearch}
+              notes={fields} 
+              addNewNote={addNewNote}
+              isFetching={isFetching}
               navbar={navbar}
-              addNewNote={addNewNote} 
+              setNavbar={setNavbar} 
               expanded={expanded}
-              newNote={newNote}
-              handleSignout={handleSignout}
-              token={parsedUserToken}
+              setExpanded={setExpanded}
             />
-          </LabelsCtx>
-          <div
-            className={`!overflow-hidden ${
-              navbar && !expanded ? "ml-[60px] xxs:ml-[60px]" : 
-              !navbar && !expanded ? "ml-[60px] xxs:ml-0" :
-              expanded && 'ml-0'
-            }`}
-            id="dark"
-          >
-            <div className="flex flex-row h-screen">
-              <Notes 
-                page={page}
-                search={search}
-                setPage={setPage}
-                totalDocs={totalDocs}
-                hasNextPage={hasNextPage}
-                setSearch={setSearch}
-                notes={fields} 
-                addNewNote={addNewNote}
-                isFetching={isFetching}
-                navbar={navbar}
-                setNavbar={setNavbar} 
-                expanded={expanded}
-                setExpanded={setExpanded}
-              />
-        
-              <NavbarContext 
-                navbar={navbar}
-                setNavbar={setNavbar}
+      
+            <NavbarContext 
+              navbar={navbar}
+              setNavbar={setNavbar}
+            >
+              <RefetchContext 
+                fetchNotes={fetchNotes}
               >
-                <RefetchContext 
-                  fetchNotes={fetchNotes}
-                >
-                  <NoteDetails 
-                    notes={fields} 
-                    remove={remove}
-                    labels={labels}
-                    expanded={expanded}
-                    deleteNote={deleteNote} 
-                    setExpanded={setExpanded}
-                    labelIsFetching={labelIsFetching}
-                  />
-                </RefetchContext>
-              </NavbarContext>
-            </div>
+                <NoteDetails 
+                  notes={fields} 
+                  remove={remove}
+                  labels={labels}
+                  expanded={expanded}
+                  deleteNote={deleteNote} 
+                  setExpanded={setExpanded}
+                  labelIsFetching={labelIsFetching}
+                />
+              </RefetchContext>
+            </NavbarContext>
           </div>
-        </SelectedNoteContext>
-      </NoteWasChangedCtx>
+        </div>
+      </SelectedNoteContext>
     </div>
   );
 }

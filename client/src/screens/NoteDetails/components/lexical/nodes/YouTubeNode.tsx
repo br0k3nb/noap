@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import type {
   DOMConversionMap,
@@ -38,6 +38,15 @@ function YouTubeComponent({
 }: YouTubeComponentProps) {
   const noteContext = useContext(ExpandedCtx);
 
+  const [ currentScreenSize, setCurrentScreenSize ] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const updateScreenSize = () => setTimeout(() => setCurrentScreenSize(window.innerWidth), 500);
+
+    window.addEventListener("resize", updateScreenSize);
+    return () => window.removeEventListener("resize", updateScreenSize);
+  }, []);
+
   return (
     <BlockWithAlignableContents
       className={className}
@@ -50,7 +59,7 @@ function YouTubeComponent({
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}
         title="YouTube video"
-        style={{maxWidth: !noteContext?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}}
+        style={{maxWidth: !noteContext?.expanded ? currentScreenSize - 495 : currentScreenSize - 58}}
       />
     </BlockWithAlignableContents>
   );

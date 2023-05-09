@@ -126,16 +126,15 @@ export default function ImageComponent({
 }): JSX.Element {
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const activeEditorRef = useRef<LexicalEditor | null>(null);
   const [ isSelected, setSelected, clearSelection ] = useLexicalNodeSelection(nodeKey);
-  const [ isResizing, setIsResizing ] = useState<boolean>(false);
   const { isCollabActive } = useCollaborationContext();
   const [ editor ] = useLexicalComposerContext();
-  const [ selection, setSelection ] = useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
-  const activeEditorRef = useRef<LexicalEditor | null>(null);
 
+  const [ isResizing, setIsResizing ] = useState<boolean>(false);
+  const [ selection, setSelection ] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
   const [ hover, setHover ] = useState(false);
+  const [ currentScreenSize, setCurrentScreenSize ] = useState(window.innerWidth);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -143,9 +142,8 @@ export default function ImageComponent({
         const event: KeyboardEvent = payload;
         event.preventDefault();
         const node = $getNodeByKey(nodeKey);
-        if ($isImageNode(node)) {
-          node.remove();
-        }
+
+        if ($isImageNode(node)) node.remove();
         setSelected(false);
       }
       return false;
@@ -192,9 +190,8 @@ export default function ImageComponent({
         editor.update(() => {
           setSelected(true);
           const parentRootElement = editor.getRootElement();
-          if (parentRootElement !== null) {
-            parentRootElement.focus();
-          }
+
+          if (parentRootElement !== null) parentRootElement.focus();
         });
         return true;
       }
@@ -230,9 +227,7 @@ export default function ImageComponent({
     let isMounted = true;
     const unregister = mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
-        if (isMounted) {
-          setSelection(editorState.read(() => $getSelection()));
-        }
+        if (isMounted) setSelection(editorState.read(() => $getSelection()));
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -289,29 +284,31 @@ export default function ImageComponent({
     setSelected
   ]);
 
+  useEffect(() => {
+    const updateScreenSize = () => setTimeout(() => setCurrentScreenSize(window.innerWidth), 500);
+
+    window.addEventListener("resize", updateScreenSize);
+
+    return () => window.removeEventListener("resize", updateScreenSize);
+  }, []);
+
   const setShowCaption = () => {
     editor.update(() => {
       const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.setShowCaption(true);
-      }
+      if ($isImageNode(node)) node.setShowCaption(true);
     });
-  };
+  };  
 
   const onResizeEnd = (
     nextWidth: "inherit" | number,
     nextHeight: "inherit" | number
   ) => {
     // Delay hiding the resize bars for click case
-    setTimeout(() => {
-      setIsResizing(false);
-    }, 200);
+    setTimeout(() => setIsResizing(false), 200);
 
     editor.update(() => {
       const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.setWidthAndHeight(nextWidth, nextHeight);
-      }
+      if ($isImageNode(node)) node.setWidthAndHeight(nextWidth, nextHeight);
     });
   };
 
@@ -332,7 +329,6 @@ export default function ImageComponent({
     });
 
     document.body.appendChild(a);
-    console.log(JSON.stringify(editor.getEditorState()));
 
     a.click();
     a.remove();
@@ -373,7 +369,6 @@ export default function ImageComponent({
                     </li> */}
                     <li className="text-xs uppercase tracking-widest">
                       <a
-                        id="delete"
                         className="active:!bg-gray-600"
                         onClick={() => donwloadImage(src)}
                       >
@@ -410,7 +405,7 @@ export default function ImageComponent({
               imageRef={imageRef}
               width={width}
               height={height}
-              maxWidth={!noteExpanded?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}
+              maxWidth={!noteExpanded?.expanded ? currentScreenSize - 495 : currentScreenSize - 58}
             />
         </div>
         {showCaption && (
@@ -452,7 +447,7 @@ export default function ImageComponent({
             editor={editor}
             buttonRef={buttonRef}
             imageRef={imageRef}
-            maxWidth={!noteExpanded?.expanded ? window.innerWidth - 495 : window.innerWidth - 58}
+            maxWidth={!noteExpanded?.expanded ? currentScreenSize - 495 : currentScreenSize - 58}
             onResizeStart={onResizeStart}
             onResizeEnd={onResizeEnd}
             captionsEnabled={captionsEnabled}

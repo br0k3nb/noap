@@ -70,30 +70,38 @@ type Props = {
   note: any;
   saveSpinner: boolean;
   register: UseFormRegister<FieldValues>;
-  floatingAnchorElem: HTMLDivElement | null;
   save: (currentState: EditorState) => Promise<void>;
 };
 
 type TitleProps = {
   register: UseFormRegister<FieldValues>;
   disableToolbar: () => void;
+  currentScreenSize: number;
   noteCtx: any;
 };
 
 type BottomBarProps = {
   save: (currentState: EditorState) => Promise<void>;
+  currentScreenSize: number;
   editor: LexicalEditor;
   saveSpinner: boolean;
   note: any;
 };
 
-const Editor = forwardRef(
-  ({ save, register, saveSpinner, floatingAnchorElem, note }: Props, ref) => {
+const defaultScreenSize = {
+  width: window.innerWidth,
+  height: window.innerHeight
+};
+
+const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: any) => {
     const [ editor ] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
     const noteExpanded = useContext(ExpandedCtx);
+
     const [ titleFocused, setTitleFocused ] = useState(false);
+    const [ currentScreenSize, setCurrentScreenSize ] = useState<any>(defaultScreenSize);
+    const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
 
     const {
       settings: { isRichText },
@@ -110,13 +118,19 @@ const Editor = forwardRef(
 
         if (isNextSmallWidthViewport !== isSmallWidthViewport)
           setIsSmallWidthViewport(isNextSmallWidthViewport);
+
+        setTimeout(() => {
+          setCurrentScreenSize({
+            width: window.innerWidth,
+            height: window.innerHeight
+          });
+        }, 500);
       };
 
       window.addEventListener("resize", updateViewPortWidth);
+      setTimeout(() => setFloatingAnchorElem(ref?.current));
 
-      return () => {
-        window.removeEventListener("resize", updateViewPortWidth);
-      };
+      return () => window.removeEventListener("resize", updateViewPortWidth);
     }, [isSmallWidthViewport]);
 
     const disableToolbar = () => setTitleFocused(true);
@@ -138,7 +152,6 @@ const Editor = forwardRef(
             <>
               <RichTextPlugin
                 contentEditable={
-                  // @ts-ignore
                   <div className="editor" ref={ref}>
                     <div
                       className={`
@@ -149,9 +162,9 @@ const Editor = forwardRef(
                       `}
                       style={{
                         height:
-                          window.outerWidth > 640
-                            ? window.innerHeight - 100
-                            : window.innerHeight - 65,
+                          currentScreenSize.width > 640
+                            ? currentScreenSize.height - 100
+                            : currentScreenSize.height - 65,
                       }}
                     >
                       <div onClick={() => setTitleFocused(true)}>
@@ -159,6 +172,7 @@ const Editor = forwardRef(
                           register={register}
                           noteCtx={noteExpanded}
                           disableToolbar={disableToolbar}
+                          currentScreenSize={currentScreenSize.width}
                         />
                       </div>
                       <div
@@ -166,8 +180,8 @@ const Editor = forwardRef(
                         className="xxs:mb-5 mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col"
                         style={
                           !noteExpanded?.expanded
-                            ? { width: window.innerWidth - 430 }
-                            : { width: window.innerWidth }
+                            ? { width: currentScreenSize.width - 430 }
+                            : { width: currentScreenSize.width }
                         }
                       >
                         <div className="mb-20">
@@ -179,6 +193,7 @@ const Editor = forwardRef(
                             save={save}
                             editor={editor}
                             saveSpinner={saveSpinner}
+                            currentScreenSize={currentScreenSize.width}
                           />
                         </div>
                       </div>
@@ -229,20 +244,20 @@ const Editor = forwardRef(
   }
 );
 
-export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
+export function TitleInput({ register, noteCtx, disableToolbar, currentScreenSize }: TitleProps) {
   return (
     <div
       className="text-3xl mt-10 px-6 flex flex-wrap xxs:text-2xl"
       style={
         !noteCtx?.expanded
-          ? { width: window.innerWidth - 430 }
-          : { width: window.innerWidth }
+          ? { width: currentScreenSize - 430 }
+          : { width: currentScreenSize }
       }
     >
       <textarea
         id="note-title"
         onClick={() => disableToolbar()}
-        rows={ window.innerWidth > 640 ? 1 : 2 }
+        rows={ currentScreenSize > 640 ? 1 : 2 }
         wrap="hard"
         spellCheck="false"
         className="!bg-gray-700 w-full px-1 placeholder-gray-400 focus:outline-none resize-none"
@@ -253,7 +268,7 @@ export function TitleInput({ register, noteCtx, disableToolbar }: TitleProps) {
   );
 }
 
-export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) {
+export function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {
   const noteExpanded = useContext(ExpandedCtx);
   const refetch = useContext(RefetchCtx);
 
@@ -357,10 +372,10 @@ export function BottomBar({ save, editor, saveSpinner, note } : BottomBarProps) 
             className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
             style={
               !noteExpanded?.expanded
-                ? { width: window.innerWidth <= 1280 ? window.innerWidth - 650 : window.innerWidth - 710} 
+                ? { width: currentScreenSize <= 1280 ? currentScreenSize - 650 : currentScreenSize - 710} 
                 : {
-                  width: window.innerWidth > 640 && window.innerWidth <= 1280 ? window.innerWidth - 150 
-                  : window.innerWidth <= 640 ? window.innerWidth - 150 : window.innerWidth - 280
+                  width: currentScreenSize > 640 && currentScreenSize <= 1280 ? currentScreenSize - 150 
+                  : currentScreenSize <= 640 ? currentScreenSize - 150 : currentScreenSize - 280
                 }
             }
           >
