@@ -297,14 +297,6 @@ export default function Nav({
           </div>
           <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[98px]"/>
           <div className="flex flex-col items-center absolute top-28">
-            <div className="tooltip tooltip-right text-gray-300" data-tip="Home">
-              <a
-                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
-                href="#"
-              >
-                <BsFillHouseDoorFill className="text-gray-300" size={23} />
-              </a>
-            </div>
             <div
               className={`tooltip tooltip-right text-gray-100 ${newNote && 'tooltip-open'}`}
               data-tip={`${newNote ? "Adding note..." : "Add new note"}`}
