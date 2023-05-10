@@ -19,34 +19,9 @@ import { NoteCtx } from "../../../../context/SelectedNoteCtx";
 
 import api from "../../../../services/api";
 
-import Editor from "./Editor";
+import Editor from "./components/Editor/Editor";
 
-type Notes = {
-  note: {
-    _id: string;
-    userId: string;
-    title?: string;
-    body: string;
-    image?: string;
-    state: {
-      _id: string;
-      state: string;
-    };
-    labels?: {
-      _id: string;
-      name: string;
-      type: string;
-      color: string;
-      fontColor: string;
-    };
-    updatedAt?: string;
-    createdAt: string;
-  }[];
-};
-
-type Props = {
-  notes: FieldArrayWithId<Notes, "note", "id">[];
-};
+type Props = { notes: FieldArrayWithId<Notes, "note", "id">[] };
 
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
@@ -63,9 +38,7 @@ export default function App({ notes }: Props): JSX.Element {
 
   const { reset, register } = useForm({});
 
-  const token = JSON.parse(
-    window.localStorage.getItem("user_token") || ""
-  );
+  const token = JSON.parse(window.localStorage.getItem("user_token") || "");
     
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
@@ -94,8 +67,7 @@ export default function App({ notes }: Props): JSX.Element {
           const compressImg = BSON.serialize({images});
           const resultImg = BSON.deserialize(compressImg)
 
-          const create = await api.patch(
-            `https://noap-typescript-api.vercel.app/edit/${token.token}`,
+          const create = await api.patch(`/edit/${token.token}`,
             {
               title,
               body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',
@@ -157,7 +129,7 @@ export default function App({ notes }: Props): JSX.Element {
       <SharedHistoryContext>
         <TableContext>
           <SharedAutocompleteContext>
-            <div className="editor-shell h-screen w-fit overflow-hidden absolute ">
+            <div className="editor-shell h-screen w-fit overflow-hidden absolute">
               {/* @ts-ignore */}
               <UpdatePlugin />
               <Editor

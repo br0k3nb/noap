@@ -1,8 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { useForm, FieldValues } from 'react-hook-form';
-
-import { useGoogleLogin } from "@react-oauth/google";
 
 import {
   BsFillHouseDoorFill,
@@ -13,17 +9,14 @@ import {
   BsPeopleFill,
   BsGlobe2, 
   BsGearWide,
+  BsFillTrashFill,
   BsGlobeAmericas
 } from "react-icons/bs";
 
 import { BiLock } from "react-icons/bi";
 
-import Dialog from './components/Dialog';
-import api from '../../../../services/api';
+import AccountSettingsModal from './components/AccountSettingsModal';
 import LabelModal from './components/LabelModal';
-import { toastAlert } from '../../../../components/Alert/Alert';
-
-// import { motion } from "framer-motion";
 
 type NavProps = {
   addNewNote: () => Promise<void>;
@@ -31,234 +24,43 @@ type NavProps = {
   expanded: boolean;
   newNote: boolean;
   navbar: boolean;
-  token: {
-    googleAccount: boolean;
-    token: string;
-    name: string;
-    _id: string;
-  }
 };
 
-export default function Nav({
-  navbar,
-  newNote,
-  addNewNote,
-  expanded,
-  handleSignout,
-  token
-}: NavProps) {
-  const [ auth, setAuth ] = useState(false);
-  const [ changeInfo, setChangeInfo ] = useState('');
-  const [ convertAcc, setConvertAcc ] =  useState('');
-  const [ svgLoader, setSvgLoader ] = useState(false);
+export default function Nav({ navbar, newNote, addNewNote, expanded, handleSignout }: NavProps) {
   const [ openLabelModal, setOpenLabelModal ] = useState(false);
+  const [ openAuthModal, setOpenAuthModal ] = useState(false);
+  const [ userIsAuth, setUserIsAuth ] = useState(false);
   const [ openSettingsModal, setOpenSettingsModal ] = useState(false);
 
-  const { register, handleSubmit, reset, formState } = useForm();
-  const { errors } = formState;
+  const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+  const { googleAccount, name } = parsedUserToken;
 
-  const navigate = useNavigate();
-
-  const authUser = async (data: FieldValues) => {
-    setSvgLoader(true);
-
-    try {
-      const verify = await api.post(`https://noap-typescript-api.vercel.app/verify-user/${token.token}`, {
-        password: data.password,
-        _id: token._id
-      }, {
-        headers: { 
-          "Access-Control-Allow-Origin": "*",
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Disposition': 'form-data'
-        }
-      });
-
-      setAuth(true);  
-      setSvgLoader(false);
-
-      reset({password: ''});
-      
-      toastAlert({icon: 'success', title: `${verify.data.message}`, timer: 2500});
-    } catch (err: any) {
-      setSvgLoader(false);
-      toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
-    }
-  };
-
-  const changePassword = async (data: FieldValues) => {
-    setSvgLoader(true);
-
-    try {
-      const { password, confirmPassword } = data;  
-
-      if(password !== confirmPassword) {
-        setSvgLoader(false);
-        return toastAlert({icon: 'error', title: "Passwords don't match!", timer: 2500});
-      }
-      
-      const changeP = await api.patch('https://noap-typescript-api.vercel.app/change-pass', {
-        password,
-        userId: token._id
-      }, {
-        headers: { 
-          "Access-Control-Allow-Origin": "*",
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Disposition': 'form-data'
-        }
-      });
-
-      setSvgLoader(false);
-      reset({password: '', confirmPassword: ''});
-      toastAlert({icon: 'success', title: `${changeP.data.message}`, timer: 2500});
-    } catch (err: any) {
-      setSvgLoader(false);
-      toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
-    }
-  };
-
-  const handleAccountConversion = async (data: FieldValues) => {
-    setSvgLoader(true);
-
-    try {
-    
-      if(data.password !== data.confirmPassword) {
-        setSvgLoader(false);
-        return toastAlert({icon: 'error', title: "Passwords don't match!", timer: 2500});
-      }
-      
-      const convertAccount = await api.patch(`https://noap-typescript-api.vercel.app/convert/account/email/${token.token}}`, {
-        password: data.password,
-        _id: token._id
-      });
-
-      setSvgLoader(false);
-      setConvertAcc('redirect');
-      reset({password: '', confirmPassword: ''});
-      toastAlert({icon: 'success', title: `${convertAccount.data.message}`, timer: 3000});
-
-      setTimeout(() => {
-        navigate('/');
-        window.localStorage.removeItem("user_token");
-      }, 2000);
-    } catch (err: any) {
-      setSvgLoader(false);
-      toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});      
-    }
+  const accSettingsModalProps = {
+    setUserIsAuth,
+    openSettingsModal,
+    open: openAuthModal,
+    setOpenSettingsModal,
+    setOpen: setOpenAuthModal
   }
-
-  const linkGAcc = useGoogleLogin({
-    onSuccess: (codeResponse) => {
-      fetchGoogleAccountData(codeResponse);
-    },
-    onError: (error) =>
-      toastAlert({
-        icon: "error",
-        title: `Login failed, ${error}}`,
-        timer: 2500,
-      }),
-  });
-
-  const fetchGoogleAccountData = async (codeResponse: any) => {
-    setSvgLoader(true);
-
-    try {
-      if (codeResponse) {
-        const userData = await api.get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`,
-          {
-            headers: {
-              Authorization: `Bearer ${codeResponse.access_token}`,
-              Accept: "application/json",
-            },
-          }
-        );
-
-        const { email, name, id } = userData.data;
-
-        const createUser = await api.patch(`https://noap-typescript-api.vercel.app/convert/account/google/${token.token}`, { 
-            email,
-            name,
-            id, _id: token._id 
-          }
-        );
-        
-        setSvgLoader(false);
-        setConvertAcc('redirect');
-
-        toastAlert({icon: 'success', title: `${createUser.data.message}`, timer: 3000});
-
-        setTimeout(() => {
-          navigate('/');
-          window.localStorage.removeItem("user_token");
-        }, 2000);
-      }
-    } catch (err: any) {
-      setSvgLoader(false);
-      console.log(err);
-      toastAlert({
-        icon: "error",
-        title: `${err?.response.data.message}`,
-        timer: 3000,
-      });
-    }
-  };
-
-  const handleModalClose = () => {
-    reset({
-      password: '',
-      confirmPassword: ''
-    });
-
-    setOpenSettingsModal(false);
-    setChangeInfo('');
-    setTimeout(() => setConvertAcc(''), 500);
-  };
-
 
   return (
     <div className={`${expanded && "hidden"}`}>
-      <Dialog
-        auth={auth}
-        token={token}
-        errors={errors}
-        register={register}
-        linkGAcc={linkGAcc}
-        authUser={authUser}
-        svgLoader={svgLoader}
-        convertAcc={convertAcc}
-        changeInfo={changeInfo}
-        checked={openSettingsModal}
-        handleSubmit={handleSubmit}
-        setConvertAcc={setConvertAcc}
-        setChangeInfo={setChangeInfo}
-        changePassword={changePassword}
-        handleModalClose={handleModalClose}
-        handleAccountConversion={handleAccountConversion}
-      />
+      <AccountSettingsModal {...accSettingsModalProps}/>
 
       <LabelModal
-        token={token}
         open={openLabelModal}
+        token={parsedUserToken}
         setOpen={setOpenLabelModal}
       />
-      <div
-        className={`fixed ${
-          !navbar && "flex xxs:hidden"
-        }`}
-      >
-        <div 
-          className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900 justify-end"
-        >
-          <div
-            className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6"
-          >
+      <div className={`fixed ${!navbar && "flex xxs:hidden"}`}>
+        <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900 justify-end">
+          <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
             <div className="dropdown dropdown-right pt-[6.2px]">
-              <label tabIndex={0} className="">
+              <label tabIndex={0}>
                 <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
                   <div className="rounded-full border !border-gray-500 bg-stone-700 hover:bg-stone-800 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
                     <p className='mt-[7px]'>
-                      {token?.name && token?.name[0].toUpperCase()}
+                      {name && name[0].toUpperCase()}
                     </p>
                   </div>
                 </div>
@@ -270,7 +72,7 @@ export default function Nav({
                 <li>
                   <a
                     className="active:!bg-gray-600 rounded-xl"
-                    onClick={() => setOpenSettingsModal(true)}
+                    onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenSettingsModal(true)}
                   >
                     <label htmlFor="my-modal-4" className="text-gray-300">
                       <div className="flex flex-row space-x-2">
@@ -323,22 +125,25 @@ export default function Nav({
                 <BsTagFill className="text-gray-300" size={23} />
               </a>
             </div>
-            {/* <div className="tooltip tooltip-right text-gray-300" data-tip="Events"> */}
-              <button
-                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
-                disabled={true}
-              >
-                <BsFillCalendarEventFill className="text-gray-300 " size={22} />
-              </button>
-            {/* </div> */}
-            {/* <div className="tooltip tooltip-right text-gray-300" data-tip="Settings"> */}
-              <button
-                className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
-                disabled={true}
-              >
-                <BsGearWide className="text-gray-300 " size={22} />
-              </button>
-            {/* </div> */}
+            <button
+              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+              disabled={true}
+            >
+              <BsFillCalendarEventFill className="text-gray-300/60" size={22} />
+            </button>
+            <button
+              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+              disabled={true}
+            >
+              <BsFillTrashFill className="text-gray-300/60" size={22} />
+            </button>
+          
+            <button
+              className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+              disabled={true}
+            >
+              <BsGearWide className="text-gray-300/60" size={22} />
+            </button>
           </div>
         </div>
       </div>

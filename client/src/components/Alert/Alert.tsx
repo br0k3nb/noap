@@ -1,4 +1,4 @@
-import Swal, {SweetAlertIcon, SweetAlertPosition} from "sweetalert2";
+import Swal, { SweetAlertIcon, SweetAlertPosition } from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import './alert.css';
 
@@ -17,7 +17,7 @@ type AlertProps = {
     position?: SweetAlertPosition;
 }
 
-export function alert ({icon, iconColor, title, text, timer, confirmButton, escape, enter, outClick}: AlertProps) {
+export function alert ({ icon, iconColor, title, text, timer, confirmButton, escape, enter, outClick }: AlertProps) {
 
     return (
         MySwal.fire({
@@ -28,9 +28,7 @@ export function alert ({icon, iconColor, title, text, timer, confirmButton, esca
             showConfirmButton: confirmButton === undefined ? (false) : confirmButton,
             timer: timer,
             timerProgressBar: true,
-            hideClass: {
-            popup: "animate__animated animate__fadeOutUp",
-            },
+            hideClass: { popup: "animate__animated animate__fadeOutUp" },
             allowEscapeKey: escape === undefined ? (false) : escape,
             allowEnterKey: enter === undefined ? (false) : enter,
             allowOutsideClick: outClick === undefined ? (false) : outClick,
@@ -38,7 +36,7 @@ export function alert ({icon, iconColor, title, text, timer, confirmButton, esca
     )
 }
 
-export function toastAlert ({icon, title, text, timer, confirmButton, position}: AlertProps) {
+export function toastAlert ({ icon, title, text, timer, confirmButton, position }: AlertProps) {
     return (
         MySwal.fire({
             icon: icon,
@@ -48,9 +46,7 @@ export function toastAlert ({icon, title, text, timer, confirmButton, position}:
             toast: true,
             showConfirmButton: confirmButton === undefined ? (false) : confirmButton,
             position: position !== undefined ? (position): 'bottom-right',
-            customClass: {
-                popup: 'colored-toast'
-            },
+            customClass: { popup: 'colored-toast' },
             timer: timer,
             timerProgressBar: true
         })

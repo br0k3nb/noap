@@ -6,42 +6,13 @@ import { BsJournalRichtext, BsTagsFill, BsPeopleFill, BsArrowDown, BsArrowUp } f
 
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
-import TextEditor from "./components/lexical/App";
+import TextEditor from "./components/lexical";
 
 import { NoteCtx } from "../../context/SelectedNoteCtx";
 import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 
 import moment from "moment";
 import "moment/locale/pt-br";
-
-type Notes = {
-  note: {
-    _id: string;
-    userId: string;
-    title?: string;
-    body: string;
-    image?: string;
-    state: {
-      _id: string;
-      state: string;
-    };
-    updatedAt?: string;
-    createdAt: string;
-  }[];
-};
-
-type Labels = {
-  labels: {
-    _id: string;
-    userId: string;
-    name: string;
-    color: string;
-    fontColor?: string;
-    type: string;
-    updatedAt?: string;
-    createdAt: string;
-  }[];
-};
 
 type Props = {
   notes: FieldArrayWithId<Notes, "note", "id">[];
@@ -189,7 +160,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               deleteButtonAction={removeNote}
               mainText="Are you sure you want to delete this note?"
               mainTextCustomClassName="xxs:text-xs mb-5"
-              modalWrapperClassName={`!w-96`}
+              modalWrapperClassName="!w-96"
             />
             <SelectLabelModal
               checked={openLabelModal}

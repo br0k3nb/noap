@@ -63,9 +63,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
     
     const closeModal = () => {
         setOpen(false);
-        setTimeout(() => {
-            setCreateLabel(false);
-        }, 500);
+        setTimeout(() => setCreateLabel(false), 500);
     }
     
     const openDeleteModal = (chip: Label) => {
@@ -85,7 +83,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
             try {
                 const { name } = data;
     
-                const newLabel = await api.post(`https://noap-typescript-api.vercel.app/label/add/${token._id}/${token.token}`, {
+                const newLabel = await api.post(`/label/add/${token._id}/${token.token}`, {
                     color,
                     fontColor,
                     name,
@@ -116,13 +114,13 @@ export default function LabelModal({ open, setOpen, token }: Props) {
             setLoader(true);
         
             try {
-                const deleteL = await api.delete(`https://noap-typescript-api.vercel.app/label/delete/${selectedLabel}/${token.token}`)
+                const deleteL = await api.delete(`/label/delete/${selectedLabel}/${token.token}`)
 
                 toastAlert({icon: 'success', title: `${deleteL.data.message}`, timer: 3000});
                 setLoader(false);
                 closeDeleteModal();
                 
-                const findLabel = labels?.find(({_id}: any) => selectedLabel);
+                const findLabel = labels?.find(({_id}) => _id === selectedLabel);
                 labelData?.removeLabels(labels?.indexOf(findLabel as any));
                 
                 labelData?.fetchLabels();
@@ -153,7 +151,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
 
         if(selectedStyle) {
             try {
-                const editL = await api.patch(`https://noap-typescript-api.vercel.app/label/edit/${token._id}/${token.token}`, {
+                const editL = await api.patch(`/label/edit/${token._id}/${token.token}`, {
                     name: data.editName,
                     _id: editId,
                     color,
@@ -178,16 +176,20 @@ export default function LabelModal({ open, setOpen, token }: Props) {
         }
     }
 
+    const modalProps = {
+        open,
+        setOpen,
+        title: 'Labels',
+        options: {
+            onClose: closeModal,
+            titleWrapperClassName: "px-6",
+            modalWrapperClassName: `xxs:!w-[18rem] !px-0 !w-[23rem] max-h-[27.5rem] overflow-hidden ${createLabel && '!max-h-none'}`
+        }
+    }
+
     return (
-        <div>
-            <Modal
-                open={open}
-                setOpen={setOpen}
-                onClose={closeModal}
-                title='Labels'
-                titleWrapperClasName="px-6"
-                modalWrapperClassName={`xxs:!w-[18rem] !px-0 !w-[23rem] max-h-[27.5rem] overflow-hidden ${createLabel && '!max-h-none'}`}
-            >
+        <>
+            <Modal {...modalProps}>
                 <>
                     {!createLabel ? (
                         <>
@@ -722,6 +724,6 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                 mainText='Are you sure you want to delete this label?'
                 modalWrapperClassName={`!w-96`}
             />
-        </div>
+        </>
     )
 }

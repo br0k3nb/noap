@@ -21,46 +21,9 @@ import NavbarContext from "../../context/NavbarCtx";
 import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
-type Notes = {
-  note: {
-    _id: string;
-    userId: string;
-    title?: string;
-    body: string;
-    image?: string;
-    state: {
-      _id: string;
-      state: string;
-    };
-    labels?: [{
-      _id: string;
-      name: string;
-      type: string;
-      color: string;
-      fontColor: string;
-    }];
-    updatedAt?: string;
-    createdAt: string;
-  }[];
-};
-
-type Labels = {
-  labels: {
-    _id: string;
-    userId: string;
-    name: string;
-    color: string;
-    fontColor?: string;
-    type: string;
-    updatedAt?: string;
-    createdAt: string;
-  }[];
-};
-
 export default function Home(): JSX.Element {
   const [ selectedNote, setSelectedNote ] = useState<number | null>(null);
   const [ hasNextPage, setHasNextPage ] = useState(false);
-  const [ wasChanged, setWasChanged ] = useState(false);
   const [ expanded, setExpanded ] = useState(false);
   const [ blurFlag, setBlurFlag ] = useState(true);
   const [ newNote, setNewNote ] = useState(false);
@@ -74,7 +37,6 @@ export default function Home(): JSX.Element {
   const navigate = useNavigate();
 
   const { control } = useForm<Notes>();
-
   const { control: labelsControl } = useForm<Labels>();
 
   const { fields, append, replace, remove } = useFieldArray({
@@ -91,17 +53,16 @@ export default function Home(): JSX.Element {
     name: "labels",
   });
 
-  const parsedUserToken = JSON.parse(
-    window.localStorage.getItem("user_token") || "{}"
-  );
+  const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+  if (Object.keys(parsedUserToken).length === 0) navigate("/");
+  
+  const { token, _id } = parsedUserToken;
 
-  const fetchNotes = async () => {
-    if (Object.keys(parsedUserToken).length === 0) return navigate("/");
+  const fetchNotes = async () => { 
     setBlurFlag(false);
 
     try {
-      const notes = await api.get(
-        `https://noap-typescript-api.vercel.app/notes/${parsedUserToken._id}/${parsedUserToken.token}`, {
+      const notes = await api.get(`/notes/${_id}/${token}`, {
           params: {
               search: delayedSearch,
               page,
@@ -126,7 +87,7 @@ export default function Home(): JSX.Element {
 
   const fetchLabels = async () => {
     try {
-        const getLabels = await api.get(`https://noap-typescript-api.vercel.app/labels/${parsedUserToken._id}/${parsedUserToken.token}`);
+        const getLabels = await api.get(`/labels/${_id}/${token}`);
 
         if (labels.length === 0) appendLabels(getLabels.data);
         else if (labels.length >= 1) {
@@ -156,22 +117,20 @@ export default function Home(): JSX.Element {
   const addNewNote = async () => {
     setNewNote(true);
 
-    const defaultLexicalState =
-      '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
+    const defaultLexicalState = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
     try {
-      await api.post(
-        `https://noap-typescript-api.vercel.app/add/${parsedUserToken.token}`,
+      await api.post(`/add/${token}`,
         {
           title: "Untitled",
           body: "",
           image: "no image attached",
           state: defaultLexicalState,
-          userId: parsedUserToken._id,
+          userId: _id,
         }
       );
 
-      setWasChanged(!wasChanged);
+      fetchNotes();
       setNewNote(false);
     } catch (err: any) {
       console.log(err);
@@ -183,11 +142,9 @@ export default function Home(): JSX.Element {
     }
   };
 
-  const deleteNote = async (_id: string) => {
+  const deleteNote = async (noteId: string) => {
     try {
-      const deleteNote = await api.delete(
-        `https://noap-typescript-api.vercel.app/delete/${_id}/${parsedUserToken.token}`
-      );
+      const deleteNote = await api.delete(`/delete/${noteId}/${token}`);
       toastAlert({
         icon: "success",
         title: `${deleteNote.data.message}`,
@@ -207,12 +164,12 @@ export default function Home(): JSX.Element {
     navigate("/");
   };
 
-  const {isFetching} = useQuery([ "verifyUser", wasChanged, delayedSearch, page ], fetchNotes, {
+  const { isFetching } = useQuery([ "verifyUser", delayedSearch, page ], fetchNotes, {
     refetchInterval: 300000,
     refetchOnWindowFocus: true
   });
 
-  const { isFetching: labelIsFetching } = useQuery(["fetchLabels", wasChanged], fetchLabels, {
+  const { isFetching: labelIsFetching } = useQuery(["fetchLabels"], fetchLabels, {
     refetchOnWindowFocus: false
   });
 
@@ -234,7 +191,6 @@ export default function Home(): JSX.Element {
             expanded={expanded}
             newNote={newNote}
             handleSignout={handleSignout}
-            token={parsedUserToken}
           />
         </LabelsCtx>
         <div
