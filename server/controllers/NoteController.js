@@ -2,13 +2,11 @@ import Note from '../models/Note.js';
 import NoteState from '../models/NoteState.js';
 import Label from '../models/Label.js';
 
-
 export default {
     async view(req, res) {
         try {
-            const {userId} = req.params;
-
-            const {search, ...filter} = req.query;
+            const { userId } = req.params;
+            const { search, ...filter } = req.query;
             const searchRegex = new RegExp(search, 'i');
 
             const aggregate = Note.aggregate(
@@ -40,7 +38,6 @@ export default {
             );
 
             const notes = await Note.aggregatePaginate(aggregate, filter);
-
             res.status(200).json(notes);
         } catch (err) {
             res.status(400).json({message: err});
@@ -48,10 +45,8 @@ export default {
     },
     async getNote(req, res) {
         try {
-            const {id} = req.params;
-
+            const { id } = req.params;
             const note = await Note.findById(id);
-
             res.status(200).json(note);
         } catch (err) {
             res.status(400).json({message: err});
@@ -61,17 +56,9 @@ export default {
         try {
             const {title, body, image, state, userId} = req.body;
 
-            const saveState = await NoteState.create({ state });
-
-            const saveNote = await Note.create({
-                title,
-                body,
-                image,
-                state: saveState._id,
-                userId
-            });
-
-            await NoteState.findOneAndUpdate({_id: saveState._id}, { noteId: saveNote._id });
+            const { _id } = await NoteState.create({ state });
+            const { _id: noteId } = await Note.create({ title, body, image, state: _id, userId });
+            await NoteState.findOneAndUpdate({_id}, { noteId });
 
             res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
@@ -82,10 +69,7 @@ export default {
     async addLabel(req , res) {
         try {
             const { labels, noteId } = req.body;
-
-            const findLabels = await Label.find({
-                '_id': { $in: labels}
-            });
+            const findLabels = await Label.find({ '_id': { $in: labels } });
 
             if(findLabels.length === 0) return res.status(400).json({ message: "No labels found!" });
 
@@ -94,33 +78,25 @@ export default {
             if(note?.labels.length !== 0) {
                 for(const [_, noteLabel] of note.labels.entries()) {
                     for(const [_, label] of findLabels.entries()) {
-                        if(noteLabel._id.toString() === label._id.toString()) {
-                            throw ({ message: "Label already attached!" });
-                        }
+                        if(noteLabel._id.toString() === label._id.toString()) throw ({ message: "Label already attached!" });
                     }
                 }
             }
            
-            await Note.findOneAndUpdate({_id: noteId}, {
-                labels: [
-                    ...note.labels,
-                    ...findLabels
-                ]
-            });
+            await Note.findOneAndUpdate({ _id: noteId }, { labels: [ ...note.labels, ...findLabels ] });
 
             res.status(200).json({message: 'Label attached!'});
         } catch (err) {
             console.log(err);
-            if(err?.message) res.status(400).json(err);
-            else res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({message: 'Error, please try again later!'});
         }
     },
     async edit(req, res) {
         try {
             const { _id, title, body, image, state, stateId } = req.body;
 
-            await Note.findOneAndUpdate({_id}, { title, body, image });
-            await NoteState.findByIdAndUpdate({_id: stateId}, { state });
+            await Note.findOneAndUpdate({ _id }, { title, body, image });
+            await NoteState.findByIdAndUpdate({ _id: stateId }, { state });
 
             res.status(200).json({message: 'Note updated!'});
         } catch (err) {
@@ -130,10 +106,10 @@ export default {
     },
     async delete(req, res) {
         try {
-            const {id} = req.params;
-            const getStateId = await Note.findById({ _id: id });
+            const { id } = req.params;
+            const { state } = await Note.findById({ _id: id });
 
-            await NoteState.findByIdAndDelete(getStateId.state);
+            await NoteState.findByIdAndDelete(state);
             await Note.findByIdAndDelete(id);
             
             res.status(200).json({message: 'Note deleted!'});
@@ -145,19 +121,15 @@ export default {
     async deleteLabel(req, res) {
         try {
             const {id, noteId} = req.params;
-            const note = await Note.findById({ _id: noteId });
+            const { labels } = await Note.findById({ _id: noteId });
 
-            if(!note) res.status(400).json({ message: "Note wasn't found!"});
-
-            const labelToDelete = note.labels.find(({_id}) => _id.toString() === id);
+            if(!labels) res.status(400).json({ message: "Note wasn't found!"});
+            const labelToDelete = labels.find(({_id}) => _id.toString() === id);
 
             if(!labelToDelete.length === 0) res.status(400).json({ message: "Label not found!"});
 
-            note.labels.splice(note.labels.indexOf(labelToDelete), 1);
-
-            await Note.findByIdAndUpdate({_id: noteId}, { 
-                labels: note.labels
-            });
+            labels.splice(labels.indexOf(labelToDelete), 1);
+            await Note.findByIdAndUpdate({_id: noteId}, { labels });
             
             res.status(200).json({message: 'Label detached!'});
         } catch (err) {
@@ -168,11 +140,7 @@ export default {
     async deleteAllLabels(req, res) {
         try {
             const { noteId } = req.params;
-
-            await Note.findByIdAndUpdate({_id: noteId}, { 
-                labels: []
-            });
-            
+            await Note.findByIdAndUpdate({_id: noteId}, { labels: [] });           
             res.status(200).json({message: 'Labels detached!'});
         } catch (err) {
             console.log(err);
