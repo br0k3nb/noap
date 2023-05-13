@@ -245,9 +245,11 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
           setOpen={setOpen}
           deleteButtonAction={deleteAllLabels}
           mainText="Are you sure you want to remove all labels attached to this note?"
-          subText="This action will only detach labels from this note!"
-          subTextCustomClassName="xxs:mt-2 xxs:mb-7 mt-4 mb-6"
-          modalWrapperClassName="!w-96"
+          options={{
+            subText: "This action will only detach labels from this note!",
+            subTextCustomClassName: "xxs:mt-2 xxs:mb-7 mt-4 mb-6",
+            modalWrapperClassName: "!w-96"
+          }}
         />
       </div> 
     )

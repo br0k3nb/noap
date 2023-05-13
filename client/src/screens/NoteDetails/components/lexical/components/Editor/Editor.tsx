@@ -87,18 +87,10 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
 
     useEffect(() => {
       const updateViewPortWidth = () => {
-        const isNextSmallWidthViewport =
-          CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
-
-        if (isNextSmallWidthViewport !== isSmallWidthViewport)
-          setIsSmallWidthViewport(isNextSmallWidthViewport);
-
-        setTimeout(() => {
-          setCurrentScreenSize({
-            width: window.innerWidth,
-            height: window.innerHeight
-          });
-        }, 500);
+        const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
+        
+        if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);
+        setTimeout(() => setCurrentScreenSize({ width: window.innerWidth, height: window.innerHeight}), 500);
       };
 
       window.addEventListener("resize", updateViewPortWidth);

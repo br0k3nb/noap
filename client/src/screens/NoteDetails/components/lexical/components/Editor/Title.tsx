@@ -11,11 +11,7 @@ export default function TitleInput({ register, noteCtx, disableToolbar, currentS
     return (
       <div
         className="text-3xl mt-10 px-6 flex flex-wrap xxs:text-2xl"
-        style={
-          !noteCtx?.expanded
-            ? { width: currentScreenSize - 430 }
-            : { width: currentScreenSize }
-        }
+        style={!noteCtx?.expanded ? { width: currentScreenSize - 430 } : { width: currentScreenSize }}
       >
         <textarea
           id="note-title"

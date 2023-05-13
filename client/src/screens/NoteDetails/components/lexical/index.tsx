@@ -81,20 +81,11 @@ export default function App({ notes }: Props): JSX.Element {
           refetchNoteCtx?.fetchNotes();
           setSaveSpinner(false);
           
-          toastAlert({
-            icon: "success",
-            title: `${create.data.message}`,
-            timer: 2000,
-          });
+          toastAlert({ icon: "success", title: `${create.data.message}`, timer: 2000 });
         }
       } catch (err: any) {
         console.log(err);
-
-        toastAlert({
-          icon: "error",
-          title: `${err.response.data.message}`,
-          timer: 2000,
-        });
+        toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
       }
   };
 
@@ -113,9 +104,7 @@ export default function App({ notes }: Props): JSX.Element {
 
     if(lastSelectedNotes.current !== noteContext?.selectedNote) {
       setTimeout(() => {
-        reset({
-          title: notes[noteContext?.selectedNote as number].title,
-        });
+        reset({ title: notes[noteContext?.selectedNote as number].title });
 
         const editorState = editor.parseEditorState((notes[noteContext?.selectedNote as number].state.state));
         editor.setEditorState(editorState);

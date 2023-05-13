@@ -173,9 +173,7 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
             />
 
             <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
-              <p 
-                className="px-2 text-sm xxs:text-[10px] xxs:px-0"
-              >
+              <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
                 Last updated on {days(lastUpdated() as string)} at {hours(lastUpdated() as string)}
               </p>
             </div>
@@ -184,13 +182,8 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
         
         <div className="flex flex-col w-screen">
           {selectedNote?.selectedNote !== null ? (
-            <div 
-              className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
-            >
-              <NoteExpandedCtx 
-                expanded={expanded} 
-                setExpanded={setExpanded}
-              >
+            <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
+              <NoteExpandedCtx expanded={expanded} setExpanded={setExpanded}>
                 <TextEditor notes={notes} />
               </NoteExpandedCtx >
             </div>
