@@ -159,8 +159,10 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               setOpen={setOpen}
               deleteButtonAction={removeNote}
               mainText="Are you sure you want to delete this note?"
-              mainTextCustomClassName="xxs:text-xs mb-5"
-              modalWrapperClassName="!w-96"
+              options={{ 
+                mainTextCustomClassName: "xxs:text-xs mb-5",
+                modalWrapperClassName: "!w-96"
+              }}
             />
             <SelectLabelModal
               checked={openLabelModal}

@@ -39,11 +39,7 @@
   .sign-text-inputs {
     @apply transition
     duration-300
-    bg-white 
-    border
-    border-gray-200
-    hover:border
-    hover:border-gray-400
+    bg-gray-100
     text-gray-900 
     text-[17px] 
     w-full 

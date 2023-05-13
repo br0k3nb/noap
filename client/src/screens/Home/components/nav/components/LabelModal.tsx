@@ -716,13 +716,15 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                 </>
             </Modal>
             <ConfirmationModal
-                loader={loader}
                 open={deleteModal}
                 setOpen={setDeleteModal}
-                onClose={closeDeleteModal}
                 deleteButtonAction={deleteLabel}
                 mainText='Are you sure you want to delete this label?'
-                modalWrapperClassName={`!w-96`}
+                options={{
+                    loader,
+                    onClose: closeDeleteModal,
+                    modalWrapperClassName: "!w-96"
+                }}
             />
         </>
     )

@@ -23,10 +23,10 @@ import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
   const [ selectedNote, setSelectedNote ] = useState<number | null>(null);
+  const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
+  const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);
   const [ hasNextPage, setHasNextPage ] = useState(false);
-  const [ expanded, setExpanded ] = useState(false);
   const [ blurFlag, setBlurFlag ] = useState(true);
-  const [ newNote, setNewNote ] = useState(false);
   const [ totalDocs, setTotalDocs ] = useState(0);
   const [ navbar, setNavbar ] = useState(false);
   const [ search, setSearch ] = useState('');
@@ -81,7 +81,7 @@ export default function Home(): JSX.Element {
 
     } catch (err) {
       console.log(err);
-      handleSignout();
+      signOutUser();
     }
   };
 
@@ -110,12 +110,12 @@ export default function Home(): JSX.Element {
         }
     } catch (err) {
       console.log(err);
-      handleSignout();
+      signOutUser();
     }
 }
 
   const addNewNote = async () => {
-    setNewNote(true);
+    setShowLoaderOnNavbar(true);
 
     const defaultLexicalState = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
@@ -131,7 +131,7 @@ export default function Home(): JSX.Element {
       );
 
       fetchNotes();
-      setNewNote(false);
+      setShowLoaderOnNavbar(false);
     } catch (err: any) {
       console.log(err);
       toastAlert({
@@ -159,7 +159,7 @@ export default function Home(): JSX.Element {
     }
   };
 
-  const handleSignout = () => {
+  const signOutUser = () => {
     window.localStorage.removeItem("user_token");
     navigate("/");
   };
@@ -188,16 +188,15 @@ export default function Home(): JSX.Element {
           <Nav 
             navbar={navbar}
             addNewNote={addNewNote} 
-            expanded={expanded}
-            newNote={newNote}
-            handleSignout={handleSignout}
+            expanded={noteIsExpanded}
+            showSvgLoader={showLoaderOnNavbar}
           />
         </LabelsCtx>
         <div
           className={`!overflow-hidden ${
-            navbar && !expanded ? "ml-[60px] xxs:ml-[60px]" : 
-            !navbar && !expanded ? "ml-[60px] xxs:ml-0" :
-            expanded && 'ml-0'
+            navbar && !noteIsExpanded ? "ml-[60px] xxs:ml-[60px]" : 
+            !navbar && !noteIsExpanded ? "ml-[60px] xxs:ml-0" :
+            noteIsExpanded && 'ml-0'
           }`}
           id="dark"
         >
@@ -214,8 +213,8 @@ export default function Home(): JSX.Element {
               isFetching={isFetching}
               navbar={navbar}
               setNavbar={setNavbar} 
-              expanded={expanded}
-              setExpanded={setExpanded}
+              expanded={noteIsExpanded}
+              setExpanded={setNoteIsExpanded}
             />
       
             <NavbarContext 
@@ -229,9 +228,9 @@ export default function Home(): JSX.Element {
                   notes={fields} 
                   remove={remove}
                   labels={labels}
-                  expanded={expanded}
+                  expanded={noteIsExpanded}
                   deleteNote={deleteNote} 
-                  setExpanded={setExpanded}
+                  setExpanded={setNoteIsExpanded}
                   labelIsFetching={labelIsFetching}
                 />
               </RefetchContext>
