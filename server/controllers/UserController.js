@@ -218,22 +218,17 @@ export default {
     },
     async findAndSendCode(req, res) {
         try {
-            const {email} = req.body;
+            const { email } = req.body;
+            const userExists = await User.find({ email });
 
-            const userExists = await User.find({email});
-
-            if(userExists.length === 0) return res.status(400).json({message: 'No users were found with this email address!'});
+            if(userExists.length === 0) return res.status(400).json({message: 'No users were found with this email address!', code: 1});
 
             const findOtp = await Otp.find({userId: userExists[0]._id});
-            
             const lastOtpDate = findOtp[findOtp.length - 1]?.createdAt;
 
             if(findOtp.length !== 0 && lastOtpDate.setDate(lastOtpDate.getDate() + 1) <= new Date) {
-                await Otp.deleteMany({
-                    userId: userExists[0]._id,
-                    id: findOtp.map(val => val._id)
-                });
-            } //removing all otps after 24 hours
+                await Otp.deleteMany({ userId: userExists[0]._id, id: findOtp.map(val => val._id) }); //removing all otps after 24 hours
+            }
 
             if(findOtp.length === 0 || (findOtp.length < 5 && findOtp[findOtp.length - 1].spam < Date.now())) {
                 const otpCode = `${Math.floor(1000 + Math.random() * 9000)}`;
@@ -443,11 +438,8 @@ export default {
                     `
                 }
 
-                transporter.sendMail(message, async (error, info) => {
-                    if(error) res.status(500).json({
-                        message: "Internal sever error, please try again or later", code: 500
-                    });
-
+                transporter.sendMail(message, async (error) => {
+                    if(error) res.status(500).json({ message: "Internal sever error, please try again or later", code: 2 });
                     else {
                         await Otp.create({
                             userId: userExists[0]._id,
@@ -456,45 +448,28 @@ export default {
                             spam: Date.now() + 120000 //adding spam protection of 2 minutes per email
                         });
 
-                        res.status(200).json({
-                            message: 'Email sent!',
-                            userId: userExists[0]._id
-                        });
+                        res.status(200).json({ message: 'Email sent!', userId: userExists[0]._id });
                     }
                 });
             }
-            else if(findOtp.length === 5) {
-                 res.status(400).json({
-                    message: 'Maximum number of otp codes exceeded, please verify your email!',
-                });
-            }
-            else res.status(400).json({
-                message: 'Wait at least a 2 minutes to send another email!',
-                spam: findOtp[findOtp.length -1].spam
-            });
+
+            //if the user sent 5 emails and didn't verified the otp, then the user isn't allowed to sent more emails
+            else if(findOtp.length === 5) res.status(400).json({ message: 'Maximum number of otp codes exceeded, please verify your email!', code: 3 });
+            else res.status(400).json({ message: 'Wait at least a 2 minutes to send another email!', spam: findOtp[findOtp.length -1].spam, code: 4 });
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: err});
         }
     },
     async verifyOtp(res, req) {
         try {
-            const {otp, userId} = res.body;
-            
-            const findOtp = await Otp.find({userId});
+            const { otp, userId } = res.body;
+            const findOtp = await Otp.find({ userId });
 
             if(findOtp.length === 0) return req.status(400).json({ message: "Wrong OTP code, please try again!"});
-            
-            const compareOTPs = await bcrypt.compare(
-                otp,
-                findOtp[findOtp.length - 1].otp
-            );
+            const compareOTPs = await bcrypt.compare(otp, findOtp[findOtp.length - 1].otp);
 
             if(compareOTPs && findOtp[findOtp.length - 1].expiresAt > Date.now()) {
-                if(findOtp.length > 1) await Otp.deleteMany({
-                    userId,
-                    id: findOtp.map(val => val._id)
-                });
+                if(findOtp.length > 1) await Otp.deleteMany({ userId, id: findOtp.map(val => val._id)});
                 else await Otp.findByIdAndDelete(findOtp[0]._id);
 
                 return req.status(200).json({ message: "Verified!"});
