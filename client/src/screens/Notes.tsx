@@ -168,7 +168,7 @@ export default function Notes({ notes, addNewNote, isFetching, navbar, setNavbar
                               </div>
                             )}
                           </div>
-                          <p className="text-xs tracking-tighter mt-2 px-4 pb-[0.06rem]">
+                          <p className="text-xs tracking-tighter mt-2 px-4 pb-[0.04rem]">
                             {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                           </p>
                           {parsedImage && (<div className="h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>)}
