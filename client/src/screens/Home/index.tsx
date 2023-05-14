@@ -44,11 +44,7 @@ export default function Home(): JSX.Element {
     name: "note",
   });
 
-  const { fields: labels,
-      append: appendLabels,
-      update: updateLabels,
-      replace: replaceLabels,
-      remove: removeLabels } = useFieldArray({
+  const { fields: labels, append: appendLabels, update: updateLabels, replace: replaceLabels, remove: removeLabels } = useFieldArray({
     control: labelsControl,
     name: "labels",
   });
@@ -60,25 +56,16 @@ export default function Home(): JSX.Element {
 
   const fetchNotes = async () => { 
     setBlurFlag(false);
-
     try {
-      const notes = await api.get(`/notes/${_id}/${token}`, {
-          params: {
-              search: delayedSearch,
-              page,
-              limit: 10,
-          },
-        }
-      );
+      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${_id}/${token}`, { 
+        params: { search: delayedSearch, page, limit: 10 }
+      });
 
-      const docs = notes.data.docs;
-
-      setTotalDocs(notes.data.totalDocs);
-      setHasNextPage(notes.data.hasNextPage);
+      setTotalDocs(totalDocs);
+      setHasNextPage(hasNextPage);
 
       if (fields.length === 0) append(docs);
       else replace(docs);
-
     } catch (err) {
       console.log(err);
       signOutUser();
@@ -116,7 +103,6 @@ export default function Home(): JSX.Element {
 
   const addNewNote = async () => {
     setShowLoaderOnNavbar(true);
-
     const defaultLexicalState = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
     try {
@@ -145,17 +131,9 @@ export default function Home(): JSX.Element {
   const deleteNote = async (noteId: string) => {
     try {
       const deleteNote = await api.delete(`/delete/${noteId}/${token}`);
-      toastAlert({
-        icon: "success",
-        title: `${deleteNote.data.message}`,
-        timer: 2000,
-      });
+      toastAlert({ icon: "success", title: `${deleteNote.data.message}`, timer: 2000 });
     } catch (err: any) {
-      toastAlert({
-        icon: "error",
-        title: `${err.response.data.message}`,
-        timer: 2000,
-      });
+      toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
     }
   };
 
@@ -169,7 +147,7 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: true
   });
 
-  const { isFetching: labelIsFetching } = useQuery(["fetchLabels"], fetchLabels, {
+  const { isFetching: labelIsFetching } = useQuery([ "fetchLabels" ], fetchLabels, {
     refetchOnWindowFocus: false
   });
 

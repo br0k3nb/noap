@@ -53,7 +53,7 @@ export default function App({ notes }: Props): JSX.Element {
 
       if(findImages && findImages.length !== 0) {
         const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
-        images = removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[3.50rem] w-[162px] xxs:w-[159px]">');
+        images = removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-lg object-cover !h-[3.50rem] min-w-[98.5%]">');
       }
       else images = 'no image attached';
       

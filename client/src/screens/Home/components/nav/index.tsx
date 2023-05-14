@@ -1,20 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-
-import {
-  BsFillHouseDoorFill,
-  BsJournalPlus,
-  BsTagFill,
-  BsFillCalendarEventFill,
-  BsDoorOpenFill,
-  BsPeopleFill,
-  BsGlobe2, 
-  BsGearWide,
-  BsFillTrashFill,
-  BsGlobeAmericas
-} from "react-icons/bs";
-
 import { BiLock } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
+import { BsJournalPlus, BsTagFill, BsFillCalendarEventFill, BsDoorOpenFill, BsGearWide, BsFillTrashFill } from "react-icons/bs";
 
 import AccountSettingsModal from './components/AccountSettingsModal';
 import LabelModal from './components/LabelModal';
@@ -55,12 +42,8 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded }: Nav
 
   return (
     <div className={`${expanded && "hidden"}`}>
-      <AccountSettingsModal {...accSettingsModalProps}/>
-      <LabelModal
-        open={openLabelModal}
-        token={parsedUserToken}
-        setOpen={setOpenLabelModal}
-      />
+      <AccountSettingsModal {...accSettingsModalProps} />
+      <LabelModal open={openLabelModal} token={parsedUserToken} setOpen={setOpenLabelModal} />
       <ConfirmationModal
         open={openSignOutConfirmationModal}
         setOpen={setOpenSignOutConfirmationModal}
@@ -80,22 +63,17 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded }: Nav
               <label tabIndex={0}>
                 <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
                   <div className="rounded-full border !border-gray-500 bg-stone-700 hover:bg-stone-800 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
-                    <p className='mt-[7px]'>
-                      {name && name[0].toUpperCase()}
-                    </p>
+                    <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
                   </div>
                 </div>
               </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu shadow w-64 rounded-xl bg-stone-800"
-              >
+              <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-stone-800">
                 <li>
                   <a
-                    className="active:!bg-gray-600 rounded-xl"
+                    className="active:!bg-gray-600 rounded-xl text-gray-300"
                     onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenSettingsModal(true)}
                   >
-                    <label htmlFor="my-modal-4" className="text-gray-300">
+                    <label htmlFor="my-modal-4">
                       <div className="flex flex-row space-x-2">
                         <span>Change login information</span>  
                         <BiLock size={22} className="pt-1"/>
@@ -104,10 +82,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded }: Nav
                   </a>
                   <div className="mx-2 border border-transparent !border-b-stone-900 !h-[1px] p-0 !rounded-none"/>
                   <a
-                    className="active:!bg-gray-600 rounded-xl"
+                    className="active:!bg-gray-600 rounded-xl text-gray-300"
                     onClick={() => setOpenSignOutConfirmationModal(true)}
                   >
-                    <label htmlFor="my-modal-4" className="text-gray-300">
+                    <label htmlFor="my-modal-4">
                       <div className="flex flex-row space-x-2">
                         <p>Log out</p>
                         <BsDoorOpenFill size={19} className="pt-1"/>
