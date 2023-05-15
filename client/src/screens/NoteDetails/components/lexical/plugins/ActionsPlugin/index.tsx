@@ -1,32 +1,20 @@
 import type { LexicalEditor } from "lexical";
+import { $createTextNode, $getRoot, $isParagraphNode, CLEAR_EDITOR_COMMAND, COMMAND_PRIORITY_EDITOR } from "lexical";
 
 import { $createCodeNode, $isCodeNode } from "@lexical/code";
 import { exportFile, importFile } from "@lexical/file";
-import {
-  $convertFromMarkdownString,
-  $convertToMarkdownString,
-} from "@lexical/markdown";
+import { $convertFromMarkdownString, $convertToMarkdownString } from "@lexical/markdown";
 import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { CONNECTED_COMMAND, TOGGLE_CONNECT_COMMAND } from "@lexical/yjs";
-import {
-  $createTextNode,
-  $getRoot,
-  $isParagraphNode,
-  CLEAR_EDITOR_COMMAND,
-  COMMAND_PRIORITY_EDITOR,
-} from "lexical";
-import * as React from "react";
+
 import { useCallback, useEffect, useState } from "react";
 
 import useModal from "../../hooks/useModal";
 import Button from "../../ui/Button";
 import { PLAYGROUND_TRANSFORMERS } from "../MarkdownTransformers";
-import {
-  SPEECH_TO_TEXT_COMMAND,
-  SUPPORT_SPEECH_RECOGNITION,
-} from "../SpeechToTextPlugin";
+import { SPEECH_TO_TEXT_COMMAND, SUPPORT_SPEECH_RECOGNITION } from "../SpeechToTextPlugin";
 
 async function sendEditorState(editor: LexicalEditor): Promise<void> {
   const stringifiedEditorState = JSON.stringify(editor.getEditorState());
@@ -66,24 +54,18 @@ async function validateEditorState(editor: LexicalEditor): Promise<void> {
   }
 }
 
-export default function ActionsPlugin({
-  isRichText,
-}: {
-  isRichText: boolean;
-}): JSX.Element {
-  const [editor] = useLexicalComposerContext();
-  const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const [isSpeechToText, setIsSpeechToText] = useState(false);
-  const [connected, setConnected] = useState(false);
-  const [isEditorEmpty, setIsEditorEmpty] = useState(true);
-  const [modal, showModal] = useModal();
+export default function ActionsPlugin(): JSX.Element {
+  const [ editor ] = useLexicalComposerContext();
+  const [ isEditable, setIsEditable ] = useState(() => editor.isEditable());
+  const [ isSpeechToText, setIsSpeechToText ] = useState(false);
+  const [ connected, setConnected ] = useState(false);
+  const [ isEditorEmpty, setIsEditorEmpty ] = useState(true);
+  const [ modal, showModal ] = useModal();
   const { isCollabActive } = useCollaborationContext();
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerEditableListener((editable) => {
-        setIsEditable(editable);
-      }),
+      editor.registerEditableListener((editable) => setIsEditable(editable)),
       editor.registerCommand<boolean>(
         CONNECTED_COMMAND,
         (payload) => {
@@ -98,30 +80,19 @@ export default function ActionsPlugin({
 
   useEffect(() => {
     return editor.registerUpdateListener(
-      ({ dirtyElements, prevEditorState, tags }) => {
-        // If we are in read only mode, send the editor state
-        // to server and ask for validation if possible.
-        if (
-          !isEditable &&
-          dirtyElements.size > 0 &&
-          !tags.has("historic") &&
-          !tags.has("collaboration")
-        ) {
-          validateEditorState(editor);
-        }
+      ({ dirtyElements, tags }) => {
+        if (!isEditable && dirtyElements.size > 0 && !tags.has("historic") && !tags.has("collaboration")) validateEditorState(editor);
         editor.getEditorState().read(() => {
           const root = $getRoot();
           const children = root.getChildren();
 
-          if (children.length > 1) {
-            setIsEditorEmpty(false);
-          } else {
+          if (children.length > 1) setIsEditorEmpty(false);
+          else {
             if ($isParagraphNode(children[0])) {
               const paragraphChildren = children[0].getChildren();
               setIsEditorEmpty(paragraphChildren.length === 0);
-            } else {
-              setIsEditorEmpty(false);
-            }
+            } 
+            else setIsEditorEmpty(false);
           }
         });
       }
@@ -157,10 +128,7 @@ export default function ActionsPlugin({
             editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
             setIsSpeechToText(!isSpeechToText);
           }}
-          className={
-            "action-button action-button-mic " +
-            (isSpeechToText ? "active" : "")
-          }
+          className={"action-button action-button-mic " + isSpeechToText ? "active" : ""}
           title="Speech To Text"
           aria-label={`${isSpeechToText ? "Enable" : "Disable"} speech to text`}
         >
@@ -204,10 +172,7 @@ export default function ActionsPlugin({
       <button
         className={`action-button ${!isEditable ? "unlock" : "lock"}`}
         onClick={() => {
-          // Send latest editor state to commenting validation server
-          if (isEditable) {
-            sendEditorState(editor);
-          }
+          if (isEditable) sendEditorState(editor);
           editor.setEditable(!editor.isEditable());
         }}
         title="Read-Only Mode"
@@ -226,15 +191,9 @@ export default function ActionsPlugin({
       {isCollabActive && (
         <button
           className="action-button connect"
-          onClick={() => {
-            editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected);
-          }}
-          title={`${
-            connected ? "Disconnect" : "Connect"
-          } Collaborative Editing`}
-          aria-label={`${
-            connected ? "Disconnect from" : "Connect to"
-          } a collaborative editing server`}
+          onClick={() => editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected)}
+          title={`${connected ? "Disconnect" : "Connect"} Collaborative Editing`}
+          aria-label={`${connected ? "Disconnect from" : "Connect to"} a collaborative editing server`}
         >
           <i className={connected ? "disconnect" : "connect"} />
         </button>

@@ -13,9 +13,7 @@ function EquationEditor(
   {equation, setEquation, inline}: BaseEquationEditorProps,
   forwardedRef: Ref<HTMLInputElement | HTMLTextAreaElement>,
 ): JSX.Element {
-  const onChange = (event: ChangeEvent) => {
-    setEquation((event.target as HTMLInputElement).value);
-  };
+  const onChange = (event: ChangeEvent) => setEquation((event.target as HTMLInputElement).value);
 
   return inline && forwardedRef instanceof HTMLInputElement ? (
     <span className="EquationEditor_inputBackground">

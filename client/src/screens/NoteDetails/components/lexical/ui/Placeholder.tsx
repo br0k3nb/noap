@@ -17,15 +17,7 @@ export default function Placeholder({
   const expandedCtx = useContext(ExpandedCtx);
 
   return (
-    <div
-      className={
-        className ||
-        `Placeholder__root text-gray-400
-        ${navContext?.navbar && !expandedCtx?.expanded ? "!left-[570px]" :
-        expandedCtx?.expanded && "!left-[30px]"}
-        `
-      }
-    >
+    <div className={className || `Placeholder__root text-gray-400 ${navContext?.navbar && !expandedCtx?.expanded ? "!left-[570px]" : expandedCtx?.expanded && "!left-[30px]"}`}>
       {children}
     </div>
   );

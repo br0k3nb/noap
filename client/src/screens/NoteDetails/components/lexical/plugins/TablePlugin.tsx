@@ -97,17 +97,16 @@ export function InsertTableDialog({
   useEffect(() => {
     const row = Number(rows);
     const column = Number(columns);
-    if (row && row > 0 && row <= 500 && column && column > 0 && column <= 50) {
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
-    }
+
+    if (row && row > 0 && row <= 500 && column && column > 0 && column <= 50) setIsDisabled(false);
+    else setIsDisabled(true);
   }, [rows, columns]);
 
   const onClick = () => {
     activeEditor.dispatchCommand(INSERT_TABLE_COMMAND, { columns, rows });
     onClose();
   };
+
   return (
     <>
       <TextInput
@@ -147,17 +146,16 @@ export function InsertNewTableDialog({
   useEffect(() => {
     const row = Number(rows);
     const column = Number(columns);
-    if (row && row > 0 && row <= 500 && column && column > 0 && column <= 50) {
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
-    }
+
+    if (row && row > 0 && row <= 500 && column && column > 0 && column <= 50) setIsDisabled(false);
+    else setIsDisabled(true);
   }, [rows, columns]);
 
   const onClick = () => {
     activeEditor.dispatchCommand(INSERT_NEW_TABLE_COMMAND, { columns, rows });
     onClose();
   };
+
   return (
     <>
       <TextInput
@@ -194,10 +192,7 @@ export function TablePlugin({
   const cellContext = useContext(CellContext);
 
   useEffect(() => {
-    //@ts-ignore
-    if (!editor.hasNodes([TableNode])) {
-      invariant(false, "TablePlugin: TableNode is not registered on editor");
-    }
+    if (!editor.hasNodes([TableNode]))  invariant(false, "TablePlugin: TableNode is not registered on editor");
 
     cellContext.set(cellEditorConfig, children);
 
@@ -205,9 +200,7 @@ export function TablePlugin({
       INSERT_TABLE_COMMAND,
       ({ columns, rows, includeHeaders }) => {
         const selection = $getSelection();
-        if (!$isRangeSelection(selection)) {
-          return true;
-        }
+        if (!$isRangeSelection(selection)) return true;
         const focus = selection.focus;
         const focusNode = focus.getNode();
         if (focusNode !== null) {
@@ -218,22 +211,17 @@ export function TablePlugin({
           );
           if ($isRootOrShadowRoot(focusNode)) {
             const target = focusNode.getChildAtIndex(focus.offset);
-            if (target !== null) {
-              target.insertBefore(tableNode);
-            } else {
-              focusNode.append(tableNode);
-            }
-            //@ts-ignore
+            if (target !== null) target.insertBefore(tableNode);
+            else focusNode.append(tableNode);
+
             tableNode.insertBefore($createParagraphNode());
           } else {
-            const topLevelNode = focusNode.getTopLevelElementOrThrow();
-            //@ts-ignore
+            const topLevelNode = focusNode.getTopLevelElementOrThrow();          
             topLevelNode.insertAfter(tableNode);
           }
-          //@ts-ignore
+          
           tableNode.insertAfter($createParagraphNode());
           const nodeSelection = $createNodeSelection();
-          //@ts-ignore
           nodeSelection.add(tableNode.getKey());
           $setSelection(nodeSelection);
         }

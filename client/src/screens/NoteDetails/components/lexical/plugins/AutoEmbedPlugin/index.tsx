@@ -1,15 +1,8 @@
 import type { LexicalEditor } from "lexical";
 
-import {
-  AutoEmbedOption,
-  EmbedConfig,
-  EmbedMatchResult,
-  LexicalAutoEmbedPlugin,
-  URL_MATCHER,
-} from "@lexical/react/LexicalAutoEmbedPlugin";
+import { AutoEmbedOption, EmbedConfig, EmbedMatchResult, LexicalAutoEmbedPlugin, URL_MATCHER } from "@lexical/react/LexicalAutoEmbedPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useMemo, useState } from "react";
-import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import useModal from "../../hooks/useModal";
@@ -38,32 +31,16 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
 
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
   contentName: "Youtube Video",
-
   exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-
-  // Icon for display.
   icon: <i className="icon youtube comp-picker" />,
-
-  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
-    editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id);
-  },
-
+  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id),
   keywords: ["youtube", "video"],
-
   // Determine if a given URL is a match and return url data.
   parseUrl: async (url: string) => {
-    const match =
-      /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/.exec(url);
-
+    const match = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/.exec(url);
     const id = match ? (match?.[2].length === 11 ? match[2] : null) : null;
 
-    if (id != null) {
-      return {
-        id,
-        url,
-      };
-    }
-
+    if (id != null) return { id, url };
     return null;
   },
 
@@ -71,78 +48,36 @@ export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
 };
 
 export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
-  // e.g. Tweet or Google Map.
   contentName: "Tweet",
-
   exampleUrl: "https://twitter.com/jack/status/20",
-
-  // Icon for display.
   icon: <i className="icon tweet comp-picker" />,
-
-  // Create the Lexical embed node from the url data.
-  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
-    editor.dispatchCommand(INSERT_TWEET_COMMAND, result.id);
-  },
-
-  // For extra searching.
+  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => editor.dispatchCommand(INSERT_TWEET_COMMAND, result.id),
   keywords: ["tweet", "twitter"],
-
-  // Determine if a given URL is a match and return url data.
   parseUrl: (text: string) => {
-    const match =
-      /^https:\/\/twitter\.com\/(#!\/)?(\w+)\/status(es)*\/(\d+)$/.exec(text);
+    const match = /^https:\/\/twitter\.com\/(#!\/)?(\w+)\/status(es)*\/(\d+)$/.exec(text);
 
-    if (match != null) {
-      return {
-        id: match[4],
-        url: match[0],
-      };
-    }
-
+    if (match != null) return { id: match[4], url: match[0] };
     return null;
   },
-
-  type: "tweet",
+  type: "tweet"
 };
 
 export const FigmaEmbedConfig: PlaygroundEmbedConfig = {
   contentName: "Figma Document",
-
   exampleUrl: "https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File",
-
   icon: <i className="icon figma comp-picker" />,
-
-  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
-    editor.dispatchCommand(INSERT_FIGMA_COMMAND, result.id);
-  },
-
+  insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => editor.dispatchCommand(INSERT_FIGMA_COMMAND, result.id),
   keywords: ["figma", "figma.com", "mock-up"],
-
-  // Determine if a given URL is a match and return url data.
   parseUrl: (text: string) => {
-    const match =
-      /https:\/\/([\w.-]+\.)?figma.com\/(file|proto)\/([0-9a-zA-Z]{22,128})(?:\/.*)?$/.exec(
-        text
-      );
-
-    if (match != null) {
-      return {
-        id: match[3],
-        url: match[0],
-      };
-    }
-
+    const match =/https:\/\/([\w.-]+\.)?figma.com\/(file|proto)\/([0-9a-zA-Z]{22,128})(?:\/.*)?$/.exec(text);
+    if (match != null) return { id: match[3], url: match[0] };
     return null;
   },
 
   type: "figma",
 };
 
-export const EmbedConfigs = [
-  TwitterEmbedConfig,
-  YoutubeEmbedConfig,
-  FigmaEmbedConfig,
-];
+export const EmbedConfigs = [ TwitterEmbedConfig, YoutubeEmbedConfig, FigmaEmbedConfig ];
 
 function AutoEmbedMenuItem({
   index,
@@ -228,19 +163,12 @@ export function AutoEmbedDialog({
   const [editor] = useLexicalComposerContext();
   const [embedResult, setEmbedResult] = useState<EmbedMatchResult | null>(null);
 
-  const validateText = useMemo(
-    () =>
-      debounce((inputText: string) => {
+  const validateText = useMemo(() => debounce((inputText: string) => {
         const urlMatch = URL_MATCHER.exec(inputText);
         if (embedConfig != null && inputText != null && urlMatch != null) {
-          Promise.resolve(embedConfig.parseUrl(inputText)).then(
-            (parseResult) => {
-              setEmbedResult(parseResult);
-            }
-          );
-        } else if (embedResult != null) {
-          setEmbedResult(null);
-        }
+          Promise.resolve(embedConfig.parseUrl(inputText)).then((parseResult) => setEmbedResult(parseResult));
+        } 
+        else if (embedResult != null) setEmbedResult(null);
       }, 200),
     [embedConfig, embedResult]
   );
@@ -256,7 +184,6 @@ export function AutoEmbedDialog({
     <div style={{ width: "600px" }} className="xxs:!max-w-[256px]">
       <div className="Input__wrapper">
         <input
-          type="text"
           className="Input__input"
           placeholder={embedConfig.exampleUrl}
           value={text}
@@ -297,12 +224,8 @@ export default function AutoEmbedPlugin(): JSX.Element {
     dismissFn: () => void
   ) => {
     return [
-      new AutoEmbedOption("Dismiss", {
-        onSelect: dismissFn,
-      }),
-      new AutoEmbedOption(`Embed ${activeEmbedConfig.contentName}`, {
-        onSelect: embedFn,
-      }),
+      new AutoEmbedOption("Dismiss", { onSelect: dismissFn }),
+      new AutoEmbedOption(`Embed ${activeEmbedConfig.contentName}`, { onSelect: embedFn }),
     ];
   };
 
@@ -314,22 +237,13 @@ export default function AutoEmbedPlugin(): JSX.Element {
         onOpenEmbedModalForConfig={openEmbedModal}
         getMenuOptions={getMenuOptions}
         menuRenderFn={(
-          anchorElementRef,
-          {
-            selectedIndex,
-            options,
-            selectOptionAndCleanUp,
-            setHighlightedIndex,
-          }
+          anchorElementRef, { selectedIndex, options, selectOptionAndCleanUp, setHighlightedIndex }
         ) =>
           anchorElementRef.current
             ? ReactDOM.createPortal(
                 <div
                   className="typeahead-popover auto-embed-menu"
-                  style={{
-                    marginLeft: anchorElementRef.current.style.width,
-                    width: 200,
-                  }}
+                  style={{marginLeft: anchorElementRef.current.style.width, width: 200 }}
                 >
                   <AutoEmbedMenu
                     options={options}
@@ -338,9 +252,7 @@ export default function AutoEmbedPlugin(): JSX.Element {
                       setHighlightedIndex(index);
                       selectOptionAndCleanUp(option);
                     }}
-                    onOptionMouseEnter={(index: number) => {
-                      setHighlightedIndex(index);
-                    }}
+                    onOptionMouseEnter={(index: number) => setHighlightedIndex(index)}
                   />
                 </div>,
                 anchorElementRef.current

@@ -1,10 +1,8 @@
 import { Suspense } from "react";
 import "./LinkPreview.css";
 
-// Cached responses or running request promises
 const PREVIEW_CACHE = {};
-const URL_MATCHER =
-  /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+const URL_MATCHER = /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 //@ts-ignore
 function useSuspenseRequest(url) {
   //@ts-ignore
@@ -43,35 +41,22 @@ function LinkPreviewContent({ url }) {
     <div className="LinkPreview__container">
       {preview.img && (
         <div className="LinkPreview__imageWrapper">
-          <img
-            src={preview.img}
-            alt={preview.title}
-            className="LinkPreview__image"
-          />
+          <img src={preview.img} alt={preview.title} className="LinkPreview__image"/>
         </div>
       )}
-      {preview.domain && (
-        <div className="LinkPreview__domain">{preview.domain}</div>
-      )}
-      {preview.title && (
-        <div className="LinkPreview__title">{preview.title}</div>
-      )}
-      {preview.description && (
-        <div className="LinkPreview__description">{preview.description}</div>
-      )}
+      {preview.domain && <div className="LinkPreview__domain">{preview.domain}</div>}
+      {preview.title && <div className="LinkPreview__title">{preview.title}</div>}
+      {preview.description && <div className="LinkPreview__description">{preview.description}</div>}
     </div>
   );
 }
 //@ts-ignore
 function Glimmer(props) {
   return (
-    <div
-      className="LinkPreview__glimmer"
+    <div 
+      className="LinkPreview__glimmer" 
+      style={{ animationDelay: String((props.index || 0) * 300), ...(props.style || {}) }}
       {...props}
-      style={{
-        animationDelay: String((props.index || 0) * 300),
-        ...(props.style || {}),
-      }}
     />
   );
 }

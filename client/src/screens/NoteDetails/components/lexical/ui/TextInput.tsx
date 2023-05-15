@@ -20,12 +20,10 @@ export default function TextInput({
       <label className="Input__label !text-gray-200 text-xs uppercase tracking-widest">{label}</label>
       <input
         type="text"
-        className="Input__input !bg-gray-700 placeholder:text-xs placeholder:uppercase placeholder:tracking-widest"
+        className="Input__input !bg-gray-q700 placeholder:text-xs placeholder:uppercase placeholder:tracking-widest"
         placeholder={placeholder}
         value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
-        }}
+        onChange={(e) => onChange(e.target.value)}
         data-test-id={dataTestId}
       />
     </div>

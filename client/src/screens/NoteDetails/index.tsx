@@ -63,88 +63,46 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
           <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
             <div>
               <div className="mr-2 tooltip tooltip-right !text-gray-200" data-tip={`${!expanded ? 'Expand note' : 'Minimize note'}`}>
-                <button
-                  className="hover:bg-stone-600 px-1 py-1 rounded"
-                  onClick={() => handleExpand()}
-                >
-                  {expanded ? (
-                    <AiOutlineFullscreenExit size={22} />
-                  ): (
-                    <AiOutlineFullscreen size={22} />
-                  )}
+                <button className="hover:bg-stone-600 px-1 py-1 rounded" onClick={() => handleExpand()}>
+                  {expanded ? <AiOutlineFullscreenExit size={22} /> : <AiOutlineFullscreen size={22} />}
                 </button>
               </div>
-
-              <div 
-                className="dropdown hover:bg-stone-600 rounded !inline !pt-[11px] pb-[1.28px] px-1"
-              >
+              <div className="dropdown hover:bg-stone-600 rounded !inline !pt-[11px] pb-[1.28px] px-1">
                 <label tabIndex={0}>
                   <div className="tooltip tooltip-right !text-gray-200" data-tip="Actions">      
                     <AiOutlineEllipsis size={23} />
                   </div>
                 </label> 
                 <ul tabIndex={0} className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800">
-                  <li className="">
-                    <a 
-                      className="active:!bg-gray-600 hover:!bg-gray-700" 
-                      onClick={() => setOpen(true)}
-                    >
-                      <label 
-                        htmlFor="my-modal-4"
-                        className="text-red-600"
-                      >
+                  <li>
+                    <a className="active:!bg-gray-600 hover:!bg-gray-700" onClick={() => setOpen(true)}>
+                      <label htmlFor="my-modal-4" className="text-red-600">
                         <div className="flex flex-row space-x-2 ">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Delete note 
-                          </p>
+                          <p className="py-1 text-xs uppercase tracking-widest">Delete note</p>
                           <AiFillDelete size={20} className="pt-1"/>
                         </div>
                       </label>
                     </a>
-                    <a 
-                      className="active:!bg-gray-600 hover:!bg-gray-700" 
-                      onClick={() => setOpenlabelModal(true)}
-                    >
-                      <label 
-                        htmlFor="my-modal-4"
-                        className="text-gray-300"
-                      >
+                    <a className="active:!bg-gray-600 hover:!bg-gray-700" onClick={() => setOpenlabelModal(true)}>
+                      <label htmlFor="my-modal-4" className="text-gray-300">
                         <div className="flex flex-row space-x-2">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Attach labels
-                          </p>
+                          <p className="py-1 text-xs uppercase tracking-widest">Attach labels</p>
                           <BsTagsFill size={20} className="pt-[3px]"/>
                         </div>
                       </label>
                     </a>
-                    <a 
-                      className="cursor-not-allowed active:!bg-transparent" 
-                      // onClick={() => setChecked(!checked)}
-                    > 
-                      <label 
-                        htmlFor="my-modal-4"
-                        className="text-gray-600"
-                      >
+                    <a className="cursor-not-allowed active:!bg-transparent"> 
+                      <label htmlFor="my-modal-4" className="text-gray-600">
                         <div className="flex flex-row space-x-2 cursor-not-allowed">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Hide bottom bar
-                          </p>
+                          <p className="py-1 text-xs uppercase tracking-widest">Hide bottom bar</p>
                           <BsArrowDown size={20} className="pt-[3px]"/>
                         </div>
                       </label>
                     </a>
-                    <a 
-                      className="cursor-not-allowed active:!bg-transparent" 
-                      // onClick={() => setChecked(!checked)}
-                    > 
-                      <label 
-                        htmlFor="my-modal-4"
-                        className="text-gray-600"
-                      >
+                    <a className="cursor-not-allowed active:!bg-transparent"> 
+                      <label htmlFor="my-modal-4" className="text-gray-600">
                         <div className="flex flex-row space-x-2 cursor-not-allowed">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Share Note
-                          </p>
+                          <p className="py-1 text-xs uppercase tracking-widest">Share Note</p>
                           <BsPeopleFill size={20} className="pt-[3px]"/>
                         </div>
                       </label>
@@ -153,7 +111,6 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
                 </ul>
               </div>
             </div>
-
             <ConfirmationModal
               open={open}
               setOpen={setOpen}
@@ -171,7 +128,6 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               labels={labels}
               selectedNote={getSeletedNoteId}
             />
-
             <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
               <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
                 Last updated on {days(lastUpdated() as string)} at {hours(lastUpdated() as string)}
@@ -189,13 +145,9 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
             </div>
           ) : (
             <div className="flex flex-col justify-self-center mr-[28rem]">
-              <div className="mt-[24%] mx-auto">
-                <div className="flex mx-20 mb-5">
-                  <BsJournalRichtext size={166} className="text-gray-500" />
-                </div>
-                <p className="text-xl text-gray-500">
-                  The selected note will appear here...
-                </p>
+              <div className="mt-[24%] mx-auto">                
+                <BsJournalRichtext size={166} className="text-gray-500 mx-20 mb-5" />
+                <p className="text-xl text-gray-500">The selected note will appear here...</p>
               </div>
             </div>
           )}

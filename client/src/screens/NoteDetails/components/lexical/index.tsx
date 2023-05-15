@@ -61,11 +61,11 @@ export default function App({ notes }: Props): JSX.Element {
         if (currentState) {
           const state = JSON.stringify(currentState);
           
-          const compressState = pack({state});
+          const compressState = pack({ state });
           const resultState = unpack(compressState);
 
-          const compressImg = BSON.serialize({images});
-          const resultImg = BSON.deserialize(compressImg)
+          const compressImg = BSON.serialize({ images });
+          const resultImg = BSON.deserialize(compressImg);
 
           const create = await api.patch(`/edit/${token.token}`,
             {

@@ -34,36 +34,17 @@ export default function KatexEquationAlterer({
       <div className="KatexEquationAlterer_defaultRow">Equation</div>
       <div className="KatexEquationAlterer_centerRow">
         {inline ? (
-          <input
-            onChange={(event) => {
-              setEquation(event.target.value);
-            }}
-            value={equation}
-            className="KatexEquationAlterer_textArea !bg-gray-700"
-          />
+          <input onChange={(event) => setEquation(event.target.value)} value={equation} className="KatexEquationAlterer_textArea !bg-gray-700"/>
         ) : (
-          <textarea
-            onChange={(event) => {
-              setEquation(event.target.value);
-            }}
-            value={equation}
-            className="KatexEquationAlterer_textArea !bg-gray-700"
-          />
+          <textarea onChange={(event) => setEquation(event.target.value)} value={equation} className="KatexEquationAlterer_textArea !bg-gray-700"/>
         )}
       </div>
       <div className="KatexEquationAlterer_defaultRow">Visualization </div>
       <div className="KatexEquationAlterer_centerRow">
-        <KatexRenderer
-          equation={equation}
-          inline={false}
-          onDoubleClick={() => null}
-        />
+        <KatexRenderer equation={equation} inline={false} onDoubleClick={() => null}/>
       </div>
       <div className="KatexEquationAlterer_dialogActions">
-        <Button 
-          onClick={onClick}
-          className='!bg-gray-700'
-        >
+        <Button onClick={onClick} className='!bg-gray-700'>
           Confirm
         </Button>
       </div>

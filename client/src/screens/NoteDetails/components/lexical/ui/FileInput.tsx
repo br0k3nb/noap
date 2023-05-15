@@ -16,13 +16,7 @@ export default function FileInput({
   return (
     <div className="Input__wrapper">
       <label className="Input__label !text-gray-200 text-xs uppercase tracking-widest">{label}</label>
-      <input
-        type="file"
-        accept={accept}
-        className="Input__input"
-        onChange={(e) => onChange(e.target.files)}
-        data-test-id={dataTestId}
-      />
+      <input type="file" accept={accept} className="Input__input" onChange={(e) => onChange(e.target.files)} data-test-id={dataTestId}/>
     </div>
   );
 }

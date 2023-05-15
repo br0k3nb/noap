@@ -112,11 +112,7 @@ export default function ColorPicker({
 
   return (
     <DropDown {...rest} disabled={disabled} stopCloseOnClickSelf={true}>
-      <div
-        className="color-picker-wrapper !text-gray-200"
-        style={{ width: WIDTH }}
-        ref={innerDivRef}
-      >
+      <div className="color-picker-wrapper !text-gray-200" style={{ width: WIDTH }} ref={innerDivRef}>
         <TextInput label="Hex" onChange={onSetHex} value={inputColor} />
         <div className="color-picker-basic-color">
           {basicColors.map((basicColor) => (
@@ -138,20 +134,13 @@ export default function ColorPicker({
         >
           <div
             className="color-picker-saturation_cursor"
-            style={{
-              backgroundColor: selfColor.hex,
-              left: saturationPosition.x,
-              top: saturationPosition.y,
-            }}
+            style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
           />
         </MoveWrapper>
         <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
           <div
             className="color-picker-hue_cursor"
-            style={{
-              backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`,
-              left: huePosition.x,
-            }}
+            style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
           />
         </MoveWrapper>
         <div
@@ -201,9 +190,7 @@ function MoveWrapper({
 
     move(e);
 
-    const onMouseMove = (_e: MouseEvent): void => {
-      move(_e);
-    };
+    const onMouseMove = (_e: MouseEvent): void => move(_e);
 
     const onMouseUp = (_e: MouseEvent): void => {
       document.removeEventListener("mousemove", onMouseMove, false);
@@ -217,12 +204,7 @@ function MoveWrapper({
   };
 
   return (
-    <div
-      ref={divRef}
-      className={className}
-      style={style}
-      onMouseDown={onMouseDown}
-    >
+    <div ref={divRef} className={className} style={style} onMouseDown={onMouseDown}>
       {children}
     </div>
   );

@@ -24,12 +24,7 @@ export default function Button({
   return (
     <button
       disabled={disabled}
-      className={joinClasses(
-        "Button__root !bg-gray-700",
-        disabled && "Button__disabled",
-        small && "Button__small",
-        className
-      )}
+      className={joinClasses("Button__root !bg-gray-700", disabled && "Button__disabled", small && "Button__small", className)}
       onClick={onClick}
       title={title}
       aria-label={title}

@@ -5,7 +5,6 @@ import { BsXLg } from 'react-icons/bs';
 
 import "./Modal.css";
 
-
 function PortalImpl({
   onClose,
   children,
@@ -20,47 +19,33 @@ function PortalImpl({
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (modalRef.current !== null) {
-      modalRef.current.focus();
-    }
+    if (modalRef.current !== null) modalRef.current.focus();
   }, []);
 
   useEffect(() => {
     let modalOverlayElement: HTMLElement | null = null;
 
     const handler = (event: KeyboardEvent) => {
-      if (event.keyCode === 27) {
-        onClose();
-      }
+      if (event.keyCode === 27) onClose();
     };
 
     const clickOutsideHandler = (event: MouseEvent) => {
       const target = event.target;
-      if (
-        modalRef.current !== null &&
-        !modalRef.current.contains(target as Node) &&
-        closeOnClickOutside
-      ) {
-        onClose();
-      }
+      if (modalRef.current !== null && !modalRef.current.contains(target as Node) && closeOnClickOutside) onClose();
     };
 
     const modelElement = modalRef.current;
 
     if (modelElement !== null) {
       modalOverlayElement = modelElement.parentElement;
-      if (modalOverlayElement !== null) {
-        modalOverlayElement.addEventListener('click', clickOutsideHandler);
-      }
+      if (modalOverlayElement !== null) modalOverlayElement.addEventListener('click', clickOutsideHandler);
     }
 
     window.addEventListener("keydown", handler);
 
     return () => {
       window.removeEventListener("keydown", handler);
-      if (modalOverlayElement !== null) {
-        modalOverlayElement?.removeEventListener("click", clickOutsideHandler);
-      }
+      if (modalOverlayElement !== null) modalOverlayElement?.removeEventListener("click", clickOutsideHandler);
     };
   }, [closeOnClickOutside, onClose]);
 
@@ -96,11 +81,7 @@ export default function Modal({
   title: string;
 }): JSX.Element {
   return createPortal(
-    <PortalImpl
-      onClose={onClose}
-      title={title}
-      closeOnClickOutside={closeOnClickOutside}
-    >
+    <PortalImpl onClose={onClose} title={title} closeOnClickOutside={closeOnClickOutside}>
       {children}
     </PortalImpl>,
     document.body
