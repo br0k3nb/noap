@@ -32,11 +32,8 @@ export default function TypingPerfPlugin(): JSX.Element | null {
 
         const measureEventEnd = function logKeyPress() {
             if (keyPressTimerId != null) {
-                if (invalidatingEvent) {
-                    invalidatingEvent = false;
-                } else {
-                    log.push(performance.now() - start);
-                }
+                if (invalidatingEvent) invalidatingEvent = false;
+                else log.push(performance.now() - start);
 
                 clearTimeout(keyPressTimerId);
                 keyPressTimerId = null;
@@ -55,8 +52,7 @@ export default function TypingPerfPlugin(): JSX.Element | null {
             // Schedule a timer to report the results.
             timerId = setTimeout(() => {
                 const total = log.reduce((a, b) => a + b, 0);
-                const reportedText =
-                    'Typing Perf: ' + Math.round((total / log.length) * 100) / 100 + 'ms';
+                const reportedText = 'Typing Perf: ' + Math.round((total / log.length) * 100) / 100 + 'ms';
                 report(reportedText);
                 log = [];
             }, 2000);
@@ -77,9 +73,7 @@ export default function TypingPerfPlugin(): JSX.Element | null {
         const keyDownHandler = function keyDownHandler(event: KeyboardEvent) {
             const keyCode = event.keyCode;
 
-            if (keyCode === 8 || keyCode === 13) {
-                measureEventStart();
-            }
+            if (keyCode === 8 || keyCode === 13) measureEventStart();
         };
 
         const pasteHandler = function pasteHandler() {

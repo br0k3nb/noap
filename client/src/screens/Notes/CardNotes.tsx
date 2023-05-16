@@ -32,17 +32,17 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded }
     return (
         <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900">
             {isFetching ? (
-                <div className="flex flex-col items-center mt-14">
-                    <Loader />
-                    <p className="mt-2 text-xl animate-pulse">Loading notes...</p>
-                </div>
+                    <div className="flex flex-col items-center mt-14">
+                        <Loader />
+                        <p className="mt-2 text-xl animate-pulse">Loading notes...</p>
+                    </div>
                 ) : (
                     <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 xxs:mb-20">
                         {notes.length > 0 ? (
                             <>
                                 {notes.map((val, idx) => {
                                     const { image, labels, _id, body, createdAt, updatedAt, title } = val;
-                                    const { color, type, fontColor, name } = labels && labels[0] as any;
+                                    const { color, type, fontColor, name } = labels?.length && labels[0] as any;
                                     const parsedImage = image !== "no image attached" ? parse(image as string): false;
 
                                     return (
@@ -55,37 +55,38 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded }
                                                         (labels && labels.length) && parsedImage ? body.slice(0, 73) + '...' : body}
                                                     </div>
                                                     {labels && labels.length > 0 && (
-                                                    <div className="mt-1">
-                                                        {type === "default" ? (
-                                                        <div className="flex space-x-1">
-                                                            <p 
-                                                                className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
-                                                                style={{ backgroundColor: color, borderColor: color, color: fontColor }}
-                                                            >
-                                                                {name.length > 16 ? name.slice(0, 11) + '...' : name}
-                                                            </p>
-                                                            {labels.length > 1 && (
-                                                            <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
-                                                                <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + labels.length}</p>
-                                                            </div>
-                                                            )}
-                                                        </div> 
-                                                        ) : (
-                                                        <div className="flex space-x-1">
-                                                            <p 
-                                                                className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
-                                                                style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
-                                                            >
-                                                                {name.length > 14 ? name.slice(0, 14) + '...' : name}
-                                                            </p>
-                                                            {labels.length > 1 && (
-                                                            <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
-                                                                <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + labels.length}</p>
-                                                            </div>
-                                                            )}
+                                                        <div className="mt-1">
+                                                            {type === "default" ? (
+                                                                    <div className="flex space-x-1">
+                                                                        <p 
+                                                                            className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
+                                                                            style={{ backgroundColor: color, borderColor: color, color: fontColor }}
+                                                                        >
+                                                                            {name.length > 16 ? name.slice(0, 11) + '...' : name}
+                                                                        </p>
+                                                                        {labels.length > 1 && (
+                                                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + labels.length}</p>
+                                                                        </div>
+                                                                        )}
+                                                                    </div> 
+                                                                ) : (
+                                                                    <div className="flex space-x-1">
+                                                                        <p 
+                                                                            className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
+                                                                            style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
+                                                                        >
+                                                                            {name.length > 14 ? name.slice(0, 14) + '...' : name}
+                                                                        </p>
+                                                                        {labels.length > 1 && (
+                                                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + labels.length}</p>
+                                                                        </div>
+                                                                        )}
+                                                                    </div>
+                                                                )
+                                                            }
                                                         </div>
-                                                        )}
-                                                    </div>
                                                     )}
                                                 </div>
                                                 <p className="text-xs tracking-tighter mt-2 px-4 pb-[0.04rem]">

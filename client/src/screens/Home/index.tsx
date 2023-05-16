@@ -120,11 +120,7 @@ export default function Home(): JSX.Element {
       setShowLoaderOnNavbar(false);
     } catch (err: any) {
       console.log(err);
-      toastAlert({
-        icon: "error",
-        title: `${err.response.data.message}`,
-        timer: 2000,
-      });
+      toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
     }
   };
 
@@ -153,22 +149,9 @@ export default function Home(): JSX.Element {
 
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
-      <SelectedNoteContext 
-        selectedNote={selectedNote}
-        setSelectedNote={setSelectedNote}
-      >
-        <LabelsCtx 
-          labels={labels}
-          removeLabels={removeLabels}
-          fetchLabels={fetchLabels}
-          isFetching={labelIsFetching}
-        >
-          <Nav 
-            navbar={navbar}
-            addNewNote={addNewNote} 
-            expanded={noteIsExpanded}
-            showSvgLoader={showLoaderOnNavbar}
-          />
+      <SelectedNoteContext selectedNote={selectedNote} setSelectedNote={setSelectedNote}>
+        <LabelsCtx labels={labels} removeLabels={removeLabels} fetchLabels={fetchLabels} isFetching={labelIsFetching}>
+          <Nav navbar={navbar} addNewNote={addNewNote}  expanded={noteIsExpanded} showSvgLoader={showLoaderOnNavbar}/>
         </LabelsCtx>
         <div
           className={`!overflow-hidden ${
@@ -195,13 +178,8 @@ export default function Home(): JSX.Element {
               setExpanded={setNoteIsExpanded}
             />
       
-            <NavbarContext 
-              navbar={navbar}
-              setNavbar={setNavbar}
-            >
-              <RefetchContext 
-                fetchNotes={fetchNotes}
-              >
+            <NavbarContext navbar={navbar} setNavbar={setNavbar}>
+              <RefetchContext fetchNotes={fetchNotes}>
                 <NoteDetails 
                   notes={fields} 
                   remove={remove}

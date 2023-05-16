@@ -43,8 +43,8 @@ export default function App({ notes }: Props): JSX.Element {
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
 
-      let images = ''
-
+      let images = '';
+      
       const title = editorRef?.current.firstChild.children[0].childNodes[0].children[0].value;
       const body = editorRef?.current.firstChild.children[1].innerHTML;
 

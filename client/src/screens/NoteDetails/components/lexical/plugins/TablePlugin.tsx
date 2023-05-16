@@ -56,7 +56,7 @@ export const CellContext = createContext<CellContextShape>({
     // Empty
   },
 });
-
+  
 export function TableContext({ children }: { children: JSX.Element }) {
   const [contextValue, setContextValue] = useState<{
     cellEditorConfig: null | CellEditorConfig;
