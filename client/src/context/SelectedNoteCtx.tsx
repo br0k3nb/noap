@@ -1,14 +1,14 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 
 type SelectedNoteContext = {
-    selectedNote: number | null;
-    setSelectedNote: Dispatch<SetStateAction<number | null>>;
+    selectedNote: string | null;
+    setSelectedNote: Dispatch<SetStateAction<string | null>>;
 };
 
 type Props = {
     children: any,
-    selectedNote: number | null,
-    setSelectedNote: Dispatch<SetStateAction<number | null>>;
+    selectedNote: string | null,
+    setSelectedNote: Dispatch<SetStateAction<string | null>>;
 }
 
 export const NoteCtx = createContext<SelectedNoteContext | null>(null);

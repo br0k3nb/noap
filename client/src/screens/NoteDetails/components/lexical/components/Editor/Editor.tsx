@@ -64,10 +64,7 @@ type Props = {
   save: (currentState: EditorState) => Promise<void>;
 };
 
-const defaultScreenSize = {
-  width: window.innerWidth,
-  height: window.innerHeight
-};
+const defaultScreenSize = { width: window.innerWidth, height: window.innerHeight };
 
 const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: any) => {
     const [ editor ] = useLexicalComposerContext();
@@ -76,6 +73,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
     const noteExpanded = useContext(ExpandedCtx);
 
     const [ titleFocused, setTitleFocused ] = useState(false);
+    const [ isSmallWidthViewport, setIsSmallWidthViewport ] = useState<boolean>(false);
     const [ currentScreenSize, setCurrentScreenSize ] = useState<any>(defaultScreenSize);
     const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
 
@@ -83,14 +81,12 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
 
     const placeholder = <Placeholder>Enter some text</Placeholder>;
 
-    const [ isSmallWidthViewport, setIsSmallWidthViewport ] = useState<boolean>(false);
-
     useEffect(() => {
       const updateViewPortWidth = () => {
         const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
         
         if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);
-        setTimeout(() => setCurrentScreenSize({ width: window.innerWidth, height: window.innerHeight}), 500);
+        setTimeout(() => setCurrentScreenSize({ width: window.innerWidth, height: window.innerHeight }), 500);
       };
 
       window.addEventListener("resize", updateViewPortWidth);
@@ -120,18 +116,8 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
                 contentEditable={
                   <div className="editor" ref={ref}>
                     <div
-                      className={`
-                        !overflow-y-scroll
-                        scrollbar-thin
-                        scrollbar-track-transparent
-                        scrollbar-thumb-gray-900
-                      `}
-                      style={{
-                        height:
-                          currentScreenSize.width > 640
-                            ? currentScreenSize.height - 100
-                            : currentScreenSize.height - 65,
-                      }}
+                      className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+                      style={{ height: currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65 }}
                     >
                       <div onClick={() => setTitleFocused(true)}>
                         <TitleInput
@@ -144,11 +130,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
                       <div
                         onClick={() => setTitleFocused(false)}
                         className="xxs:mb-5 mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col"
-                        style={
-                          !noteExpanded?.expanded
-                            ? { width: currentScreenSize.width - 430 }
-                            : { width: currentScreenSize.width }
-                        }
+                        style={!noteExpanded?.expanded ? { width: currentScreenSize.width - 430 } : { width: currentScreenSize.width }}
                       >
                         <div className="mb-20">
                           <ContentEditable />
@@ -195,9 +177,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
 
               {floatingAnchorElem && (
                 <>
-                  {window.outerWidth > 640 && (
-                    <DraggableBlockPlugin anchorElem={floatingAnchorElem} />
-                  )}
+                  {window.outerWidth > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
                   <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
                   <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
                 </>

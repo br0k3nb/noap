@@ -15,7 +15,6 @@ import {
   DRAGOVER_COMMAND,
   DRAGSTART_COMMAND,
   DROP_COMMAND,
-  LexicalCommand,
   LexicalEditor,
 } from "lexical";
 import { useEffect, useRef, useState } from "react";
@@ -27,18 +26,14 @@ import { BsLink, BsFillFolderSymlinkFill } from 'react-icons/bs';
 
 import { CAN_USE_DOM } from "../../shared/canUseDOM";
   
-import {
-  $createImageNode,
-  $isImageNode,
-  ImageNode,
-  ImagePayload,
-} from "../../nodes/ImageNode";
+import { $createImageNode, $isImageNode, ImageNode, ImagePayload } from "../../nodes/ImageNode";
 import Button from "../../ui/Button";
 import { DialogActions, DialogButtonsList } from "../../ui/Dialog";
 import FileInput from "../../ui/FileInput";
 import TextInput from "../../ui/TextInput";
 
 import { toastAlert } from "../../../../../../components/Alert/Alert";
+import SvgLoader from "../../../../../../components/SvgLoader";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -88,11 +83,7 @@ export function InsertImageUriDialogBody({
   );
 }
 
-export function InsertImageUploadedDialogBody({
-  onClick,
-}: {
-  onClick: (payload: InsertImagePayload) => void;
-}) {
+export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
   const [ src, setSrc ] = useState("");
   const [ altText, setAltText ] = useState("");
   const [ loader, setLoader ] = useState(false);
@@ -127,31 +118,14 @@ export function InsertImageUploadedDialogBody({
         },
       });
     }
-    else if(files && !files[0].type.startsWith("image")) {
-      toastAlert({
-        icon: "error",
-        title: `Only images are supported!`,
-        timer: 3000,
-      });
-    }
-    else toastAlert({
-      icon: "error",
-      title: `Image too large!`,
-      timer: 3000,
-    });
+    else if(files && !files[0].type.startsWith("image")) toastAlert({ icon: "error", title: `Only images are supported!`, timer: 3000 });
+    else toastAlert({ icon: "error", title: `Image too large!`, timer: 3000 });
   };
 
   return (
     <>
-      <p className="text-red-500 uppercase text-xs tracking-widest xxs:mb-2">
-        (Max size 5mb)
-      </p>
-      <FileInput
-        label="Image Upload"
-        onChange={loadImage}
-        accept="image/*"
-        data-test-id="image-modal-file-upload"
-      />
+      <p className="text-red-500 uppercase text-xs tracking-widest xxs:mb-2"> (Max size 5mb) </p>
+      <FileInput label="Image Upload" onChange={loadImage} accept="image/*" data-test-id="image-modal-file-upload" />
       <TextInput
         label="Alt Text"
         placeholder="Descriptive alternative text"
@@ -160,53 +134,22 @@ export function InsertImageUploadedDialogBody({
         data-test-id="image-modal-alt-text-input"
       />
       <DialogActions>
-        {loader ? (
-          <div
-            className="flex flex-row justify-center bg-gray-700 px-3 !py-[13px] rounded-lg"
+        {loader ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "bg-gray-700 py-3 px-3 rounded-lg" }}/>) : (
+          <Button
+            className="!bg-gray-700 !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
+            data-test-id="image-modal-file-upload-btn"
+            disabled={isDisabled}
+            onClick={() => onClick({ altText, src })}
           >
-            <svg
-              aria-hidden="true"
-              role="status"
-              className="inline w-4 h-4 mr-3 text-white animate-spin xxs:my-1 my-[1.5px] mt-[2px]"
-              viewBox="0 0 100 101"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"
-              />
-              <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"
-              />
-            </svg>
-            <span className="pt-0 xxs:pt-[2.4px] animate-pulse text-sm uppercase tracking-widest">Loading...</span>
-          </div>
-        ) : (
-          <>
-            <Button
-              data-test-id="image-modal-file-upload-btn"
-              disabled={isDisabled}
-              className="!bg-gray-700 !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
-              onClick={() => onClick({ altText, src })}
-            >
-              <p className="py-[3px]">Confirm</p>
-            </Button>
-          </>
+            <p className="py-[3px]">Confirm</p>
+          </Button>
         )}
       </DialogActions>
     </>
   );
 }
 
-export function InsertImageDialog({
-  activeEditor,
-  onClose,
-}: {
-  activeEditor: LexicalEditor;
-  onClose: () => void;
-}): JSX.Element {
+export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: LexicalEditor; onClose: () => void; }) {
   const [ mode, setMode ] = useState<null | "url" | "file">(null);
   const hasModifier = useRef(false);
 
@@ -279,23 +222,17 @@ export default function ImagesPlugin({captionsEnabled} : {captionsEnabled?: bool
       ),
       editor.registerCommand<DragEvent>(
         DRAGSTART_COMMAND,
-        (event) => {
-          return onDragStart(event);
-        },
+        (event) => onDragStart(event),
         COMMAND_PRIORITY_HIGH
       ),
       editor.registerCommand<DragEvent>(
         DRAGOVER_COMMAND,
-        (event) => {
-          return onDragover(event);
-        },
+        (event) => onDragover(event),
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand<DragEvent>(
         DROP_COMMAND,
-        (event) => {
-          return onDrop(event, editor);
-        },
+        (event) => onDrop(event, editor),
         COMMAND_PRIORITY_HIGH
       )
     );
@@ -304,8 +241,7 @@ export default function ImagesPlugin({captionsEnabled} : {captionsEnabled?: bool
   return null;
 }
 
-const TRANSPARENT_IMAGE =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const TRANSPARENT_IMAGE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const img = document.createElement("img");
 img.src = TRANSPARENT_IMAGE;
 
@@ -358,9 +294,8 @@ function onDrop(event: DragEvent, editor: LexicalEditor): boolean {
     const range = getDragSelection(event);
     node.remove();
     const rangeSelection = $createRangeSelection();
-    if (range !== null && range !== undefined) {
-      rangeSelection.applyDOMRange(range);
-    }
+    if (range !== null && range !== undefined) rangeSelection.applyDOMRange(range);
+
     $setSelection(rangeSelection);
     editor.dispatchCommand(INSERT_IMAGE_COMMAND, data);
   }

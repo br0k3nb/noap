@@ -1,5 +1,6 @@
 import { useContext, SetStateAction, Dispatch } from "react";
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
+import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
 import { NoteCtx } from "../../context/SelectedNoteCtx";
 
@@ -77,15 +78,15 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                         disabled={page === 1 ? true : false}
                         onClick={() => setPage(page - 1)}
                     > 
-                        «
+                        <MdKeyboardDoubleArrowLeft size={18} />
                     </button>
-                    <button className="!bg-gray-800 !border-transparent uppercase tracking-widest text-sm cursor-default">Page {page}</button>
+                    <p className="!bg-gray-800 uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
                     <button 
                         className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
                         disabled={hasNextPage ? false : true}
                         onClick={() => setPage(page + 1)}
                     >
-                        »
+                        <MdKeyboardDoubleArrowRight size={18} />
                     </button>
                 </div>
             </div>

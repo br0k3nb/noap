@@ -1,5 +1,4 @@
-import { useContext, SetStateAction, Dispatch, useState } from "react";
-import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
+import { useContext, SetStateAction, Dispatch } from "react";
 import { FieldArrayWithId } from "react-hook-form";
 
 import parse from "html-react-parser";
@@ -24,8 +23,8 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded }
     const hours = (date: string) => moment(date).format("LT");
     const days = (date: string) => moment(date).format("ll");
 
-    const handleNoteClick = (idx: number) => {
-        noteContext?.setSelectedNote(idx);
+    const handleNoteClick = (_id: string) => {
+        noteContext?.setSelectedNote(_id);
         setExpanded(window.outerWidth <= 1030 ? true : false);
     }
 
@@ -46,8 +45,8 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded }
                                     const parsedImage = image !== "no image attached" ? parse(image as string): false;
 
                                     return (
-                                        <a className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} onClick={() => handleNoteClick(idx)} key={_id}>
-                                            <div className={`rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${noteContext?.selectedNote === idx && "!border-gray-300"}`}>
+                                        <a className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} onClick={() => handleNoteClick(_id)} key={_id}>
+                                            <div className={`rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${noteContext?.selectedNote === _id && "!border-gray-300"}`}>
                                                 <p className="text-lg px-4 mb-3 truncate">{title}</p>
                                                 <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[148px]"}`}>
                                                     <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">

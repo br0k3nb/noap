@@ -25,18 +25,18 @@ type Props = { notes: FieldArrayWithId<Notes, "note", "id">[] };
 
 export default function App({ notes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
-  const lastSelectedNotes = useRef<number | null | undefined>(null);
+  const lastSelectedNotes = useRef<string | null | undefined>(null);
 
   const [ saveSpinner, setSaveSpinner ] = useState(false);
 
+  const { reset, register } = useForm({});
+  
   const noteContext = useContext(NoteCtx);
   const refetchNoteCtx = useContext(RefetchCtx);
-
-  useEffect(() => {
-    lastSelectedNotes.current = noteContext?.selectedNote;
-  }, [noteContext?.selectedNote]);
-
-  const { reset, register } = useForm({});
+  
+  const note = notes.find(({_id}) => _id === noteContext?.selectedNote);
+  
+  useEffect(() => { lastSelectedNotes.current = noteContext?.selectedNote }, [noteContext?.selectedNote]);
 
   const token = JSON.parse(window.localStorage.getItem("user_token") || "");
     
@@ -73,8 +73,8 @@ export default function App({ notes }: Props): JSX.Element {
               body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',
               image: resultImg.images,
               state: resultState.state,
-              _id: notes[(noteContext?.selectedNote as number)]._id,
-              stateId: notes[(noteContext?.selectedNote as number)].state._id
+              _id: noteContext?.selectedNote,
+              stateId: note?.state._id
             }
           );
           
@@ -104,9 +104,9 @@ export default function App({ notes }: Props): JSX.Element {
 
     if(lastSelectedNotes.current !== noteContext?.selectedNote) {
       setTimeout(() => {
-        reset({ title: notes[noteContext?.selectedNote as number].title });
+        reset({ title: note?.title });
 
-        const editorState = editor.parseEditorState((notes[noteContext?.selectedNote as number].state.state));
+        const editorState = editor.parseEditorState((note?.state.state as string));
         editor.setEditorState(editorState);
         editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
       }); 
@@ -120,14 +120,8 @@ export default function App({ notes }: Props): JSX.Element {
           <SharedAutocompleteContext>
             <div className="editor-shell h-screen w-fit overflow-hidden absolute">
               {/* @ts-ignore */}
-              <UpdatePlugin />
-              <Editor
-                note={notes[noteContext?.selectedNote as number]}
-                ref={editorRef}
-                save={saveNote}
-                register={register}
-                saveSpinner={saveSpinner}
-              />
+              <UpdatePlugin />  
+              <Editor note={note} ref={editorRef} save={saveNote} register={register} saveSpinner={saveSpinner} />
             </div>
           </SharedAutocompleteContext>
         </TableContext>

@@ -7,6 +7,7 @@ import { LexicalEditor, EditorState } from "lexical";
 
 import { RefetchCtx } from "../../../../../../context/RefetchCtx";
 import { ExpandedCtx } from "../../../../../../context/NoteExpandedCtx";
+import { ToggleBottomBarCtx } from "../../../../../../context/ToggleBottomBar";
 
 import { toastAlert } from "../../../../../../components/Alert/Alert";
 import ConfirmationModal from "../../../../../../components/ConfirmationModal";
@@ -23,8 +24,9 @@ type BottomBarProps = {
 };
 
 export default function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {
-    const noteExpanded = useContext(ExpandedCtx);
-    const refetch = useContext(RefetchCtx);
+  const toggleBottomBar = useContext(ToggleBottomBarCtx);
+  const noteExpanded = useContext(ExpandedCtx);
+  const refetch = useContext(RefetchCtx);
   
     const [ open, setOpen ] = useState(false);
   
@@ -54,7 +56,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
     }
   
     return (
-      <div className="h-12 bg-gray-800 w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500">
+      <div className={`h-12 bg-gray-800 w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500 ${!toggleBottomBar?.showBottomBar && "hidden"}`}>
         <div className="px-2 py-[0.50rem]">
           <div className="flex space-x-2">
             <div className="!mr-2">

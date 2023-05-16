@@ -22,7 +22,7 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
-  const [ selectedNote, setSelectedNote ] = useState<number | null>(null);
+  const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
   const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
   const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);
   const [ hasNextPage, setHasNextPage ] = useState(false);

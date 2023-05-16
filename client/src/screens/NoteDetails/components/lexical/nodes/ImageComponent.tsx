@@ -91,11 +91,7 @@ function LazyImage({
       src={src}
       alt={altText}
       ref={imageRef}
-      style={{
-        height,
-        maxWidth,
-        width,
-      }}
+      style={{ height, maxWidth, width }}
       draggable="false"
     />
   );
@@ -161,15 +157,13 @@ export default function ImageComponent({
         latestSelection.getNodes().length === 1
       ) {
         if (showCaption) {
-          // Move focus into nested editor
           $setSelection(null);
           event.preventDefault();
           caption.focus();
           return true;
-        } else if (
-          buttonElem !== null &&
-          buttonElem !== document.activeElement
-        ) {
+        } 
+
+        else if ( buttonElem !== null && buttonElem !== document.activeElement) {
           event.preventDefault();
           buttonElem.focus();
           return true;
@@ -182,11 +176,9 @@ export default function ImageComponent({
 
   const onEscape = useCallback(
     (event: KeyboardEvent) => {
-      if (
-        activeEditorRef.current === caption ||
-        buttonRef.current === event.target
-      ) {
+      if (activeEditorRef.current === caption || buttonRef.current === event.target) {
         $setSelection(null);
+
         editor.update(() => {
           setSelected(true);
           const parentRootElement = editor.getRootElement();
@@ -237,11 +229,7 @@ export default function ImageComponent({
         },
         COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand<MouseEvent>(
-        CLICK_COMMAND,
-        onMouseClick,
-        COMMAND_PRIORITY_LOW
-      ),
+      editor.registerCommand<MouseEvent>(CLICK_COMMAND, onMouseClick, COMMAND_PRIORITY_LOW),
       editor.registerCommand(
         DRAGSTART_COMMAND,
         (event) => {
@@ -255,16 +243,8 @@ export default function ImageComponent({
         },
         COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(
-        KEY_DELETE_COMMAND,
-        onDelete,
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand(
-        KEY_BACKSPACE_COMMAND,
-        onDelete,
-        COMMAND_PRIORITY_LOW
-      ),
+      editor.registerCommand(KEY_DELETE_COMMAND, onDelete, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(KEY_BACKSPACE_COMMAND, onDelete, COMMAND_PRIORITY_LOW),
       editor.registerCommand(KEY_ENTER_COMMAND, onEnter, COMMAND_PRIORITY_LOW),
       editor.registerCommand(KEY_ESCAPE_COMMAND, onEscape, COMMAND_PRIORITY_LOW)
     );
@@ -286,7 +266,6 @@ export default function ImageComponent({
 
   useEffect(() => {
     const updateScreenSize = () => setTimeout(() => setCurrentScreenSize(window.innerWidth), 500);
-
     window.addEventListener("resize", updateScreenSize);
 
     return () => window.removeEventListener("resize", updateScreenSize);
@@ -322,12 +301,7 @@ export default function ImageComponent({
   const noteExpanded = useContext(ExpandedCtx);
 
   const donwloadImage = (srcLink: string) => {
-    const a = Object.assign(document.createElement("a"), {
-      href: srcLink,
-      style:"display:none",
-      download: "image"
-    });
-
+    const a = Object.assign(document.createElement("a"), { href: srcLink, style:"display:none", download: "image" });
     document.body.appendChild(a);
 
     a.click();
@@ -351,10 +325,7 @@ export default function ImageComponent({
                   <label 
                     tabIndex={0}
                     className={`text-[11px] uppercase tracking-widest text-gray-300`}
-                    style={resizeBar ? {
-                      fontSize: 10,
-                      paddingTop: 1
-                    }: undefined}
+                    style={resizeBar ? { fontSize: 10, paddingTop: 1 }: undefined}
                   >
                     <div className="rounded-full py-1 pl-[1px]">
                       <BsThreeDotsVertical size={resizeBar ? 13 : 15} style={resizeBar ? {paddingTop: 2} : undefined} / >
@@ -368,10 +339,7 @@ export default function ImageComponent({
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move down</a>
                     </li> */}
                     <li className="text-xs uppercase tracking-widest">
-                      <a
-                        className="active:!bg-gray-600"
-                        onClick={() => donwloadImage(src)}
-                      >
+                      <a className="active:!bg-gray-600" onClick={() => donwloadImage(src)}>
                         <div className="flex flex-row space-x-2">
                           <span>Download</span>
                           <BsFillFileEarmarkArrowDownFill size={16}/>
@@ -423,18 +391,10 @@ export default function ImageComponent({
                   providerFactory={createWebsocketProvider}
                   shouldBootstrap={true}
                 />
-              ) : (
-                <HistoryPlugin externalHistoryState={historyState} />
-              )}
+              ) : ( <HistoryPlugin externalHistoryState={historyState} /> )}
               <RichTextPlugin
-                contentEditable={
-                  <ContentEditable className="ImageNode__contentEditable !object-cover" />
-                }
-                placeholder={
-                  <Placeholder className="ImageNode__placeholder">
-                    Enter a caption...
-                  </Placeholder>
-                }
+                contentEditable={ <ContentEditable className="ImageNode__contentEditable !object-cover" />}
+                placeholder={<Placeholder className="ImageNode__placeholder"> Enter a caption... </Placeholder>}
                 ErrorBoundary={LexicalErrorBoundary}
               />
             </LexicalNestedComposer>

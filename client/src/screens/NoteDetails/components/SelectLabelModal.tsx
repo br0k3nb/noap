@@ -4,7 +4,6 @@ import { AiFillTags } from 'react-icons/ai';
 
 import api from '../../../services/api';
 
-import LabelModal from '../../Home/components/nav/components/LabelModal';
 import { toastAlert } from '../../../components/Alert/Alert';
 import { RefetchCtx } from '../../../context/RefetchCtx';
 import SvgLoader from '../../../components/SvgLoader';
@@ -13,7 +12,7 @@ import Modal from '../../../components/Modal';
 type Props = {
     checked: boolean;
     isFetching: boolean;
-    selectedNote: string | false;
+    selectedNote: string | null | undefined;
     setChecked: Dispatch<SetStateAction<boolean>>;
     labels: FieldArrayWithId<Labels, "labels", "id">[];
 }
@@ -43,10 +42,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
         open: checked,
         setOpen: setChecked,
         title: "Select a label",
-        options: {
-            titleWrapperClassName: 'px-6',
-            modalWrapperClassName: '!px-0 xxs:!w-[18rem] w-[24rem] max-h-[27.6rem] overflow-hidden'
-        }
+        options: { titleWrapperClassName: 'px-6', modalWrapperClassName: '!px-0 xxs:!w-[18rem] w-[24rem] max-h-[27.6rem] overflow-hidden' }
     }
 
     return (
@@ -89,11 +85,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 ) : (
                     <div className="flex flex-col space-y-4 items-center justify-center mt-5 text-gray-500">
                         <AiFillTags size={60} className='!mt-5'/>
-                        <div className='!mb-6'>
-                            <button className="text-gray-200 text-xs font-light tracking-widest uppercase px-3 mr-5 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out w-full mx-auto">
-                                Create a label
-                            </button>
-                        </div>
+                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>Your labels will appear here!</p>
                     </div>
                 )}
             </div>
