@@ -1,6 +1,6 @@
 type Props = {
-    options?: {
-        showLoadingText?: boolean;
+    options: {
+        showLoadingText: boolean;
         LoaderClassName?: string;
         LoadingTextClassName?: string;
         wrapperClassName?: string;

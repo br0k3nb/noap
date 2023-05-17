@@ -57,9 +57,9 @@ export default function LabelModal({ open, setOpen, token }: Props) {
         setTimeout(() => setCreateLabel(false), 500);
     }
     
-    const openDeleteModal = (chip: Label) => {
+    const openDeleteModal = (_id: string) => {
+        setSelectedLabel(_id);
         setDeleteModal(true);
-        setSelectedLabel(chip._id);
     }
 
     const closeDeleteModal = () => {
@@ -82,7 +82,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                 name,
                 selectedStyle
             });
-
+            
             setLoader(false);
             labelData?.fetchLabels();
             toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
@@ -91,15 +91,15 @@ export default function LabelModal({ open, setOpen, token }: Props) {
             toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
         }
     }
-
+    
     const deleteLabel = async () => {
         setLoader(true);
-
-        if(selectedLabel) {
+        
+        if(!selectedLabel) {
             setLoader(false);
-            toastAlert({icon: 'error', title: `Please, select a label to delete`, timer: 3000});
+            return toastAlert({icon: 'error', title: `Please, select a label to delete`, timer: 3000});
         }
-
+        
         try {
             const deleteL = await api.delete(`/label/delete/${selectedLabel}/${token.token}`)
             toastAlert({ icon: 'success', title: `${deleteL.data.message}`, timer: 3000 });
@@ -121,21 +121,22 @@ export default function LabelModal({ open, setOpen, token }: Props) {
         reset({ editName: name });
         setEditId(_id);
         setColor(color);
+        setSelectedStyle('');
         setFontColor(fontColor);
         setCreateLabel('edit');
     }
 
-    const editLabel = async ({ name }: FieldValues) => {
+    const editLabel = async ({ editName }: FieldValues) => {
         setLoader(true);
 
-        if(selectedStyle) {
+        if(!selectedStyle) {
             setLoader(false);
             return toastAlert({ icon: 'error', title: `Please, select a label type!`, timer: 3000 });
-        }
+        }        
         
         try {
             const editL = await api.patch(`/label/edit/${token._id}/${token.token}`, {
-                name,
+                name: editName,
                 _id: editId,
                 color,
                 fontColor
@@ -210,7 +211,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                                                                                 </a>
                                                                             </li>
                                                                             <li className="text-xs uppercase tracking-widest">
-                                                                                <a id="delete" className="active:!bg-gray-600" onClick={() => openDeleteModal(chip)}>
+                                                                                <a id="delete" className="active:!bg-gray-600" onClick={() => openDeleteModal(chip._id)}>
                                                                                     Delete label
                                                                                 </a>
                                                                             </li>

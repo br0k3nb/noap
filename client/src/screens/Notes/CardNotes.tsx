@@ -65,7 +65,7 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded }
                                                                         </p>
                                                                         {labels.length > 1 && (
                                                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
-                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + labels.length}</p>
+                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
                                                                         </div>
                                                                         )}
                                                                     </div> 
@@ -79,7 +79,7 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded }
                                                                         </p>
                                                                         {labels.length > 1 && (
                                                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
-                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + labels.length}</p>
+                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
                                                                         </div>
                                                                         )}
                                                                     </div>

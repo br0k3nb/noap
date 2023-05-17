@@ -83,14 +83,14 @@ export default function LoginHelp() {
             <p className='!text-xs pt-[1px] xxs:pt-[2.4px] mr-2'>
                 you can send another email in {minutes} minute(s) : {seconds} second(s)
             </p>  
-            <SvgLoader options={{LoaderClassName: "xxs:!h-5 xxs:!w-5 !my-auto"}}/>
+            <SvgLoader options={{ showLoadingText: false, LoaderClassName: "xxs:!h-5 xxs:!w-5 !my-auto" }}/>
           </div>
         </button>
       )
     }
     else return (
       <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
-        {loader ? ( <SvgLoader options={{showLoadingText: true}}/> ) : ( <p className={`${loader && 'hidden'}`}>Send code</p> )}
+        {loader ? ( <SvgLoader options={{ showLoadingText: true }}/> ) : ( <p className={`${loader && 'hidden'}`}>Send code</p> )}
       </button>
     )
   };
