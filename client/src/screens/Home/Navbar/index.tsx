@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { FieldArrayWithId } from 'react-hook-form';
+
 import { BiLock } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { BsJournalPlus, BsTagFill, BsFillCalendarEventFill, BsDoorOpenFill, BsGearWide, BsFillTrashFill } from "react-icons/bs";
@@ -7,18 +9,19 @@ import { motion } from 'framer-motion';
 
 import AccountSettingsModal from './components/AccountSettingsModal';
 import LabelModal from './components/LabelModal';
-import ConfirmationModal from '../../../../components/ConfirmationModal';
-import SvgLoader from '../../../../components/SvgLoader';
-import logo from '../../../../assets/logo/logo-white-no-bg.png'
+import ConfirmationModal from '../../../components/ConfirmationModal';
+import SvgLoader from '../../../components/SvgLoader';
+import logo from '../../../assets/logo/logo-white-no-bg.png'
 
 type NavProps = {
+  labels: FieldArrayWithId<Labels, "labels", "id">[];
   addNewNote: () => Promise<void>;
   showSvgLoader: boolean;
   expanded: boolean;
   navbar: boolean;
 };
 
-export default function Nav({ navbar, showSvgLoader, addNewNote, expanded }: NavProps) {
+export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, labels }: NavProps) {
   const [ openLabelModal, setOpenLabelModal ] = useState(false);
   const [ openAuthModal, setOpenAuthModal ] = useState(false);
   const [ userIsAuth, setUserIsAuth ] = useState(false);
@@ -51,10 +54,18 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded }: Nav
     return () => window.removeEventListener("resize", updateViewPortWidth);
   }, []);
 
+  const hide = { x: -140, transitionEnd: { display: "none" }};
+  const show = { display: "block", x: 0 };
+
   return (
     <div className={`${expanded && "hidden"}`}>
       <AccountSettingsModal {...accSettingsModalProps} />
-      <LabelModal open={openLabelModal} token={parsedUserToken} setOpen={setOpenLabelModal} />
+      <LabelModal 
+        open={openLabelModal} 
+        token={parsedUserToken} 
+        setOpen={setOpenLabelModal} 
+        labels={labels}
+      />
       <ConfirmationModal
         open={openSignOutConfirmationModal}
         setOpen={setOpenSignOutConfirmationModal}
@@ -154,7 +165,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded }: Nav
         ) : ( 
           <motion.div 
             initial={{ x: -100 }}
-            whileInView={{ x: 0 }}
+            animate={!navbar ? hide : show}
             transition={{ duration: 0.4 }}
             className={`fixed ${!navbar && "flex xxs:hidden"}  bg-stone-900`}
             style={{height: deviceScreenSize.height}}

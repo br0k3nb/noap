@@ -6,7 +6,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { toastAlert } from "../../components/Alert/Alert";
 
 import Notes from "../Notes";
-import Nav from "./components/nav";
+import Nav from "./Navbar";
 import NoteDetails from "../NoteDetails";
 
 import api from "../../services/api";
@@ -25,14 +25,19 @@ export default function Home(): JSX.Element {
   const [ isMobileDevice, setIsMobileDevice ] = useState(window.innerWidth <= 640);
   const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
   const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
+  const [ hasNextPageLabel, setHasNextPageLabel ] = useState(false);
   const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);
+  const [ totalDocsLabel, setTotalDocsLabel ] = useState(0);
   const [ hasNextPage, setHasNextPage ] = useState(false);
+  const [ searchLabel, setSearchLabel ] = useState('');
   const [ blurFlag, setBlurFlag ] = useState(true);
+  const [ pageLabel, setPageLabel ] = useState(1);
   const [ totalDocs, setTotalDocs ] = useState(0);
   const [ navbar, setNavbar ] = useState(false);
   const [ search, setSearch ] = useState('');
   const [ page, setPage ] = useState(1);
 
+  const delayedSearchLabel = useDebounce(searchLabel, 500);
   const delayedSearch = useDebounce(search, 500);
 
   const navigate = useNavigate();
@@ -40,12 +45,9 @@ export default function Home(): JSX.Element {
   const { control } = useForm<Notes>();
   const { control: labelsControl } = useForm<Labels>();
 
-  const { fields, append, replace, remove } = useFieldArray({
-    control,
-    name: "note",
-  });
+  const { fields, append, replace, remove } = useFieldArray({ control, name: "note" });
 
-  const { fields: labels, append: appendLabels, update: updateLabels, replace: replaceLabels, remove: removeLabels } = useFieldArray({
+  const { fields: labels, append: appendLabels, replace: replaceLabels, remove: removeLabels } = useFieldArray({
     control: labelsControl,
     name: "labels",
   });
@@ -82,27 +84,15 @@ export default function Home(): JSX.Element {
 
   const fetchLabels = async () => {
     try {
-        const getLabels = await api.get(`/labels/${_id}/${token}`);
+        const {data: { docs, totalDocs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
+          params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
+        });
 
-        if (labels.length === 0) appendLabels(getLabels.data);
-        else if (labels.length >= 1) {
-            getLabels.data.map((value: any, index: number) => {
-    
-            //creating a condition checker by "hand" because i can't
-            //just use value === labels[index], since useFieldArray
-            //inserts it's own id into the array.
-            const labelIsTheSame =
-                value.name === labels[index]?.name &&
-                value.color === labels[index]?.color &&
-                value?.fontColor === labels[index]?.fontColor &&
-                value.type === labels[index]?.type 
+        setTotalDocsLabel(totalDocs);
+        setHasNextPageLabel(hasNextPage);
 
-            if (getLabels.data.length > labels.length && labels.length - 1 < index) appendLabels(value);
-            else if (getLabels.data.length < labels.length) replaceLabels(getLabels.data);
-            else if (getLabels.data[index]._id === labels[index]?._id && !labelIsTheSame) updateLabels(index, value);
-            else if (getLabels.data.length === labels.length && labelIsTheSame) return;
-          });
-        }
+        if (labels.length === 0) appendLabels(docs);
+        else replaceLabels(docs);
     } catch (err) {
       console.log(err);
       signOutUser();
@@ -150,17 +140,32 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: true
   });
 
-  const { isFetching: labelIsFetching } = useQuery([ "fetchLabels" ], fetchLabels, {
-    refetchOnWindowFocus: false
-  });
+  const { isFetching: labelIsFetching } = useQuery([ "fetchLabels", delayedSearchLabel, pageLabel ], fetchLabels, { refetchOnWindowFocus: false });
 
   // setIsMobileDevice
 
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
       <SelectedNoteContext selectedNote={selectedNote} setSelectedNote={setSelectedNote}>
-        <LabelsCtx labels={labels} removeLabels={removeLabels} fetchLabels={fetchLabels} isFetching={labelIsFetching}>
-          <Nav navbar={navbar} addNewNote={addNewNote}  expanded={noteIsExpanded} showSvgLoader={showLoaderOnNavbar}/>
+        <LabelsCtx  
+          pageLabel={pageLabel}
+          searchLabel={searchLabel}
+          fetchLabels={fetchLabels} 
+          removeLabels={removeLabels}
+          setPageLabel={setPageLabel}
+          isFetching={labelIsFetching}
+          setSearchLabel={setSearchLabel}
+          hasNextPageLabel={hasNextPageLabel}
+          setTotalDocsLabel={setTotalDocsLabel}
+          setHasNextPageLabel={setHasNextPageLabel}
+        >
+          <Nav
+            labels={labels}
+            navbar={navbar}
+            addNewNote={addNewNote} 
+            expanded={noteIsExpanded} 
+            showSvgLoader={showLoaderOnNavbar}
+          />
         </LabelsCtx>
         <div
           className={`!overflow-hidden ${!isMobileDevice && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
@@ -169,17 +174,17 @@ export default function Home(): JSX.Element {
           <div className="flex flex-row h-screen">
             <Notes 
               page={page}
-              search={search}
-              setPage={setPage}
-              totalDocs={totalDocs}
-              hasNextPage={hasNextPage}
-              setSearch={setSearch}
               notes={fields} 
-              addNewNote={addNewNote}
-              isFetching={isFetching}
+              search={search}
               navbar={navbar}
+              setPage={setPage}
+              setSearch={setSearch}
+              totalDocs={totalDocs}
               setNavbar={setNavbar} 
               expanded={noteIsExpanded}
+              hasNextPage={hasNextPage}
+              addNewNote={addNewNote}
+              isFetching={isFetching}
               setExpanded={setNoteIsExpanded}
             />
       

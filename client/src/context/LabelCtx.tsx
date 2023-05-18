@@ -1,40 +1,64 @@
-import { createContext } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
 import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
-
-type Labels = {
-    labels: {
-        _id: string;
-        userId: string;
-        name: string;
-        color: string;
-        fontColor?: string;
-        type: string;
-        updatedAt?: string;
-        createdAt: string;
-    }[];
-};
   
 type LabelContext = {
+    pageLabel: number;
+    searchLabel: string;
     isFetching: boolean;
+    hasNextPageLabel: boolean;
     fetchLabels: () => Promise<void>;
-    removeLabels: UseFieldArrayRemove; 
-    labels: FieldArrayWithId<Labels, "labels", "id">[];
+    removeLabels: UseFieldArrayRemove;
+    setPageLabel: Dispatch<SetStateAction<number>>;
+    setSearchLabel: Dispatch<SetStateAction<string>>;
+    setTotalDocsLabel: Dispatch<SetStateAction<number>>;
+    setHasNextPageLabel: Dispatch<SetStateAction<boolean>>;
   }
 
 type Props = {
     children: any,
+    pageLabel: number;
     isFetching: boolean;
+    searchLabel: string;
+    hasNextPageLabel: boolean;
     fetchLabels: () => Promise<void>;
-    removeLabels: UseFieldArrayRemove; 
-    labels: FieldArrayWithId<Labels, "labels", "id">[];
+    removeLabels: UseFieldArrayRemove;
+    setPageLabel: Dispatch<SetStateAction<number>>;
+    setSearchLabel: Dispatch<SetStateAction<string>>;
+    setTotalDocsLabel: Dispatch<SetStateAction<number>>;
+    setHasNextPageLabel: Dispatch<SetStateAction<boolean>>;
 }
 
 export const LabelsCtx = createContext<LabelContext | null>(null);
 
-export default function LabelsContext({ children, isFetching, fetchLabels, removeLabels, labels }: Props) {
+export default function LabelsContext({ 
+        children,
+        pageLabel,
+        isFetching, 
+        fetchLabels, 
+        searchLabel,
+        removeLabels,
+        setPageLabel, 
+        setSearchLabel,
+        hasNextPageLabel,
+        setTotalDocsLabel, 
+        setHasNextPageLabel 
+    }: Props) {
 
     return (
-        <LabelsCtx.Provider value={{ isFetching, fetchLabels, removeLabels, labels }}>
+        <LabelsCtx.Provider 
+            value={{
+                pageLabel,
+                isFetching,
+                searchLabel,
+                fetchLabels,
+                removeLabels, 
+                setPageLabel,
+                setSearchLabel,
+                hasNextPageLabel,
+                setTotalDocsLabel,
+                setHasNextPageLabel
+            }}
+        >
             {children}
         </LabelsCtx.Provider>
     )

@@ -1,17 +1,21 @@
-import { SetStateAction, Dispatch, useState, useContext } from 'react';
-import { useForm, FieldValues } from 'react-hook-form';
-import { BsThreeDotsVertical } from 'react-icons/bs';
+import { SetStateAction, Dispatch, useState, useContext, useEffect } from 'react';
+import { useForm, FieldValues, FieldArrayWithId } from 'react-hook-form';
 import { HexColorPicker } from "react-colorful";
+
+import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { BsThreeDotsVertical, BsSearch, BsFilter } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
 
-import Modal from '../../../../../components/Modal';
-import { toastAlert } from '../../../../../components/Alert/Alert';
-import ConfirmationModal from '../../../../../components/ConfirmationModal';
-import SvgLoader from '../../../../../components/SvgLoader';
+import Modal from '../../../../components/Modal';
+import SvgLoader from '../../../../components/SvgLoader';
+import { toastAlert } from '../../../../components/Alert/Alert';
+import ConfirmationModal from '../../../../components/ConfirmationModal';
 
-import { LabelsCtx } from '../../../../../context/LabelCtx';
+import { LabelsCtx } from '../../../../context/LabelCtx';
 
-import api from '../../../../../services/api';
+import { motion } from 'framer-motion';
+
+import api from '../../../../services/api';
 
 type Props = {
     open: boolean;
@@ -22,6 +26,7 @@ type Props = {
         name: string;
         _id: string;
     };
+    labels: FieldArrayWithId<Labels, "labels", "id">[];
 }
 
 type Label = {
@@ -34,13 +39,14 @@ type Label = {
     default: string;
 }
 
-export default function LabelModal({ open, setOpen, token }: Props) {
+export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const [ loader, setLoader ] = useState(false);
     const [ color, setColor ] = useState("#0e63b9");
     const [ fontColor, setFontColor ] = useState("#ffffff");
     const [ deleteModal, setDeleteModal ] = useState(false);
     const [ selectedStyle, setSelectedStyle ] = useState('');
     const [ editId, setEditId ] = useState<string | null>(null);
+    const [ showSearchBar, setShowSearchBar ] = useState(false);
     const [ showColorPicker, setShowColorPicker ] = useState('');
     const [ showDropDown, setShowDropDown ] = useState<number | null>(null);
     const [ createLabel, setCreateLabel ] = useState<string | boolean>(false);
@@ -50,10 +56,18 @@ export default function LabelModal({ open, setOpen, token }: Props) {
     const { errors } = formState;
 
     const labelData = useContext(LabelsCtx);
-    const labels = labelData?.labels;
-    
+
+    // useEffect(() => {
+    //     const updateViewPortWidth = () => setDeviceScreenSize(window.innerWidth);
+    //     window.addEventListener("resize", () => setTimeout(() => updateViewPortWidth, 500));
+    //     return () => window.removeEventListener("resize", () => setTimeout(() => updateViewPortWidth, 500));
+    // }, []);
+
+    const deviceScreenSize = window.innerWidth;
+
     const closeModal = () => {
         setOpen(false);
+        labelData?.setPageLabel(1);
         setTimeout(() => setCreateLabel(false), 500);
     }
     
@@ -76,16 +90,11 @@ export default function LabelModal({ open, setOpen, token }: Props) {
         }
 
         try {
-            const newLabel = await api.post(`/label/add/${token._id}/${token.token}`, {
-                color,
-                fontColor,
-                name,
-                selectedStyle
-            });
+            const newLabel = await api.post(`/label/add/${token._id}/${token.token}`, { color, fontColor, name, selectedStyle });
+            toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
             
             setLoader(false);
             labelData?.fetchLabels();
-            toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
         } catch (err: any) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
@@ -97,7 +106,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
         
         if(!selectedLabel) {
             setLoader(false);
-            return toastAlert({icon: 'error', title: `Please, select a label to delete`, timer: 3000});
+            return toastAlert({ icon: 'error', title: `Please, select a label to delete`, timer: 3000 });
         }
         
         try {
@@ -116,7 +125,7 @@ export default function LabelModal({ open, setOpen, token }: Props) {
     }
 
     const resetLabelInfoToEdit = (chip: Label) => {
-        const { _id, name, color, fontColor, type } : any = labels?.find(({_id}) => _id === chip._id);
+        const { _id, name, color, fontColor } : any = labels?.find(({_id}) => _id === chip._id);
         
         reset({ editName: name });
         setEditId(_id);
@@ -158,8 +167,18 @@ export default function LabelModal({ open, setOpen, token }: Props) {
         options: {
             onClose: closeModal,
             titleWrapperClassName: "px-6",
-            modalWrapperClassName: `xxs:!w-[18rem] !px-0 !w-[23rem] max-h-[27.5rem] overflow-hidden ${createLabel && '!max-h-none'}`
+            modalWrapperClassName: `xxs:!w-[18rem] !px-0 !w-[23rem] max-h-none overflow-hidden`
         }
+    }
+
+    const hide = { opacity: 0, transitionEnd: { display: "none" } };
+    const show = { opacity: 1, display: "block" };
+
+    const onInputChange = (currentTarget: HTMLInputElement) => labelData?.setSearchLabel(currentTarget.value);
+
+    const handleShowSearchBar = () => {
+        setShowSearchBar(!showSearchBar);
+        labelData?.setSearchLabel('');
     }
 
     return (
@@ -168,12 +187,39 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                 <>
                     {!createLabel ? (
                         <>
-                            <div className="mb-8 mt-5 text-gray-300 px-6 ">
-                                <p className='text-base uppercase tracking-widest'>Your labels</p>
+                            <div className="text-gray-300">
+                                <div className="flex flex-row justify-between mb-3 px-6 my-4">
+                                    <p className='text-base uppercase tracking-widest my-auto'>Your labels</p>
+                                    <div className="flex flex-row space-x-2">
+                                        <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
+                                            <BsFilter size={25}/> 
+                                        </div>
+                                        <div className="tooltip tooltip-left text-gray-100 before:text-[15px]" data-tip="Search">
+                                            <div 
+                                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                                onClick={() => handleShowSearchBar()}
+                                            >
+                                                <BsSearch size={22} className="pt-[4px] cursor-pointer" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <motion.div
+                                    animate={!showSearchBar ? hide : show}
+                                    transition={{ duration: 0.4 }}
+                                    className={`bg-gray-800 hidden ${showSearchBar && "!grid"} px-6`}
+                                >
+                                    <input
+                                        className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
+                                        onChange={({currentTarget}) => onInputChange(currentTarget)}
+                                        placeholder="Search for labels..."
+                                        value={labelData?.searchLabel}
+                                    />
+                                </motion.div>
                                 {labels && labels?.length > 0 ? (
                                     <>
-                                        {labelData?.isFetching ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!mt-5" }} /> ) : 
-                                            (<div className="flex flex-col space-y-2 mt-4 text-sm px-1 max-h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
+                                        {labelData?.isFetching ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} /> ) : 
+                                            (<div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] !min-h-[9rem] max-h-[14.9rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                                                 {labels?.map((chip: any, idx: number) => {
                                                     const { color, fontColor, name, type } = chip;
 
@@ -184,14 +230,16 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                                                                     className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate"
                                                                     style={{ borderColor: color, color }}
                                                                 >
-                                                                    {name.length > 25 ? name.slice(0,24) + '...' : name}
+                                                                    {(name.length > 24 && deviceScreenSize > 640) ? name.slice(0,24) + '...' 
+                                                                    : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,17) + '...' : name}
                                                                 </div>
                                                             ) : (
                                                                 <div 
-                                                                    className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate"
+                                                                    className="badge badge-accent !py-3 uppercase text-xs tracking-widest"
                                                                     style={{ backgroundColor: color, borderColor: color, color: fontColor }}
                                                                 >
-                                                                    {name.length > 25 ? name.slice(0,24) + '...' : name}
+                                                                    {(name.length > 24 && deviceScreenSize > 640) ? name.slice(0,24) + '...' 
+                                                                    : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,17) + '...' : name}
                                                                 </div>
                                                             )}
                                                             <div className="flex items-center justify-center">
@@ -226,11 +274,30 @@ export default function LabelModal({ open, setOpen, token }: Props) {
                                         )}
                                     </>
                                 ) : (
-                                    <div className="flex flex-col space-y-4 items-center justify-center mt-5 text-gray-500">
+                                    <div className="flex flex-col space-y-4 items-center justify-center my-5 text-gray-500">
                                         <AiFillTags size={60} className='!mt-5'/>
-                                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>Your labels will appear here!</p>
+                                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>No labels were found!</p>
                                     </div>
                                 )}
+                            </div>
+                            <div className="text-gray-300 px-5 my-1">
+                                <div className=" !bg-gray-800 flex !justify-between">
+                                    <button 
+                                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        disabled={labelData?.pageLabel === 1 ? true : false}
+                                        onClick={() => labelData?.setPageLabel(labelData?.pageLabel - 1)}
+                                    > 
+                                        <MdKeyboardDoubleArrowLeft size={18} />
+                                    </button>
+                                    <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {labelData?.pageLabel}</p>
+                                    <button 
+                                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        disabled={labelData?.hasNextPageLabel ? false : true}
+                                        onClick={() => labelData?.setPageLabel(labelData?.pageLabel + 1)}
+                                    >
+                                        <MdKeyboardDoubleArrowRight size={18} />
+                                    </button>
+                                </div>
                             </div>
                             <div className="flex justify-center items-center border border-transparent border-t-gray-600">
                                 <button  className='text-sm uppercase text-gray-200 rounded-full mt-5' onClick={() => setCreateLabel(true)}>
