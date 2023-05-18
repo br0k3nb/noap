@@ -68,6 +68,8 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const closeModal = () => {
         setOpen(false);
         labelData?.setPageLabel(1);
+        labelData?.setSearchLabel('');
+        setShowSearchBar(false);
         setTimeout(() => setCreateLabel(false), 500);
     }
     
@@ -174,7 +176,10 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const hide = { opacity: 0, transitionEnd: { display: "none" } };
     const show = { opacity: 1, display: "block" };
 
-    const onInputChange = (currentTarget: HTMLInputElement) => labelData?.setSearchLabel(currentTarget.value);
+    const onInputChange = (currentTarget: HTMLInputElement) => {
+        labelData?.setSearchLabel(currentTarget.value);
+        labelData?.setPageLabel(1);
+    }
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
@@ -212,14 +217,14 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
                                     <input
                                         className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
                                         onChange={({currentTarget}) => onInputChange(currentTarget)}
-                                        placeholder="Search for labels..."
+                                        placeholder="Search..."
                                         value={labelData?.searchLabel}
                                     />
                                 </motion.div>
                                 {labels && labels?.length > 0 ? (
                                     <>
                                         {labelData?.isFetching ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} /> ) : 
-                                            (<div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] !min-h-[9rem] max-h-[14.9rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
+                                            (<div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] !min-h-[9rem] max-h-[14.9rem] xxs:!max-h-[10.5rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                                                 {labels?.map((chip: any, idx: number) => {
                                                     const { color, fontColor, name, type } = chip;
 
@@ -536,7 +541,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
                 setOpen={setDeleteModal}
                 deleteButtonAction={deleteLabel}
                 mainText='Are you sure you want to delete this label?'
-                options={{ loader, onClose: closeDeleteModal, modalWrapperClassName: "!w-96" }}
+                options={{ loader, onClose: closeDeleteModal, modalWrapperClassName: "!w-96 xxs:!w-80", mainTextCustomClassName: "xxs:text-xs" }}
             />
         </>
     )

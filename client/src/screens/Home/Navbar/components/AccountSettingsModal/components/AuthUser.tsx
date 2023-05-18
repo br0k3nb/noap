@@ -54,15 +54,15 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
         title: "Account Settings",
         options: {
           onClose: handleModalClose,
-          titleWrapperClassName: "px-6 mb-5",
-          modalWrapperClassName: "!px-0 text-gray-100 !w-[22rem] font-light"
+          titleWrapperClassName: "px-6 mb-4",
+          modalWrapperClassName: "!px-0 text-gray-100 !w-[22rem] xxs:!w-[19.4rem] font-light"
         }
     }
 
     return (
         <Modal {...modalProps}>
           <div className="px-6">
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-2 ">
                 <p className="text-xl">Confirm your identity</p>
                 <p className="text-base text-gray-400">
                   To change yout account information, you have to authenticate

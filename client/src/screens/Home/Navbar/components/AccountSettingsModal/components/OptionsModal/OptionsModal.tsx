@@ -38,7 +38,7 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
         options: {
             onClose: handleModalClose,
             titleWrapperClassName: "px-6 mb-5",
-            modalWrapperClassName: "!px-0 text-gray-100 !w-96 font-light",
+            modalWrapperClassName: "!px-0 text-gray-100 !w-96 font-light xxs:!w-[19.4rem]",
         }
     }
 
