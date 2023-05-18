@@ -59,10 +59,8 @@ export default {
             const { _id } = await NoteState.create({ state });
             const { _id: noteId } = await Note.create({ title, body, image, state: _id, userId });
             await NoteState.findOneAndUpdate({_id}, { noteId });
-
             res.status(200).json({message: 'Saved susccessfuly!'});
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     },
@@ -84,10 +82,8 @@ export default {
             }
            
             await Note.findOneAndUpdate({ _id: noteId }, { labels: [ ...note.labels, ...findLabels ] });
-
             res.status(200).json({message: 'Label attached!'});
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     },
@@ -97,10 +93,8 @@ export default {
 
             await Note.findOneAndUpdate({ _id }, { title, body, image });
             await NoteState.findByIdAndUpdate({ _id: stateId }, { state });
-
             res.status(200).json({message: 'Note updated!'});
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     },
@@ -114,7 +108,6 @@ export default {
             
             res.status(200).json({message: 'Note deleted!'});
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     },
@@ -133,7 +126,6 @@ export default {
             
             res.status(200).json({message: 'Label detached!'});
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     },
@@ -143,7 +135,6 @@ export default {
             await Note.findByIdAndUpdate({_id: noteId}, { labels: [] });           
             res.status(200).json({message: 'Labels detached!'});
         } catch (err) {
-            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     }

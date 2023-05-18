@@ -195,7 +195,9 @@ export default {
             }
 
             //if the user sent 5 emails and didn't verified the otp, then the user isn't allowed to sent more emails
-            else if(findOtp.length === 5) res.status(400).json({ message: 'Maximum number of otp codes exceeded, please verify your email!', code: 3 });
+            else if(findOtp.length === 5) {
+                res.status(400).json({ message: 'Maximum number of otp codes exceeded, please verify your email!', code: 3 });
+            }
             else res.status(400).json({ message: 'Wait at least a 2 minutes to send another email!', spam: findOtp[findOtp.length -1].spam, code: 4 });
         } catch (err) {
             res.status(400).json({message: err});
@@ -217,7 +219,6 @@ export default {
             }
             else return req.status(400).json({ message: "Wrong OTP code, please try again!"});
         } catch (err) {
-           console.log(err); 
            req.status(400).json({message: err});
         }
     }

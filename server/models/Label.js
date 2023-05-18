@@ -1,22 +1,21 @@
 import mongoose from 'mongoose';
 import LabelSchema from '../schemas/LabelSchema.js';
 
-import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 LabelSchema.pre('findOneAndUpdate', function (next) {
-    this.findOneAndUpdate({}, {updatedAt: new Date()});
+    this.findOneAndUpdate({}, { updatedAt: new Date() });
 
     next();
 });
 
 LabelSchema.pre('save', function (next) {
-    if (!this.isNew)
-        this.updatedAt = new Date();
+    if (!this.isNew) this.updatedAt = new Date();
 
     next();
 });
 
-LabelSchema.plugin(mongooseAggregatePaginate);
+LabelSchema.plugin(mongoosePaginate);
 
 const Label = mongoose.model('Label', LabelSchema, 'labels');
 

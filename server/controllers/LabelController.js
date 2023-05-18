@@ -4,8 +4,23 @@ export default {
     async view(req, res) {
         try {
             const { userId } = req.params;
-            const getAllLabels = await Label.find({userId});
-            res.status(200).json(getAllLabels);
+            const {search, ...filter} = req.query;
+
+            const searchRegex = new RegExp(search, 'i');
+            const options = {...filter, sort: {'_id' : 1}};
+
+            const labels = await Label.paginate({
+                $and: [
+                    { userId },
+                    { 
+                        $or: [
+                            { 'name': searchRegex }
+                        ] 
+                    },
+                ]
+            }, options);
+            
+            res.status(200).json(labels);
         } catch (err) {
             res.status(400).json({message: err});
         }
