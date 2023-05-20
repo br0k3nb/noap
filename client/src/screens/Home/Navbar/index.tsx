@@ -12,6 +12,7 @@ import LabelModal from './components/LabelModal';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import SvgLoader from '../../../components/SvgLoader';
 import logo from '../../../assets/logo/logo-white-no-bg.png'
+// import logoN from '../../../assets/logo/logo-white-no-bg-just-N.png'
 
 type NavProps = {
   labels: FieldArrayWithId<Labels, "labels", "id">[];
@@ -161,12 +162,15 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 </button>
               </div>
             </div>
+            {/* <div className="absolute bottom-3 left-4">
+              <img src={logoN} alt="" className='w-6 h-6' />
+            </div> */}
           </div>
         ) : ( 
           <motion.div 
             initial={{ x: -100 }}
             animate={!navbar ? hide : show}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.3 }}
             className={`fixed ${!navbar && "flex xxs:hidden"}  bg-stone-900`}
             style={{height: deviceScreenSize.height}}
           >

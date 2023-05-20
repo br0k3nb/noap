@@ -56,7 +56,7 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                         onClick={() => deleteButtonAction()}
                     >
                         {options?.loader ? (
-                          <SvgLoader options={{showLoadingText: false}} /> 
+                          <SvgLoader options={{ showLoadingText: true }} /> 
                         ) : (
                             <p className='text-sm uppercase tracking-widest'>
                                 {options?.customDeleteButtonText ? options?.customDeleteButtonText : "Delete"}

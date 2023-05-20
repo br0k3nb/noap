@@ -32,6 +32,9 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
         setSearch(currentTarget.value)
     };
 
+    const hide = { opacity: 0, transitionEnd: { display: "none" }};
+    const show = { display: "block", opacity: 1 };
+
     return (
         <>
             <div className="overflow-hidden flex flex-col pt-2 bg-gray-800 h-[100px]">
@@ -59,9 +62,8 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                 </div>
             </div>
             <motion.div
-                initial={{ x: -100 }}
-                whileInView={{ x: 0 }}
-                transition={{ duration: 0.6 }}
+                animate={showSearch ? show : hide}
+                transition={{ duration: 0.4 }}
                 className={`bg-gray-800 px-6 pb-2 hidden ${showSearch && "!grid"}`}
             >
                 <input

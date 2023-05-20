@@ -20,12 +20,7 @@ import api from '../../../../services/api';
 type Props = {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    token: {
-        googleAccount: boolean;
-        token: string;
-        name: string;
-        _id: string;
-    };
+    token: { googleAccount: boolean; token: string; name: string; _id: string; };
     labels: FieldArrayWithId<Labels, "labels", "id">[];
 }
 

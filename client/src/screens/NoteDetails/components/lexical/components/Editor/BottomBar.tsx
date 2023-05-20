@@ -111,6 +111,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 <>
                   {note.labels.map((val: any, idx: number) => {
                     const { color, fontColor, name, _id, type } = val;
+                    
                     return (
                         <div className="max-w-lg mt-[1px]" key={idx}>
                           {type === "default" ? (
@@ -159,10 +160,10 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 onClick={() => save(editor.getEditorState())}
                 className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-gray-600 px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 transition-all ease-in-out duration-500"
               >
-                {saveSpinner ? (<SvgLoader options={{ showLoadingText: true, LoadingTextClassName: "!text-[12px]" }} />) : (
+                {saveSpinner ? ( <SvgLoader options={{ showLoadingText: true, LoadingTextClassName: "!text-[12px]" }} /> ) : (
                   <div className="flex space-x-0 xl:space-x-2">
                     <p className="mt-[2px] hidden xl:inline">Save note</p>
-                    <AiFillSave size={20}/>
+                    <AiFillSave size={20} />
                   </div>
                 )}
               </button>
@@ -175,8 +176,9 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
           mainText="Are you sure you want to remove all labels attached to this note?"
           options={{
             subText: "This action will only detach labels from this note!",
-            subTextCustomClassName: "xxs:mt-2 xxs:mb-7 mt-4 mb-6",
-            modalWrapperClassName: "!w-96"
+            mainTextCustomClassName: 'xxs:text-xs' ,
+            subTextCustomClassName: "xxs:mt-2 xxs:mb-7 mt-4 mb-6 px-6",
+            modalWrapperClassName: "!w-96 xxs:!w-[22rem]"
           }}
         />
     </div> 

@@ -190,15 +190,28 @@ export default function Home(): JSX.Element {
       
             <NavbarContext navbar={navbar} setNavbar={setNavbar}>
               <RefetchContext fetchNotes={fetchNotes}>
-                <NoteDetails 
-                  notes={fields} 
-                  remove={remove}
-                  labels={labels}
-                  expanded={noteIsExpanded}
-                  deleteNote={deleteNote} 
-                  setExpanded={setNoteIsExpanded}
-                  labelIsFetching={labelIsFetching}
-                />
+                <LabelsCtx  
+                  pageLabel={pageLabel}
+                  searchLabel={searchLabel}
+                  fetchLabels={fetchLabels} 
+                  removeLabels={removeLabels}
+                  setPageLabel={setPageLabel}
+                  isFetching={labelIsFetching}
+                  setSearchLabel={setSearchLabel}
+                  hasNextPageLabel={hasNextPageLabel}
+                  setTotalDocsLabel={setTotalDocsLabel}
+                  setHasNextPageLabel={setHasNextPageLabel}
+                >
+                  <NoteDetails 
+                    notes={fields} 
+                    remove={remove}
+                    labels={labels}
+                    expanded={noteIsExpanded}
+                    deleteNote={deleteNote} 
+                    setExpanded={setNoteIsExpanded}
+                    labelIsFetching={labelIsFetching}
+                  />
+                </LabelsCtx>
               </RefetchContext>
             </NavbarContext>
           </div>
