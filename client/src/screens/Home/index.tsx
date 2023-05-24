@@ -26,8 +26,7 @@ export default function Home(): JSX.Element {
   const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
   const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
   const [ hasNextPageLabel, setHasNextPageLabel ] = useState(false);
-  const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);
-  const [ totalDocsLabel, setTotalDocsLabel ] = useState(0);
+  const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);  
   const [ hasNextPage, setHasNextPage ] = useState(false);
   const [ searchLabel, setSearchLabel ] = useState('');
   const [ blurFlag, setBlurFlag ] = useState(true);
@@ -84,11 +83,10 @@ export default function Home(): JSX.Element {
 
   const fetchLabels = async () => {
     try {
-        const {data: { docs, totalDocs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
+        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
           params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
         });
 
-        setTotalDocsLabel(totalDocs);
         setHasNextPageLabel(hasNextPage);
 
         if (labels.length === 0) appendLabels(docs);
@@ -140,9 +138,25 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: true
   });
 
-  const { isFetching: labelIsFetching } = useQuery([ "fetchLabels", delayedSearchLabel, pageLabel ], fetchLabels, { refetchOnWindowFocus: false });
+  const { isFetching: labelIsFetching } = useQuery([ "fetchLabels", delayedSearchLabel, pageLabel ], fetchLabels, { 
+    refetchOnWindowFocus: false 
+  });
 
-  // setIsMobileDevice
+  const notesProps = {
+    page,
+    search,
+    navbar,
+    setPage,
+    setSearch,
+    totalDocs,
+    setNavbar,
+    isFetching,
+    addNewNote,
+    hasNextPage,
+    notes: fields,
+    expanded: noteIsExpanded,
+    setExpanded: setNoteIsExpanded
+  }
 
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
@@ -156,8 +170,6 @@ export default function Home(): JSX.Element {
           isFetching={labelIsFetching}
           setSearchLabel={setSearchLabel}
           hasNextPageLabel={hasNextPageLabel}
-          setTotalDocsLabel={setTotalDocsLabel}
-          setHasNextPageLabel={setHasNextPageLabel}
         >
           <Nav
             labels={labels}
@@ -168,39 +180,19 @@ export default function Home(): JSX.Element {
           />
         </LabelsCtx>
         <div
-          className={`!overflow-hidden ${!isMobileDevice && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
+          className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
           id="dark"
         >
           <div className="flex flex-row h-screen">
-            <Notes 
-              page={page}
-              notes={fields} 
-              search={search}
-              navbar={navbar}
-              setPage={setPage}
-              setSearch={setSearch}
-              totalDocs={totalDocs}
-              setNavbar={setNavbar} 
-              expanded={noteIsExpanded}
-              hasNextPage={hasNextPage}
-              addNewNote={addNewNote}
-              isFetching={isFetching}
-              setExpanded={setNoteIsExpanded}
-            />
-      
+            <Notes {...notesProps}/>
             <NavbarContext navbar={navbar} setNavbar={setNavbar}>
               <RefetchContext fetchNotes={fetchNotes}>
                 <LabelsCtx  
                   pageLabel={pageLabel}
                   searchLabel={searchLabel}
-                  fetchLabels={fetchLabels} 
-                  removeLabels={removeLabels}
                   setPageLabel={setPageLabel}
-                  isFetching={labelIsFetching}
                   setSearchLabel={setSearchLabel}
                   hasNextPageLabel={hasNextPageLabel}
-                  setTotalDocsLabel={setTotalDocsLabel}
-                  setHasNextPageLabel={setHasNextPageLabel}
                 >
                   <NoteDetails 
                     notes={fields} 

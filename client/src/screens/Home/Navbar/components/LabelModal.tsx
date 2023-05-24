@@ -1,4 +1,4 @@
-import { SetStateAction, Dispatch, useState, useContext, useEffect } from 'react';
+import { SetStateAction, Dispatch, useState, useContext } from 'react';
 import { useForm, FieldValues, FieldArrayWithId } from 'react-hook-form';
 import { HexColorPicker } from "react-colorful";
 
@@ -51,19 +51,23 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const { errors } = formState;
 
     const labelData = useContext(LabelsCtx);
-
-    // useEffect(() => {
-    //     const updateViewPortWidth = () => setDeviceScreenSize(window.innerWidth);
-    //     window.addEventListener("resize", () => setTimeout(() => updateViewPortWidth, 500));
-    //     return () => window.removeEventListener("resize", () => setTimeout(() => updateViewPortWidth, 500));
-    // }, []);
+    const { 
+        setPageLabel, 
+        setSearchLabel, 
+        searchLabel, 
+        fetchLabels, 
+        removeLabels, 
+        isFetching, 
+        pageLabel, 
+        hasNextPageLabel 
+    } = labelData as any;
 
     const deviceScreenSize = window.innerWidth;
 
     const closeModal = () => {
         setOpen(false);
-        labelData?.setPageLabel(1);
-        labelData?.setSearchLabel('');
+        setPageLabel(1);
+        setSearchLabel('');
         setShowSearchBar(false);
         setTimeout(() => setCreateLabel(false), 500);
     }
@@ -91,7 +95,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
             
             setLoader(false);
-            labelData?.fetchLabels();
+            fetchLabels();
         } catch (err: any) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
@@ -113,8 +117,8 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             closeDeleteModal();
             
             const findLabel = labels?.find(({_id}) => _id === selectedLabel);
-            labelData?.removeLabels(labels?.indexOf(findLabel as any));
-            labelData?.fetchLabels();
+            removeLabels(labels?.indexOf(findLabel as any));
+            fetchLabels();
         } catch (err: any) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
@@ -149,7 +153,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             });
 
             setLoader(false);
-            labelData?.fetchLabels();
+            fetchLabels();
             toastAlert({ icon: 'success', title: `${editL.data.message}`, timer: 3000 });
         } catch (err: any) {
             setLoader(false);
@@ -172,13 +176,13 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const show = { opacity: 1, display: "block" };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        labelData?.setSearchLabel(currentTarget.value);
-        labelData?.setPageLabel(1);
+        setSearchLabel(currentTarget.value);
+        setPageLabel(1);
     }
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
-        labelData?.setSearchLabel('');
+        setSearchLabel('');
     }
 
     return (
@@ -213,12 +217,12 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
                                         className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
                                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                                         placeholder="Search..."
-                                        value={labelData?.searchLabel}
+                                        value={searchLabel}
                                     />
                                 </motion.div>
                                 {labels && labels?.length > 0 ? (
                                     <>
-                                        {labelData?.isFetching ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} /> ) : 
+                                        {isFetching ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} /> ) : 
                                             (<div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] !min-h-[9rem] max-h-[14.9rem] xxs:!max-h-[10.5rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                                                 {labels?.map((chip: any, idx: number) => {
                                                     const { color, fontColor, name, type } = chip;
@@ -284,16 +288,16 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
                                 <div className=" !bg-gray-800 flex !justify-between">
                                     <button 
                                         className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
-                                        disabled={labelData?.pageLabel === 1 ? true : false}
-                                        onClick={() => labelData?.setPageLabel(labelData?.pageLabel - 1)}
+                                        disabled={pageLabel === 1 ? true : false}
+                                        onClick={() => setPageLabel(pageLabel - 1)}
                                     > 
                                         <MdKeyboardDoubleArrowLeft size={18} />
                                     </button>
-                                    <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {labelData?.pageLabel}</p>
+                                    <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
                                     <button 
                                         className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
-                                        disabled={labelData?.hasNextPageLabel ? false : true}
-                                        onClick={() => labelData?.setPageLabel(labelData?.pageLabel + 1)}
+                                        disabled={hasNextPageLabel ? false : true}
+                                        onClick={() => setPageLabel(pageLabel + 1)}
                                     >
                                         <MdKeyboardDoubleArrowRight size={18} />
                                     </button>

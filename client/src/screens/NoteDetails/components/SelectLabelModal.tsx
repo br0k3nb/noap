@@ -33,6 +33,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
     const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
 
     const labelData = useContext(LabelsCtx);
+    const { setPageLabel, setSearchLabel, searchLabel, pageLabel, hasNextPageLabel } = labelData as any;
 
     const addLabel = async (data: FieldValues) => {
         try {
@@ -59,13 +60,13 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
     const deviceScreenSize = window.innerWidth;
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        labelData?.setSearchLabel(currentTarget.value);
-        labelData?.setPageLabel(1);
+        setSearchLabel(currentTarget.value);
+        setPageLabel(1);
     }
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
-        labelData?.setSearchLabel('');
+        setSearchLabel('');
     }
 
     const hide = { opacity: 0, transitionEnd: { display: "none" } };
@@ -99,7 +100,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                         placeholder="Search..."
-                        value={labelData?.searchLabel}
+                        value={searchLabel}
                     />
                 </motion.div>
                 {isFetching ? <SvgLoader options={{ showLoadingText: true, wrapperClassName: "my-36" }}/> : labels.length > 0 ? (
@@ -135,16 +136,16 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                             <div className=" !bg-gray-800 flex !justify-between">
                                 <button 
                                     className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
-                                    disabled={labelData?.pageLabel === 1 ? true : false}
-                                    onClick={() => labelData?.setPageLabel(labelData?.pageLabel - 1)}
+                                    disabled={pageLabel === 1 ? true : false}
+                                    onClick={() => setPageLabel(pageLabel - 1)}
                                 > 
                                     <MdKeyboardDoubleArrowLeft size={18} />
                                 </button>
-                                <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {labelData?.pageLabel}</p>
+                                <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
                                 <button 
                                     className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
-                                    disabled={labelData?.hasNextPageLabel ? false : true}
-                                    onClick={() => labelData?.setPageLabel(labelData?.pageLabel + 1)}
+                                    disabled={hasNextPageLabel ? false : true}
+                                    onClick={() => setPageLabel(pageLabel + 1)}
                                 >
                                     <MdKeyboardDoubleArrowRight size={18} />
                                 </button>

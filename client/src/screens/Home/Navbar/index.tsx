@@ -7,12 +7,11 @@ import { BsJournalPlus, BsTagFill, BsFillCalendarEventFill, BsDoorOpenFill, BsGe
 
 import { motion } from 'framer-motion';
 
-import AccountSettingsModal from './components/AccountSettingsModal';
-import LabelModal from './components/LabelModal';
 import ConfirmationModal from '../../../components/ConfirmationModal';
+import AccountSettingsModal from './components/AccountSettingsModal';
+import logo from '../../../assets/logo/logo-white-no-bg.png';
 import SvgLoader from '../../../components/SvgLoader';
-import logo from '../../../assets/logo/logo-white-no-bg.png'
-// import logoN from '../../../assets/logo/logo-white-no-bg-just-N.png'
+import LabelModal from './components/LabelModal';
 
 type NavProps = {
   labels: FieldArrayWithId<Labels, "labels", "id">[];
@@ -81,17 +80,17 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
       />
       {deviceScreenSize.width > 640  ? ( 
           <div className={`fixed ${!navbar && "flex xxs:hidden"}`}>
-            <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-stone-900 justify-end">
+            <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-gray-900 justify-end">
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
                 <div className="dropdown dropdown-right pt-[6.2px]">
                   <label tabIndex={0}>
                     <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
-                      <div className="rounded-full border !border-gray-500 bg-stone-700 hover:bg-stone-800 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
+                      <div className="rounded-full border !border-gray-500 bg-gray-800 hover:bg-gray-900/60 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
                         <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
                       </div>
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-stone-800">
+                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-gray-800 border border-gray-600">
                     <li>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
@@ -104,7 +103,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                           </div>
                         </label>
                       </a>
-                      <div className="mx-2 border border-transparent !border-b-stone-900 !h-[1px] p-0 !rounded-none"/>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
                         onClick={() => setOpenSignOutConfirmationModal(true)}
@@ -130,7 +129,9 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                     className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
                     onClick={() => addNewNote()}
                   >
-                    {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: false }} /> ) : ( <BsJournalPlus className="text-gray-300" size={23}/> )}
+                    {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: false, wrapperClassName: "pl-3" }} /> ) : 
+                      ( <BsJournalPlus className="text-gray-300" size={23}/> )
+                    }
                   </a>
                 </div>
                 <div className="tooltip tooltip-right text-gray-300" data-tip="Labels">
@@ -162,19 +163,16 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 </button>
               </div>
             </div>
-            {/* <div className="absolute bottom-3 left-4">
-              <img src={logoN} alt="" className='w-6 h-6' />
-            </div> */}
           </div>
         ) : ( 
           <motion.div 
             initial={{ x: -100 }}
             animate={!navbar ? hide : show}
             transition={{ duration: 0.3 }}
-            className={`fixed ${!navbar && "flex xxs:hidden"}  bg-stone-900`}
+            className={`fixed ${!navbar && "flex xxs:hidden"} bg-gray-900 z-50`}
             style={{height: deviceScreenSize.height}}
           >
-            <div className="flex flex-col items-center w-[140px] overflow-hidden text-gray-400">
+            <div className="flex flex-col items-center w-[150px] overflow-hidden text-gray-400">
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
                 <div className="dropdown dropdown-right pt-[6.2px]">
                   <label tabIndex={0}>
@@ -265,7 +263,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 </button>
               </div>
             </div>
-            <div className="absolute bottom-3 left-9">
+            <div className="absolute bottom-3 left-10">
               <img src={logo} className='w-16 h-6' />
             </div>
           </motion.div>

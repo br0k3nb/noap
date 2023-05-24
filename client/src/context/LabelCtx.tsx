@@ -1,31 +1,27 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
+import { UseFieldArrayRemove } from "react-hook-form";
   
 type LabelContext = {
     pageLabel: number;
     searchLabel: string;
-    isFetching: boolean;
+    isFetching?: boolean;
     hasNextPageLabel: boolean;
-    fetchLabels: () => Promise<void>;
-    removeLabels: UseFieldArrayRemove;
+    fetchLabels?: () => Promise<void>;
+    removeLabels?: UseFieldArrayRemove;
     setPageLabel: Dispatch<SetStateAction<number>>;
     setSearchLabel: Dispatch<SetStateAction<string>>;
-    setTotalDocsLabel: Dispatch<SetStateAction<number>>;
-    setHasNextPageLabel: Dispatch<SetStateAction<boolean>>;
   }
 
 type Props = {
     children: any,
     pageLabel: number;
-    isFetching: boolean;
+    isFetching?: boolean;
     searchLabel: string;
     hasNextPageLabel: boolean;
-    fetchLabels: () => Promise<void>;
-    removeLabels: UseFieldArrayRemove;
+    fetchLabels?: () => Promise<void>;
+    removeLabels?: UseFieldArrayRemove;
     setPageLabel: Dispatch<SetStateAction<number>>;
     setSearchLabel: Dispatch<SetStateAction<string>>;
-    setTotalDocsLabel: Dispatch<SetStateAction<number>>;
-    setHasNextPageLabel: Dispatch<SetStateAction<boolean>>;
 }
 
 export const LabelsCtx = createContext<LabelContext | null>(null);
@@ -39,9 +35,7 @@ export default function LabelsContext({
         removeLabels,
         setPageLabel, 
         setSearchLabel,
-        hasNextPageLabel,
-        setTotalDocsLabel, 
-        setHasNextPageLabel 
+        hasNextPageLabel
     }: Props) {
 
     return (
@@ -54,9 +48,7 @@ export default function LabelsContext({
                 removeLabels, 
                 setPageLabel,
                 setSearchLabel,
-                hasNextPageLabel,
-                setTotalDocsLabel,
-                setHasNextPageLabel
+                hasNextPageLabel
             }}
         >
             {children}

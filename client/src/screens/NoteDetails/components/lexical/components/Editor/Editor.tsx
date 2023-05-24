@@ -97,6 +97,8 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
 
     const disableToolbar = () => setTitleFocused(true);
 
+    const editorHeight = currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65;
+
     return (
       <div className="!h-screen !w-screen">
         {titleFocused && <ToolbarPlugin titleFocused={titleFocused} />}
@@ -116,8 +118,15 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
                 contentEditable={
                   <div className="editor" ref={ref}>
                     <div
-                      className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
-                      style={{ height: currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65 }}
+                      className="!overflow-y-scroll scrollbar scrollbar-track-gray-600 scrollbar-thumb-gray-700 overflow-x-hidden"                     
+                      style={!noteExpanded?.expanded ? { 
+                          width: currentScreenSize.width - 440,
+                          height: editorHeight
+                        } : {
+                          width: currentScreenSize.width,
+                          height: editorHeight
+                        }
+                      }  
                     >
                       <div onClick={() => setTitleFocused(true)}>
                         <TitleInput
