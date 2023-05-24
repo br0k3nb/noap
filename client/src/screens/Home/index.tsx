@@ -18,8 +18,8 @@ import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
 import LabelsCtx from "../../context/LabelCtx";
 
-import "../../styles/themes/light.css";
 import "../../styles/themes/dark.css";
+import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
   const [ isMobileDevice, setIsMobileDevice ] = useState(window.innerWidth <= 640);
