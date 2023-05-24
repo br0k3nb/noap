@@ -1,17 +1,12 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-import "./index.css";
-
-import { $isCodeNode } from "@lexical/code";
-import { $getNearestNodeFromDOMNode, LexicalEditor } from "lexical";
-import { Options } from "prettier";
-
 import { useState } from "react";
+import { $getNearestNodeFromDOMNode, LexicalEditor } from "lexical";
+import { $isCodeNode } from "@lexical/code";
+
+import { Options } from "prettier";
+import prettierIcon from "../../../../images/icons/prettier.svg";
+import prettierErrorIcon from "../../../../images/icons/prettier-error.svg";
+
+import "./index.css";
 
 interface Props {
   lang: string;
@@ -39,18 +34,10 @@ async function loadPrettierFormat() {
 }
 
 const PRETTIER_OPTIONS_BY_LANG: Record<string, Options> = {
-  css: {
-    parser: "css",
-  },
-  html: {
-    parser: "html",
-  },
-  js: {
-    parser: "babel",
-  },
-  markdown: {
-    parser: "markdown",
-  },
+  css: { parser: "css" },
+  html: { parser: "html" },
+  js: { parser: "babel" },
+  markdown: { parser: "markdown" },
 };
 
 const LANG_CAN_BE_PRETTIER = Object.keys(PRETTIER_OPTIONS_BY_LANG);
@@ -71,8 +58,8 @@ function getPrettierOptions(lang: string): Options {
 }
 
 export function PrettierButton({ lang, editor, getCodeDOMNode }: Props) {
-  const [syntaxError, setSyntaxError] = useState<string>("");
-  const [tipsVisible, setTipsVisible] = useState<boolean>(false);
+  const [ syntaxError, setSyntaxError ] = useState<string>("");
+  const [ tipsVisible, setTipsVisible ] = useState<boolean>(false);
 
   async function handleClick(): Promise<void> {
     const codeDOMNode = getCodeDOMNode();
@@ -82,9 +69,7 @@ export function PrettierButton({ lang, editor, getCodeDOMNode }: Props) {
       const options = getPrettierOptions(lang);
       options.plugins = [await loadPrettierParserByLang(lang)];
 
-      if (!codeDOMNode) {
-        return;
-      }
+      if (!codeDOMNode) return;
 
       editor.update(() => {
         const codeNode = $getNearestNodeFromDOMNode(codeDOMNode);
@@ -93,7 +78,6 @@ export function PrettierButton({ lang, editor, getCodeDOMNode }: Props) {
           const content = codeNode.getTextContent();
 
           let parsed = "";
-
           parsed = format(content, options);
 
           if (parsed !== "") {
@@ -108,22 +92,17 @@ export function PrettierButton({ lang, editor, getCodeDOMNode }: Props) {
       if (error instanceof Error) {
         setSyntaxError(error.message);
         setTipsVisible(true);
-      } else {
-        console.error("Unexpected error: ", error);
-      }
+      } 
+      else console.error("Unexpected error: ", error);
     }
   }
 
   function handleMouseEnter() {
-    if (syntaxError !== "") {
-      setTipsVisible(true);
-    }
+    if (syntaxError !== "") setTipsVisible(true);
   }
 
   function handleMouseLeave() {
-    if (syntaxError !== "") {
-      setTipsVisible(false);
-    }
+    if (syntaxError !== "") setTipsVisible(false);
   }
 
   return (
@@ -136,9 +115,9 @@ export function PrettierButton({ lang, editor, getCodeDOMNode }: Props) {
         aria-label="prettier"
       >
         {syntaxError ? (
-          <i className="format prettier-error" />
-        ) : (
-          <i className="format prettier" />
+          <img src={prettierErrorIcon} className="h-4 w-4"/>
+        ) : ( 
+          <img src={prettierIcon} className="h-4 w-4"/> 
         )}
       </button>
       {tipsVisible ? (

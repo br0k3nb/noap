@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { $isCodeNode } from "@lexical/code";
 import {
   $getNearestNodeFromDOMNode,
@@ -5,10 +7,10 @@ import {
   $setSelection,
   LexicalEditor,
 } from "lexical";
-import * as React from "react";
-import { useState } from "react";
 
 import { useDebounce } from "../../utils";
+import successIcon from "../../../../images/icons/success.svg";
+import copyIcon from "../../../../images/icons/copy.svg";
 
 interface Props {
   editor: LexicalEditor;
@@ -16,7 +18,7 @@ interface Props {
 }
 
 export function CopyButton({ editor, getCodeDOMNode }: Props) {
-  const [isCopyCompleted, setCopyCompleted] = useState<boolean>(false);
+  const [ isCopyCompleted, setCopyCompleted ] = useState<boolean>(false);
 
   const removeSuccessIcon = useDebounce(() => {
     setCopyCompleted(false);
@@ -25,18 +27,14 @@ export function CopyButton({ editor, getCodeDOMNode }: Props) {
   async function handleClick(): Promise<void> {
     const codeDOMNode = getCodeDOMNode();
 
-    if (!codeDOMNode) {
-      return;
-    }
+    if (!codeDOMNode) return;
 
     let content = "";
 
     editor.update(() => {
       const codeNode = $getNearestNodeFromDOMNode(codeDOMNode);
 
-      if ($isCodeNode(codeNode)) {
-        content = codeNode.getTextContent();
-      }
+      if ($isCodeNode(codeNode)) content = codeNode.getTextContent();
 
       const selection = $getSelection();
       $setSelection(selection);
@@ -54,9 +52,9 @@ export function CopyButton({ editor, getCodeDOMNode }: Props) {
   return (
     <button className="menu-item" onClick={handleClick} aria-label="copy">
       {isCopyCompleted ? (
-        <i className="format success" />
+        <img src={successIcon} className="h-4 w-4"/> 
       ) : (
-        <i className="format copy" />
+        <img src={copyIcon} className="h-4 w-4"/>
       )}
     </button>
   );

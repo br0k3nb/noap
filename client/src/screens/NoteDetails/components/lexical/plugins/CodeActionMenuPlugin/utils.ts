@@ -13,12 +13,10 @@ export function useDebounce<T extends (...args: never[]) => void>(
     () =>
       debounce(
         (...args: Parameters<T>) => {
-          if (funcRef.current) {
-            funcRef.current(...args);
-          }
+          if (funcRef.current) funcRef.current(...args);
         },
         ms,
-        {maxWait},
+        { maxWait },
       ),
     [ms, maxWait],
   );

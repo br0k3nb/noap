@@ -83,25 +83,35 @@ const CODE_LANGUAGE_OPTIONS = getCodeLanguageOptions();
 
 const FONT_FAMILY_OPTIONS: [string, string][] = [
   ["Arial", "Arial"],
+  ["Amatic SC", "Amatic SC"],
+  ["Bangers", "Bangers"],
   ["Courier New", "Courier New"],
+  ["Dancing Script", "Dancing Script"],
   ["Georgia", "Georgia"],
-  ["Times New Roman", "Times New Roman"],
+  ["Montserrat", "Montserrat"],
+  ["Nanum Gothic Coding", "Nanum Gothic Coding"],
+  ["Roboto", "Roboto"],
+  ["Reenie Beanie", "Reenie Beanie"],
+  ["Source Code Pro", "Source Code Pro"],
   ["Trebuchet MS", "Trebuchet MS"],
-  ["Verdana", "Verdana"],
+  ["Times New Roman", "Times New Roman"]
 ];
 
 const FONT_SIZE_OPTIONS: [string, string][] = [
+  ["8px", "8px"],
+  ["9px", "9px"],
   ["10px", "10px"],
   ["11px", "11px"],
   ["12px", "12px"],
-  ["13px", "13px"],
   ["14px", "14px"],
-  ["15px", "15px"],
-  ["16px", "16px"],
-  ["17px", "17px"],
   ["18px", "18px"],
-  ["19px", "19px"],
-  ["20px", "20px"],
+  ["24px", "24px"],
+  ["30px", "30px"],
+  ["36px", "36px"],
+  ["48px", "48px"],
+  ["60px", "60px"],
+  ["72px", "72px"],
+  ["96px", "96px"]
 ];
 
 function dropDownActiveClass(active: boolean) {
@@ -273,13 +283,15 @@ function FontDropDown({
       {(style === "font-family" ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
         ([option, text]) => (
           <DropDownItem
-            className={`bg-gray-800 hover:!bg-gray-600 item ${dropDownActiveClass(value === option)} ${
-              style === "font-size" ? "fontsize-item" : ""
-            }`}
+            className={`
+              bg-gray-800 hover:!bg-gray-600 item 
+              ${dropDownActiveClass(value === option)} 
+              ${style === "font-size" ? "fontsize-item" : ""}
+            `}
             onClick={() => handleClick(option)}
             key={option}
           >
-            <span className="text">{text}</span>
+            <span className="text" style={{fontFamily: option}}>{text}</span>
           </DropDownItem>
         )
       )}
@@ -451,9 +463,7 @@ export default function ToolbarPlugin({titleFocused}: any) {
   );
 
   const onBgColorSelect = useCallback(
-    (value: string) => {
-      applyStyleText({'background-color': value});
-    },
+    (value: string) => {applyStyleText({'background-color': value})},
     [applyStyleText],
   );
 
@@ -476,11 +486,11 @@ export default function ToolbarPlugin({titleFocused}: any) {
 
   const noteIsExpanded = useContext(ExpandedCtx);
 
-  addEventListener("resize", () => setTimeout(() => setScreenSize(!noteIsExpanded?.expanded ? window.outerWidth - 60 - 380 : 0), 500));
+  addEventListener("resize", () => setTimeout(() => setScreenSize(!noteIsExpanded?.expanded ? window.outerWidth - 440 : 0), 500));
 
   return (
     <div 
-      className="toolbar !h-11 !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
+      className="toolbar !h-[2.79rem] !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
       style={screenSize !== 0 ? {width: screenSize}: undefined}
     >
       <button

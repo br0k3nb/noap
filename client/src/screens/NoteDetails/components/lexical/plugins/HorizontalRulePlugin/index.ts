@@ -1,18 +1,11 @@
 import { useEffect } from "react";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $createHorizontalRuleNode,
-  INSERT_HORIZONTAL_RULE_COMMAND,
-} from "@lexical/react/LexicalHorizontalRuleNode";
-import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_EDITOR,
-} from "lexical";
+import { $createHorizontalRuleNode, INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
 
 export default function HorizontalRulePlugin() {
-  const [editor] = useLexicalComposerContext();
+  const [ editor ] = useLexicalComposerContext();
 
   useEffect(() => {
     return editor.registerCommand(

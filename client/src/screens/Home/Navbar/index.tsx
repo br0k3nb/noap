@@ -178,14 +178,14 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                   <label tabIndex={0}>
                     <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
                       <div className="flex flex-row">
-                        <div className="rounded-full border !border-gray-500 bg-stone-700 hover:bg-stone-800 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
+                        <div className="rounded-full border !border-gray-500 bg-gray-800 hover:bg-gray-900/60 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
                           <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
                         </div>
                         <p className='ml-2 my-auto uppercase text-xs tracking-widest'>{name && name}</p>
                       </div>
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-40 rounded-xl bg-stone-800">
+                  <ul tabIndex={0} className="dropdown-content menu shadow w-40 overflow-hidden rounded-xl bg-gray-800 border border-gray-600">
                     <li>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
@@ -193,19 +193,19 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       >
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
-                            <span>Change login information</span>  
+                            <span className='xxs:text-sm'>Change login information</span>  
                             <BiLock size={37} className="my-auto"/>
                           </div>
                         </label>
                       </a>
-                      <div className="mx-2 border border-transparent !border-b-stone-900 !h-[1px] p-0 !rounded-none"/>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
                         onClick={() => setOpenSignOutConfirmationModal(true)}
                       >
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
-                            <p>Log out</p>
+                            <p className='xxs:text-sm'>Log out</p>
                             <BsDoorOpenFill size={20} className="pt-1 my-auto"/>
                           </div>
                         </label>

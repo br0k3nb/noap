@@ -14,12 +14,12 @@ import api from "../../services/api";
 import { useDebounce } from "../../hooks/useDebounce";
 
 import SelectedNoteContext from "../../context/SelectedNoteCtx";
-import LabelsCtx from "../../context/LabelCtx";
 import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
+import LabelsCtx from "../../context/LabelCtx";
 
-import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
+import "../../styles/themes/dark.css";
 
 export default function Home(): JSX.Element {
   const [ isMobileDevice, setIsMobileDevice ] = useState(window.innerWidth <= 640);
@@ -158,19 +158,21 @@ export default function Home(): JSX.Element {
     setExpanded: setNoteIsExpanded
   }
 
+  const navLabelCtxProps = {
+    pageLabel,
+    searchLabel,
+    fetchLabels,
+    removeLabels,
+    setPageLabel,
+    labelIsFetching,
+    setSearchLabel,
+    hasNextPageLabel
+  }
+
   return (
     <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
       <SelectedNoteContext selectedNote={selectedNote} setSelectedNote={setSelectedNote}>
-        <LabelsCtx  
-          pageLabel={pageLabel}
-          searchLabel={searchLabel}
-          fetchLabels={fetchLabels} 
-          removeLabels={removeLabels}
-          setPageLabel={setPageLabel}
-          isFetching={labelIsFetching}
-          setSearchLabel={setSearchLabel}
-          hasNextPageLabel={hasNextPageLabel}
-        >
+        <LabelsCtx {...navLabelCtxProps}>
           <Nav
             labels={labels}
             navbar={navbar}

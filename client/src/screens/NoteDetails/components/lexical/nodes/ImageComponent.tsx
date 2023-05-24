@@ -103,22 +103,20 @@ export default function ImageComponent({
   nodeKey,
   width,
   height,
-  maxWidth,
   resizable,
   showCaption,
   caption,
   captionsEnabled,
 }: {
+  src: string;
   altText: string;
-  caption: LexicalEditor;
-  height: "inherit" | number;
-  maxWidth: number;
   nodeKey: NodeKey;
   resizable: boolean;
   showCaption: boolean;
-  src: string;
-  width: "inherit" | number;
+  caption: LexicalEditor;
   captionsEnabled: boolean;
+  width: "inherit" | number;
+  height: "inherit" | number;
 }): JSX.Element {
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -309,6 +307,7 @@ export default function ImageComponent({
   }
 
   const resizeBar = typeof width === "number" && width <= 257;
+  const defaultStyle = "z-10 !rounded-lg !object-cover xxs:!max-h-96 xxs:!w-screen sm:!max-h-96 lg:!object-fill xl:!max-h-screen";
 
   return (
     <Suspense fallback={null}>
@@ -365,8 +364,8 @@ export default function ImageComponent({
             <LazyImage
               className={
                 isFocused
-                  ? `z-10 focused !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${$isNodeSelection(selection) ? "draggable" : ""}`
-                  : `z-10 !rounded-lg !object-cover xxs:!max-h-80 sm:!max-h-96 lg:!object-fill xl:!max-h-screen ${hover && "mb-[0.365rem]"}`
+                  ? `${defaultStyle} focused ${$isNodeSelection(selection) ? "draggable" : ""}`
+                  : `${defaultStyle} ${hover && "mb-[0.365rem]"}`
               }
               src={src}
               altText={altText}
@@ -400,7 +399,7 @@ export default function ImageComponent({
             </LexicalNestedComposer>
           </div>
         )}
-        {resizable && $isNodeSelection(selection) && isFocused && (
+        {(resizable && $isNodeSelection(selection)) && (isFocused && currentScreenSize > 640) && (
           <ImageResizer
             showCaption={showCaption}
             setShowCaption={setShowCaption}

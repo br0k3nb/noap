@@ -67,7 +67,7 @@ function getBlockElement(
       
       const point = new Point(event.x, event.y);
       const domRect = Rect.fromDOM(elem);
-      const {marginTop, marginBottom} = window.getComputedStyle(elem);
+      const { marginTop, marginBottom } = window.getComputedStyle(elem);
 
       const rect = domRect.generateNewRect({
         bottom: domRect.bottom + parseFloat(marginBottom),
@@ -338,7 +338,7 @@ function useDraggableBlockMenu(
         ref={menuRef}
         draggable={true}
         onDragStart={onDragStart}
-        style={customMargin !== '' ? {marginTop: Number(customMargin)} : undefined}
+        style={(customMargin && Number(customMargin)) ? {marginTop: Number(customMargin)} : undefined}
         onDragEnd={onDragEnd}
       >
         <div className={isEditable ? 'icon rounded-sm' : ''} />

@@ -78,14 +78,14 @@
   text-decoration: underline;
 }
 .PlaygroundEditorTheme__code {
-  background-color: #f0f2f5;
-  color: rgb(56, 56, 56);
+  background-color: #18263b;
+  border-radius: 0.50rem;
+  color: rgb(224, 224, 224);
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
   padding: 8px 8px 8px 46px;
   line-height: 1.53;
   font-size: 13px;
-  /* margin-bottom: 8px; */
   tab-size: 2;
   white-space: pre;
   overflow-x: auto;
@@ -94,12 +94,12 @@
 .PlaygroundEditorTheme__code:before {
   content: attr(data-gutter);
   position: absolute;
-  background-color: #eee;
+  background-color: #18263b;
   left: 0;
   top: 0;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #323f58;
   padding: 8px;
-  color: #777;
+  color: #d1d1d1;
   white-space: pre-wrap;
   text-align: right;
   min-width: 25px;
@@ -267,7 +267,7 @@
 .PlaygroundEditorTheme__ol1 {
   padding: 0;
   margin: 0;
-  margin-left: 16px;
+  margin-left: 16px;  
   list-style-position: inside;
 }
 .PlaygroundEditorTheme__ol2 {
@@ -366,36 +366,30 @@
   transform: rotate(45deg);
   border-width: 0 2px 2px 0;
 }
-.PlaygroundEditorTheme__nestedListItem {
-  list-style-type: none;
-}
-.PlaygroundEditorTheme__nestedListItem:before,
-.PlaygroundEditorTheme__nestedListItem:after {
-  display: none;
-}
+
 .PlaygroundEditorTheme__tokenComment {
   color: slategray;
 }
 .PlaygroundEditorTheme__tokenPunctuation {
-  color: #999;
+  color: #f1f1f1;
 }
 .PlaygroundEditorTheme__tokenProperty {
-  color: #905;
+  color: rgb(207, 0, 114);
 }
 .PlaygroundEditorTheme__tokenSelector {
-  color: #690;
+  color: rgb(133, 199, 0);
 }
 .PlaygroundEditorTheme__tokenOperator {
-  color: #9a6e3a;
+  color: #ffbd6d;
 }
 .PlaygroundEditorTheme__tokenAttr {
-  color: #07a;
+  color: #59a9f3;
 }
 .PlaygroundEditorTheme__tokenVariable {
   color: #e90;
 }
 .PlaygroundEditorTheme__tokenFunction {
-  color: #dd4a68;
+  color: #fc5274;
 }
 .PlaygroundEditorTheme__mark {
   background: rgba(255, 212, 0, 0.14);

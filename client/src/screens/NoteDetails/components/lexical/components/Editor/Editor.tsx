@@ -118,7 +118,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
                 contentEditable={
                   <div className="editor" ref={ref}>
                     <div
-                      className="!overflow-y-scroll scrollbar scrollbar-track-gray-600 scrollbar-thumb-gray-700 overflow-x-hidden"                     
+                      className="!overflow-y-scroll scrollbar scrollbar-track-gray-600 scrollbar-thumb-gray-800 overflow-x-hidden"                     
                       style={!noteExpanded?.expanded ? { 
                           width: currentScreenSize.width - 440,
                           height: editorHeight
@@ -186,8 +186,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
 
               {floatingAnchorElem && (
                 <>
-                  {window.outerWidth > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
-                  <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
+                  {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
                   <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
                 </>
               )}

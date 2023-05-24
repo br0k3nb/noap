@@ -54,7 +54,7 @@ function YouTubeComponent({
       nodeKey={nodeKey}
     >
       <iframe
-        className="w-[700px] h-[415px] xxs:!h-44 !object-cover rounded-lg"
+        className="w-[700px] h-[415px] xxs:!h-[13.7rem] !object-cover rounded-lg"
         src={`https://www.youtube.com/embed/${videoID}`}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}

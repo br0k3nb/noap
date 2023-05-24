@@ -1,4 +1,5 @@
 @import 'https://fonts.googleapis.com/css?family=Reenie+Beanie';
+@import 'https://fonts.googleapis.com/css2?family=Amatic+SC&family=Bangers&family=Dancing+Script&family=Montserrat&family=Nanum+Gothic+Coding&family=Roboto&family=Source+Code+Pro&display=swap';
 
 header {
   margin: auto;
@@ -1533,16 +1534,14 @@ button.item.dropdown-item-active i {
 }
 
 hr {
-  padding: 2px 2px;
+  padding: 1px 1px;
   border: none;
   margin: 1em 0;
   cursor: pointer;
-  background-color: #888686;
+  background-color: #1f2937;
 }
 
 hr:after {
-  content: '';
-  /* display: block; */
   height: 2px;
   background-color: #ccc;
   line-height: 2px;

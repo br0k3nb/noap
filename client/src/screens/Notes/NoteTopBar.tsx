@@ -38,7 +38,7 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
     return (
         <>
             <div className="overflow-hidden flex flex-col pt-2 bg-gray-800 h-[100px]">
-                <div className="flex flex-col mb-[4.2px]">
+                <div className="flex flex-col mb-[4px]">
                     <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
                         <div className="text-center flex flex-row space-x-1 px-2">
                         <span> <BsJournalText size={23} className="pt-1" /> </span>
@@ -73,10 +73,10 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                     value={search}
                 />
             </motion.div>
-            <div className="!bg-gray-800 border border-transparent border-t-gray-600 border-b-gray-600 text-gray-300">
+            <div className="!bg-gray-800 border border-transparent border-t-gray-700 border-b-gray-700 text-gray-300">
                 <div className="btn-group !bg-gray-800 flex !justify-between px-6">
                     <button 
-                        className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
+                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
                         disabled={page === 1 ? true : false}
                         onClick={() => setPage(page - 1)}
                     > 
@@ -84,7 +84,7 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                     </button>
                     <p className="!bg-gray-800 uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
                     <button 
-                        className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
+                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
                         disabled={hasNextPage ? false : true}
                         onClick={() => setPage(page + 1)}
                     >

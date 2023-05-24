@@ -153,14 +153,24 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                       )
                   })}
                 </>
-              ) : ( <p className="text-xs uppercase tracking-widest mt-[2px] px-2 pt-1 h-[25px] bg-gray-900 rounded-full">No labels attached!</p> )}
+              ) : ( 
+                <p className="text-xs uppercase tracking-widest mt-[2px] px-2 pt-1 h-[25px] bg-gray-900 rounded-full">No labels attached!</p> 
+              )}
             </div>
               <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
               <button
                 onClick={() => save(editor.getEditorState())}
                 className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-gray-600 px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 transition-all ease-in-out duration-500"
               >
-                {saveSpinner ? ( <SvgLoader options={{ showLoadingText: true, LoadingTextClassName: "!text-[12px]" }} /> ) : (
+                {saveSpinner ? ( 
+                  <SvgLoader 
+                    options={{ 
+                      showLoadingText: true, 
+                      LoadingTextClassName: "!text-[12px]", 
+                      wrapperClassName: "xxs:px-2"
+                    }} 
+                  /> 
+                ) : (
                   <div className="flex space-x-0 xl:space-x-2">
                     <p className="mt-[2px] hidden xl:inline">Save note</p>
                     <AiFillSave size={20} />

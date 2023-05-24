@@ -1,6 +1,7 @@
 type Props = {
     options: {
         showLoadingText: boolean;
+        customLoadingText?: string;
         LoaderClassName?: string;
         LoadingTextClassName?: string;
         wrapperClassName?: string;
@@ -8,7 +9,7 @@ type Props = {
 }
 
 export default function SvgLoader({ options }: Props) {
-    const { showLoadingText, LoaderClassName, LoadingTextClassName, wrapperClassName } = options as any;
+    const { showLoadingText, customLoadingText, LoaderClassName, LoadingTextClassName, wrapperClassName } = options as any;
     return (
         <div className={`flex flex-row justify-center animate-pulse ${wrapperClassName && wrapperClassName}`}>
             <svg
@@ -28,7 +29,7 @@ export default function SvgLoader({ options }: Props) {
             </svg>
             {showLoadingText && (
                 <span className={`pb-[3px] xxs:pt-[2.4px] text-sm uppercase tracking-widest ${LoadingTextClassName && LoadingTextClassName}`}>
-                    Loading...
+                    {customLoadingText ? customLoadingText : "Loading..."}
                 </span>
             )}
         </div>
