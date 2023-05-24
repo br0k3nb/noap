@@ -118,7 +118,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
                 contentEditable={
                   <div className="editor" ref={ref}>
                     <div
-                      className="!overflow-y-scroll scrollbar scrollbar-track-gray-600 scrollbar-thumb-gray-800 overflow-x-hidden"                     
+                      className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden"                     
                       style={!noteExpanded?.expanded ? { 
                           width: currentScreenSize.width - 440,
                           height: editorHeight
