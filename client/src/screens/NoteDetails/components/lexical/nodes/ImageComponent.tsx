@@ -38,6 +38,7 @@ import { Suspense, useCallback, useEffect, useRef, useState, useContext } from "
 import { motion } from "framer-motion";
 
 import { BsTrash, BsThreeDotsVertical, BsFillFileEarmarkArrowDownFill } from 'react-icons/bs';
+import { AiOutlineFullscreen } from 'react-icons/ai';
 
 import { createWebsocketProvider } from "../collaboration";
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
@@ -51,6 +52,7 @@ import Placeholder from "../ui/Placeholder";
 import { $isImageNode } from "./ImageNode";
 
 import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import Modal from "../../../../../components/Modal";
 
 const imageCache = new Set();
 
@@ -76,11 +78,11 @@ function LazyImage({
   height,
   maxWidth,
 }: {
-  altText: string;
-  className: string | null;
+  altText?: string;
+  className?: string | null;
   height: "inherit" | number;
-  imageRef: { current: null | HTMLImageElement };
-  maxWidth: number;
+  imageRef?: { current: null | HTMLImageElement };
+  maxWidth: number | string;
   src: string;
   width: "inherit" | number;
 }): JSX.Element {
@@ -125,9 +127,10 @@ export default function ImageComponent({
   const { isCollabActive } = useCollaborationContext();
   const [ editor ] = useLexicalComposerContext();
 
-  const [ isResizing, setIsResizing ] = useState<boolean>(false);
-  const [ selection, setSelection ] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
   const [ hover, setHover ] = useState(false);
+  const [ isResizing, setIsResizing ] = useState<boolean>(false);
+  const [ openFullscreenModal, setOpenFullscreenModal ] = useState(false);
+  const [ selection, setSelection ] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
   const [ currentScreenSize, setCurrentScreenSize ] = useState(window.innerWidth);
 
   const onDelete = useCallback(
@@ -310,14 +313,31 @@ export default function ImageComponent({
   const defaultStyle = "z-10 !rounded-lg !object-cover xxs:!max-h-96 xxs:!w-screen sm:!max-h-96 lg:!object-fill xl:!max-h-screen";
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={"loading..."}>
+      <Modal 
+        open={openFullscreenModal} 
+        setOpen={setOpenFullscreenModal}
+        options={{
+          titleWrapperClassName: "!border-none absolute right-1 top-1",
+          modalWrapperClassName: "!max-w-fit border border-gray-600",
+          closeButtonClassName: "!border-none"
+        }}
+      >
+        <LazyImage
+          src={src}
+          height={"inherit"}
+          className={"!rounded-xl mt-4"}
+          width={currentScreenSize - 100}
+          maxWidth={700}
+        />
+      </Modal>
       <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
         <div draggable={draggable} className="!object-cover !rounded-lg !relative">
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.3  }}
-              className={`!absolute -top-0 -right-0 !w-8 !bg-gray-500 rounded-bl-lg rounded-tr-lg h-8 hidden ${hover && '!inline'}`}
+              className={`!absolute -top-0 -right-0 !w-8 !bg-gray-900 rounded-bl-lg rounded-tr-lg h-8 hidden ${hover && '!inline'}`}
             >
               <div className="flex flex-row space-x-2 px-2 pt-1 justify-between">  
                 <div className="dropdown dropdown-left">
@@ -342,6 +362,14 @@ export default function ImageComponent({
                         <div className="flex flex-row space-x-2">
                           <span>Download</span>
                           <BsFillFileEarmarkArrowDownFill size={16}/>
+                        </div>
+                      </a>
+                    </li>
+                    <li className="text-xs uppercase tracking-widest">
+                      <a className="active:!bg-gray-600" onClick={() => setOpenFullscreenModal(true)}>
+                        <div className="flex flex-row space-x-2">
+                          <span className="my-auto">Fullscreen</span>
+                          <AiOutlineFullscreen size={20}/>
                         </div>
                       </a>
                     </li>

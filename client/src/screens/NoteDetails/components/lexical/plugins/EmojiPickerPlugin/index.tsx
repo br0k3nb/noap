@@ -1,18 +1,13 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+
+import { $createTextNode, $getSelection, $isRangeSelection, TextNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   LexicalTypeaheadMenuPlugin,
   TypeaheadOption,
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin";
-import {
-  $createTextNode,
-  $getSelection,
-  $isRangeSelection,
-  TextNode,
-} from "lexical";
-import * as React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import * as ReactDOM from "react-dom";
 
 class EmojiOption extends TypeaheadOption {
   title: string;
@@ -46,9 +41,8 @@ function EmojiMenuItem({
   option: EmojiOption;
 }) {
   let className = "item";
-  if (isSelected) {
-    className += " selected";
-  }
+  if (isSelected) className += " selected";
+
   return (
     <li
       key={option.key}
@@ -131,15 +125,10 @@ export default function EmojiPickerPlugin() {
     ) => {
       editor.update(() => {
         const selection = $getSelection();
+        if (!$isRangeSelection(selection) || selectedOption == null) return;
 
-        if (!$isRangeSelection(selection) || selectedOption == null) {
-          return;
-        }
-
-        if (nodeToRemove) {
-          nodeToRemove.remove();
-        }
-
+        if (nodeToRemove) nodeToRemove.remove();
+        
         selection.insertNodes([$createTextNode(selectedOption.emoji)]);
 
         closeMenu();
@@ -158,12 +147,10 @@ export default function EmojiPickerPlugin() {
         anchorElementRef,
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
       ) => {
-        if (anchorElementRef.current == null || options.length === 0) {
-          return null;
-        }
+        if (anchorElementRef.current == null || options.length === 0) return null;
 
         return anchorElementRef.current && options.length
-          ? ReactDOM.createPortal(
+          ? createPortal(
               <div className="typeahead-popover emoji-menu">
                 <ul>
                   {options.map((option: EmojiOption, index) => (
@@ -175,9 +162,7 @@ export default function EmojiPickerPlugin() {
                           setHighlightedIndex(index);
                           selectOptionAndCleanUp(option);
                         }}
-                        onMouseEnter={() => {
-                          setHighlightedIndex(index);
-                        }}
+                        onMouseEnter={() => setHighlightedIndex(index)}
                         option={option}
                       />
                     </div>

@@ -27,16 +27,12 @@ function findAndTransformEmoji(node: TextNode): null | TextNode {
       const [emojiStyle, emojiText] = emojiData;
       let targetNode;
 
-      if (i === 0) {
-        [targetNode] = node.splitText(i + 2);
-      } else {
-        [, targetNode] = node.splitText(i, i + 2);
-      }
+      if (i === 0) [targetNode] = node.splitText(i + 2);
+      else [, targetNode] = node.splitText(i, i + 2);
 
       const emojiNode = $createEmojiNode(emojiStyle, emojiText);
       targetNode.replace(emojiNode);
 
-      //@ts-ignore
       return emojiNode;
     }
   }
@@ -48,9 +44,7 @@ function textNodeTransform(node: TextNode): void {
   let targetNode: TextNode | null = node;
 
   while (targetNode !== null) {
-    if (!targetNode.isSimpleText()) {
-      return;
-    }
+    if (!targetNode.isSimpleText()) return;
 
     targetNode = findAndTransformEmoji(targetNode);
   }
@@ -67,7 +61,8 @@ function useEmojis(editor: LexicalEditor): void {
 }
 
 export default function EmojisPlugin(): JSX.Element | null {
-  const [editor] = useLexicalComposerContext();
+  const [ editor ] = useLexicalComposerContext();
   useEmojis(editor);
+
   return null;
 }
