@@ -54,13 +54,15 @@ function DropDownItems({
   children,
   dropDownRef,
   onClose,
+  modalClassName
 }: {
   children: ReactNode;
+  modalClassName?: string;
   dropDownRef: Ref<HTMLDivElement>;
   onClose: () => void;
 }) {
-  const [items, setItems] = useState<React.RefObject<HTMLButtonElement>[]>();
-  const [highlightedItem, setHighlightedItem] = useState<React.RefObject<HTMLButtonElement>>();
+  const [ items, setItems ] = useState<React.RefObject<HTMLButtonElement>[]>();
+  const [ highlightedItem, setHighlightedItem ] = useState<React.RefObject<HTMLButtonElement>>();
 
   const registerItem = useCallback(
     (itemRef: React.RefObject<HTMLButtonElement>) => {
@@ -94,9 +96,7 @@ function DropDownItems({
   };
 
   const contextValue = useMemo(
-    () => ({
-      registerItem,
-    }),
+    () => ({registerItem}),
     [registerItem]
   );
 
@@ -107,7 +107,11 @@ function DropDownItems({
 
   return (
     <DropDownContext.Provider value={contextValue}>
-      <div className="dropdown-lexical" ref={dropDownRef} onKeyDown={handleKeyDown}>
+      <div 
+        className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500`} 
+        ref={dropDownRef} 
+        onKeyDown={handleKeyDown}
+      >
         {children}
       </div>
     </DropDownContext.Provider>
@@ -119,6 +123,7 @@ export default function DropDown({
   buttonLabel,
   buttonAriaLabel,
   buttonClassName,
+  modalClassName,
   buttonIconClassName,
   children,
   stopCloseOnClickSelf,
@@ -126,6 +131,7 @@ export default function DropDown({
   disabled?: boolean;
   buttonAriaLabel?: string;
   buttonClassName: string;
+  modalClassName?: string;
   buttonIconClassName?: string;
   buttonLabel?: string;
   children: ReactNode;
@@ -184,7 +190,11 @@ export default function DropDown({
 
       {showDropDown &&
         createPortal(
-          <DropDownItems dropDownRef={dropDownRef} onClose={handleClose}>
+          <DropDownItems 
+            modalClassName={modalClassName} 
+            dropDownRef={dropDownRef} 
+            onClose={handleClose}
+          >
             {children}
           </DropDownItems>,
           document.body,

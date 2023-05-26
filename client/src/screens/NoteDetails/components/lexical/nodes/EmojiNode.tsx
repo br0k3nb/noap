@@ -1,19 +1,4 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import type {
-  EditorConfig,
-  LexicalNode,
-  NodeKey,
-  SerializedTextNode,
-  Spread,
-} from "lexical";
-
+import type { EditorConfig, LexicalNode, NodeKey, SerializedTextNode, Spread } from "lexical";
 import { $applyNodeReplacement, TextNode } from "lexical";
 
 export type SerializedEmojiNode = Spread<
@@ -49,15 +34,10 @@ export class EmojiNode extends TextNode {
     return dom;
   }
 
-  updateDOM(
-    prevNode: TextNode,
-    dom: HTMLElement,
-    config: EditorConfig
-  ): boolean {
+  updateDOM(prevNode: TextNode, dom: HTMLElement, config: EditorConfig): boolean {
     const inner = dom.firstChild;
-    if (inner === null) {
-      return true;
-    }
+    if (inner === null) return true;
+    
     super.updateDOM(prevNode, inner as HTMLElement, config);
     return false;
   }
@@ -88,16 +68,11 @@ export class EmojiNode extends TextNode {
   }
 }
 
-export function $isEmojiNode(
-  node: LexicalNode | null | undefined
-): node is EmojiNode {
+export function $isEmojiNode(node: LexicalNode | null | undefined): node is EmojiNode {
   return node instanceof EmojiNode;
 }
 
-export function $createEmojiNode(
-  className: string,
-  emojiText: string
-): EmojiNode {
+export function $createEmojiNode(className: string, emojiText: string): EmojiNode {
   const node = new EmojiNode(className, emojiText).setMode("token");
   return $applyNodeReplacement(node);
 }

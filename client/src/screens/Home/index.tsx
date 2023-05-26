@@ -18,6 +18,8 @@ import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
 import LabelsCtx from "../../context/LabelCtx";
 
+import default_editor_state from "../../datasets/default_editor_state.json";
+
 import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
@@ -52,7 +54,7 @@ export default function Home(): JSX.Element {
   });
 
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-  if (Object.keys(parsedUserToken).length === 0) navigate("/");
+  useEffect(() => { Object.keys(parsedUserToken).length === 0 && navigate("/") }, []);
   
   const { token, _id } = parsedUserToken;
 
@@ -65,48 +67,51 @@ export default function Home(): JSX.Element {
 
   const fetchNotes = async () => { 
     setBlurFlag(false);
-    try {
-      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${_id}/${token}`, { 
-        params: { search: delayedSearch, page, limit: 10 }
-      });
-
-      setTotalDocs(totalDocs);
-      setHasNextPage(hasNextPage);
-
-      if (fields.length === 0) append(docs);
-      else replace(docs);
-    } catch (err) {
-      console.log(err);
-      signOutUser();
+    if(_id) {
+      try {
+        const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${_id}/${token}`, { 
+          params: { search: delayedSearch, page, limit: 10 }
+        });
+  
+        setTotalDocs(totalDocs);
+        setHasNextPage(hasNextPage);
+  
+        if (fields.length === 0) append(docs);
+        else replace(docs);
+      } catch (err) {
+        console.log(err);
+        signOutUser();
+      }
     }
   };
 
   const fetchLabels = async () => {
-    try {
-        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
-          params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
-        });
-
-        setHasNextPageLabel(hasNextPage);
-
-        if (labels.length === 0) appendLabels(docs);
-        else replaceLabels(docs);
-    } catch (err) {
-      console.log(err);
-      signOutUser();
+    if(_id) {
+      try {
+          const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
+            params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
+          });
+  
+          setHasNextPageLabel(hasNextPage);
+  
+          if (labels.length === 0) appendLabels(docs);
+          else replaceLabels(docs);
+      } catch (err) {
+        console.log(err);
+        signOutUser();
+      }
     }
-}
+  }
 
   const addNewNote = async () => {
     setShowLoaderOnNavbar(true);
-    const defaultLexicalState = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
     try {
       await api.post(`/add/${token}`, {
           title: "Untitled",
           body: "",
           image: "no image attached",
-          state: defaultLexicalState,
+          state: JSON.stringify(default_editor_state),
           userId: _id,
         }
       );

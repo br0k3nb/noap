@@ -17,7 +17,7 @@ import { useSharedHistoryContext } from "../../context/SharedHistoryContext";
 import AutoEmbedPlugin from "../../plugins/AutoEmbedPlugin";
 import AutoLinkPlugin from "../../plugins/AutoLinkPlugin";
 // import LexicalClickableLinkPlugin from '@lexical/react/LexicalClickableLinkPlugin';
-// import ClickableLinkPlugin from "./plugins/ClickableLinkPlugin";
+import ClickableLinkPlugin from "../../plugins/ClickableLinkPlugin";
 import CodeHighlightPlugin from "../../plugins/CodeHighlightPlugin";
 import CodeActionMenuPlugin from "../../plugins/CodeActionMenuPlugin";
 import CollapsiblePlugin from "../../plugins/CollapsiblePlugin";
@@ -168,6 +168,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
               <ImagesPlugin captionsEnabled={true} />
               <HistoryPlugin externalHistoryState={historyState} />
               <LinkPlugin />
+              <ClickableLinkPlugin />
               {/* <AutocompletePlugin /> */}
               {/* <PollPlugin /> */}
               {/* <MarkdownShortcutPlugin /> */}

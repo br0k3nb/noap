@@ -23,7 +23,7 @@ import {
   TextNode,
 } from "lexical";
 import { useCallback, useMemo, useState, useContext } from "react";
-import * as ReactDOM from "react-dom";
+import { createPortal } from "react-dom";
 
 import useModal from "../../hooks/useModal";
 import { EmbedConfigs } from "../AutoEmbedPlugin";
@@ -318,9 +318,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       matchingString: string
     ) => {
       editor.update(() => {
-        if (nodeToRemove) {
-          nodeToRemove.remove();
-        }
+        if (nodeToRemove) nodeToRemove.remove();
         selectedOption.onSelect(matchingString);
         closeMenu();
       });
@@ -339,31 +337,51 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
         menuRenderFn={(
           anchorElementRef,
           { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
-        ) =>
-          anchorElementRef.current && options.length
-            ? ReactDOM.createPortal(
-                <div className="typeahead-popover component-picker-menu !bg-gray-800">
-                  <ul>
+        ) => {
+            if (anchorElementRef.current == null || options.length === 0) return null;
+
+            const getElPositionData = anchorElementRef.current.getBoundingClientRect();
+            const { x, y } = getElPositionData;
+
+            const overflowXAxis = window.innerWidth - x < 176;
+            const overflowYAxis = window.innerHeight - y < 260;
+
+            console.log(overflowYAxis);
+
+            return anchorElementRef.current && options.length
+            ? createPortal(
+                <div 
+                  className={`typeahead-popover component-picker-menu !bg-gray-800 
+                    ${overflowXAxis && !overflowYAxis ? "!absolute !-left-44" 
+                    : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5" 
+                    : overflowXAxis && overflowYAxis ? "!absolute !-left-52 !-top-48" 
+                    : undefined}
+                  `}
+                >
+                  <ul className="!h-[180px] border border-gray-600">
                     {options.map((option, i: number) => (
-                      <ComponentPickerMenuItem
-                        index={i}
-                        isSelected={selectedIndex === i}
-                        onClick={() => {
-                          setHighlightedIndex(i);
-                          selectOptionAndCleanUp(option);
-                        }}
-                        onMouseEnter={() => {
-                          setHighlightedIndex(i);
-                        }}
-                        key={option.key}
-                        option={option}
-                      />
+                      <div key={option.key}>
+                        <ComponentPickerMenuItem
+                          index={i}
+                          isSelected={selectedIndex === i}
+                          onClick={() => {
+                            setHighlightedIndex(i);
+                            selectOptionAndCleanUp(option);
+                          }}
+                          onMouseEnter={() => setHighlightedIndex(i)}
+                          option={option}
+                        />
+                        {i !== options.length - 1 && (
+                          <div className="border border-transparent border-t-gray-700 mx-2"/>
+                        )}
+                      </div>
                     ))}
                   </ul>
                 </div>,
                 anchorElementRef.current
               )
             : null
+          }
         }
       />
     </>

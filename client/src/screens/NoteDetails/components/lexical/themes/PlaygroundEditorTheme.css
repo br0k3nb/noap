@@ -68,11 +68,14 @@
 }
 .PlaygroundEditorTheme__hashtag {
   background-color: rgba(88, 144, 255, 0.15);
-  border-bottom: 1px solid rgba(88, 144, 255, 0.3);
+  border-bottom: 1px solid rgba(88, 113, 255, 0.3);
 }
 .PlaygroundEditorTheme__link {
-  color: rgb(33, 111, 219);
+  color: rgb(69, 145, 252);
   text-decoration: none;
+}
+.PlaygroundEditorTheme__link span {
+  cursor: pointer;
 }
 .PlaygroundEditorTheme__link:hover {
   text-decoration: underline;

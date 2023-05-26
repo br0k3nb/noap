@@ -212,7 +212,7 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .typeahead-popover {
-  background: #fff;
+  background: #111827;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   margin-top: 25px;
@@ -246,13 +246,12 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .typeahead-popover ul li.selected {
-  background: #eee;
+  background: #111827;
 }
 
 .typeahead-popover li {
   margin: 0 8px 0 8px;
   padding: 8px;
-  color: #050505;
   cursor: pointer;
   line-height: 16px;
   font-size: 15px;
@@ -260,7 +259,7 @@ pre::-webkit-scrollbar-thumb {
   align-content: center;
   flex-direction: row;
   flex-shrink: 0;
-  background-color: #fff;
+  background-color: #1f2937;
   border-radius: 8px;
   border: 0;
 }
@@ -281,7 +280,7 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .typeahead-popover li:hover {
-  background-color: #eee;
+  background-color: #111827;
 }
 
 .typeahead-popover li .text {
@@ -667,21 +666,19 @@ i.prettier-error {
 }
 
 .dropdown-lexical .item {
-  margin: 0 8px 0 8px;
+  /* margin: 0 8px 0 8px; */
   padding: 8px;
   color: rgb(229 231 235) !important;
   cursor: pointer;
-  line-height: 16px;
-  font-size: 15px;
+  line-height: 15px;
+  font-size: 16px;
   display: flex;
-  align-content: center;
-  flex-direction: row;
+  /* align-content: center; */
   flex-shrink: 0;
-  justify-content: space-between;
+  justify-content: center;
   border-radius: 8px;
   border: 0;
-  max-width: 250px;
-  min-width: 100px;
+  max-width: 230px;
 }
 
 .dropdown-lexical .item.fontsize-item,
@@ -704,9 +701,9 @@ i.prettier-error {
   margin-bottom: 8px;
 }
 
-.dropdown-lexical .item:hover {
+/* .dropdown-lexical .item:hover {
   background-color: rgb(75 85 99);
-}
+} */
 
 .dropdown-lexical .item .text {
   display: flex;
@@ -747,7 +744,7 @@ i.prettier-error {
 }
 
 .comp-picker {
-  filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(357deg) brightness(104%) contrast(101%);
+  filter: invert(100%) sepia(36%) saturate(1130%) hue-rotate(177deg) brightness(88%) contrast(95%);
 }
 
 .icon.paragraph {
@@ -1033,22 +1030,6 @@ i.prettier-error {
   background-color: rgba(150, 150, 150, 0.4);
 }
 
-.emoji.happysmile {
-  background-image: url(images/emoji/1F642.png);
-}
-
-.emoji.veryhappysmile {
-  background-image: url(images/emoji/1F600.png);
-}
-
-.emoji.unhappysmile {
-  background-image: url(images/emoji/1F641.png);
-}
-
-.emoji.heart {
-  background-image: url(images/emoji/2764.png);
-}
-
 .keyword {
   color: rgb(241, 118, 94);
   font-weight: bold;
@@ -1253,23 +1234,21 @@ button.action-button:disabled {
 }
 
 .toolbar {
-  display: flex;
-  margin-bottom: 1px;
-  background: #fff;
-  padding: 0px; 
-  vertical-align: middle;
-  overflow: auto;
-  height: 70px;
   width: 100%;
+  padding: 0px; 
+  height: 70px;
+  display: flex;
+  overflow: auto;
   flex-wrap: inherit;
+  margin-bottom: 1px;
+  vertical-align: middle;
 }
 
 .toolbar button.toolbar-item {
-  border: 0;
   display: flex;
+  padding: 8px;
   background: none;
   border-radius: 10px;
-  padding: 8px;
   cursor: pointer;
   vertical-align: middle;
   flex-shrink: 0;
@@ -1371,9 +1350,6 @@ i.format {
 .toolbar .divider {
   width: 1px;
   background-color: #636363;
-  /* height: 2px;
-  margin-top: 20px;
-  margin-bottom: 10px; */
   margin: 0 4px;
 }
 
