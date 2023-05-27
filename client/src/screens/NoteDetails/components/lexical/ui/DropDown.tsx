@@ -74,6 +74,7 @@ function DropDownItems({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!items) return;
 
+    console.log("i was executed2");
     const key = event.key;
 
     if (["Escape", "ArrowUp", "ArrowDown", "Tab"].includes(key)) event.preventDefault();
@@ -121,9 +122,11 @@ function DropDownItems({
 export default function DropDown({
   disabled = false,
   buttonLabel,
-  buttonAriaLabel,
+  buttonLabelClassName,
+  useCustomButton,
   buttonClassName,
   modalClassName,
+  customButtonLabel,
   buttonIconClassName,
   children,
   stopCloseOnClickSelf,
@@ -132,14 +135,17 @@ export default function DropDown({
   buttonAriaLabel?: string;
   buttonClassName: string;
   modalClassName?: string;
+  useCustomButton?: any;
   buttonIconClassName?: string;
+  buttonLabelClassName?: string;
+  customButtonLabel?: any;
   buttonLabel?: string;
   children: ReactNode;
   stopCloseOnClickSelf?: boolean;
 }): JSX.Element {
   const dropDownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [showDropDown, setShowDropDown] = useState(false);
+  const buttonRef = useRef<any>(null);
+  const [ showDropDown, setShowDropDown ] = useState(false);
 
   const handleClose = () => {
     setShowDropDown(false);
@@ -151,9 +157,13 @@ export default function DropDown({
     const dropDown = dropDownRef.current;
 
     if (showDropDown && button !== null && dropDown !== null) {
-      const {top, left} = button.getBoundingClientRect();
+      const { top, left } = button.getBoundingClientRect();
+
+      const usingCustomButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20) - 12}px`;
+      const usingDefaultButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20)}px`;
+
       dropDown.style.top = `${top + 40}px`;
-      dropDown.style.left = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20)}px`;
+      dropDown.style.left = useCustomButton ? usingCustomButton : usingDefaultButton;
     }
   }, [dropDownRef, buttonRef, showDropDown]);
 
@@ -163,6 +173,7 @@ export default function DropDown({
     if (button !== null && showDropDown) {
       const handle = (event: MouseEvent) => {
         const target = event.target;
+        console.log(target)
         if (stopCloseOnClickSelf) {
           if (dropDownRef.current && dropDownRef.current.contains(target as Node)) return;
         }
@@ -177,16 +188,40 @@ export default function DropDown({
 
   return (
     <>
-      <button
-        disabled={disabled}
-        aria-label={buttonAriaLabel || buttonLabel}
-        className={buttonClassName}
-        onClick={() => setShowDropDown(!showDropDown)}
-        ref={buttonRef}>
-        {buttonIconClassName && <span className={buttonIconClassName} />}
-        {buttonLabel && <span className="text dropdown-button-text">{buttonLabel}</span>}
-        <i className="chevron-down comp-picker" />
-      </button>
+      {!useCustomButton ? (
+        <button
+          disabled={disabled}
+          className={buttonClassName}
+          onClick={() => setShowDropDown(!showDropDown)}
+          ref={buttonRef}
+        >
+          {buttonIconClassName && <span className={buttonIconClassName} />}
+          {buttonLabel && 
+            <span 
+              className={`text dropdown-button-text ${buttonLabelClassName && buttonLabelClassName}`}
+            >
+              {buttonLabel}
+            </span>
+          }
+          <i className="chevron-down comp-picker" />
+        </button>
+      ) : (
+        <button 
+          className="border border-gray-600 hover:!border-gray-500 rounded-lg h-8 my-auto hover:bg-gray-600"
+          onClick={() => setShowDropDown(!showDropDown)}
+          ref={buttonRef}
+        >
+          <div className="my-1 mr-1 text-gray-200">
+            {(buttonLabel && !customButtonLabel) ? (
+              <span 
+                className={`text dropdown-button-text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}
+              >
+                {buttonLabel}
+              </span>
+            ) : customButtonLabel}
+          </div>
+        </button>
+      )}
 
       {showDropDown &&
         createPortal(

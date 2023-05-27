@@ -298,20 +298,27 @@ function FontDropDown({
   editor,
   value,
   style,
-  disabled = false
+  disabled = false,
+  customLabelSetter,
+  customLabel,
+  isFontSizeModal,
 }: {
   editor: LexicalEditor;
   value: string;
   style: string;
   disabled?: boolean;
+  customLabelSetter?: any;
+  customLabel?: any;
+  isFontSizeModal?: boolean;
 }): JSX.Element {
+
   const handleClick = useCallback(
-    (option: string) => {
+    (option: string, styleType?: string) => {
       editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
           $patchStyleText(selection, {
-            [style]: option,
+            [styleType ? styleType : style]: option,
           });
         }
       });
@@ -319,50 +326,70 @@ function FontDropDown({
     [editor, style]
   );
 
-  const buttonAriaLabel =
-    style === "font-family"
-      ? "Formatting options for font family"
-      : "Formatting options for font size";
+  const parseFontSizeToNumber = (fontSize: string) => {
+    const reg = new RegExp(/^\d+/, "gi");
+    const getFontSize = reg.exec(fontSize);
+    return getFontSize && getFontSize[0]
+  }
       
-      const userAgent = navigator.userAgent;
-      let browserName;
-      
-      if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
-      else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
+  const userAgent = navigator.userAgent;
+  let browserName;
+  
+  if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
+  else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
+
+  // const customButtonLabel = 
+  //   <input 
+  //     type="text" 
+  //     className="w-10 rounded bg-inherit text-center" 
+  //     id="changeFontSize"
+  //     value={customLabel}
+  //     onChange={(e) => {
+  //       const val = e.target.value;
+
+  //       if(!Number(val)) return customLabelSetter("");
+  //       if(Number(val) && val.length > 3) return customLabelSetter(val.slice(0,3) + "px", "font-size");
+
+  //       customLabelSetter(Number(val) <= 100 ? val : 100);
+  //     }}
+  //   />
 
   return (
     <DropDown
       modalClassName={`
         !max-h-[338px] overflow-scroll scrollbar-track-transparent scrollbar-thumb-gray-900
-        ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"} 
+        ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
+        ${isFontSizeModal && "!w-16 xxs:!w-[58px] overflow-x-hidden"}
       `}
       disabled={disabled}
-      buttonClassName={`toolbar-item ` + style}
-      buttonLabel={value}
-      buttonIconClassName={style === "font-family" ? "icon block-type font-family comp-picker" : ""}
-      buttonAriaLabel={buttonAriaLabel}
+      buttonClassName={`toolbar-item hover:!bg-transparent ${isFontSizeModal && "!hidden"} ` + style}
+      buttonLabelClassName={`${isFontSizeModal && "pl-2 pr-1"}`}
+      // customButtonLabel={isFontSizeModal ? customButtonLabel : false}
+      buttonLabel={isFontSizeModal ? parseFontSizeToNumber(value) as string : value}
+      buttonIconClassName={!isFontSizeModal ? "icon block-type font-family comp-picker" : ""}
+      useCustomButton={isFontSizeModal ? true : false}
     >
-      {(style === "font-family" ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
-        ([option, text], i: number) => (
-          <>
-            <DropDownItem
-              className={`item !pb-0 !pt-0 ${style === "font-size" ? "fontsize-item" : ""}`}
-              onClick={() => handleClick(option)}
-              key={option}
+      {(!isFontSizeModal ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
+        ([option, text]) => (
+          <DropDownItem
+            className={`item !pb-0 !pt-0 mx-auto ${style !== "font-family" && "!w-14"}`}
+            onClick={() => handleClick(option)}
+            key={option}
+          >
+            <div 
+              className={`bg-gray-800 hover:bg-gray-700 my-1 rounded-lg
+                ${!isFontSizeModal ? "!mx-2 w-screen" : "!w-[50px]"}
+                ${dropDownActiveClass(value === option)}
+              `}
             >
-              <div 
-                className={`bg-gray-800 hover:bg-gray-700 px-2 my-1 rounded-lg
-                  ${style !== "font-size" ? "!mx-2 w-screen" : "!w-[50px]"}
-                  ${dropDownActiveClass(value === option)}
-                `}
+              <p 
+                style={{fontFamily: option}} 
+                className={`text-start py-[14px] px-2 ${isFontSizeModal && "!text-center !px-0"}`}
               >
-                <p style={{fontFamily: option}} className="text-start py-[14px]">{text}</p>
-              </div>
-            </DropDownItem>
-            {(i < FONT_SIZE_OPTIONS.length - 1 && style !== "font-family") && (
-              <div className="border border-transparent border-t-gray-700 mx-3"/>
-            )}
-          </>
+                {isFontSizeModal ? parseFontSizeToNumber(text) : text}
+              </p>
+            </div>
+          </DropDownItem>
         )
       )}
     </DropDown>
@@ -395,8 +422,9 @@ export default function ToolbarPlugin({ titleFocused }: any) {
   const [ codeLanguage, setCodeLanguage ] = useState<string>('');
   const [ isEditable, setIsEditable ] = useState(!titleFocused ? () => editor.isEditable() : false);
   const [ screenSize, setScreenSize ] = useState<number>(0);
+  const [ fontSizeInputText, setFontSizeInputText ] = useState(14);
 
-  let prevNodeKey = useRef<null | string>(null);
+  const prevNodeKey = useRef<null | string>(null);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -572,14 +600,16 @@ export default function ToolbarPlugin({ titleFocused }: any) {
         }
       });
     },
-    [editor]
+    [editor, fontSizeInputText]
   );
 
   const handleIncrementFontSizeButton = () => {
     if(getFontSize) {
       const parsedFontSize = parseInt(getFontSize[0]);
-      setFontSize((parsedFontSize + 1) + 'px');
-      updateFontSize((parsedFontSize + 1) + 'px');
+      if(parsedFontSize < 100) {
+        setFontSize((parsedFontSize + 1) + 'px');
+        updateFontSize((parsedFontSize + 1) + 'px');
+      }
     }
   }
 
@@ -652,7 +682,7 @@ export default function ToolbarPlugin({ titleFocused }: any) {
         </DropDown>
       ) : (
         <>
-          <FontDropDown 
+          <FontDropDown
             disabled={!isEditable} 
             style={"font-family"} 
             value={fontFamily} 
@@ -662,23 +692,24 @@ export default function ToolbarPlugin({ titleFocused }: any) {
           <div className="mx-1 flex flex-row space-x-2">
             <button 
               onClick={() => handleIncrementFontSizeButton()}
-              className="w-8 hover:bg-gray-600 rounded-lg" 
+              className="w-8 h-8 my-auto hover:bg-gray-600 rounded-lg"
             > 
-              <span className="px-2">+</span> 
+              <span className="">+</span> 
             </button>
-            <div className="border border-gray-600 rounded-lg">
-              <FontDropDown 
-                disabled={!isEditable} 
-                style={"font-size"} 
-                value={fontSize} 
-                editor={editor} 
-              />
-            </div>
+            <FontDropDown
+              customLabel={fontSizeInputText}
+              customLabelSetter={setFontSizeInputText}
+              isFontSizeModal={true}
+              disabled={!isEditable} 
+              style={"font-size"} 
+              value={fontSize} 
+              editor={editor}
+            />
             <button 
               onClick={() => handleDecrementFontSizeButton()}
-              className="w-8 hover:bg-gray-600 rounded-lg"
+              className="w-8 h-8 my-auto hover:bg-gray-600 rounded-lg"
             > 
-              <span className="px-2">-</span> 
+              <span className="">-</span> 
             </button>
           </div>
           <Divider />

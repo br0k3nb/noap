@@ -80,20 +80,22 @@ function ComponentPickerMenuItem({
   let className = "item !bg-gray-800 !text-gray-300 hover:!bg-gray-500";
   if (isSelected) className += " selected";
   return (
-    <li
-      key={option.key}
-      tabIndex={-1}
-      className={className}
-      ref={option.setRefElement}
-      role="option"
-      aria-selected={isSelected}
-      id={"typeahead-item-" + index}
-      onMouseEnter={onMouseEnter}
-      onClick={onClick}
-    >
-      {option.icon}
-      <span className="text">{option.title}</span>
-    </li>
+    <div className="flex flex-row space-x-2 py-1">
+      <li
+        key={option.key}
+        tabIndex={-1}
+        className={className}
+        ref={option.setRefElement}
+        role="option"
+        aria-selected={isSelected}
+        id={"typeahead-item-" + index}
+        onMouseEnter={onMouseEnter}
+        onClick={onClick}
+      >
+        {option.icon}
+        <span className="text">{option.title}</span>
+      </li>
+    </div>
   );
 }
 
@@ -343,8 +345,8 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
             const getElPositionData = anchorElementRef.current.getBoundingClientRect();
             const { x, y } = getElPositionData;
 
-            const overflowXAxis = window.innerWidth - x < 176;
-            const overflowYAxis = window.innerHeight - y < 260;
+            const overflowXAxis = window.outerWidth - x < 176;
+            const overflowYAxis = window.outerHeight - y < 260;
 
             console.log(overflowYAxis);
 

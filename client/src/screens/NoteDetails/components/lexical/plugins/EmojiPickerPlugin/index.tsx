@@ -155,8 +155,8 @@ export default function EmojiPickerPlugin() {
         const getElPositionData = anchorElementRef.current.getBoundingClientRect();
         const { x, y } = getElPositionData;
 
-        const overflowXAxis = window.innerWidth - x < 176;
-        const overflowYAxis = window.innerHeight - y < 240;
+        const overflowXAxis = window.outerWidth - x < 176;
+        const overflowYAxis = window.outerHeight - y < 240;
 
         return anchorElementRef.current && options.length
           ? createPortal(
