@@ -312,19 +312,18 @@ function FontDropDown({
   isFontSizeModal?: boolean;
 }): JSX.Element {
 
-  const handleClick = useCallback(
-    (option: string, styleType?: string) => {
+  const handleClick = useCallback((option: string) => {
       editor.update(() => {
         const selection = $getSelection();
+
         if ($isRangeSelection(selection)) {
-          $patchStyleText(selection, {
-            [styleType ? styleType : style]: option,
-          });
+          $patchStyleText(selection, { [style]: option });
         }
       });
     },
     [editor, style]
   );
+
 
   const parseFontSizeToNumber = (fontSize: string) => {
     const reg = new RegExp(/^\d+/, "gi");
@@ -338,21 +337,22 @@ function FontDropDown({
   if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
   else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
-  // const customButtonLabel = 
-  //   <input 
-  //     type="text" 
-  //     className="w-10 rounded bg-inherit text-center" 
-  //     id="changeFontSize"
-  //     value={customLabel}
-  //     onChange={(e) => {
-  //       const val = e.target.value;
+  
+  const customButtonLabel = 
+    <input 
+      type="text" 
+      className="w-10 rounded bg-inherit text-center" 
+      id="changeFontSize"
+      value={customLabel}
+      onChange={(e) => {
+        const val = e.target.value;
 
-  //       if(!Number(val)) return customLabelSetter("");
-  //       if(Number(val) && val.length > 3) return customLabelSetter(val.slice(0,3) + "px", "font-size");
+        if(!Number(val)) return customLabelSetter("");
+        if(Number(val) && val.length > 3) return customLabelSetter(val.slice(0,3)); 
 
-  //       customLabelSetter(Number(val) <= 100 ? val : 100);
-  //     }}
-  //   />
+        customLabelSetter(Number(val) <= 100 ? val : 100);
+      }}
+    />
 
   return (
     <DropDown
@@ -364,7 +364,7 @@ function FontDropDown({
       disabled={disabled}
       buttonClassName={`toolbar-item hover:!bg-transparent ${isFontSizeModal && "!hidden"} ` + style}
       buttonLabelClassName={`${isFontSizeModal && "pl-2 pr-1"}`}
-      // customButtonLabel={isFontSizeModal ? customButtonLabel : false}
+      customButtonLabel={isFontSizeModal ? customButtonLabel : false}
       buttonLabel={isFontSizeModal ? parseFontSizeToNumber(value) as string : value}
       buttonIconClassName={!isFontSizeModal ? "icon block-type font-family comp-picker" : ""}
       useCustomButton={isFontSizeModal ? true : false}
@@ -423,11 +423,19 @@ export default function ToolbarPlugin({ titleFocused }: any) {
   const [ isEditable, setIsEditable ] = useState(!titleFocused ? () => editor.isEditable() : false);
   const [ screenSize, setScreenSize ] = useState<number>(0);
   const [ fontSizeInputText, setFontSizeInputText ] = useState(14);
+  const [ executedCounter, setExecutedCounter ] = useState(0);
 
+  const [ lastSelection, setLastSelection ] =  useState<any>(null);
   const prevNodeKey = useRef<null | string>(null);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
+
+    if(selection && !lastSelection && executedCounter < 1) {
+      setExecutedCounter(executedCounter + 1);
+      setLastSelection(selection);
+      cleanLastSelection(10000);
+    }
 
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode();
@@ -469,7 +477,8 @@ export default function ToolbarPlugin({ titleFocused }: any) {
           const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
           const type = parentList ? parentList.getListType() : element.getListType();
           setBlockType(type);
-        } else {
+        }
+        else {
           const type = $isHeadingNode(element) ? element.getTag() : element.getType();
           if (type in blockTypeToBlockName) setBlockType(type as keyof typeof blockTypeToBlockName);
 
@@ -490,6 +499,7 @@ export default function ToolbarPlugin({ titleFocused }: any) {
       setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#374151"));
 
       prevNodeKey.current = anchorNode.getKey();
+      setExecutedCounter(0);
     }
   }, [activeEditor]);
 
@@ -529,6 +539,16 @@ export default function ToolbarPlugin({ titleFocused }: any) {
       )
     );
   }, [activeEditor, editor, updateToolbar]);
+
+  function cleanLastSelection(n: number) {  
+    n = n || 2000;
+    console.log(n);
+    return new Promise(done => {
+      setTimeout(() => {
+        done(setLastSelection(null)), n
+      });
+    });
+  }
 
   const applyStyleText = useCallback(
     (styles: Record<string, string>) => {
@@ -590,18 +610,43 @@ export default function ToolbarPlugin({ titleFocused }: any) {
   const getFontSize = reg.exec(fontSize);
 
   const updateFontSize = useCallback(
-    (option: string) => {
+    (option: string, whoCalled?: string) => {
       editor.update(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          $patchStyleText(selection, {
+        console.log(lastSelection);
+      
+        if(whoCalled === "textfield" && lastSelection) {
+          console.log("i was executed");
+          return $patchStyleText(lastSelection, {
+            "font-size": option
+          });
+        }
+        if (whoCalled !== "textfield" && $isRangeSelection(selection)) {
+          console.log("i was executed2");
+          return $patchStyleText(selection, {
             "font-size": option
           });
         }
       });
     },
-    [editor, fontSizeInputText]
+    [editor]
   );
+
+  useEffect(() => {
+    if(fontSizeInputText + "px" !== fontSize) {
+      setTimeout(() => updateFontSize(fontSizeInputText + "px", "textfield"), 1500); 
+    }
+  }, [ fontSizeInputText ]);
+
+  // const el = document.getElementById("editor_lexical");
+  // addEventListener("mouseup", () => {
+  //   if(lastSelection && executedCounter < 1) {
+  //     console.log("i was ecefqw01 ")
+  //     setExecutedCounter(executedCounter + 1);
+  //     cleanLastSelection(10000);
+  //   }
+  // });
+  // console.log(document.getElementById("editor_lexical")?.addEventListener("click", () => "i was clicked"));
 
   const handleIncrementFontSizeButton = () => {
     if(getFontSize) {

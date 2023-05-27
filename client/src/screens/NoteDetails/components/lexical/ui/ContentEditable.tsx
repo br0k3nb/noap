@@ -8,7 +8,7 @@ export default function LexicalContentEditable({
 }): JSX.Element {
   return (
     <>
-      <ContentEditable className={className || "ContentEditable__root"} spellCheck="false" />
+      <ContentEditable className={className || "ContentEditable__root"} id="editor_lexical" spellCheck="false" />
     </>
   );
 }
