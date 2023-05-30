@@ -23,7 +23,9 @@ export default function SignInForm() {
 
   const thereIsATK = JSON.parse( window.localStorage.getItem("user_token") || "{}");
 
-  useEffect(() => Object.keys(thereIsATK).length > 0 ? navigate("/home"): undefined, []);
+  useEffect(() => {
+    if(Object.keys(thereIsATK).length > 0) navigate(`/notes/${thereIsATK._id}/page/1`);
+  }, []);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -59,7 +61,6 @@ export default function SignInForm() {
     try {
       const { data } = await api.post("/sign-in", { email, password });
       window.localStorage.setItem("user_token", JSON.stringify(data));
-      // console.log(data);
 
       setSvgLoader("");
       
