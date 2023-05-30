@@ -71,30 +71,29 @@ function DropDownItems({
     [setItems],
   );
 
-  // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-  //   if (!items) return;
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!items) return;
 
-  //   console.log("i was executed2");
-  //   const key = event.key;
+    const key = event.key;
 
-  //   if (["Escape", "ArrowUp", "ArrowDown", "Tab"].includes(key)) event.preventDefault();
+    if (["Escape", "ArrowUp", "ArrowDown", "Tab"].includes(key)) event.preventDefault();
 
-  //   if (key === "Escape" || key === "Tab") onClose();
-  //   else if (key === "ArrowUp") {
-  //     setHighlightedItem((prev) => {
-  //       if (!prev) return items[0];
-  //       const index = items.indexOf(prev) - 1;
+    if (key === "Escape" || key === "Tab") onClose();
+    else if (key === "ArrowUp") {
+      setHighlightedItem((prev) => {
+        if (!prev) return items[0];
+        const index = items.indexOf(prev) - 1;
 
-  //       return items[index === -1 ? items.length - 1 : index];
-  //     });
-  //   } else if (key === "ArrowDown") {
-  //     setHighlightedItem((prev) => {
-  //       if (!prev) return items[0];
+        return items[index === -1 ? items.length - 1 : index];
+      });
+    } else if (key === "ArrowDown") {
+      setHighlightedItem((prev) => {
+        if (!prev) return items[0];
 
-  //       return items[items.indexOf(prev) + 1];
-  //     });
-  //   }
-  // };
+        return items[items.indexOf(prev) + 1];
+      });
+    }
+  };
 
   const contextValue = useMemo(
     () => ({registerItem}),
@@ -102,8 +101,8 @@ function DropDownItems({
   );
 
   useEffect(() => {
-    // if (items && !highlightedItem) setHighlightedItem(items[0]);
-    // if (highlightedItem && highlightedItem.current) highlightedItem.current.focus();
+    if (items && !highlightedItem) setHighlightedItem(items[0]);
+    if (highlightedItem && highlightedItem.current) highlightedItem.current.focus();
   }, [items, highlightedItem]);
 
   return (
@@ -111,7 +110,7 @@ function DropDownItems({
       <div 
         className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500`} 
         ref={dropDownRef} 
-        // onKeyDown={handleKeyDown}
+        onKeyDown={handleKeyDown}
       >
         {children}
       </div>
@@ -205,26 +204,21 @@ export default function DropDown({
           <i className="chevron-down comp-picker" />
         </button>
       ) : (
-        <div 
+        <button 
           className="border border-gray-600 hover:!border-gray-500 rounded-lg h-8 my-auto hover:bg-gray-600"
-          onClick={(e) => {
-            setShowDropDown(!showDropDown);
-            // document.getElementById("changeFontSize")?.focus();
-            // e.stopPropagation();
-            // e.preventDefault();
-          }}
-          ref={buttonRef} 
+          onClick={() => setShowDropDown(!showDropDown)}
+          ref={buttonRef}
         >
           <div className="my-1 mr-1 text-gray-200">
             {(buttonLabel && !customButtonLabel) ? (
-              <span className={`text dropdown-button-text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}>
+              <span 
+                className={`text dropdown-button-text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}
+              >
                 {buttonLabel}
               </span>
             ) : customButtonLabel}
           </div>
-        {/* <button>
-        </button> */}
-        </div>
+        </button>
       )}
 
       {showDropDown &&

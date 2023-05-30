@@ -1,4 +1,5 @@
 import { useContext, SetStateAction, Dispatch } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
@@ -21,6 +22,9 @@ type Props = {
 
 export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch, hasNextPage, setNavbar, setPage, setSearch, setShowSearch }: Props) {
     const noteContext = useContext(NoteCtx);
+    const location = useLocation();
+
+    const baseURL = location.pathname.slice(0, (location.pathname.length - String(page).length));
 
     const handleSearchClick = () => {
         setShowSearch(showSearch ? false : true);
@@ -75,21 +79,39 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
             </motion.div>
             <div className="!bg-gray-800 border border-transparent border-t-gray-700 border-b-gray-700 text-gray-300">
                 <div className="btn-group !bg-gray-800 flex !justify-between px-6">
-                    <button 
-                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
-                        disabled={page === 1 ? true : false}
-                        onClick={() => setPage(page - 1)}
-                    > 
-                        <MdKeyboardDoubleArrowLeft size={18} />
-                    </button>
+                    {page === 1 ? (
+                        <button 
+                            className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
+                            disabled={true}
+                        > 
+                            <MdKeyboardDoubleArrowLeft size={18} />
+                        </button>
+                    ) : (
+                        <Link 
+                            className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
+                            onClick={() => setPage(page - 1)}
+                            to={baseURL + (page - 1)}
+                        > 
+                            <MdKeyboardDoubleArrowLeft size={18} />
+                        </Link>
+                    )}
                     <p className="!bg-gray-800 uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
-                    <button 
-                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
-                        disabled={hasNextPage ? false : true}
-                        onClick={() => setPage(page + 1)}
-                    >
-                        <MdKeyboardDoubleArrowRight size={18} />
-                    </button>
+                    {!hasNextPage ? (
+                        <button 
+                            className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
+                            disabled={true}
+                        >
+                            <MdKeyboardDoubleArrowRight size={18} />
+                        </button>
+                    ) : (
+                        <Link 
+                            className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
+                            onClick={() => setPage(page + 1)}
+                            to={baseURL + (page + 1)}
+                        > 
+                            <MdKeyboardDoubleArrowRight size={18} />
+                        </Link>
+                    )}
                 </div>
             </div>
         </>
