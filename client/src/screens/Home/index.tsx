@@ -74,8 +74,10 @@ export default function Home(): JSX.Element {
 
     if(getPageInURL) setPage(Number(getPageInURL[1]));
 
+    const pageUrl = getPageInURL ? getPageInURL[1] : 1;
+
     try {
-      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${page}/${_id}/${token}`, { 
+      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${pageUrl}/${_id}/${token}`, { 
         params: { search: delayedSearch, limit: 10 }
       });
 
