@@ -86,7 +86,7 @@ export default function Home(): JSX.Element {
       else replace(docs);
     } catch (err) {
       console.log(err);
-      // signOutUser();
+      signOutUser();
     }
   };
 
@@ -102,7 +102,7 @@ export default function Home(): JSX.Element {
         else replaceLabels(docs);
     } catch (err) {
       console.log(err);
-      // signOutUser();
+      signOutUser();
     }
   }
 
