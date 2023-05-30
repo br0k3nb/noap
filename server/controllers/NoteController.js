@@ -5,15 +5,18 @@ import Label from '../models/Label.js';
 export default {
     async view(req, res) {
         try {
-            const { userId } = req.params;
-            const { search, ...filter } = req.query;
+            const { author, page } = req.params;
+            if(!author || !page) return res.status(404).json({message: "Acess denied!"});
+
+            const { search, limit } = req.query;
+
             const searchRegex = new RegExp(search, 'i');
 
             const aggregate = Note.aggregate(
                 [
                     {
                         $match: {
-                            userId,
+                            author,
                             $or: [
                                 {title: searchRegex},
                                 {'labels.name': searchRegex}
@@ -37,10 +40,10 @@ export default {
                 ]
             );
 
-            const notes = await Note.aggregatePaginate(aggregate, filter);
+            const notes = await Note.aggregatePaginate(aggregate, { page, limit });
             res.status(200).json(notes);
         } catch (err) {
-            res.status(400).json({message: err});
+            res.status(400).json({ message: err });
         }
     },
     async getNote(req, res) {
@@ -49,18 +52,27 @@ export default {
             const note = await Note.findById(id);
             res.status(200).json(note);
         } catch (err) {
-            res.status(400).json({message: err});
+            res.status(400).json({ message: err });
         }
     },
     async add(req , res) {
         try {
-            const {title, body, image, state, userId} = req.body;
+            const { title, body, image, state, author } = req.body;
 
             const { _id } = await NoteState.create({ state });
-            const { _id: noteId } = await Note.create({ title, body, image, state: _id, userId });
-            await NoteState.findOneAndUpdate({_id}, { noteId });
-            res.status(200).json({message: 'Saved susccessfuly!'});
+            const { _id: noteId } = await Note.create({ 
+                title, 
+                body, 
+                image, 
+                state: _id, 
+                author, 
+                settings: { shared: false }
+            });
+
+            await NoteState.findOneAndUpdate({ _id }, { noteId });
+            res.status(200).json({ message: 'Saved susccessfuly!' });
         } catch (err) {
+            console.log(err);
             res.status(400).json({message: 'Error, please try again later!'});
         }
     },
@@ -82,9 +94,9 @@ export default {
             }
            
             await Note.findOneAndUpdate({ _id: noteId }, { labels: [ ...note.labels, ...findLabels ] });
-            res.status(200).json({message: 'Label attached!'});
+            res.status(200).json({ message: 'Label attached!' });
         } catch (err) {
-            res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({ message: 'Error, please try again later!' });
         }
     },
     async edit(req, res) {
@@ -93,9 +105,10 @@ export default {
 
             await Note.findOneAndUpdate({ _id }, { title, body, image });
             await NoteState.findByIdAndUpdate({ _id: stateId }, { state });
-            res.status(200).json({message: 'Note updated!'});
+            
+            res.status(200).json({ message: 'Note updated!' });
         } catch (err) {
-            res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({ message: 'Error, please try again later!' });
         }
     },
     async delete(req, res) {
@@ -106,9 +119,9 @@ export default {
             await NoteState.findByIdAndDelete(state);
             await Note.findByIdAndDelete(id);
             
-            res.status(200).json({message: 'Note deleted!'});
+            res.status(200).json({ message: 'Note deleted!' });
         } catch (err) {
-            res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({ message: 'Error, please try again later!' });
         }
     },
     async deleteLabel(req, res) {
@@ -122,20 +135,21 @@ export default {
             if(!labelToDelete.length === 0) res.status(400).json({ message: "Label not found!"});
 
             labels.splice(labels.indexOf(labelToDelete), 1);
-            await Note.findByIdAndUpdate({_id: noteId}, { labels });
+            await Note.findByIdAndUpdate({ _id: noteId }, { labels });
             
-            res.status(200).json({message: 'Label detached!'});
+            res.status(200).json({ message: 'Label detached!' });
         } catch (err) {
-            res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({ message: 'Error, please try again later!' });
         }
     },
     async deleteAllLabels(req, res) {
         try {
             const { noteId } = req.params;
+
             await Note.findByIdAndUpdate({_id: noteId}, { labels: [] });           
-            res.status(200).json({message: 'Labels detached!'});
+            res.status(200).json({ message: 'Labels detached!' });
         } catch (err) {
-            res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({ message: 'Error, please try again later!' });
         }
     }
 }
