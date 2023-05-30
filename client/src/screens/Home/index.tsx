@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 
@@ -42,6 +42,7 @@ export default function Home(): JSX.Element {
   const delayedSearch = useDebounce(search, 500);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { control } = useForm<Notes>();
   const { control: labelsControl } = useForm<Labels>();
@@ -58,6 +59,9 @@ export default function Home(): JSX.Element {
   
   const { token, _id } = parsedUserToken;
 
+  const findPageInURL = new RegExp(`notes\/${_id}\/page\/([0-9]+)`);
+  const getPageInURL = findPageInURL.exec(location.pathname);
+
   useEffect(() => {
     const updateViewPortWidth = () => setIsMobileDevice(window.innerWidth <= 640 ? true : false);
 
@@ -67,39 +71,38 @@ export default function Home(): JSX.Element {
 
   const fetchNotes = async () => { 
     setBlurFlag(false);
-    if(_id) {
-      try {
-        const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${_id}/${token}`, { 
-          params: { search: delayedSearch, page, limit: 10 }
-        });
-  
-        setTotalDocs(totalDocs);
-        setHasNextPage(hasNextPage);
-  
-        if (fields.length === 0) append(docs);
-        else replace(docs);
-      } catch (err) {
-        console.log(err);
-        signOutUser();
-      }
+
+    if(getPageInURL) setPage(Number(getPageInURL[1]));
+
+    try {
+      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${page}/${_id}/${token}`, { 
+        params: { search: delayedSearch, limit: 10 }
+      });
+
+      setTotalDocs(totalDocs);
+      setHasNextPage(hasNextPage);
+
+      if (fields.length === 0) append(docs);
+      else replace(docs);
+    } catch (err) {
+      console.log(err);
+      signOutUser();
     }
   };
 
   const fetchLabels = async () => {
-    if(_id) {
-      try {
-          const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
-            params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
-          });
-  
-          setHasNextPageLabel(hasNextPage);
-  
-          if (labels.length === 0) appendLabels(docs);
-          else replaceLabels(docs);
-      } catch (err) {
-        console.log(err);
-        signOutUser();
-      }
+    try {
+        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
+          params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
+        });
+
+        setHasNextPageLabel(hasNextPage);
+
+        if (labels.length === 0) appendLabels(docs);
+        else replaceLabels(docs);
+    } catch (err) {
+      console.log(err);
+      signOutUser();
     }
   }
 
@@ -112,7 +115,7 @@ export default function Home(): JSX.Element {
           body: "",
           image: "no image attached",
           state: JSON.stringify(default_editor_state),
-          userId: _id,
+          author: _id,
         }
       );
 
@@ -138,7 +141,7 @@ export default function Home(): JSX.Element {
     navigate("/");
   };
 
-  const { isFetching } = useQuery([ "verifyUser", delayedSearch, page ], fetchNotes, {
+  const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL], fetchNotes, {
     refetchInterval: 300000,
     refetchOnWindowFocus: true
   });

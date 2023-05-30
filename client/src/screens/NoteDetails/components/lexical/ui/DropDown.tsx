@@ -74,7 +74,6 @@ function DropDownItems({
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!items) return;
 
-    console.log("i was executed2");
     const key = event.key;
 
     if (["Escape", "ArrowUp", "ArrowDown", "Tab"].includes(key)) event.preventDefault();
@@ -173,7 +172,6 @@ export default function DropDown({
     if (button !== null && showDropDown) {
       const handle = (event: MouseEvent) => {
         const target = event.target;
-        console.log(target)
         if (stopCloseOnClickSelf) {
           if (dropDownRef.current && dropDownRef.current.contains(target as Node)) return;
         }

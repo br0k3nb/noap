@@ -22,7 +22,17 @@ export default new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         required: true,
     },
-    userId: {
+    settings: {
+        shared: {
+            type: Boolean,
+            required: true
+        },
+        permissions: {
+            type: mongoose.Schema.Types.Mixed,
+            required: false
+        }
+    },
+    author: {
         type: String,
         required: true,
     },

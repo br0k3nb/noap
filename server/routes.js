@@ -22,7 +22,7 @@ router.patch("/convert/account/google/:token", UserController.convertIntoGoogleA
 router.post("/add/:token", verifyUser, NoteController.add);
 router.patch("/edit/:token", verifyUser, NoteController.edit);
 router.get("/note/:id/:token", verifyUser, NoteController.getNote);
-router.get("/notes/:userId/:token", verifyUser, NoteController.view);
+router.get("/notes/:page/:author/:token", verifyUser, NoteController.view);
 router.delete("/delete/:id/:token", verifyUser, NoteController.delete);
 router.post("/note/add/label/:token", verifyUser, NoteController.addLabel);
 router.delete("/note/delete/label/:id/:noteId/:token", verifyUser, NoteController.deleteLabel);

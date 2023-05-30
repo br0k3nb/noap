@@ -59,9 +59,11 @@ export default function SignInForm() {
     try {
       const { data } = await api.post("/sign-in", { email, password });
       window.localStorage.setItem("user_token", JSON.stringify(data));
+      // console.log(data);
+
       setSvgLoader("");
       
-      navigate("/home");
+      navigate(`/notes/${data._id}/page/1`);
     } catch (err: any) {
       setSvgLoader("");
       toastAlert({

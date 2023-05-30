@@ -38,7 +38,7 @@ export default function RoutesApp () {
         {/* </Route> */}
 
         <Route path="/help" element={<LoginHelp/>} />
-        <Route path="/home" element={<Home/>} />
+        <Route path={`/notes/:userId/page/:page`} element={<Home/>} />
         <Route path="/sign-up" element={<SignUpForm />} />
         <Route path="/*" element={<Page404 />} />
       </Routes>
