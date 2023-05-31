@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -12,6 +12,7 @@ import NoteDetails from "../NoteDetails";
 import api from "../../services/api";
 
 import { useDebounce } from "../../hooks/useDebounce";
+import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import SelectedNoteContext from "../../context/SelectedNoteCtx";
 import RefetchContext from "../../context/RefetchCtx";
@@ -24,7 +25,7 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
-  const [ isMobileDevice, setIsMobileDevice ] = useState(window.innerWidth <= 640);
+  const [ screenSize, setScreenSize ] = useState<any>({width: window.innerWidth});
   const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
   const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
   const [ hasNextPageLabel, setHasNextPageLabel ] = useState(false);
@@ -39,6 +40,7 @@ export default function Home(): JSX.Element {
 
   const delayedSearchLabel = useDebounce(searchLabel, 500);
   const delayedSearch = useDebounce(search, 500);
+  useUpdateViewport(setScreenSize, 500);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,16 +58,9 @@ export default function Home(): JSX.Element {
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
   const { _id } = parsedUserToken;
 
-  const findPageInURL = new RegExp(`notes\/${_id}\/page\/([0-9]+)`);
+  const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
   const getPageInURL = findPageInURL.exec(location.pathname);
-
-  useEffect(() => {
-    const updateViewPortWidth = () => setIsMobileDevice(window.innerWidth <= 640 ? true : false);
-
-    window.addEventListener("resize", updateViewPortWidth);
-    return () => window.removeEventListener("resize", updateViewPortWidth);
-  }, []);
-
+  
   const fetchNotes = async () => { 
     if(getPageInURL) setPage(Number(getPageInURL[1]));
 
@@ -82,9 +77,12 @@ export default function Home(): JSX.Element {
       if (fields.length === 0) append(docs);
       else replace(docs);
     } catch (err: any) {
-        if(err?.message.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        const errMsg = err.message;  
+
+        if(errMsg.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        else if (errMsg.startsWith("Connection")) toastAlert({ icon: "error", title: `${err.message}`, timer: 5000 });
         else {
-          toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+          toastAlert({ icon: "error", title: `${err.message}`, timer: 3000 });
           signOutUser();
         }
     }
@@ -101,9 +99,12 @@ export default function Home(): JSX.Element {
         if (labels.length === 0) appendLabels(docs);
         else replaceLabels(docs);
     } catch (err: any) {
-        if(err?.message.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err?.message}`, timer: 2000 });
+        const errMsg = err.message;  
+
+        if(errMsg.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        else if (errMsg.startsWith("Connection")) toastAlert({ icon: "error", title: `${err.message}`, timer: 5000 });
         else {
-          toastAlert({ icon: "error", title: `${err?.message}`, timer: 2000 });
+          toastAlert({ icon: "error", title: `${err.message}`, timer: 3000 });
           signOutUser();
         }
     }
@@ -126,7 +127,7 @@ export default function Home(): JSX.Element {
       setShowLoaderOnNavbar(false);
     } catch (err: any) {
       console.log(err);
-      toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+      toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
     }
   };
 
@@ -135,7 +136,7 @@ export default function Home(): JSX.Element {
       const deleteNote = await api.delete(`/delete/${noteId}`);
       toastAlert({ icon: "success", title: `${deleteNote.data.message}`, timer: 2000 });
     } catch (err: any) {
-      toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+      toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
     }
   };
 
@@ -167,7 +168,7 @@ export default function Home(): JSX.Element {
     notes: fields,
     expanded: noteIsExpanded,
     setExpanded: setNoteIsExpanded
-  }
+  };
 
   const navLabelCtxProps = {
     pageLabel,
@@ -178,7 +179,9 @@ export default function Home(): JSX.Element {
     labelIsFetching,
     setSearchLabel,
     hasNextPageLabel
-  }
+  };
+
+  const isMobileDevice = screenSize.width <= 640 ? true : false;
 
   return (
     <div className={`!h-screen`}>

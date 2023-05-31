@@ -46,50 +46,28 @@ export default function SignIn() {
       setSvgLoader("");
 
       window.localStorage.setItem("user_token", JSON.stringify({ name: userName, token, _id, googleAccount }));
-      navigate("/home");
+      navigate("/notes/page/1");
     } catch (err: any) {
       setSvgLoader("");
-      toastAlert({ icon: "error", title: `${err?.response.data.message}`, timer: 3000 });
+      toastAlert({ icon: "error", title: `${err?.message}`, timer: 3000 });
     }
   };
 
   const handleForm = async ({ email, password }: FieldValues) => {
-    if(auth) {
-      setSvgLoader("email");
+    setSvgLoader("email");
 
     const callback = (data: any, err: any) => {
       if (!err && data) {
-        navigate(`/notes/${data._id}/page/1`);
+        navigate(`/notes/page/1`);
         setSvgLoader("");
       } 
       else {
         setSvgLoader("");
-        toastAlert({
-          icon: "error",
-          title: `${err?.message ? err?.message: "Internal error, please try again or later!"}`,
-          timer: 2500,
-        });
+        toastAlert({ icon: "error", title: `${err?.message}`, timer: 2500 });
       }
     }
 
     await auth?.signIn({ email, password, callback });
-  };
-
-    // try {
-    //   const { data } = await api.post("/sign-in", { email, password });
-    //   window.localStorage.setItem("user_token", JSON.stringify(data));
-
-    //   setSvgLoader("");
-      
-    //   navigate(`/notes/${data._id}/page/1`);
-    // } catch (err: any) {
-    //   setSvgLoader("");
-    //   toastAlert({
-    //     icon: "error",
-    //     title: `${err?.response.data.message ? err?.response.data.message: "Internal error, please try again or later!"}`,
-    //     timer: 2500,
-    //   });
-    // }
   };
 
   return (

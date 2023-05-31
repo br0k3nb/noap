@@ -98,7 +98,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             fetchLabels();
         } catch (err: any) {
             setLoader(false);
-            toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
+            toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
         }
     }
     
@@ -121,7 +121,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             fetchLabels();
         } catch (err: any) {
             setLoader(false);
-            toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
+            toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
         }
     }
 
@@ -157,7 +157,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             toastAlert({ icon: 'success', title: `${editL.data.message}`, timer: 3000 });
         } catch (err: any) {
             setLoader(false);
-            toastAlert({ icon: 'error', title: `${err.reponse.data.message}`, timer: 3000 });
+            toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
         }
     }
 

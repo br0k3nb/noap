@@ -21,7 +21,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
     const [ redirect, setRedirect ] = useState(false);
 
     const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { token, _id } = parsedUserToken;
+    const { _id } = parsedUserToken;
 
     const navigate = useNavigate();
 
@@ -47,7 +47,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
           }, 2000);
         } catch (err: any) {
           setshowSvgLoader(false);
-          toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});      
+          toastAlert({icon: 'error', title: `${err.message}`, timer: 2500});      
         }
     }
 

@@ -20,7 +20,7 @@ export default function Page404() {
           <div className="flex text-md tracking-widest uppercase justify-center">
             <a
               className="w-full border border-gray-500 rounded-[30px] py-2 xxs:py-2 text-center bg-red-600 hover:bg-red-700 hover:-translate-y-0 hover:scale-105 transition duration-200"
-              href="/home"
+              href="/notes/page/1"
             >
               Go back
             </a>

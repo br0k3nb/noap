@@ -28,11 +28,7 @@ export default function SignUp () {
       setTimeout(() => navigate("/"), 1000);
     } catch (err: any) {
       setWasSubmitted(false);
-      toastAlert({
-        icon: 'error', 
-        title:`${err?.response.data.message ? err?.response.data.message : 'Internal error, please try again or later!'}`, 
-        timer: 2000
-      });
+      toastAlert({ icon: 'error', title:`${err?.message}`, timer: 2000 });
     }
   };
 

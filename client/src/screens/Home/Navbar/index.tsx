@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FieldArrayWithId } from 'react-hook-form';
 
 import { BiLock } from "react-icons/bi";
@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { BsJournalPlus, BsTagFill, BsFillCalendarEventFill, BsDoorOpenFill, BsGearWide, BsFillTrashFill } from "react-icons/bs";
 
 import { motion } from 'framer-motion';
+
+import useUpdateViewport from '../../../hooks/useUpdateViewport';
 
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import AccountSettingsModal from './components/AccountSettingsModal';
@@ -22,14 +24,15 @@ type NavProps = {
 };
 
 export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, labels }: NavProps) {
-  const [ openLabelModal, setOpenLabelModal ] = useState(false);
-  const [ openAuthModal, setOpenAuthModal ] = useState(false);
   const [ userIsAuth, setUserIsAuth ] = useState(false);
+  const [ openAuthModal, setOpenAuthModal ] = useState(false);
+  const [ openLabelModal, setOpenLabelModal ] = useState(false);
   const [ openSettingsModal, setOpenSettingsModal ] = useState(false);
   const [ openSignOutConfirmationModal, setOpenSignOutConfirmationModal ] = useState(false);
-  const [ deviceScreenSize, setDeviceScreenSize] = useState({width: window.innerWidth, height: window.innerHeight});
+  const [ deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const navigate = useNavigate();
+  useUpdateViewport(setDeviceScreenSize, 500);
 
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
   const { googleAccount, name } = parsedUserToken;
@@ -46,13 +49,6 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
     window.localStorage.removeItem("user_token");
     navigate("/");
   };
-
-  useEffect(() => {
-    const updateViewPortWidth = () => setDeviceScreenSize({width: window.innerWidth, height: window.innerHeight});
-
-    window.addEventListener("resize", updateViewPortWidth);
-    return () => window.removeEventListener("resize", updateViewPortWidth);
-  }, []);
 
   const hide = { x: -140, transitionEnd: { display: "none" }};
   const show = { display: "block", x: 0 };

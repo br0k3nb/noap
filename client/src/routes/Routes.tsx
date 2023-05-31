@@ -21,7 +21,7 @@ export default function RoutesApp() {
           <Route path="/" element={<LoginRedirect />} />
 
           <Route
-            path={`/notes/:author/page/:page`}
+            path="/notes/page/:page"
             element={<ProtectedRoute />}
           >
             <Route index element={<Home />} />

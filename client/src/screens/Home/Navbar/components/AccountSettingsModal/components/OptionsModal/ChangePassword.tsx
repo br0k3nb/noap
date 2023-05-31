@@ -36,7 +36,7 @@ export default function ChangePassword({ register, handleSubmit, errors, reset }
           toastAlert({icon: 'success', title: `${changeP.data.message}`, timer: 2500});
         } catch (err: any) {
           setshowSvgLoader(false);
-          toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
+          toastAlert({icon: 'error', title: `${err.message}`, timer: 2500});
         }
     };    
 

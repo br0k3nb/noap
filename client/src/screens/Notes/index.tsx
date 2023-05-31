@@ -38,7 +38,7 @@ export default function Notes({
     const [ showSearch, setShowSearch ] = useState(false);
     
     const navTopBarProps = { hasNextPage, navbar, page, search, setNavbar, setPage, setSearch, setShowSearch, showSearch, totalDocs };
-    const cardNotesProps = { addNewNote, isFetching, notes, setExpanded, page, setPage };  
+    const cardNotesProps = { addNewNote, isFetching, notes, setExpanded, page };  
 
     return (
         <div className={`overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-gray-600 !bg-gray-800 ${expanded && "hidden"}`}>

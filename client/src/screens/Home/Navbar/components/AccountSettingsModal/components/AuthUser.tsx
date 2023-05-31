@@ -39,7 +39,7 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
             toastAlert({icon: 'success', title: `${verify.data.message}`, timer: 2500});
         } catch (err: any) {
             setshowSvgLoader(false);
-            toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2500});
+            toastAlert({icon: 'error', title: `${err.message}`, timer: 2500});
         }
     };
 

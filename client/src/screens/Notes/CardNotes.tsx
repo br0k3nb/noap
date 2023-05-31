@@ -15,12 +15,11 @@ type Props = {
     page: number;
     isFetching: boolean;
     addNewNote: () => Promise<void>;
-    setPage: Dispatch<SetStateAction<number>>;
     setExpanded: Dispatch<SetStateAction<boolean>>;
     notes: FieldArrayWithId<Notes, "note", "id">[];
 };
 
-export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, page, setPage }: Props) {
+export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, page }: Props) {
     const noteContext = useContext(NoteCtx);
     const location = useLocation();
 

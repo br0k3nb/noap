@@ -18,13 +18,18 @@ api.interceptors.request.use(async config => {
 api.interceptors.response.use(
     response => response,
     error => {
+        const errorStatus = error?.response?.status;
+
         if(error.message === "Request aborted")
             return Promise.reject({ message: "Refetching error, please try again or later" });
 
-        if (!error.response)
-            return Promise.reject({ message: "Error, please try again or later" });
+        if ((errorStatus >= 500 && errorStatus <= 599)) //(500 - 599) = Sever error responses
+            return Promise.reject({ message: "Server error, please try again or later"});
 
-        return Promise.reject(error.response.data);
+        if(error?.code === "ERR_NETWORK")
+            return Promise.reject({ message: "Connection to server failed, please verify your internet connection"});
+
+        return Promise.reject(error?.response?.data);
     },
 );
 
