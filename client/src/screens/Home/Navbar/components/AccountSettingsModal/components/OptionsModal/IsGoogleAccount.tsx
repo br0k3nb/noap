@@ -34,7 +34,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
             return toastAlert({icon: 'error', title: "Passwords don't match!", timer: 2500});
           }
           
-          const convertAccount = await api.patch(`/convert/account/email/${token}}`, { password, _id });
+          const convertAccount = await api.patch(`/convert/account/email}`, { password, _id });
           toastAlert({ icon: 'success', title: `${convertAccount.data.message}`, timer: 3000 });
     
           setshowSvgLoader(false);

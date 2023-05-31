@@ -31,7 +31,6 @@ export default function Home(): JSX.Element {
   const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);  
   const [ hasNextPage, setHasNextPage ] = useState(false);
   const [ searchLabel, setSearchLabel ] = useState('');
-  const [ blurFlag, setBlurFlag ] = useState(true);
   const [ pageLabel, setPageLabel ] = useState(1);
   const [ totalDocs, setTotalDocs ] = useState(0);
   const [ navbar, setNavbar ] = useState(false);
@@ -55,9 +54,7 @@ export default function Home(): JSX.Element {
   });
 
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-  useEffect(() => { Object.keys(parsedUserToken).length === 0 && navigate("/") }, []);
-  
-  const { token, _id } = parsedUserToken;
+  const { _id } = parsedUserToken;
 
   const findPageInURL = new RegExp(`notes\/${_id}\/page\/([0-9]+)`);
   const getPageInURL = findPageInURL.exec(location.pathname);
@@ -70,14 +67,12 @@ export default function Home(): JSX.Element {
   }, []);
 
   const fetchNotes = async () => { 
-    setBlurFlag(false);
-
     if(getPageInURL) setPage(Number(getPageInURL[1]));
 
     const pageUrl = getPageInURL ? getPageInURL[1] : 1;
 
     try {
-      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${pageUrl}/${_id}/${token}`, { 
+      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${pageUrl}/${_id}`, { 
         params: { search: delayedSearch, limit: 10 }
       });
 
@@ -86,15 +81,18 @@ export default function Home(): JSX.Element {
 
       if (fields.length === 0) append(docs);
       else replace(docs);
-    } catch (err) {
-      console.log(err);
-      signOutUser();
+    } catch (err: any) {
+        if(err?.message.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        else {
+          toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+          signOutUser();
+        }
     }
   };
 
   const fetchLabels = async () => {
     try {
-        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}/${token}`, { 
+        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}`, { 
           params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
         });
 
@@ -102,9 +100,12 @@ export default function Home(): JSX.Element {
 
         if (labels.length === 0) appendLabels(docs);
         else replaceLabels(docs);
-    } catch (err) {
-      console.log(err);
-      signOutUser();
+    } catch (err: any) {
+        if(err?.message.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err?.message}`, timer: 2000 });
+        else {
+          toastAlert({ icon: "error", title: `${err?.message}`, timer: 2000 });
+          signOutUser();
+        }
     }
   }
 
@@ -112,7 +113,7 @@ export default function Home(): JSX.Element {
     setShowLoaderOnNavbar(true);
 
     try {
-      await api.post(`/add/${token}`, {
+      await api.post(`/add`, {
           title: "Untitled",
           body: "",
           image: "no image attached",
@@ -131,7 +132,7 @@ export default function Home(): JSX.Element {
 
   const deleteNote = async (noteId: string) => {
     try {
-      const deleteNote = await api.delete(`/delete/${noteId}/${token}`);
+      const deleteNote = await api.delete(`/delete/${noteId}`);
       toastAlert({ icon: "success", title: `${deleteNote.data.message}`, timer: 2000 });
     } catch (err: any) {
       toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
@@ -180,7 +181,7 @@ export default function Home(): JSX.Element {
   }
 
   return (
-    <div className={`!h-screen ${blurFlag && 'blur-xl'}`}>
+    <div className={`!h-screen`}>
       <SelectedNoteContext selectedNote={selectedNote} setSelectedNote={setSelectedNote}>
         <LabelsCtx {...navLabelCtxProps}>
           <Nav

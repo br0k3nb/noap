@@ -91,7 +91,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         }
 
         try {
-            const newLabel = await api.post(`/label/add/${token._id}/${token.token}`, { color, fontColor, name, selectedStyle });
+            const newLabel = await api.post(`/label/add/${token._id}`, { color, fontColor, name, selectedStyle });
             toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
             
             setLoader(false);
@@ -111,7 +111,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         }
         
         try {
-            const deleteL = await api.delete(`/label/delete/${selectedLabel}/${token.token}`)
+            const deleteL = await api.delete(`/label/delete/${selectedLabel}`)
             toastAlert({ icon: 'success', title: `${deleteL.data.message}`, timer: 3000 });
             setLoader(false);
             closeDeleteModal();
@@ -145,7 +145,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         }        
         
         try {
-            const editL = await api.patch(`/label/edit/${token._id}/${token.token}`, {
+            const editL = await api.patch(`/label/edit/${token._id}`, {
                 name: editName,
                 _id: editId,
                 color,
