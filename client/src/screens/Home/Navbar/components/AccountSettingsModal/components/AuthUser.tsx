@@ -28,7 +28,7 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
         setshowSvgLoader(true);
 
         try {
-            const verify = await api.post(`/verify-user/${token}`, { password, _id });
+            const verify = await api.post(`/verify-user`, { password, _id });
 
             setAuth(true);  
             setshowSvgLoader(false);

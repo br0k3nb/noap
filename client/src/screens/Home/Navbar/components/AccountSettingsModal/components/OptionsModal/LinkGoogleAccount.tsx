@@ -40,7 +40,7 @@ export default function LinkGoogleAccount() {
 
             const { email, name, id } = userData.data;
 
-            const createUser = await api.patch(`/convert/account/google/${token}`, { email, name, id, _id });
+            const createUser = await api.patch(`/convert/account/google`, { email, name, id, _id });
             toastAlert({icon: 'success', title: `${createUser.data.message}`, timer: 3000});
             
             setshowSvgLoader(false);

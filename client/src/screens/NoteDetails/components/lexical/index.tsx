@@ -37,8 +37,6 @@ export default function App({ notes }: Props): JSX.Element {
   const note = notes.find(({_id}) => _id === noteContext?.selectedNote);
   
   useEffect(() => { lastSelectedNotes.current = noteContext?.selectedNote }, [noteContext?.selectedNote]);
-
-  const token = JSON.parse(window.localStorage.getItem("user_token") || "");
     
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
@@ -67,7 +65,7 @@ export default function App({ notes }: Props): JSX.Element {
           const compressImg = BSON.serialize({ images });
           const resultImg = BSON.deserialize(compressImg);
 
-          const create = await api.patch(`/edit/${token.token}`,
+          const create = await api.patch("/edit",
             {
               title,
               body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',

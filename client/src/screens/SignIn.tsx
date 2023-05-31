@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from "react-hook-form";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -10,22 +10,19 @@ import { toastAlert } from "../components/Alert/Alert";
 import SvgLoader from "../components/SvgLoader";
 
 import api from "../services/api";
+import useAuth from "../hooks/useAuth";
+
 import note from "../assets/main.svg";
 import noapLogo from "../assets/logo/logo-white-no-bg.png";
 
-export default function SignInForm() {
+export default function SignIn() {
   const navigate = useNavigate();
+  const auth = useAuth();
 
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
 
   const [ svgLoader, setSvgLoader ] = useState("");
-
-  const thereIsATK = JSON.parse( window.localStorage.getItem("user_token") || "{}");
-
-  useEffect(() => {
-    if(Object.keys(thereIsATK).length > 0) navigate(`/notes/${thereIsATK._id}/page/1`);
-  }, []);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -57,22 +54,42 @@ export default function SignInForm() {
   };
 
   const handleForm = async ({ email, password }: FieldValues) => {
-    setSvgLoader("email");
-    try {
-      const { data } = await api.post("/sign-in", { email, password });
-      window.localStorage.setItem("user_token", JSON.stringify(data));
+    if(auth) {
+      setSvgLoader("email");
 
-      setSvgLoader("");
-      
-      navigate(`/notes/${data._id}/page/1`);
-    } catch (err: any) {
-      setSvgLoader("");
-      toastAlert({
-        icon: "error",
-        title: `${err?.response.data.message ? err?.response.data.message: "Internal error, please try again or later!"}`,
-        timer: 2500,
-      });
+    const callback = (data: any, err: any) => {
+      if (!err && data) {
+        navigate(`/notes/${data._id}/page/1`);
+        setSvgLoader("");
+      } 
+      else {
+        setSvgLoader("");
+        toastAlert({
+          icon: "error",
+          title: `${err?.message ? err?.message: "Internal error, please try again or later!"}`,
+          timer: 2500,
+        });
+      }
     }
+
+    await auth?.signIn({ email, password, callback });
+  };
+
+    // try {
+    //   const { data } = await api.post("/sign-in", { email, password });
+    //   window.localStorage.setItem("user_token", JSON.stringify(data));
+
+    //   setSvgLoader("");
+      
+    //   navigate(`/notes/${data._id}/page/1`);
+    // } catch (err: any) {
+    //   setSvgLoader("");
+    //   toastAlert({
+    //     icon: "error",
+    //     title: `${err?.response.data.message ? err?.response.data.message: "Internal error, please try again or later!"}`,
+    //     timer: 2500,
+    //   });
+    // }
   };
 
   return (

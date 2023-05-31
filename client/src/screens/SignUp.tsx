@@ -11,7 +11,7 @@ import api from '../services/api';
 import note from '../assets/main.svg';
 import noapLogo from '../assets/logo/logo-white-no-bg.png';
 
-export default function SignUpForm () {  
+export default function SignUp () {  
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
 
