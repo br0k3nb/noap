@@ -6,17 +6,18 @@ export default (req, res, next) => {
 
   if (!authorization) return res.status(401).json({ message: "Authentication token wasn't found" });
 
-  const parts = authorization.split(' ');
+  const scheme = authorization.slice(0,6);
 
-  if (!parts.length === 2) return res.status(401).json({ message: "Authentication error" });
+  if (!String(scheme).startsWith("Bearer"))
+    return res.status(401).json({ message: "Authentication error" });
 
-  const [scheme, data] = parts;
+  const data = authorization.slice(6, authorization.length);
 
   if (!/^Bearer$/i.test(scheme)) return res.status(401).json({ message: "Invalid token" });
 
   const { token } = JSON.parse(data);
 
-  jwt.verify(token, `${process.env.SECRET}`, (err, decoded) => {
+  jwt.verify(token, `${process.env.SECRET}`, err => {
     if (err) return res.status(401).send({ message: "Access denied, sign in again" });
     
     return next();
