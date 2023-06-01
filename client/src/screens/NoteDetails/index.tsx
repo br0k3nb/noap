@@ -9,6 +9,8 @@ import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical";
 
 import { NoteCtx } from "../../context/SelectedNoteCtx";
+import { RefetchCtx } from "../../context/RefetchCtx";
+
 import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 import ToggleBottomBarContext from "../../context/ToggleBottomBar";
 
@@ -16,17 +18,18 @@ import moment from "moment";
 import "moment/locale/pt-br";
 
 type Props = {
+  labels: FieldArrayWithId<Labels, "labels", "id">[];
   notes: FieldArrayWithId<Notes, "note", "id">[];
   setExpanded: Dispatch<SetStateAction<boolean>>;
   deleteNote: (_id: string) => Promise<void>;
   remove: UseFieldArrayRemove;
-  labels: FieldArrayWithId<Labels, "labels", "id">[];
   labelIsFetching: boolean;
   expanded: boolean;
 };
 
 export default function NoteDetails({ notes, deleteNote, remove, expanded, setExpanded, labelIsFetching, labels }: Props) {
   const selectedNote = useContext(NoteCtx);
+  const { fetchNotes } = useContext(RefetchCtx) as any;
 
   const [ open, setOpen ] = useState(false);
   const [ openLabelModal, setOpenlabelModal ] = useState(false);
@@ -40,7 +43,8 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
     setOpen(false);
 
     deleteNote(selectedNote?.selectedNote as string);
-    remove(notes.indexOf(note as any));
+    remove(notes.indexOf(note as FieldArrayWithId<Notes, "note", "id">));
+    setTimeout(() => fetchNotes(), 500); 
   }
 
   const handleExpand = () => {
@@ -119,7 +123,13 @@ export default function NoteDetails({ notes, deleteNote, remove, expanded, setEx
               setOpen={setOpen}
               deleteButtonAction={removeNote}
               mainText="Are you sure you want to delete this note?"
-              options={{ mainTextCustomClassName: "xxs:text-xs mb-5", modalWrapperClassName: "!w-96 xxs:!w-80" }}
+              options={{
+                alertComponentIcon: "warning",
+                alertComponentText: "Be aware that this action can not be undone!",
+                subTextCustomClassName: "px-6",
+                mainTextCustomClassName: "mb-5 text-xs",
+                modalWrapperClassName: "!w-96 xxs:!w-80 border border-gray-600"
+              }}
             />
             <SelectLabelModal
               checked={openLabelModal}

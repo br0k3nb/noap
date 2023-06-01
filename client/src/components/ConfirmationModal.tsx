@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction } from 'react'
 import Modal from './Modal'
 import SvgLoader from './SvgLoader';
 
+import { AiFillWarning, AiFillInfoCircle } from "react-icons/ai";
+
 type Props = {
     open: boolean;
     mainText: string;
@@ -9,9 +11,12 @@ type Props = {
         subText?: string;
         loader?: boolean;
         onClose?: () => void;
+        alertComponentIcon?: string;
+        alertComponentText?: string
         modalWrapperClassName?: string;
         titleWrapperClassName?: string;
         subTextCustomClassName?: string;
+        alertComponentClassName?: string;
         mainTextCustomClassName?: string;
         customCloseButtonAction?: () => void;
         customDeleteButtonText?: string;
@@ -43,6 +48,29 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                     {options?.subText}
                 </p>
             )}
+            {options?.alertComponentText && (
+                <div className="alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[17.2rem] !h-[4.5rem]">
+                    <div className="text-[13.5px] uppercase tracking-wide">
+                        {options?.alertComponentIcon  === "warning" ? ( 
+                            <AiFillWarning 
+                                size={17}
+                                className="stroke-info flex-shrink-0 w-6 h-6 text-yellow-600" 
+                            />
+                         ) : options?.alertComponentIcon === "info" ? (
+                            <AiFillInfoCircle 
+                                size={17}
+                                className="stroke-info flex-shrink-0 w-6 h-6 text-blue-500" 
+                            />
+                         ) : (
+                            <AiFillWarning 
+                                size={17}
+                                className="stroke-info flex-shrink-0 w-6 h-6 text-yellow-600" 
+                            />
+                         )}
+                        <span className="">{options?.alertComponentText}</span>
+                    </div>
+                </div>
+            )}
             <div className="mt-5 xxs:mt-5">
                 <div className="mt-3 flex flex-row justify-evenly">
                     <button
@@ -52,7 +80,7 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                         {options?.customCancelButtonText ? options?.customCancelButtonText : "Cancel"}
                     </button>
                     <button 
-                        className="bg-red-600 hover:bg-red-800 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out"
+                        className="bg-red-700 hover:bg-red-800 text-gray-100 px-7 py-3 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out"
                         onClick={() => deleteButtonAction()}
                     >
                         {options?.loader ? (

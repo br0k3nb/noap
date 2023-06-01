@@ -74,8 +74,8 @@ export default function Home(): JSX.Element {
       setTotalDocs(totalDocs);
       setHasNextPage(hasNextPage);
 
-      if (fields.length === 0) append(docs);
-      else replace(docs);
+      if (fields.length === 0) return append(docs);
+      if (fields.length > 0) return replace(docs);
     } catch (err: any) {
         const errMsg = err.message;  
 

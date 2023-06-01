@@ -68,9 +68,9 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
         deleteButtonAction={signOutUser}
         mainText='Are you sure you want to sign out ?'
         options={{ 
-          customDeleteButtonText: "Sign out", 
+          customDeleteButtonText: "Sign out",
           modalWrapperClassName: "!w-96",
-          mainTextCustomClassName: "text-center",
+          mainTextCustomClassName: "text-center text-[14px] font-light",
           customCancelButtonText: "Go back"
         }}
       />
