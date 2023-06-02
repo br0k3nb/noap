@@ -40,7 +40,7 @@ import {
   } from '../../nodes/EquationNode';
   import {$createImageNode, $isImageNode, ImageNode} from '../../nodes/ImageNode';
   import {$createTweetNode, $isTweetNode, TweetNode} from '../../nodes/TweetNode';
-  import emojiList from '../../utils/emoji-list';
+  import emojiList from '../../../../../../datasets/emoji_list';
   
   export const HR: ElementTransformer = {
     dependencies: [HorizontalRuleNode],
