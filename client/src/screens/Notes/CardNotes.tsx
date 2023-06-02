@@ -13,13 +13,14 @@ import Loader from "../../components/Loader";
 
 type Props = {
     page: number;
+    search: string;
     isFetching: boolean;
     addNewNote: () => Promise<void>;
     setExpanded: Dispatch<SetStateAction<boolean>>;
     notes: FieldArrayWithId<Notes, "note", "id">[];
 };
 
-export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, page }: Props) {
+export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, page, search }: Props) {
     const noteContext = useContext(NoteCtx);
     const location = useLocation();
 
@@ -105,7 +106,9 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                             ) : (
                                 <div className="flex flex-col space-y-3 justify-center items-center mt-6 mx-auto">
                                     <img src={ghost} className="w-56 opacity-30 md:w-80 lg:w-56"/>
-                                    <p className="!text-gray-400 text-[13px] uppercase tracking-wide">Ouhh, it's quite empty here...</p>  
+                                    <p className="!text-gray-400 text-[13px] uppercase tracking-wide">
+                                        {search !== "" ? "No notes were found!" : "Ouhh, it's quite empty here..."}
+                                    </p>  
                                     {page > 1 ? (
                                         <Link 
                                             className="!pt-2 text-gray-200 text-sm font-light tracking-widest uppercase px-3 mr-5 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out w-full mx-auto text-center"

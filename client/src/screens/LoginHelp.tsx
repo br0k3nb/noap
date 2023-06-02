@@ -28,17 +28,19 @@ export default function LoginHelp() {
   const getEmail = async ({ email }: FieldValues) => {
     setLoader(true);
     try {
-      const {data: { message, userId: _id }} = await api.post('/find-user', {email});
-      toastAlert({ icon: 'success', title: message, timer: 2000 });      
+      const {data: { message, userId: _id }} = await api.post('/find-user', { email });
+      toastAlert({ icon: 'success', title: message, timer: 2000 });
+
       setTriggerCode(true);
       setLoader(false);
       setUserId(_id);
     } catch (err: any) {
-      const {response: { data: {message, code, spam}}} = err;
       setLoader(false);
-      setTimer(code === 3 ? 'maximum' : code === 4 && spam);
 
-      toastAlert({ icon: 'error', title: message ? message : 'Internal error, please try again later!', timer: 2500 });
+      const { message, code, spam } = err;
+      if(code) setTimer(code === 3 ? 'maximum' : code === 4 && spam);
+
+      toastAlert({ icon: 'error', title: message, timer: 2500 });
     }
   };
 
@@ -48,11 +50,12 @@ export default function LoginHelp() {
     try {
       const {data: { message }} = await api.post('/verify-otp', { userId, otp: code });
       toastAlert({icon: 'success', title: message, timer: 2000});
+
       setTriggerCode('verified');
       setLoader(false);
     } catch (err: any) {
       setLoader(false);
-      toastAlert({icon: 'error', title: err.response.data.message, timer: 2000});
+      toastAlert({icon: 'error', title: err.message, timer: 2000});
     }
   }
 
@@ -66,12 +69,13 @@ export default function LoginHelp() {
 
       const {data: { message }} = await api.patch('/change-pass', { userId, password });
       toastAlert({icon: 'success', title: message, timer: 2000});
+
       setWasChanged(true);
       setLoader(false);
       setTimeout(() => navigate('/'), 2000);
     } catch (err: any) {
       setLoader(false);
-      toastAlert({icon: 'error', title: `${err.response.data.message}`, timer: 2000});
+      toastAlert({icon: 'error', title: `${err.message}`, timer: 2000});
     }
   }
 
@@ -88,11 +92,17 @@ export default function LoginHelp() {
         </button>
       )
     }
-    else return (
-      <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
-        {loader ? ( <SvgLoader options={{ showLoadingText: true }}/> ) : ( <p className={`${loader && 'hidden'}`}>Send code</p> )}
-      </button>
-    )
+    else {
+      return (
+        <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
+          {loader ? ( 
+            <SvgLoader options={{ showLoadingText: true }}/> 
+          ) : ( 
+            "Send code"
+          )}
+        </button>
+      )
+    }
   };
 
   return (
@@ -145,7 +155,11 @@ export default function LoginHelp() {
                         </>
                       ) : (
                         <button className={`bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out`}>
-                          {loader ? ( <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> ): ("Send code")}
+                          {loader ? ( 
+                            <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> 
+                          ) : (
+                            "Send code"
+                          )}
                         </button>
                       )}                        
                     </>
@@ -165,7 +179,11 @@ export default function LoginHelp() {
                         })}
                       />
                       <button className='bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest hover:!text-[13px] transition-all duration-500 ease-in-out'>
-                        {loader ? ( <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> ): ("Verify code")}
+                        {loader ? ( 
+                          <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> 
+                        ) : (
+                          "Verify code"
+                        )}
                       </button>
                       <button 
                         type='button'
@@ -211,7 +229,11 @@ export default function LoginHelp() {
                       })}
                     />
                     <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
-                      {loader ? ( <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> ): ("Change password")}
+                      {loader ? ( 
+                        <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> 
+                      ) : (
+                        "Change password"
+                      )}
                     </button>
                     {wasChanged && (<p className='!mt-7 mx-auto animate-pulse text-sm uppercase tracking-widest'>Redirecting to sign in page...</p>)}
                 </div>
