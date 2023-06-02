@@ -39,7 +39,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
         refetch?.fetchNotes();
       } catch (err: any) {
         console.log(err);
-        toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+        toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
       }
     }
   
@@ -51,7 +51,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
         setOpen(false);
       } catch (err: any) {
         console.log(err);
-        toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+        toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
       }
     }
   

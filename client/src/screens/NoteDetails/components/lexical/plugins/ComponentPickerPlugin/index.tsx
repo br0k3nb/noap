@@ -9,9 +9,9 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import {
   LexicalTypeaheadMenuPlugin,
-  TypeaheadOption,
+  MenuOption,
   useBasicTypeaheadTriggerMatch,
-} from "@lexical/react/LexicalTypeaheadMenuPlugin";
+} from '@lexical/react/LexicalTypeaheadMenuPlugin';
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
 import { $setBlocksType } from "@lexical/selection";
 import { INSERT_TABLE_COMMAND } from "@lexical/table";
@@ -34,7 +34,7 @@ import { INSERT_IMAGE_COMMAND, InsertImageDialog } from "../ImagesPlugin";
 import { InsertPollDialog } from "../PollPlugin";
 import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
 
-class ComponentPickerOption extends TypeaheadOption {
+class ComponentPickerOption extends MenuOption {
   // What shows up in the editor
   title: string;
   // Icon for display
@@ -348,16 +348,13 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
             const overflowXAxis = window.outerWidth - x < 176;
             const overflowYAxis = window.outerHeight - y < 260;
 
-            console.log(overflowYAxis);
-
             return anchorElementRef.current && options.length
             ? createPortal(
                 <div 
-                  className={`typeahead-popover component-picker-menu !bg-gray-800 
-                    ${overflowXAxis && !overflowYAxis ? "!absolute !-left-44" 
-                    : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5" 
-                    : overflowXAxis && overflowYAxis ? "!absolute !-left-52 !-top-48" 
-                    : undefined}
+                  className={`typeahead-popover component-picker-menu !bg-gray-800
+                    ${overflowXAxis && !overflowYAxis ? "!absolute !-left-44"
+                    : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5"
+                    : overflowXAxis && overflowYAxis && "!absolute !-left-52 !-top-48"}
                   `}
                 >
                   <ul className="!h-[180px] border border-gray-600">

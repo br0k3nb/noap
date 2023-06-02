@@ -158,7 +158,7 @@ export default function DropDown({
     if (showDropDown && button !== null && dropDown !== null) {
       const { top, left } = button.getBoundingClientRect();
 
-      const usingCustomButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20) - 12}px`;
+      const usingCustomButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20) - 9}px`;
       const usingDefaultButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20)}px`;
 
       dropDown.style.top = `${top + 40}px`;
@@ -205,14 +205,14 @@ export default function DropDown({
         </button>
       ) : (
         <button 
-          className="border border-gray-600 hover:!border-gray-500 rounded-lg h-8 my-auto hover:bg-gray-600"
+          className="border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#dfe8fa4d]"
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >
           <div className="my-1 mr-1 text-gray-200">
             {(buttonLabel && !customButtonLabel) ? (
               <span 
-                className={`text dropdown-button-text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}
+                className={`text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}
               >
                 {buttonLabel}
               </span>

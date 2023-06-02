@@ -3,9 +3,9 @@ import { createPortal } from "react-dom";
 
 import { $createTextNode, $getSelection, $isRangeSelection, TextNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { LexicalTypeaheadMenuPlugin, TypeaheadOption } from "@lexical/react/LexicalTypeaheadMenuPlugin";
+import { LexicalTypeaheadMenuPlugin, MenuOption } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 
-class EmojiOption extends TypeaheadOption {
+class EmojiOption extends MenuOption {
   title: string;
   emoji: string;
   keywords: Array<string>;

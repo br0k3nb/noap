@@ -42,7 +42,11 @@ export default function ChangePassword({ register, handleSubmit, errors, reset }
 
     return (
         <>
-            <form onSubmit={handleSubmit(changePassword)} noValidate>
+            <form 
+                onSubmit={handleSubmit(changePassword)} 
+                noValidate
+                className='mx-auto'
+            >
                 <div className="flex flex-col space-y-2 px-6 ">
                     <p className="text-red-500 ml-1 uppercase text-xs tracking-widest">
                         {errors.password?.message as string}
@@ -75,8 +79,14 @@ export default function ChangePassword({ register, handleSubmit, errors, reset }
                     />
                 </div>
                 <div className="flex items-center justify-center">
-                    <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out xxs:!w-[17rem]">
-                        {showSvgLoader ? (<SvgLoader options={{ showLoadingText: true }} />) : ( <p className='py-[0.18rem]'>Change password</p> )}
+                    <button 
+                        className="w-full mx-6 bg-red-800 hover:bg-red-900 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out xxs:!w-[17rem]"
+                    >
+                        {showSvgLoader ? (
+                            <SvgLoader options={{ showLoadingText: true }} />
+                        ) : ( 
+                            <p className='py-[0.18rem]'>Change password</p> 
+                        )}
                     </button>
                 </div>
             </form>

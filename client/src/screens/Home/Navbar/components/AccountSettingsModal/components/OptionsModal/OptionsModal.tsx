@@ -17,8 +17,10 @@ type Props = {
 }
 
 export default function OptionsModal({ open, setOpen, register, handleSubmit, reset, errors }: Props) {
-    const [ changeAccountInfo, setChangeAccountInfo ] = useState('');
-    const [ showForm, setShowForm ] = useState(false);
+  const [ showForm, setShowForm ] = useState(false);
+  const [ changeAccountInfo, setChangeAccountInfo ] = useState('');
+  const [ showGoBackButton, setShowGoBackButton ] = useState(false);
+  const [ goBackButtonAction, setGoBackButtonAction ] = useState<any>({action: null});
 
     const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
     const { googleAccount } = parsedUserToken;
@@ -31,16 +33,40 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
       }, 500);
     };
 
+    const handleClickPassword = () => {
+      setChangeAccountInfo("password");
+      setShowGoBackButton(true);
+      setGoBackButtonAction({
+        action: () => {
+          setChangeAccountInfo('');
+          setGoBackButtonAction({action: null})
+        }
+      })
+    };
+
+    const handleClickGoogleAccount = () => {
+      setChangeAccountInfo("google");
+      setShowGoBackButton(true);
+      setGoBackButtonAction({
+        action: () => {
+          setChangeAccountInfo('');
+          setGoBackButtonAction({action: null})
+        }
+      })
+    };
+
     const modalProps = {
         open,
         setOpen,
         title: "Account Settings",
         options: {
-            onClose: handleModalClose,
-            titleWrapperClassName: "px-6 mb-5",
-            modalWrapperClassName: "!px-0 text-gray-100 !w-96 font-light xxs:!w-[19.4rem]",
+          onClose: handleModalClose,
+          showGoBackButton: showGoBackButton,
+          goBackButtonAction: goBackButtonAction.action,
+          titleWrapperClassName: "px-6 mb-5",
+          modalWrapperClassName: "!px-0 text-gray-100 !w-[22rem] font-light xxs:!w-[19.4rem]",
         }
-    }
+    };
 
     const changePasswordModalProps = { register, handleSubmit, reset, errors, setChangeAccountInfo };
     const IsGoogleAccountProps = { register, handleSubmit, reset, errors, showForm, setShowForm }
@@ -52,13 +78,13 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
             <div className="flex flex-col space-y-4">
               <button
                 className="py-[13.5px] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest"
-                onClick={() => setChangeAccountInfo("password")}
+                onClick={() => handleClickPassword()}
               >
                 <span className="py-4"> Change password </span>
               </button>
               <button
                 className="py-[13.5px] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest"
-                onClick={() => setChangeAccountInfo("google")}
+                onClick={() => handleClickGoogleAccount()}
               >
                 <span className="py-4"> Link a Google account </span>
               </button>

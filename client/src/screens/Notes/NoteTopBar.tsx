@@ -21,7 +21,7 @@ type Props = {
 }
 
 export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch, hasNextPage, setNavbar, setPage, setSearch, setShowSearch }: Props) {
-    const noteContext = useContext(NoteCtx);
+    const { selectedNote, setSelectedNote } = useContext(NoteCtx) as any;
     const location = useLocation();
 
     const baseURL = location.pathname.slice(0, (location.pathname.length - String(page).length));
@@ -32,9 +32,19 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
     };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        noteContext?.selectedNote && noteContext?.setSelectedNote(null);
-        setSearch(currentTarget.value)
+        selectedNote && setSelectedNote(null);
+        setSearch(currentTarget.value);
     };
+
+    const handleNextPageClick = () => {
+        setPage(page + 1);
+        selectedNote && setSelectedNote(null);
+    };
+
+    const handlePrevPageClick = () => {
+        setPage(page - 1);
+        selectedNote && setSelectedNote(null);
+    }
 
     const hide = { opacity: 0, transitionEnd: { display: "none" }};
     const show = { display: "block", opacity: 1 };
@@ -89,7 +99,7 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                     ) : (
                         <Link 
                             className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
-                            onClick={() => setPage(page - 1)}
+                            onClick={() => handlePrevPageClick()}
                             to={baseURL + (page - 1)}
                         > 
                             <MdKeyboardDoubleArrowLeft size={18} />
@@ -106,7 +116,7 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                     ) : (
                         <Link 
                             className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
-                            onClick={() => setPage(page + 1)}
+                            onClick={() => handleNextPageClick()}
                             to={baseURL + (page + 1)}
                         > 
                             <MdKeyboardDoubleArrowRight size={18} />

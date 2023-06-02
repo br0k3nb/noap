@@ -83,7 +83,7 @@ export default function App({ notes }: Props): JSX.Element {
         }
       } catch (err: any) {
         console.log(err);
-        toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+        toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
       }
   };
 

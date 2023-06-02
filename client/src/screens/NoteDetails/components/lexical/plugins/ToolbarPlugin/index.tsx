@@ -299,16 +299,12 @@ function FontDropDown({
   value,
   style,
   disabled = false,
-  customLabelSetter,
-  customLabel,
   isFontSizeModal,
 }: {
   editor: LexicalEditor;
   value: string;
   style: string;
   disabled?: boolean;
-  customLabelSetter?: any;
-  customLabel?: any;
   isFontSizeModal?: boolean;
 }): JSX.Element {
 
@@ -338,22 +334,6 @@ function FontDropDown({
   if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
   else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
-  // const customButtonLabel = 
-  //   <input 
-  //     type="text" 
-  //     className="w-10 rounded bg-inherit text-center" 
-  //     id="changeFontSize"
-  //     value={customLabel}
-  //     onChange={(e) => {
-  //       const val = e.target.value;
-
-  //       if(!Number(val)) return customLabelSetter("");
-  //       if(Number(val) && val.length > 3) return customLabelSetter(val.slice(0,3) + "px", "font-size");
-
-  //       customLabelSetter(Number(val) <= 100 ? val : 100);
-  //     }}
-  //   />
-
   return (
     <DropDown
       modalClassName={`
@@ -362,9 +342,8 @@ function FontDropDown({
         ${isFontSizeModal && "!w-16 xxs:!w-[58px] overflow-x-hidden"}
       `}
       disabled={disabled}
-      buttonClassName={`toolbar-item hover:!bg-transparent ${isFontSizeModal && "!hidden"} ` + style}
+      buttonClassName={`toolbar-item  ` + style}
       buttonLabelClassName={`${isFontSizeModal && "pl-2 pr-1"}`}
-      // customButtonLabel={isFontSizeModal ? customButtonLabel : false}
       buttonLabel={isFontSizeModal ? parseFontSizeToNumber(value) as string : value}
       buttonIconClassName={!isFontSizeModal ? "icon block-type font-family comp-picker" : ""}
       useCustomButton={isFontSizeModal ? true : false}
@@ -372,12 +351,12 @@ function FontDropDown({
       {(!isFontSizeModal ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
         ([option, text]) => (
           <DropDownItem
-            className={`item !pb-0 !pt-0 mx-auto ${style !== "font-family" && "!w-14"}`}
+            className={`item !pb-0 !pt-0 mx-auto ${style !== "font-family" && "!w-14"} `}
             onClick={() => handleClick(option)}
             key={option}
           >
             <div 
-              className={`bg-gray-800 hover:bg-gray-700 my-1 rounded-lg
+              className={`bg-gray-800 hover:!bg-gray-700 my-1 rounded-lg
                 ${!isFontSizeModal ? "!mx-2 w-screen" : "!w-[50px]"}
                 ${dropDownActiveClass(value === option)}
               `}
@@ -692,13 +671,11 @@ export default function ToolbarPlugin({ titleFocused }: any) {
           <div className="mx-1 flex flex-row space-x-2">
             <button 
               onClick={() => handleIncrementFontSizeButton()}
-              className="w-8 h-8 my-auto hover:bg-gray-600 rounded-lg"
+              className="w-8 h-8 my-auto hover:bg-[#dfe8fa4d] rounded-lg"
             > 
-              <span className="">+</span> 
+              +
             </button>
             <FontDropDown
-              customLabel={fontSizeInputText}
-              customLabelSetter={setFontSizeInputText}
               isFontSizeModal={true}
               disabled={!isEditable} 
               style={"font-size"} 
@@ -707,9 +684,9 @@ export default function ToolbarPlugin({ titleFocused }: any) {
             />
             <button 
               onClick={() => handleDecrementFontSizeButton()}
-              className="w-8 h-8 my-auto hover:bg-gray-600 rounded-lg"
+              className="w-8 h-8 my-auto hover:bg-[#dfe8fa4d] rounded-lg"
             > 
-              <span className="">-</span> 
+              -
             </button>
           </div>
           <Divider />

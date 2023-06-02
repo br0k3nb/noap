@@ -97,12 +97,12 @@ function getBlockElement(
     }
   });
 
-  if((blockElem as any)?.children[0].parentElement.className ===
+  if((blockElem as any)?.children[0]?.parentElement.className ===
    "PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr") {
     customMargin = '47';
   }
 
-  else if ((blockElem as any)?.children[0].className.startsWith('PlaygroundEditorTheme__listItem')) {
+  else if ((blockElem as any)?.children[0]?.className.startsWith('PlaygroundEditorTheme__listItem')) {
     customMargin = `${(blockElem as any)?.clientHeight / 2 + 25}`
   }
   

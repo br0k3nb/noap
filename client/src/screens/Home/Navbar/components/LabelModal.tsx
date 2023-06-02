@@ -5,6 +5,7 @@ import { HexColorPicker } from "react-colorful";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { BsThreeDotsVertical, BsSearch, BsFilter } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
+import { RiArrowGoBackFill } from "react-icons/ri";
 
 import Modal from '../../../../components/Modal';
 import SvgLoader from '../../../../components/SvgLoader';
@@ -43,9 +44,11 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const [ editId, setEditId ] = useState<string | null>(null);
     const [ showSearchBar, setShowSearchBar ] = useState(false);
     const [ showColorPicker, setShowColorPicker ] = useState('');
+    const [ showGoBackButton, setShowGoBackButton ] = useState(false);
     const [ showDropDown, setShowDropDown ] = useState<number | null>(null);
     const [ createLabel, setCreateLabel ] = useState<string | boolean>(false);
     const [ selectedLabel, setSelectedLabel ] = useState<string | null>(null);
+    const [ goBackButtonAction, setGoBackButtonAction ] = useState<any>({action: null});
 
     const { handleSubmit, register, formState, reset } = useForm<Label>();
     const { errors } = formState;
@@ -64,23 +67,34 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
 
     const deviceScreenSize = window.innerWidth;
 
+    const onAddNewLabelClick = () => {
+        setCreateLabel(true);
+        setShowGoBackButton(true);
+        setGoBackButtonAction({
+            action: () => {
+                setCreateLabel(false);
+                setGoBackButtonAction({ action: null })
+            }
+        });
+    };
+
     const closeModal = () => {
         setOpen(false);
         setPageLabel(1);
         setSearchLabel('');
         setShowSearchBar(false);
         setTimeout(() => setCreateLabel(false), 500);
-    }
+    };
     
     const openDeleteModal = (_id: string) => {
         setSelectedLabel(_id);
         setDeleteModal(true);
-    }
+    };
 
     const closeDeleteModal = () => {
         setDeleteModal(false);
         setSelectedLabel(null);
-    }
+    };
         
     const addLabel = async ({ name }: FieldValues) => {
         setLoader(true);
@@ -100,7 +114,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
         }
-    }
+    };
     
     const deleteLabel = async () => {
         setLoader(true);
@@ -123,7 +137,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
         }
-    }
+    };
 
     const resetLabelInfoToEdit = (chip: Label) => {
         const { _id, name, color, fontColor } : any = labels?.find(({_id}) => _id === chip._id);
@@ -134,7 +148,14 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         setSelectedStyle('');
         setFontColor(fontColor);
         setCreateLabel('edit');
-    }
+        setShowGoBackButton(true);
+        setGoBackButtonAction({
+            action: () => {
+                setCreateLabel(false);
+                setGoBackButtonAction({action: null})
+            }
+        });
+    };
 
     const editLabel = async ({ editName }: FieldValues) => {
         setLoader(true);
@@ -159,7 +180,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
         }
-    }
+    };
 
     const modalProps = {
         open,
@@ -167,10 +188,12 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         title: 'Labels',
         options: {
             onClose: closeModal,
+            showGoBackButton: showGoBackButton,
+            goBackButtonAction: goBackButtonAction.action,
             titleWrapperClassName: "px-6",
             modalWrapperClassName: `xxs:!w-[18rem] !px-0 !w-[23rem] max-h-none overflow-hidden`
         }
-    }
+    };
 
     const hide = { opacity: 0, transitionEnd: { display: "none" } };
     const show = { opacity: 1, display: "block" };
@@ -178,12 +201,12 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
     const onInputChange = (currentTarget: HTMLInputElement) => {
         setSearchLabel(currentTarget.value);
         setPageLabel(1);
-    }
+    };
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
         setSearchLabel('');
-    }
+    };
 
     return (
         <>
@@ -304,7 +327,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
                                 </div>
                             </div>
                             <div className="flex justify-center items-center border border-transparent border-t-gray-600">
-                                <button  className='text-sm uppercase text-gray-200 rounded-full mt-5' onClick={() => setCreateLabel(true)}>
+                                <button  className='text-sm uppercase text-gray-200 rounded-full mt-5' onClick={() => onAddNewLabelClick()}>
                                     <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
                                         Add a new label
                                     </span>
