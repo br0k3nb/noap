@@ -8,7 +8,6 @@ import {
   AiOutlineEllipsis,
 } from "react-icons/ai";
 import {
-  BsJournalRichtext,
   BsTagsFill,
   BsPeopleFill,
   BsArrowDown,
@@ -25,8 +24,6 @@ import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 import ToggleBottomBarContext from "../../context/ToggleBottomBar";
 
 import noNoteSelected from "../../assets/select-note.svg";
-
-import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -56,9 +53,6 @@ export default function NoteDetails({
   const [open, setOpen] = useState(false);
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [openLabelModal, setOpenlabelModal] = useState(false);
-  const [screenSize, setScreenSize] = useState({ width: window.outerWidth });
-
-  useUpdateViewport(setScreenSize, 500);
 
   const note = notes.find(({ _id }) => _id === selectedNote?.selectedNote);
 

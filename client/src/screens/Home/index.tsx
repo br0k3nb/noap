@@ -117,7 +117,7 @@ export default function Home(): JSX.Element {
       await api.post(`/add`, {
           title: "Untitled",
           body: "",
-          image: "no image attached",
+          image: "",
           state: JSON.stringify(default_editor_state),
           author: _id,
         }

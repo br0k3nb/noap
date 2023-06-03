@@ -23,7 +23,7 @@ api.interceptors.response.use(
         if(error.message === "Request aborted")
             return Promise.reject({ message: "Refetching error, please try again or later" });
 
-        if ((errorStatus >= 500 && errorStatus <= 599)) //(500 - 599) = Sever error responses
+        if ((errorStatus >= 500 && errorStatus <= 599)) //(500 - 599) = Server error responses
             return Promise.reject({ message: "Server error, please try again or later"});
 
         if(error?.code === "ERR_NETWORK")

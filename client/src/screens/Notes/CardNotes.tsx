@@ -2,8 +2,6 @@ import { useContext, SetStateAction, Dispatch } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
-import parse from "html-react-parser";
-
 import moment from "moment";
 import "moment/locale/pt-br";
 
@@ -48,16 +46,15 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                                 {notes.map((val, idx) => {
                                     const { image, labels, _id, body, createdAt, updatedAt, title } = val;
                                     const { color, type, fontColor, name } = labels?.length && labels[0] as any;
-                                    const parsedImage = image !== "no image attached" ? parse(image as string): false;
 
                                     return (
                                         <a className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} onClick={() => handleNoteClick(_id)} key={_id}>
                                             <div className={`rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${noteContext?.selectedNote === _id && "!border-gray-300"}`}>
                                                 <p className="text-lg px-4 mb-3 truncate">{title}</p>
-                                                <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${parsedImage && "!h-[148px]"}`}>
+                                                <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
                                                     <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
-                                                        {(labels && labels.length) && !parsedImage ? (body.length >= 135 ? body.slice(0,134).concat('...') : body) :
-                                                        (labels && labels.length) && parsedImage ? body.slice(0, 73) + '...' : body}
+                                                        {(labels && labels.length) && image === '' ? (body.length >= 135 ? body.slice(0,134).concat('...') : body) :
+                                                        (labels && labels.length) && image !== '' ? body.slice(0, 73) + '...' : body}
                                                     </div>
                                                     {labels && labels.length > 0 && (
                                                         <div className="mt-1">
@@ -97,7 +94,14 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                                                 <p className="text-xs tracking-tighter mt-2 px-4 pb-[0.04rem]">
                                                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                                                 </p>
-                                                {parsedImage && <div className="h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg">{parsedImage}</div>}
+                                                {image !== '' && (
+                                                    <div className="h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg">
+                                                        <img 
+                                                            src={image}
+                                                            className="rounded-b-[6.5px] object-cover !h-[3.50rem] min-w-[98.9%]"
+                                                        />
+                                                    </div>
+                                                )}
                                                 </div>
                                             </a>
                                         );

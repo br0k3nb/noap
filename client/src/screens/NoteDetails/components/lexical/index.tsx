@@ -1,11 +1,11 @@
 import { useRef, useEffect, useState, useContext } from "react";
 import { FieldArrayWithId, useForm } from "react-hook-form";
+
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { CLEAR_HISTORY_COMMAND } from "lexical";
 
 import { pack, unpack } from "msgpackr";
-import { BSON } from 'bson';
 
 import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
 import { SharedHistoryContext } from "./context/SharedHistoryContext";
@@ -41,7 +41,7 @@ export default function App({ notes }: Props): JSX.Element {
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
 
-      let images = '';
+      let imageSrc = '';
       
       const title = editorRef?.current.firstChild.children[0].childNodes[0].children[0].value;
       const body = editorRef?.current.firstChild.children[1].innerHTML;
@@ -50,26 +50,24 @@ export default function App({ notes }: Props): JSX.Element {
       const getTextBettwenSpanTags = body.match(/(?<=(<span data-lexical-text="true">))(\w|\d|\n|[().,\-:;@#$%^&*\[\]"'+–/\/®°⁰!?{}|`~]| )+?(?=(<\/span>))/gm);
 
       if(findImages && findImages.length !== 0) {
-        const removeInlineStyleFormImage = findImages[0].replace(/style="[^"]+"/gm, '');
-        images = removeInlineStyleFormImage.replace(/>/, ' className="rounded-b-[6.5px] object-cover !h-[3.50rem] min-w-[98.9%]">');
+        const regToGetSrcFromImg = new RegExp(/<img.*?src=["|'](.*?)["|']/);
+        const srcFromImg = regToGetSrcFromImg.exec(findImages[0]) as any;
+
+        imageSrc = srcFromImg[1];
       }
-      else images = 'no image attached';
       
       try {
-        if (currentState) {
+        if (currentState) {        
           const state = JSON.stringify(currentState);
           
           const compressState = pack({ state });
           const resultState = unpack(compressState);
 
-          const compressImg = BSON.serialize({ images });
-          const resultImg = BSON.deserialize(compressImg);
-
           const create = await api.patch("/edit",
             {
               title,
               body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',
-              image: resultImg.images,
+              image: imageSrc,
               state: resultState.state,
               _id: noteContext?.selectedNote,
               stateId: note?.state._id
@@ -119,7 +117,13 @@ export default function App({ notes }: Props): JSX.Element {
             <div className="editor-shell h-screen w-fit overflow-hidden absolute">
               {/* @ts-ignore */}
               <UpdatePlugin />  
-              <Editor note={note} ref={editorRef} save={saveNote} register={register} saveSpinner={saveSpinner} />
+              <Editor 
+                note={note} 
+                ref={editorRef} 
+                save={saveNote} 
+                register={register} 
+                saveSpinner={saveSpinner} 
+              />
             </div>
           </SharedAutocompleteContext>
         </TableContext>
