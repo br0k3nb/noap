@@ -6,7 +6,7 @@ export default {
     async view(req, res) {
         try {
             const { author, page } = req.params;
-            if(!author || !page) return res.status(404).json({message: "Acess denied!"});
+            if(!author || !page) return res.status(404).json({ message: "Access denied!" });
 
             const { search, limit } = req.query;
 
@@ -72,8 +72,7 @@ export default {
             await NoteState.findOneAndUpdate({ _id }, { noteId });
             res.status(200).json({ message: 'Saved susccessfuly!' });
         } catch (err) {
-            console.log(err);
-            res.status(400).json({message: 'Error, please try again later!'});
+            res.status(400).json({ message: 'Error creating a new note, please try again or later' });
         }
     },
     async addLabel(req , res) {

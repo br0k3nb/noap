@@ -16,7 +16,7 @@ export default new mongoose.Schema({
     }],
     image: {
         type: String,
-        required: true,
+        required: false,
     },
     state: {
         type: mongoose.Schema.Types.Mixed,
