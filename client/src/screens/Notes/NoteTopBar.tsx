@@ -81,7 +81,7 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                 className={`bg-gray-800 px-6 pb-2 hidden ${showSearch && "!grid"}`}
             >
                 <input
-                    className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10"
+                    className="sign-text-inputs bg-stone-900 text-gray-300 h-10 border !border-gray-700 hover:!border-gray-600"
                     onChange={({currentTarget}) => onInputChange(currentTarget)}
                     placeholder="Search for labels and titles..."
                     value={search}

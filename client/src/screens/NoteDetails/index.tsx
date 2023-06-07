@@ -84,8 +84,9 @@ export default function NoteDetails({
   return (
     <div
       className={`
-      flex flex-col overflow-hidden w-screen h-screen bg-gray-700 text-gray-200 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
-      ${!expanded && "hidden lg:flex"}`}
+        flex flex-col overflow-hidden w-screen h-screen bg-gray-700 text-gray-200 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
+        ${!expanded && "hidden lg:flex"}
+      `}
     >
       {selectedNote?.selectedNote !== null && (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
@@ -113,7 +114,7 @@ export default function NoteDetails({
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800"
+                className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800 border border-gray-500"
               >
                 <li>
                   <a
@@ -132,6 +133,7 @@ export default function NoteDetails({
                       </div>
                     </label>
                   </a>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <a
                     className="active:!bg-gray-600 hover:!bg-gray-700"
                     onClick={() => setOpenlabelModal(true)}
@@ -148,6 +150,7 @@ export default function NoteDetails({
                       </div>
                     </label>
                   </a>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <button
                     className="active:!bg-gray-600 hover:!bg-gray-700"
                     onClick={() => setShowBottomBar(showBottomBar ? false : true)}
@@ -170,6 +173,7 @@ export default function NoteDetails({
                       </div>
                     </label>
                   </button>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <a className="cursor-not-allowed active:!bg-transparent">
                     <label htmlFor="my-modal-4" className="text-gray-600">
                       <div className="flex flex-row space-x-2 cursor-not-allowed">
