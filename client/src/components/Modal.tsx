@@ -3,9 +3,10 @@ import { Dispatch, SetStateAction } from "react"
 import { RiArrowGoBackFill } from "react-icons/ri";
 
 type Props = {
-    children: any;
     open: boolean;
+    setOpen: Dispatch<SetStateAction<boolean>>;
     title?: string;
+    children: any;
     options?: {
         onClose?: () => void;
         showGoBackButton?: boolean;
@@ -14,7 +15,6 @@ type Props = {
         modalWrapperClassName?: string;
         goBackButtonAction?: () => void;
     };
-    setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Modal({ children, open, setOpen, title, options }: Props) {
@@ -25,7 +25,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
         onClose, 
         showGoBackButton,
         goBackButtonAction
-    } = options as any;
+    } = options || {};
 
     return (
         <div>
