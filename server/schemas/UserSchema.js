@@ -21,6 +21,10 @@ export default new mongoose.Schema({
         type: String,
         required: false
     },
+    TFAStatus : {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
+    },
     googleAccount: {
         type: Boolean,
         required: false

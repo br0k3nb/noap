@@ -3,7 +3,17 @@ import { FieldArrayWithId } from 'react-hook-form';
 
 import { BiLock } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-import { BsJournalPlus, BsTagFill, BsFillCalendarEventFill, BsDoorOpenFill, BsGearWide, BsFillTrashFill } from "react-icons/bs";
+import { 
+  BsJournalPlus, 
+  BsTagFill, 
+  BsFillCalendarEventFill, 
+  BsDoorOpenFill, 
+  BsGearWide, 
+  BsFillTrashFill,
+  BsShieldLockFill
+} from "react-icons/bs";
+
+import { Tb2Fa } from "react-icons/tb";
 
 import { motion } from 'framer-motion';
 
@@ -12,6 +22,7 @@ import useUpdateViewport from '../../../hooks/useUpdateViewport';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import AccountSettingsModal from './components/AccountSettingsModal';
 import logo from '../../../assets/logo/logo-white-no-bg.png';
+import TwoFactAuthModal from './components/TwoFactAuthModal';
 import SvgLoader from '../../../components/SvgLoader';
 import LabelModal from './components/LabelModal';
 
@@ -25,6 +36,7 @@ type NavProps = {
 
 export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, labels }: NavProps) {
   const [ userIsAuth, setUserIsAuth ] = useState(false);
+  const [ open2FAModal, setOpen2FAModal ] = useState(false);
   const [ openAuthModal, setOpenAuthModal ] = useState(false);
   const [ openLabelModal, setOpenLabelModal ] = useState(false);
   const [ openSettingsModal, setOpenSettingsModal ] = useState(false);
@@ -62,6 +74,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
         setOpen={setOpenLabelModal} 
         labels={labels}
       />
+      <TwoFactAuthModal
+        open={open2FAModal}
+        setOpen={setOpen2FAModal}
+      />
       <ConfirmationModal
         open={openSignOutConfirmationModal}
         setOpen={setOpenSignOutConfirmationModal}
@@ -86,7 +102,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       </div>
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-gray-800 border border-gray-600">
+                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-gray-800 border border-gray-600 ml-2">
                     <li>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
@@ -95,7 +111,19 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
                             <span>Change login information</span>  
-                            <BiLock size={22} className="pt-1"/>
+                            <BiLock size={25} className="pt-1"/>
+                          </div>
+                        </label>
+                      </a>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                      <a
+                        className="active:!bg-gray-600 rounded-xl text-gray-300"
+                        onClick={() => setOpen2FAModal(true)}
+                      >
+                        <label htmlFor="my-modal-4">
+                          <div className="flex flex-row space-x-2">
+                            <span>Two-factor authentication</span>  
+                            <BsShieldLockFill size={22} className="pt-1"/>
                           </div>
                         </label>
                       </a>
@@ -107,7 +135,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
                             <p>Log out</p>
-                            <BsDoorOpenFill size={19} className="pt-1"/>
+                            <BsDoorOpenFill size={22} className="pt-1"/>
                           </div>
                         </label>
                       </a>
@@ -181,18 +209,26 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       </div>
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-40 overflow-hidden rounded-xl bg-gray-800 border border-gray-600">
+                  <ul tabIndex={0} className="dropdown-content menu shadow w-44 overflow-hidden rounded-xl bg-gray-800 border border-gray-600">
                     <li>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
                         onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenSettingsModal(true)}
                       >
-                        <label htmlFor="my-modal-4">
-                          <div className="flex flex-row space-x-2">
-                            <span className='xxs:text-sm'>Change login information</span>  
-                            <BiLock size={37} className="my-auto"/>
-                          </div>
-                        </label>
+                        <div className="flex flex-row space-x-2">
+                          <span className='xxs:text-sm'>Change login information</span>  
+                          <BiLock size={37} className="my-auto"/>
+                        </div>
+                      </a>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                      <a
+                        className="active:!bg-gray-600 rounded-xl text-gray-300"
+                        onClick={() => setOpen2FAModal(true)}
+                      >
+                        <div className="flex flex-row space-x-2">
+                          <span className='xxs:text-sm'>Two-factor authentication</span>  
+                          <BsShieldLockFill size={32} className="my-auto"/>
+                        </div>
                       </a>
                       <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                       <a
@@ -201,8 +237,8 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       >
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
-                            <p className='xxs:text-sm'>Log out</p>
-                            <BsDoorOpenFill size={20} className="pt-1 my-auto"/>
+                            <p className='xxs:text-sm pt-[1px]'>Log out</p>
+                            <BsDoorOpenFill size={25} className="pt-1 my-auto"/>
                           </div>
                         </label>
                       </a>

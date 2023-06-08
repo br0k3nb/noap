@@ -6,6 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 
 import { motion } from "framer-motion";
 
+import Verify2FAModal from "../components/Verify2FAModal";
 import { toastAlert } from "../components/Alert/Alert";
 import SvgLoader from "../components/SvgLoader";
 
@@ -23,6 +24,7 @@ export default function SignIn() {
   const { errors } = formState;
 
   const [ svgLoader, setSvgLoader ] = useState("");
+  const [ openTFAModal, setOpenTFAModal ] = useState(false);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -58,12 +60,16 @@ export default function SignIn() {
 
     const callback = (data: any, err: any) => {
       if (!err && data) {
-        navigate(`/notes/page/1`);
+        const { TFAEnabled } = data;
+
+        if(TFAEnabled) setOpenTFAModal(true);
+        else navigate(`/notes/page/1`);
+
         setSvgLoader("");
       } 
       else {
         setSvgLoader("");
-        toastAlert({ icon: "error", title: `${err?.message}`, timer: 2500 });
+        toastAlert({ icon: "error", title: err.message, timer: 2500 });
       }
     }
 
@@ -77,6 +83,11 @@ export default function SignIn() {
       transition={{ duration: 0.3 }}
       className="flex flex-row h-screen bg-slate-800"
     >
+      <Verify2FAModal
+        open={openTFAModal}
+        setOpen={setOpenTFAModal}
+        useNav={"/notes/page/1"}
+      />
       <img src={note} className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-slate-800 opacity-90" draggable={false} />
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
         <div className="flex flex-row h-screen bg-slate-800">
