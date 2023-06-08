@@ -47,7 +47,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
   useUpdateViewport(setDeviceScreenSize, 500);
 
   const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-  const { googleAccount, name } = parsedUserToken;
+  const { googleAccount, name, _id } = parsedUserToken;
 
   const accSettingsModalProps = {
     setUserIsAuth,
@@ -77,6 +77,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
       <TwoFactAuthModal
         open={open2FAModal}
         setOpen={setOpen2FAModal}
+        userId={_id}
       />
       <ConfirmationModal
         open={openSignOutConfirmationModal}

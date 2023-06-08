@@ -63,7 +63,7 @@ export default function SignIn() {
       } 
       else {
         setSvgLoader("");
-        toastAlert({ icon: "error", title: `${err?.message}`, timer: 2500 });
+        toastAlert({ icon: "error", title: err.message, timer: 2500 });
       }
     }
 

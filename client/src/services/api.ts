@@ -5,7 +5,7 @@ const { host, port } = config;
 
 const api = axios.create({ baseURL: ` http://${host}:${port}/` });
 
-// const api = axios.create({ baseURL: `https://noap-typescript-api.vercel.app/` });
+// const api = axios.create({ baseURL: `https://noap-api.vercel.app/` });
 
 api.interceptors.request.use(async config => {
     const token = localStorage.getItem('user_token');
