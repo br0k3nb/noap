@@ -10,6 +10,7 @@ type Props = {
     options?: {
         onClose?: () => void;
         showGoBackButton?: boolean;
+        titleCustomClassName?:string;
         closeButtonClassName?: string;
         titleWrapperClassName?: string;
         modalWrapperClassName?: string;
@@ -22,6 +23,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
         modalWrapperClassName, 
         titleWrapperClassName, 
         closeButtonClassName, 
+        titleCustomClassName,
         onClose, 
         showGoBackButton,
         goBackButtonAction
@@ -38,7 +40,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
             <div className="modal">
                 <div className={`border border-gray-600 modal-box !bg-gray-800 relative transition-all duration-500 ${modalWrapperClassName && modalWrapperClassName}`}>
                     <div className={`flex flex-row justify-between pb-5 border border-transparent border-b-gray-600 ${titleWrapperClassName && titleWrapperClassName}`}>
-                        {title && ( <h3 className="text-2xl tracking-tight font-light text-gray-200">{title}</h3> )}
+                        {title && ( <h3 className={`text-2xl tracking-tight font-light text-gray-200 ${titleCustomClassName && titleCustomClassName}`}>{title}</h3> )}
                         <div className="flex flex-row justify-between space-x-2">
                             {(showGoBackButton && goBackButtonAction) && (
                                 <div className="tooltip tooltip-bottom" data-tip="Go back">

@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import noapLogo from '../assets/logo/logo-white-no-bg.png';
 import forgotPassword from '../assets/forgot-password.svg';
 
+import Verify2FAModal from '../components/Verify2FAModal';
 import { toastAlert } from '../components/Alert/Alert';
 import SvgLoader from '../components/SvgLoader';
 
@@ -18,6 +19,7 @@ export default function LoginHelp() {
   const [ userId, setUserId ] = useState('');
   const [ loader, setLoader ] = useState(false);
   const [ wasChanged, setWasChanged ] = useState(false);
+  const [ openTFAModal, setOpenTFAModal ] = useState(false);
   const [ triggerCode, setTriggerCode ] = useState<boolean | string>(false);
 
   const { handleSubmit, register, reset, formState } = useForm();
@@ -28,10 +30,14 @@ export default function LoginHelp() {
   const getEmail = async ({ email }: FieldValues) => {
     setLoader(true);
     try {
-      const {data: { message, userId: _id }} = await api.post('/find-user', { email });
-      toastAlert({ icon: 'success', title: message, timer: 2000 });
+      const {data: { message, userId: _id, code }} = await api.post('/find-user', { email });
 
-      setTriggerCode(true);
+      if(code && code === 5) setOpenTFAModal(true);
+      else {
+        setTriggerCode(true);
+        toastAlert({ icon: 'success', title: message, timer: 2000 });
+      }
+
       setLoader(false);
       setUserId(_id);
     } catch (err: any) {
@@ -107,6 +113,14 @@ export default function LoginHelp() {
 
   return (
     <div className="!bg-gray-800 h-screen overflow-scroll">
+      <Verify2FAModal
+        open={openTFAModal}
+        setOpen={setOpenTFAModal}
+        useNav={false}
+        customSetter={setTriggerCode}
+        customSetterContent={"verified"}
+        customUserId={{ _id: userId }}
+      />
       <div className="flex flex-row justify-between w-screen bg-stone-900 pb-3 pt-1 fixed z-10">
         <img src={noapLogo} className='w-[8rem] pl-5 pt-2' draggable={false}/> 
         <a  href='/' className='text-gray-200 text-sm font-light tracking-widest uppercase pt-[7.5px] px-3 mr-5 mt-[9px] h-9 rounded-full hover:!bg-red-700 border border-gray-500 transition-all duration-500 ease-in-out'>
@@ -139,11 +153,17 @@ export default function LoginHelp() {
                       </p>
                       <input
                         type="email"
-                        className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 ${timer === "maximum" && "border !border-red-700 hover:!border-red-800"}`}
+                        className={`
+                          sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400
+                          ${timer === "maximum" && "border !border-red-700 hover:!border-red-800"}
+                        `}
                         placeholder="Email"
                         {...register("email", {
                           required: "Email is required!",
-                          pattern: { value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message: "Invalid email!" }
+                          pattern: { 
+                            value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 
+                            message: "Invalid email!" 
+                          }
                         })}
                       />
                       {(timer !== 'maximum' && timer !== '') ? ( <Countdown date={timer} renderer={renderer} /> ) : timer === 'maximum' ? (
@@ -154,12 +174,15 @@ export default function LoginHelp() {
                           </button>
                         </>
                       ) : (
-                        <button className={`bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out`}>
+                        <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
                           {loader ? ( 
-                            <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> 
-                          ) : (
-                            "Send code"
-                          )}
+                            <SvgLoader 
+                              options={{
+                                showLoadingText: true, 
+                                LoaderClassName: "mt-[3px]"
+                              }}
+                            /> 
+                          ) : ("Search user")}
                         </button>
                       )}                        
                     </>
