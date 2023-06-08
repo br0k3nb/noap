@@ -235,7 +235,12 @@ export default {
                 code: 1
             });
 
-            const { _id, name, email: userMail} = userExists[0];
+            const { _id, name, email: userMail, TFAStatus } = userExists[0];
+
+            if(TFAStatus) {
+                const getTFAData = await TFA.findById({ _id: TFAStatus });
+                if(getTFAData?.options.useToResetPass) return res.status(200).json({ code: 5, userId: _id });
+            }
 
             const findOtp = await Otp.find({ userId: _id });
             const lastOtpDate = findOtp[findOtp.length - 1]?.createdAt;
@@ -283,6 +288,7 @@ export default {
                 code: 4 
             });
         } catch (err) {
+            console.log(err);
             res.status(400).json({ message: err });
         }
     },
@@ -322,6 +328,7 @@ export default {
                     qrcode: data,
                     userId,
                     secret: secret.base32,
+                    options: { useToResetPass: true },
                     verified: false
                 });
 
@@ -359,4 +366,19 @@ export default {
             req.status(400).json({ message: err });
         }
     },
+    async remove2FA(res, req) {
+        try {
+            const { userId } = res.body;
+
+            const getTFA = await TFA.find({ userId });
+
+            await TFA.remove({ _id: getTFA[0]._id });
+            await User.findByIdAndUpdate({ _id: getTFA[0].userId }, { TFAStatus: undefined });
+
+            return req.status(200).json({ message: "2FA removed successfuly!" });
+        } catch (err) {
+            console.log(err);
+            req.status(400).json({ message: err });
+        }
+    }
 }

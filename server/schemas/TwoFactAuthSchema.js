@@ -13,6 +13,12 @@ export default new mongoose.Schema({
         type: String,
         required: true
     },
+    options: {
+        useToResetPass: {
+            type: Boolean,
+            required: false
+        }
+    },
     verified: {
         type: Boolean,
         required: true
