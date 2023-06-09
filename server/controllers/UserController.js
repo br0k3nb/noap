@@ -227,7 +227,7 @@ export default {
     },
     async findAndSendCode(req, res) {
         try {
-            const { email } = req.body;
+            const { email, remove2FA } = req.body;
             const userExists = await User.find({ email });
 
             if(userExists.length === 0) return res.status(400).json({
@@ -237,7 +237,7 @@ export default {
 
             const { _id, name, email: userMail, TFAStatus } = userExists[0];
 
-            if(TFAStatus) {
+            if(TFAStatus && remove2FA !== "2fa") {
                 const getTFAData = await TFA.findById({ _id: TFAStatus });
                 if(getTFAData?.options.useToResetPass) return res.status(200).json({ code: 5, userId: _id });
             }
@@ -371,6 +371,8 @@ export default {
             const { userId } = res.body;
 
             const getTFA = await TFA.find({ userId });
+
+            if(getTFA.length === 0) return req.status(400).json({ message: "This account doesn't have 2FA enabled!" });
 
             await TFA.remove({ _id: getTFA[0]._id });
             await User.findByIdAndUpdate({ _id: getTFA[0].userId }, { TFAStatus: undefined });
