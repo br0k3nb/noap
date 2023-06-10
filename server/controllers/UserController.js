@@ -242,6 +242,10 @@ export default {
                 if(getTFAData?.options.useToResetPass) return res.status(200).json({ code: 5, userId: _id });
             }
 
+            if(!TFAStatus && remove2FA === "2fa") {
+                return res.status(400).json({ message: "This account doesn't have 2FA enabled!" });
+            }
+
             const findOtp = await Otp.find({ userId: _id });
             const lastOtpDate = findOtp[findOtp.length - 1]?.createdAt;
 
