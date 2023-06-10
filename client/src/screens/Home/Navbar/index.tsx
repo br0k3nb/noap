@@ -200,13 +200,11 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
                 <div className="dropdown dropdown-right pt-[6.2px]">
                   <label tabIndex={0}>
-                    <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
-                      <div className="flex flex-row">
-                        <div className="rounded-full border !border-gray-500 bg-gray-800 hover:bg-gray-900/60 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
-                          <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
-                        </div>
-                        <p className='ml-2 my-auto uppercase text-xs tracking-widest'>{name && name}</p>
+                    <div className="flex flex-row text-center">
+                      <div className="rounded-full border !border-gray-500 bg-gray-800 hover:bg-gray-900/60 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
+                        <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
                       </div>
+                      <p className='ml-2 my-auto uppercase text-xs tracking-widest'>{name && name}</p>
                     </div>
                   </label>
                   <ul tabIndex={0} className="dropdown-content menu shadow w-44 overflow-hidden rounded-xl bg-gray-800 border border-gray-600">
@@ -237,8 +235,8 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       >
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
-                            <p className='xxs:text-sm pt-[1px]'>Log out</p>
-                            <BsDoorOpenFill size={25} className="pt-1 my-auto"/>
+                            <p className='xxs:text-sm'>Log out</p>
+                            <BsDoorOpenFill size={21}/>
                           </div>
                         </label>
                       </a>

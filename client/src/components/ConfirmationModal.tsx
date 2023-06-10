@@ -12,12 +12,13 @@ type Props = {
         loader?: boolean;
         onClose?: () => void;
         alertComponentIcon?: string;
-        alertComponentText?: string
+        alertComponentText?: string;
         modalWrapperClassName?: string;
         titleWrapperClassName?: string;
         subTextCustomClassName?: string;
         alertComponentClassName?: string;
         mainTextCustomClassName?: string;
+        alertComponentTextClassName?: string;
         customCloseButtonAction?: () => void;
         customDeleteButtonText?: string;
         customCancelButtonText?: string;
@@ -27,36 +28,53 @@ type Props = {
 };
 
 export default function ConfirmationModal({ open, options, setOpen, deleteButtonAction, mainText }: Props) {
+    const {
+        subText, 
+        onClose, 
+        loader, 
+        alertComponentIcon, 
+        alertComponentText,
+        alertComponentClassName,
+        alertComponentTextClassName,
+        customCancelButtonText,
+        customCloseButtonAction,
+        customDeleteButtonText,
+        mainTextCustomClassName,
+        modalWrapperClassName,
+        subTextCustomClassName,
+        titleWrapperClassName
+    } = options || {};
+
     const modalProps = {
         open,
         setOpen,
         title: "Confirmation",
         options: {
-            onClose: options?.onClose && options?.onClose,
-            titleWrapperClassName: `${options?.titleWrapperClassName && options?.titleWrapperClassName} px-6`,
-            modalWrapperClassName: `${options?.modalWrapperClassName && options?.modalWrapperClassName} px-0`
+            onClose: onClose && onClose,
+            titleWrapperClassName: `${titleWrapperClassName && titleWrapperClassName} px-6`,
+            modalWrapperClassName: `${modalWrapperClassName && modalWrapperClassName} px-0`
         }
     };
-    
+
     return (
         <Modal {...modalProps}>
-            <p className={`mt-5 px-6 text-sm uppercase tracking-widest text-gray-300 ${options?.mainTextCustomClassName && options?.mainTextCustomClassName}`}>
+            <p className={`mt-5 px-6 text-sm uppercase tracking-widest text-gray-300 ${mainTextCustomClassName && mainTextCustomClassName}`}>
                 {mainText} 
             </p>
             {options?.subText && (
-                <p className={`text-xs uppercase tracking-widest text-gray-500 mt-4 mb-6 ${options?.subTextCustomClassName && options?.subTextCustomClassName}`}>
-                    {options?.subText}
+                <p className={`text-xs uppercase tracking-widest text-gray-500 mt-4 mb-6 ${subTextCustomClassName && subTextCustomClassName}`}>
+                    {subText}
                 </p>
             )}
-            {options?.alertComponentText && (
+            {alertComponentText && (
                 <div className="alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32">
-                    <div className="text-[13.5px] uppercase tracking-wide">
-                        {options?.alertComponentIcon  === "warning" ? ( 
+                    <div className={`text-[13.5px] uppercase tracking-wide ${alertComponentClassName && alertComponentClassName}`}>
+                        {alertComponentIcon  === "warning" ? ( 
                             <AiFillWarning 
                                 size={17}
                                 className="stroke-info flex-shrink-0 w-6 h-6 text-yellow-600" 
                             />
-                         ) : options?.alertComponentIcon === "info" ? (
+                         ) : alertComponentIcon === "info" ? (
                             <AiFillInfoCircle 
                                 size={17}
                                 className="stroke-info flex-shrink-0 w-6 h-6 text-blue-500" 
@@ -67,7 +85,11 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                                 className="stroke-info flex-shrink-0 w-6 h-6 text-yellow-600" 
                             />
                          )}
-                        <span>{options?.alertComponentText}</span>
+                        <span 
+                            className={`${alertComponentTextClassName && alertComponentTextClassName}`}
+                        >
+                            {alertComponentText}
+                        </span>
                     </div>
                 </div>
             )}
@@ -75,21 +97,28 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                 <div className="mt-3 flex flex-row justify-evenly">
                     <button
                         className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-[14px] xxs:!py-[10px] xxs:px-6 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out"
-                        onClick={() => options?.customCloseButtonAction ? options?.customCloseButtonAction() : setOpen(false)}
+                        onClick={() => customCloseButtonAction ? customCloseButtonAction() : setOpen(false)}
                     >
                         <p className='text-sm uppercase tracking-widest xxs:!text-xs'>
-                            {options?.customCancelButtonText ? options?.customCancelButtonText : "Cancel"}
+                            {customCancelButtonText ? customCancelButtonText : "Cancel"}
                         </p>
                     </button>
                     <button 
-                        className="bg-red-700 hover:bg-red-800 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out"
+                        className={`bg-red-700 hover:bg-red-800 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out`}
                         onClick={() => deleteButtonAction()}
                     >
-                        {options?.loader ? (
-                          <SvgLoader options={{ showLoadingText: true }} /> 
+                        {loader ? (
+                            <SvgLoader 
+                                options={{ 
+                                    showLoadingText: true, 
+                                    wrapperClassName: "h-4",
+                                    LoadingTextClassName: "xxs:text-xs xxs:!py-0",
+                                    LoaderClassName: "xxs:h-3 xxs:!mt-[1.5px]"
+                                }} 
+                            /> 
                         ) : (
                             <p className='text-sm uppercase tracking-widest xxs:!text-xs'>
-                                {options?.customDeleteButtonText ? options?.customDeleteButtonText : "Delete"}
+                                {customDeleteButtonText ?customDeleteButtonText : "Delete"}
                             </p>
                         )}
                     </button>

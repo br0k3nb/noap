@@ -10,6 +10,7 @@ type Props = {
     options?: {
         onClose?: () => void;
         showGoBackButton?: boolean;
+        showCloseTooltip?: boolean;
         titleCustomClassName?:string;
         closeButtonClassName?: string;
         titleWrapperClassName?: string;
@@ -26,11 +27,12 @@ export default function Modal({ children, open, setOpen, title, options }: Props
         titleCustomClassName,
         onClose, 
         showGoBackButton,
+        showCloseTooltip,
         goBackButtonAction
     } = options || {};
 
     return (
-        <div>
+        <>
             <input
                 readOnly
                 checked={open}
@@ -55,7 +57,17 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                     </div>
                                 </div>
                             )}
-                            <div className="tooltip tooltip-bottom" data-tip="Close">
+                            {showCloseTooltip ? (
+                                <div className="tooltip tooltip-bottom" data-tip="Close">
+                                    <label 
+                                        htmlFor="my-modal-3"
+                                        className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                        onClick={() => onClose ? onClose() : setOpen(false)}
+                                    >
+                                        ✕
+                                    </label>
+                                </div>
+                            ) : ( 
                                 <label 
                                     htmlFor="my-modal-3"
                                     className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
@@ -63,12 +75,12 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 >
                                     ✕
                                 </label>
-                            </div>
+                            )} 
                         </div>
                     </div>
                     {children}
                 </div>
             </div>
-        </div>
+        </>
     )
 }

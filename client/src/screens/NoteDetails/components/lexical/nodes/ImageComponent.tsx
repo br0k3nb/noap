@@ -319,14 +319,14 @@ export default function ImageComponent({
         setOpen={setOpenFullscreenModal}
         options={{
           titleWrapperClassName: "!border-none absolute right-1 top-1",
-          modalWrapperClassName: "!max-w-fit border border-gray-600",
+          modalWrapperClassName: "!max-w-fit border border-gray-600 overflow-x-hidden",
           closeButtonClassName: "!border-none"
         }}
       >
         <LazyImage
           src={src}
           height={"inherit"}
-          className={"!rounded-xl mt-4"}
+          className={"!rounded-xl mt-6"}
           width={currentScreenSize - 100}
           maxWidth={700}
         />

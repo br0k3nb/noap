@@ -59,11 +59,11 @@ export default function NoteTopBar({ page, search, navbar, totalDocs, showSearch
                             <p className="text-xl">Notes</p>
                         </div>
                         <button className="sm:hidden" onClick={() => setNavbar(!navbar)}>
-                            {!navbar ? <BsList size={29} /> : <BsXLg size={24} />}
+                            {!navbar ? <BsList size={29} /> : <BsXLg size={23} className="mb-[2px] mr-1 mt-1" />}
                         </button>
                     </div>
                     <div className="flex flex-row flex-wrap gap-x-1 justify-between px-3 py-2 max-w-screen text-gray-200">
-                        <p className="pl-3">{totalDocs} notes</p>
+                        <p className="pl-3 pt-1">{totalDocs} notes</p>
                         <div className="flex flex-row space-x-2">
                             <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> <BsFilter size={25}/> </div>
                             <div className="tooltip tooltip-left" data-tip="Search">

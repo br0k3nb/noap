@@ -59,7 +59,8 @@ export default function Verify2FAModal({ open, setOpen, useNav, customSetter, cu
             title="Two-factor authentication"
             options={{
                 titleWrapperClassName: "px-6",
-                modalWrapperClassName: "!px-0 xxs:w-[22rem] w-[25rem]",
+                titleCustomClassName: "xxs:text-[19.5px]",
+                modalWrapperClassName: "!px-0 xxs:w-[19rem] w-[22.5rem]",
                 onClose: () => setOpen(false)
             }}
         >

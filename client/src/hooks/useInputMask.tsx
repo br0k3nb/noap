@@ -33,7 +33,7 @@ export const useInputMask = (mask = '') => {
     const replacer = mask
       .replace(/([^a-zA-Z0-9\*])/g, '-')
       .split('-')
-      .reduce((acc, curr, index) => {
+      .reduce((acc, _, index) => {
         acc = acc.concat(`$${index + 1}${separators[index] || ''}`);
         return acc;
       }, '');

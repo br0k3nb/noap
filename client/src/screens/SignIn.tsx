@@ -51,7 +51,7 @@ export default function SignIn() {
       navigate("/notes/page/1");
     } catch (err: any) {
       setSvgLoader("");
-      toastAlert({ icon: "error", title: `${err?.message}`, timer: 3000 });
+      toastAlert({ icon: "error", title: err.message, timer: 3000 });
     }
   };
 
@@ -157,7 +157,7 @@ export default function SignIn() {
                   </button>
                   <div className="flex flex-col justify-between text-[12px] xxs:text-[10px] mt-2 space-y-2 uppercase tracking-widest">
                     <p className="text-gray-300">
-                      Doesn't have an account?
+                      Doesn't have an account ?
                       <a href="/sign-up" className="text-red-600 ml-1 hover:text-red-700"> Sign Up </a>
                     </p>
                     <a href="/help" className="text-gray-300 hover:text-red-600 transition-all duration-300 ease-in-out">

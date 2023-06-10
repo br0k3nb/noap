@@ -270,7 +270,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
                                                                 </div>
                                                             )}
                                                             <div className="flex items-center justify-center">
-                                                                <div className='tooltip tooltip-left' data-tip="Actions">
+                                                                <div className='tooltip tooltip-left xxs:before:bg-transparent' data-tip={ innerWidth > 640 ? "Actions" : "" }>
                                                                     <div className="dropdown dropdown-left">
                                                                         <label tabIndex={0}>
                                                                             <BsThreeDotsVertical size={16} onClick={() => setShowDropDown(idx)}/> 

@@ -94,10 +94,10 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
             title="Two-factor authentication"
             options={{
                 titleWrapperClassName: "px-6",
-                titleCustomClassName: "xxs:!text-xl",
+                titleCustomClassName: "xxs:!text-[19px]",
                 modalWrapperClassName: `
-                    !px-0 w-[27rem] xxs:!w-[20rem]
-                    ${page == 2 || TFAEnabled && isVerified && "!w-[25rem]"}
+                    !px-0 w-[27rem] xxs:!w-[19rem]
+                    ${(page == 2 || TFAEnabled && isVerified) && "!w-[23rem]"}
                     ${(TFAEnabled && !isVerified) && "!w-[22.5rem]"}
                 `,
                 onClose: () => setOpen(false)
@@ -113,7 +113,8 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
                         customDeleteButtonText: "Remove 2FA",
                         mainTextCustomClassName: "text-gray-300/90 uppercase",
                         alertComponentIcon: "warning",
-                        alertComponentText: "Are you sure you want to remove the 2FA from your account ?"
+                        alertComponentText: "Are you sure you want to remove the 2FA from your account ?",
+                        alertComponentTextClassName: "!text-[11px]"
                     }}
                 />
                 {(!page && !TFAEnabled) ? (
@@ -241,15 +242,15 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
                     <div className="mb-5">
                         <p className="text-sm uppercase tracking-widest">2FA Settings</p>
                         <div className="flex flex-col space-y-4 mt-5 justify-center items-center">
-                            <div className="form-control w-80 xxs:w-72 bg-gray-900 rounded-full px-4  py-1">
+                            <div className="form-control w-80 xxs:w-[16.8rem] bg-gray-900 rounded-full px-4  py-1">
                                 <label className="cursor-pointer label">
-                                <span className="label-text">Use 2FA to reset password</span> 
+                                <span className="label-text xxs:text-[13px]">Use 2FA to reset password</span> 
                                 <input type="checkbox" className="toggle toggle-info hover:cursor-not-allowed" checked />
                                 </label>
                             </div>
-                            <div className="w-[19.5rem] xxs:w-[17rem] border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                            <div className="w-[19.5rem] xxs:w-[15.3rem] border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                             <button
-                                className={`mt-2 w-[20rem] xxs:w-[18rem] py-3 ${showSvgLoader && "py-[0.60rem]"} bg-red-800 rounded-full text-xs uppercase tracking-widest border border-gray-700 hover:bg-red-900 transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60 text-gray-300`}
+                                className={`mt-2 w-[20rem] xxs:xxs:w-[16.8rem] py-3 ${showSvgLoader && "py-[0.60rem]"} bg-red-800 rounded-full text-xs uppercase tracking-widest border border-gray-700 hover:bg-red-900 transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60 text-gray-300`}
                                 disabled={TFACode.length === 6 ? false : true}
                                 onClick={() => setOpenConfirmationModal(true)}
                             >

@@ -144,9 +144,12 @@ export default function LoginHelp() {
         customSetterContent={"verified"}
         customUserId={{ _id: userId }}
       />
-      <div className="flex flex-row justify-between w-screen bg-stone-900 border border-transparent border-b-gray-600 pb-3 pt-1 fixed z-10">
+      <div className="flex flex-row justify-between w-screen bg-gray-900 border border-transparent border-b-gray-600 pb-3 pt-1 fixed z-10">
         <img src={noapLogo} className='w-[8rem] pl-5 pt-2' draggable={false}/> 
-        <a  href='/' className='text-gray-200 text-sm font-light tracking-widest uppercase pt-[7.5px] px-3 mr-5 mt-[9px] h-9 rounded-full hover:!bg-red-700 border border-gray-500 transition-all duration-500 ease-in-out'>
+        <a  
+          className='text-gray-200 text-sm font-light tracking-widest uppercase pt-[7.5px] px-3 mr-5 mt-[9px] h-9 rounded-full hover:!bg-red-700 border border-gray-500 transition-all duration-500 ease-in-out'
+          href='/' 
+        >
           Sign In
         </a>
       </div>
@@ -158,8 +161,8 @@ export default function LoginHelp() {
       >
         <div 
           className={`
-            flex flex-col mt-[4.2rem] w-full text-gray-300 xxs:px-6
-            ${needHelpWith === "pass" || needHelpWith === "2fa" && "!mt-[3rem] lg:px-5 xl:px-0"}
+            flex flex-col !mt-[3.5rem] w-full text-gray-300 xxs:px-6
+            ${needHelpWith === "pass" || needHelpWith === "2fa" && "!lg:px-5 xl:px-0"}
           `}
         >
           {triggerCode !== 'verified' ? (
@@ -173,13 +176,13 @@ export default function LoginHelp() {
                     </p>
                     <div className="flex flex-col space-y-5 mt-5">
                       <button
-                        className='sign-text-inputs xxs:text-xs shadow-md shadow-black/30 bg-gray-900 hover:bg-black text-gray-300 text-sm uppercase tracking-widest'
+                        className='sign-text-inputs xxs:text-xs shadow-md shadow-black/30 bg-red-800 hover:bg-red-900 text-gray-300 text-sm uppercase tracking-widest'
                         onClick={() => setNeedHelpWith("2fa")}
                       >
                         Two factor authentication
                       </button>
                       <button
-                        className='sign-text-inputs xxs:text-xs shadow-md shadow-black/30 bg-gray-900 hover:bg-black text-gray-300 text-sm uppercase tracking-widest'
+                        className='sign-text-inputs xxs:text-xs shadow-md shadow-black/30 bg-red-800 hover:bg-red-900 text-gray-300 text-sm uppercase tracking-widest'
                         onClick={() => setNeedHelpWith("pass")}
                       >
                         Forgot my password
@@ -191,13 +194,17 @@ export default function LoginHelp() {
                 <>
                   <p className='text-3xl xxs:text-2xl font-light tracking-tight'>Forgot your password ? </p>
                   <p className='text-xl xxs:text-lg font-light tracking-tight mt-2 text-gray-400'>Don't worry, we're gonna help you!</p>
-                  <p className='text-lg xxs:text-[15px] mt-10'>
+                  <p className='text-lg xxs:text-[15px] mt-7'>
                     To restore your password, you need to have access to the email address which you created the account with.
-                    <br/>
-                    <br/>
+                  </p>
+                  <p className='text-lg xxs:text-[15px] mt-4'>
                     We will send a verification code to the email address, and you just need to copy and paste on the code text box.
                   </p>
-                  <form onSubmit={triggerCode ? handleSubmit(verifyCode) : handleSubmit(getEmail)} noValidate className='mt-6'>
+                  <form 
+                    className='mt-6'
+                    noValidate 
+                    onSubmit={triggerCode ? handleSubmit(verifyCode) : handleSubmit(getEmail)} 
+                  >
                     <div className="flex flex-col space-y-2 py-5 rounded-lg !max-w-3xl mx-auto">
                       {!triggerCode ? (
                         <>
@@ -432,7 +439,7 @@ export default function LoginHelp() {
                 />
               </div>
               <button 
-                className="sign-text-inputs bg-gray-900 hover:bg-black mt-5 mb-10 text-sm uppercase tracking-widest text-gray-300"
+                className="sign-text-inputs bg-red-700 hover:bg-red-800 mt-5 mb-10 text-sm uppercase tracking-widest text-gray-200"
                 onClick={() => navigate("/")}
               >
                 Go to sign in page
