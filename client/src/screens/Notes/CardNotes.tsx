@@ -45,7 +45,7 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                             <>
                                 {notes.map((val, idx) => {
                                     const { image, labels, _id, body, createdAt, updatedAt, title } = val;
-                                    const { color, type, fontColor, name } = labels?.length && labels[0] as any;
+                                    const { color, type, fontColor, name } = labels[0] || {};
 
                                     return (
                                         <a className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} onClick={() => handleNoteClick(_id)} key={_id}>
@@ -64,7 +64,7 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                                                                             className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
                                                                             style={{ backgroundColor: color, borderColor: color, color: fontColor }}
                                                                         >
-                                                                            {name.length > 16 ? name.slice(0, 11) + '...' : name}
+                                                                            {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
                                                                         </p>
                                                                         {labels.length > 1 && (
                                                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
@@ -78,7 +78,7 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                                                                             className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
                                                                             style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
                                                                         >
-                                                                            {name.length > 14 ? name.slice(0, 14) + '...' : name}
+                                                                            {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
                                                                         </p>
                                                                         {labels.length > 1 && (
                                                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">

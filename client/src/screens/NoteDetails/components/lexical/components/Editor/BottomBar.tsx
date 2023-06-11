@@ -34,24 +34,24 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
   
     const deleteLabel = async (labelId: string) => {
       try {
-        const deleteLabel = await api.delete(`/note/delete/label/${labelId}/${note._id}/${token.token}`);
+        const deleteLabel = await api.delete(`/note/delete/label/${labelId}/${note._id}`);
         toastAlert({ icon: "success", title: `${deleteLabel.data.message}`, timer: 2000 });
         refetch?.fetchNotes();
       } catch (err: any) {
         console.log(err);
-        toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        toastAlert({ icon: "error", title: err.message, timer: 2000 });
       }
     }
   
     const deleteAllLabels = async () => {
       try {
-        const deleteLabels = await api.delete(`/note/delete-all/label/${token.token}/${note._id}`);
+        const deleteLabels = await api.delete(`/note/delete-all/label/${token.token}`);
         toastAlert({ icon: "success", title: `${deleteLabels.data.message}`, timer: 2000 });
         refetch?.fetchNotes();
         setOpen(false);
       } catch (err: any) {
         console.log(err);
-        toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        toastAlert({ icon: "error", title: err.message, timer: 2000 });
       }
     }
   
