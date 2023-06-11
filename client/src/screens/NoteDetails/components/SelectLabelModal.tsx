@@ -1,5 +1,5 @@
 import { useState, SetStateAction, Dispatch, useContext } from 'react';
-import { FieldArrayWithId, FieldValues, useForm } from 'react-hook-form';
+import { FieldArrayWithId, FieldValues, UseFormRegister, UseFormHandleSubmit } from 'react-hook-form';
 
 import { BsSearch, BsFilter } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
@@ -19,55 +19,72 @@ import { motion } from 'framer-motion';
 type Props = {
     checked: boolean;
     isFetching: boolean;
+    register: UseFormRegister<FieldValues>;
     selectedNote: string | null | undefined;
     setChecked: Dispatch<SetStateAction<boolean>>;
+    handleSubmit: UseFormHandleSubmit<FieldValues>;
     labels: FieldArrayWithId<Labels, "labels", "id">[];
 }
 
-export default function SelectLabelModal({ labels, checked, setChecked, isFetching, selectedNote }: Props) {
-    const { register, handleSubmit} = useForm();
+export default function SelectLabelModal({ labels, checked, setChecked, isFetching, selectedNote, register, handleSubmit }: Props) {
     const refetch = useContext(RefetchCtx);
 
-    const [ showSearchBar, setShowSearchBar ] = useState(false);
-
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+    const [showLoader, setShowLoader] = useState(false);
+    const [showSearchBar, setShowSearchBar] = useState(false);
 
     const labelData = useContext(LabelsCtx);
-    const { setPageLabel, setSearchLabel, searchLabel, pageLabel, hasNextPageLabel } = labelData as any;
+    const { 
+        setPageLabel, 
+        setSearchLabel, 
+        searchLabel, 
+        pageLabel, 
+        hasNextPageLabel 
+    } = labelData as any;
 
     const addLabel = async (data: FieldValues) => {
+        setShowLoader(true);
         try {
             const labels = [];
 
             for (const [key, value] of Object.entries(data)) value && labels.push(key);
+
             if(labels.length === 0) return toastAlert({icon: "error", title: `Please, select a label!`, timer: 2000});
 
-            const attachLabel = await api.post(`/note/add/label/${token.token}`, { labels, noteId: selectedNote });
-            toastAlert({icon: "success", title: `${attachLabel.data.message}`, timer: 2000});
-            refetch?.fetchNotes();
+            const {data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
+            
+            toastAlert({icon: "success", title: message, timer: 2000});
+            await refetch?.fetchNotes();
+            setShowLoader(false);
         } catch (err: any) {
-            toastAlert({ icon: "error", title: `${err.response.data.message}`, timer: 2000 });
+            toastAlert({ icon: "error", title: err.message, timer: 2000 });
+            setShowLoader(false);
         }
-    }
+    };
 
     const modalProps = {
         open: checked,
         setOpen: setChecked,
         title: "Select a label",
-        options: { titleWrapperClassName: 'px-6', modalWrapperClassName: `!px-0 xxs:!w-[18rem] max-h-[29.5rem] ${showSearchBar && "!max-h-[33.2rem]"}  w-[24rem] overflow-hidden` }
-    }
+        options: { 
+            titleWrapperClassName: 'px-6', 
+            modalWrapperClassName: `
+                !px-0 xxs:!w-[18rem] max-h-[29.5rem] w-[24rem] overflow-hidden
+                ${showSearchBar && "!max-h-[33.2rem]"}
+            ` 
+        }
+    };
 
     const deviceScreenSize = window.innerWidth;
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
         setSearchLabel(currentTarget.value);
         setPageLabel(1);
-    }
+    };
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
         setSearchLabel('');
-    }
+    };
 
     const hide = { opacity: 0, transitionEnd: { display: "none" } };
     const show = { opacity: 1, display: "block" };
@@ -103,7 +120,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         value={searchLabel}
                     />
                 </motion.div>
-                {isFetching ? <SvgLoader options={{ showLoadingText: true, wrapperClassName: "my-36" }}/> : labels.length > 0 ? (
+                {isFetching ? <SvgLoader options={{ showLoadingText: true, wrapperClassName: "my-36" }} /> : labels.length > 0 ? (
                     <form onSubmit={handleSubmit(addLabel)}>
                         <div className="flex flex-col mt-4 text-sm px-1 h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                             {labels.map((chip: any, idx: number) => {
@@ -153,9 +170,15 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         </div>
                         <div className="flex justify-center items-center border border-transparent border-t-gray-600">
                             <button type='submit' className='text-sm uppercase text-gray-200 rounded-full mt-5'>
+                            {!showLoader ? (
                                 <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
-                                    Attach label
+                                    Attach labels
                                 </span>
+                            ) : (
+                                <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent animate-pulse tracking-wide'>
+                                    Attaching labels...
+                                </span>
+                            )}
                             </button>
                         </div>
                     </form>   

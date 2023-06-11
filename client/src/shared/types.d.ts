@@ -9,13 +9,13 @@ declare type Notes = {
         _id: string;
         state: string;
       };
-      labels?: [{
+      labels: [{
         _id: string;
         name: string;
         type: string;
         color: string;
         fontColor: string;
-      }];
+      }] | [];
       updatedAt?: string;
       createdAt: string;
     }[];
