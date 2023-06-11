@@ -10,7 +10,7 @@ export default new mongoose.Schema({
         required: false,
     },
     labels: [{
-        type: mongoose.Schema.Types.Mixed,
+        type: mongoose.Schema.Types.ObjectId,
         required: false,
         ref: 'Label'
     }],

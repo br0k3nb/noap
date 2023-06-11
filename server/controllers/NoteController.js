@@ -18,8 +18,8 @@ export default {
                         $match: {
                             author,
                             $or: [
-                                {title: searchRegex},
-                                {'labels.name': searchRegex}
+                                { title: searchRegex },
+                                { 'labels.name': searchRegex }
                             ],
                         }
                     }, 
@@ -36,6 +36,35 @@ export default {
                             path: '$state', 
                             preserveNullAndEmptyArrays: false
                         }
+                    },
+                    {
+                        $lookup: {
+                            from: "labels",
+                            localField: "labels",
+                            foreignField: "_id",
+                            as: "labels"
+                        }
+                    },
+                    {   $unwind: {
+                            path: '$labels',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$_id",
+                            author: { $first: "$author" }, 
+                            title: { $first: "$title"},
+                            body: { $first: "$body"},
+                            image: { $first: "$image" },
+                            state: { $first: "$state" },
+                            labels: { $push: "$labels" },
+                            createdAt: { $first: "$createdAt" },
+                            updatedAt: { $first: "$updatedAt" }
+                        }
+                    },
+                    {
+                        $sort: { createdAt: 1 }
                     }
                 ]
             );
@@ -78,21 +107,13 @@ export default {
     async addLabel(req , res) {
         try {
             const { labels, noteId } = req.body;
-            const findLabels = await Label.find({ '_id': { $in: labels } });
-
-            if(findLabels.length === 0) return res.status(400).json({ message: "No labels found!" });
-
+            
             const note = await Note.findById(noteId);
-
-            if(note?.labels.length !== 0) {
-                for(const [_, noteLabel] of note.labels.entries()) {
-                    for(const [_, label] of findLabels.entries()) {
-                        if(noteLabel._id.toString() === label._id.toString()) throw ({ message: "Label already attached!" });
-                    }
-                }
-            }
            
-            await Note.findOneAndUpdate({ _id: noteId }, { labels: [ ...note.labels, ...findLabels ] });
+            await Note.findOneAndUpdate({ _id: noteId }, { 
+                labels: [ ...note.labels, ...labels ] 
+            });
+
             res.status(200).json({ message: 'Label attached!' });
         } catch (err) {
             res.status(400).json({ message: 'Error, please try again later!' });
@@ -125,27 +146,28 @@ export default {
     },
     async deleteLabel(req, res) {
         try {
-            const {id, noteId} = req.params;
+            const { id, noteId } = req.params;
+
             const { labels } = await Note.findById({ _id: noteId });
 
             if(!labels) res.status(400).json({ message: "Note wasn't found!"});
-            const labelToDelete = labels.find(({_id}) => _id.toString() === id);
 
-            if(!labelToDelete.length === 0) res.status(400).json({ message: "Label not found!"});
-
-            labels.splice(labels.indexOf(labelToDelete), 1);
-            await Note.findByIdAndUpdate({ _id: noteId }, { labels });
+            const filtredLabels = labels.filter(_id => _id.toString() !== id);
+            
+            await Note.findByIdAndUpdate({ _id: noteId }, { labels: filtredLabels });
             
             res.status(200).json({ message: 'Label detached!' });
         } catch (err) {
+            console.log(err);
             res.status(400).json({ message: 'Error, please try again later!' });
         }
     },
     async deleteAllLabels(req, res) {
         try {
             const { noteId } = req.params;
+            
+            await Note.findByIdAndUpdate({ _id: noteId }, { labels: [] });  
 
-            await Note.findByIdAndUpdate({_id: noteId}, { labels: [] });           
             res.status(200).json({ message: 'Labels detached!' });
         } catch (err) {
             res.status(400).json({ message: 'Error, please try again later!' });
