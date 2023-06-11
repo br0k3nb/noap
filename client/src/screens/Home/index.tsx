@@ -77,14 +77,7 @@ export default function Home(): JSX.Element {
       if (fields.length === 0) return append(docs);
       if (fields.length > 0) return replace(docs);
     } catch (err: any) {
-        const errMsg = err.message;  
-
-        if(errMsg.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
-        else if (errMsg.startsWith("Connection")) toastAlert({ icon: "error", title: `${err.message}`, timer: 5000 });
-        else {
-          toastAlert({ icon: "error", title: `${err.message}`, timer: 3000 });
-          signOutUser();
-        }
+        toastAlert({ icon: "error", title: err.message, timer: 3000 });
     }
   };
 
@@ -99,14 +92,7 @@ export default function Home(): JSX.Element {
         if (labels.length === 0) appendLabels(docs);
         else replaceLabels(docs);
     } catch (err: any) {
-        const errMsg = err.message;  
-
-        if(errMsg.startsWith("Refetching")) toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
-        else if (errMsg.startsWith("Connection")) toastAlert({ icon: "error", title: `${err.message}`, timer: 5000 });
-        else {
-          toastAlert({ icon: "error", title: `${err.message}`, timer: 3000 });
-          signOutUser();
-        }
+        toastAlert({ icon: "error", title: err.message, timer: 3000 });
     }
   }
 
@@ -117,6 +103,7 @@ export default function Home(): JSX.Element {
       await api.post(`/add`, {
           title: "Untitled",
           body: "",
+          labels: [],
           image: "",
           state: JSON.stringify(default_editor_state),
           author: _id,
@@ -127,7 +114,7 @@ export default function Home(): JSX.Element {
       setShowLoaderOnNavbar(false);
     } catch (err: any) {
       console.log(err);
-      toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
     }
   };
 
@@ -136,7 +123,7 @@ export default function Home(): JSX.Element {
       const deleteNote = await api.delete(`/delete/${noteId}`);
       toastAlert({ icon: "success", title: `${deleteNote.data.message}`, timer: 2000 });
     } catch (err: any) {
-      toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
     }
   };
 
@@ -150,7 +137,7 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: true
   });
 
-  const { isFetching: labelIsFetching } = useQuery([ "fetchLabels", delayedSearchLabel, pageLabel ], fetchLabels, { 
+  const { isFetching: labelIsFetching } = useQuery(["fetchLabels", delayedSearchLabel, pageLabel], fetchLabels, { 
     refetchOnWindowFocus: false 
   });
 
@@ -184,7 +171,7 @@ export default function Home(): JSX.Element {
   const isMobileDevice = screenSize.width <= 640 ? true : false;
 
   return (
-    <div className={`!h-screen`}>
+    <div className="!h-screen">
       <SelectedNoteContext selectedNote={selectedNote} setSelectedNote={setSelectedNote}>
         <LabelsCtx {...navLabelCtxProps}>
           <Nav
@@ -202,7 +189,7 @@ export default function Home(): JSX.Element {
           <div className="flex flex-row h-screen">
             <Notes {...notesProps}/>
             <NavbarContext navbar={navbar} setNavbar={setNavbar}>
-              <RefetchContext fetchNotes={fetchNotes}>
+              <RefetchContext fetchNotes={fetchNotes} isFetching={isFetching}>
                 <LabelsCtx  
                   pageLabel={pageLabel}
                   searchLabel={searchLabel}

@@ -1,5 +1,5 @@
 import { useState, useContext, Dispatch, SetStateAction } from "react";
-import { FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
+import { useForm, FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
 
 import {
   AiOutlineFullscreen,
@@ -54,6 +54,8 @@ export default function NoteDetails({
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [openLabelModal, setOpenlabelModal] = useState(false);
 
+  const { register, reset, handleSubmit} = useForm();
+
   const note = notes.find(({ _id }) => _id === selectedNote?.selectedNote);
 
   const removeNote = () => {
@@ -73,12 +75,28 @@ export default function NoteDetails({
     } else setExpanded(!expanded);
   };
 
+  const handleOpenLabelModal = () => {
+    let fieldsToReset = {};
+
+    if(note?.labels && note.labels.length > 0) {
+      note.labels.forEach((label) => {
+        fieldsToReset = {
+          ...fieldsToReset,
+          [label._id]: true
+        }        
+      });
+    }
+    
+    reset(fieldsToReset);
+    setOpenlabelModal(true);
+  }
+
   const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
 
   const lastUpdated = () => {
     if (!note?.updatedAt) return note?.createdAt;
-    else return note?.updatedAt;
+    return note?.updatedAt;
   };
 
   return (
@@ -136,7 +154,7 @@ export default function NoteDetails({
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <a
                     className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => setOpenlabelModal(true)}
+                    onClick={() => handleOpenLabelModal()}
                   >
                     <label
                       htmlFor="my-modal-4"
@@ -208,6 +226,8 @@ export default function NoteDetails({
             isFetching={labelIsFetching}
             labels={labels}
             selectedNote={selectedNote?.selectedNote}
+            register={register}
+            handleSubmit={handleSubmit}
           />
           <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
             <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">

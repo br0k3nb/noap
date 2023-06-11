@@ -24,13 +24,11 @@ type BottomBarProps = {
 };
 
 export default function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {
-  const toggleBottomBar = useContext(ToggleBottomBarCtx);
-  const noteExpanded = useContext(ExpandedCtx);
-  const refetch = useContext(RefetchCtx);
+    const toggleBottomBar = useContext(ToggleBottomBarCtx);
+    const noteExpanded = useContext(ExpandedCtx);
+    const refetch = useContext(RefetchCtx);
   
     const [ open, setOpen ] = useState(false);
-  
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "");
   
     const deleteLabel = async (labelId: string) => {
       try {
@@ -45,7 +43,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
   
     const deleteAllLabels = async () => {
       try {
-        const deleteLabels = await api.delete(`/note/delete-all/label/${token.token}`);
+        const deleteLabels = await api.delete(`/note/delete-all/label/${note._id}`);
         toastAlert({ icon: "success", title: `${deleteLabels.data.message}`, timer: 2000 });
         refetch?.fetchNotes();
         setOpen(false);

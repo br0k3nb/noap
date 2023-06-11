@@ -1,5 +1,5 @@
 import { useState, SetStateAction, Dispatch, useContext } from 'react';
-import { FieldArrayWithId, FieldValues, useForm } from 'react-hook-form';
+import { FieldArrayWithId, FieldValues, UseFormRegister, UseFormHandleSubmit } from 'react-hook-form';
 
 import { BsSearch, BsFilter } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
@@ -19,16 +19,18 @@ import { motion } from 'framer-motion';
 type Props = {
     checked: boolean;
     isFetching: boolean;
+    register: UseFormRegister<FieldValues>;
     selectedNote: string | null | undefined;
     setChecked: Dispatch<SetStateAction<boolean>>;
+    handleSubmit: UseFormHandleSubmit<FieldValues>;
     labels: FieldArrayWithId<Labels, "labels", "id">[];
 }
 
-export default function SelectLabelModal({ labels, checked, setChecked, isFetching, selectedNote }: Props) {
-    const { register, handleSubmit} = useForm();
+export default function SelectLabelModal({ labels, checked, setChecked, isFetching, selectedNote, register, handleSubmit }: Props) {
     const refetch = useContext(RefetchCtx);
 
-    const [ showSearchBar, setShowSearchBar ] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
+    const [showSearchBar, setShowSearchBar] = useState(false);
 
     const labelData = useContext(LabelsCtx);
     const { 
@@ -40,6 +42,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
     } = labelData as any;
 
     const addLabel = async (data: FieldValues) => {
+        setShowLoader(true);
         try {
             const labels = [];
 
@@ -50,9 +53,11 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
             const {data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
             toastAlert({icon: "success", title: message, timer: 2000});
-            refetch?.fetchNotes();
+            await refetch?.fetchNotes();
+            setShowLoader(false);
         } catch (err: any) {
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
+            setShowLoader(false);
         }
     };
 
@@ -115,7 +120,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         value={searchLabel}
                     />
                 </motion.div>
-                {isFetching ? <SvgLoader options={{ showLoadingText: true, wrapperClassName: "my-36" }}/> : labels.length > 0 ? (
+                {isFetching ? <SvgLoader options={{ showLoadingText: true, wrapperClassName: "my-36" }} /> : labels.length > 0 ? (
                     <form onSubmit={handleSubmit(addLabel)}>
                         <div className="flex flex-col mt-4 text-sm px-1 h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                             {labels.map((chip: any, idx: number) => {
@@ -165,9 +170,15 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         </div>
                         <div className="flex justify-center items-center border border-transparent border-t-gray-600">
                             <button type='submit' className='text-sm uppercase text-gray-200 rounded-full mt-5'>
+                            {!showLoader ? (
                                 <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
-                                    Attach label
+                                    Attach labels
                                 </span>
+                            ) : (
+                                <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent animate-pulse tracking-wide'>
+                                    Attaching labels...
+                                </span>
+                            )}
                             </button>
                         </div>
                     </form>   
