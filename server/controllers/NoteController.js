@@ -107,15 +107,39 @@ export default {
     async addLabel(req , res) {
         try {
             const { labels, noteId } = req.body;
-            
+
             const note = await Note.findById(noteId);
-           
+            
+            let flag = false;
+            let duplicatedLabel = "";
+            
+            for (const val of note.labels) {
+                if(flag) break;
+
+                for (const values of labels) {
+                    if(values === val.toString()) {
+                        const label = await Label.findById(val);
+                        duplicatedLabel = label.name;
+                        flag = true;
+                    
+                        break;
+                    };
+                };
+            };
+
+            if(duplicatedLabel.length > 0) {
+                return res.status(400).json({ 
+                    message: `Label ${duplicatedLabel} is already attached to note!` 
+                });
+            };
+            
             await Note.findOneAndUpdate({ _id: noteId }, { 
                 labels: [ ...note.labels, ...labels ] 
             });
 
             res.status(200).json({ message: 'Label attached!' });
         } catch (err) {
+            console.log(err);
             res.status(400).json({ message: 'Error, please try again later!' });
         }
     },
