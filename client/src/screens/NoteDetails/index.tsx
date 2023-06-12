@@ -78,8 +78,15 @@ export default function NoteDetails({
   const handleOpenLabelModal = () => {
     let fieldsToReset = {};
 
+    labels.forEach(label => {
+      fieldsToReset = {
+        ...fieldsToReset,
+        [label._id]: false
+      }
+    });
+
     if(note?.labels && note.labels.length > 0) {
-      note.labels.forEach((label) => {
+      note.labels.forEach(label => {
         fieldsToReset = {
           ...fieldsToReset,
           [label._id]: true

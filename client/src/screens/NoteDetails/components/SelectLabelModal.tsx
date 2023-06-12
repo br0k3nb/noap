@@ -43,12 +43,16 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
 
     const addLabel = async (data: FieldValues) => {
         setShowLoader(true);
+
         try {
             const labels = [];
 
             for (const [key, value] of Object.entries(data)) value && labels.push(key);
 
-            if(labels.length === 0) return toastAlert({icon: "error", title: `Please, select a label!`, timer: 2000});
+            if(!labels.length) {
+                setShowLoader(false);    
+                return toastAlert({ icon: "error", title: `Please, select a label!`, timer: 2000 });
+            };
 
             const {data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
@@ -142,7 +146,11 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                         </div>
                                         <div className="form-control">
                                             <label className="label cursor-pointer">
-                                                <input type="checkbox" className="checkbox !h-5 !w-5" {...register(_id)}/>
+                                                <input
+                                                    type="checkbox" 
+                                                    className="checkbox !h-5 !w-5" 
+                                                    {...register(_id)}
+                                                />
                                             </label>
                                         </div>
                                     </div>

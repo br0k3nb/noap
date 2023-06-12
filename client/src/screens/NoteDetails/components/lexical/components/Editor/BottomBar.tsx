@@ -28,16 +28,23 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
     const noteExpanded = useContext(ExpandedCtx);
     const refetch = useContext(RefetchCtx);
   
-    const [ open, setOpen ] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
+    const [labelToDelete, setLabelToDelete] = useState("");
   
     const deleteLabel = async (labelId: string) => {
+      setShowLoader(true);
       try {
         const deleteLabel = await api.delete(`/note/delete/label/${labelId}/${note._id}`);
         toastAlert({ icon: "success", title: `${deleteLabel.data.message}`, timer: 2000 });
-        refetch?.fetchNotes();
+
+        await refetch?.fetchNotes();
+        setShowLoader(false);
+        setLabelToDelete("");
       } catch (err: any) {
-        console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 2000 });
+        setLabelToDelete("");
+        setShowLoader(false);
       }
     }
   
@@ -121,10 +128,16 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                                 <p className="pt-[2px] !text-[11px] uppercase tracking-widest">
                                   {name.length > 30 ? name.slice(0, 30) + '...' : name.slice(0, 30)}
                                 </p>
-                                <div className='tooltip tooltip-right' data-tip="Detach">
+                                <div 
+                                  className={`${(showLoader && labelToDelete === _id) ? "tooltip tooltip-open tooltip-right" : "tooltip tooltip-right"}`} 
+                                  data-tip={`${(showLoader && labelToDelete === _id) ? "Detaching..." : "Detach"}`}
+                                >
                                   <BsXLg 
                                     size={20} 
-                                    onClick={() => deleteLabel(_id)}
+                                    onClick={() => {
+                                      deleteLabel(_id);
+                                      setLabelToDelete(_id);
+                                    }}
                                     className="py-1 cursor-pointer hover:!bg-gray-900 rounded-full transition-all duration-500 ease-in-out"
                                   />
                                 </div>
