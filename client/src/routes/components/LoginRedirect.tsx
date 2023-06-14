@@ -8,7 +8,7 @@ export default function LoginRedirect () {
     
     return (
         <>
-            {auth.isLoggedIn() && !auth.isLoading 
+            {auth?.isLoggedIn() && !auth?.isLoading 
                 ? ( <Navigate to={`/notes/page/1`} /> ) 
                 : ( <SignIn /> )
             }

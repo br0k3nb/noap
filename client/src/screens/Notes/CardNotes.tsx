@@ -53,8 +53,13 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                                                 <p className="text-lg px-4 mb-3 truncate">{title}</p>
                                                 <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
                                                     <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
-                                                        {(labels && labels.length) && image === '' ? (body.length >= 135 ? body.slice(0,134).concat('...') : body) :
-                                                        (labels && labels.length) && image !== '' ? body.slice(0, 73) + '...' : body}
+                                                        {/* using this conditions because for some reason the string truncation isn't working properly */}
+                                                        {
+                                                            labels.length && image === '' ? (body.length >= 135 ? body.slice(0,114).concat('...') : body) :
+                                                            !labels.length && image === '' ? (body.length >= 135 ? body.slice(0,131).concat('...') : body) :
+                                                            labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : 
+                                                            !labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : body
+                                                        }
                                                     </div>
                                                     {labels && labels.length > 0 && (
                                                         <div className="mt-1">

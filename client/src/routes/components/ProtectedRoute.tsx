@@ -4,10 +4,10 @@ import useAuth from "../../hooks/useAuth";
 
 export default function ProtectedRoute () {
     const auth = useAuth();
-  
+    
     return (
       <>
-        {auth.isLoggedIn() && !auth.isLoading 
+        {auth?.isLoggedIn() && !auth?.isLoading 
             ? ( <Outlet /> ) 
             : ( <Navigate to="/" /> )
         }

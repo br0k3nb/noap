@@ -76,7 +76,7 @@ export default function Home(): JSX.Element {
 
       if (fields.length === 0) return append(docs);
       if (fields.length > 0) return replace(docs);
-    } catch (err: any) {
+    } catch (err: any) {        
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
     }
   };

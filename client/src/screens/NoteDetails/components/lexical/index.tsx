@@ -47,7 +47,12 @@ export default function App({ notes }: Props): JSX.Element {
       const body = editorRef?.current.firstChild.children[1].innerHTML;
 
       const findImages = body.match(/<img[^>]+>/gm);
-      const getTextBettwenSpanTags = body.match(/(?<=(<span data-lexical-text="true">))(\w|\d|\n|[().,\-:;@#$%^&*\[\]"'+–/\/®°⁰!?{}|`~]| )+?(?=(<\/span>))/gm);
+
+      const removeAllHTMLTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
+      const addSpaceBeforeCaptalLetters = removeAllHTMLTags.replace(/(?<=[a-z])(?=[A-Z0-9])/g, ' ').trim().toString();
+      const removeImageActionMenuText = addSpaceBeforeCaptalLetters.replace(/✕Download Fullscreen Delete/g, "");
+      const removeLoadingStatusText = removeImageActionMenuText.replace(/loading\.\.\./g, "");
+      const removeBottomBarText = removeLoadingStatusText.replace(/Detach all labels No labels attached!Save note Confirmation✕Are you sure you want to remove all labels attached to this note\?This action will only detach labels from this note!Cancel Delete/gm, "");
 
       if(findImages && findImages.length !== 0) {
         const regToGetSrcFromImg = new RegExp(/<img.*?src=["|'](.*?)["|']/);
@@ -63,10 +68,10 @@ export default function App({ notes }: Props): JSX.Element {
           const compressState = pack({ state });
           const resultState = unpack(compressState);
 
-          const create = await api.patch("/edit",
+          const {data: { message }} = await api.patch("/edit",
             {
               title,
-              body: getTextBettwenSpanTags ? getTextBettwenSpanTags.slice(0,25).join(' ').slice(0,136) : '',
+              body: removeBottomBarText ? removeBottomBarText.slice(0,136) : '',
               image: imageSrc,
               state: resultState.state,
               _id: noteContext?.selectedNote,
@@ -77,11 +82,11 @@ export default function App({ notes }: Props): JSX.Element {
           refetchNoteCtx?.fetchNotes();
           setSaveSpinner(false);
           
-          toastAlert({ icon: "success", title: `${create.data.message}`, timer: 2000 });
+          toastAlert({ icon: "success", title: message, timer: 2000 });
         }
       } catch (err: any) {
         console.log(err);
-        toastAlert({ icon: "error", title: `${err.message}`, timer: 2000 });
+        toastAlert({ icon: "error", title: err.message, timer: 2000 });
       }
   };
 
