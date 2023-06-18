@@ -18,6 +18,7 @@ export default {
                         $match: {
                             author,
                             $or: [
+                                { 'settings.pinned': false },
                                 { title: searchRegex },
                                 { 'labels.name': searchRegex }
                             ],
@@ -53,11 +54,12 @@ export default {
                     {
                         $group: {
                             _id: "$_id",
-                            author: { $first: "$author" }, 
+                            author: { $first: "$author" },
                             title: { $first: "$title"},
                             body: { $first: "$body"},
                             image: { $first: "$image" },
                             state: { $first: "$state" },
+                            settings: { $first: "$settings" },
                             labels: { $push: "$labels" },
                             createdAt: { $first: "$createdAt" },
                             updatedAt: { $first: "$updatedAt" }
@@ -193,6 +195,36 @@ export default {
             await Note.findByIdAndUpdate({ _id: noteId }, { labels: [] });  
 
             res.status(200).json({ message: 'Labels detached!' });
+        } catch (err) {
+            res.status(400).json({ message: 'Error, please try again later!' });
+        }
+    },
+    async pinNote(req, res) {
+        try {
+            const { noteId } = req.params;
+            
+            await Note.findByIdAndUpdate({ _id: noteId }, { 
+                settings: {
+                    pinned: true
+                }
+            });  
+
+            res.status(200).json({ message: 'Note pinned!' });
+        } catch (err) {
+            res.status(400).json({ message: 'Error, please try again later!' });
+        }
+    },
+    async unpinNote(req, res) {
+        try {
+            const { noteId } = req.params;
+            
+            await Note.findByIdAndUpdate({ _id: noteId }, { 
+                settings: {
+                    pinned: false
+                }
+            });  
+
+            res.status(200).json({ message: 'Note unpinned!' });
         } catch (err) {
             res.status(400).json({ message: 'Error, please try again later!' });
         }

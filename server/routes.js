@@ -21,6 +21,8 @@ router.post("/2fa/qrcode", verifyUser, UserController.generate2FAQrcode);
 router.patch("/convert/account/email", UserController.convertIntoNormalAccount);
 router.patch("/convert/account/google", UserController.convertIntoGoogleAccount);
 
+// unpinNote
+
 //Notes
 router.post("/add", verifyUser, NoteController.add);
 router.patch("/edit", verifyUser, NoteController.edit);
@@ -28,6 +30,8 @@ router.get("/note/:id", verifyUser, NoteController.getNote);
 router.delete("/delete/:id", verifyUser, NoteController.delete);
 router.get("/notes/:page/:author", verifyUser, NoteController.view);
 router.post("/note/add/label", verifyUser, NoteController.addLabel);
+router.post("/note/pin-note/:noteId", verifyUser, NoteController.pinNote);
+router.post("/note/unpin-note/:noteId", verifyUser, NoteController.unpinNote);
 router.delete("/note/delete/label/:id/:noteId", verifyUser, NoteController.deleteLabel);
 router.delete("/note/delete-all/label/:noteId", verifyUser, NoteController.deleteAllLabels);
 
