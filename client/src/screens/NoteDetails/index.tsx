@@ -12,14 +12,17 @@ import {
   BsPeopleFill,
   BsArrowDown,
   BsArrowUp,
+  BsFillPinAngleFill
 } from "react-icons/bs";
 
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical";
 
-import { NoteCtx } from "../../context/SelectedNoteCtx";
+import api from "../../services/api";
 import { RefetchCtx } from "../../context/RefetchCtx";
+import { NoteCtx } from "../../context/SelectedNoteCtx";
+import { toastAlert } from "../../components/Alert/Alert";
 import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 import ToggleBottomBarContext from "../../context/ToggleBottomBar";
 
@@ -96,7 +99,17 @@ export default function NoteDetails({
     
     reset(fieldsToReset);
     setOpenlabelModal(true);
-  }
+  };
+
+  const handlePinNote = async () => {
+    try {
+      const { data: { message } } = await api.post(`/note/pin-note/${note?._id}`);
+      toastAlert({ icon: "success", title: message, timer: 2000 });
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    }
+  };
 
   const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
@@ -142,19 +155,19 @@ export default function NoteDetails({
                 className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800 border border-gray-500"
               >
                 <li>
-                  <a
+                <a
                     className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => setOpen(true)}
+                    onClick={() => handlePinNote()}
                   >
                     <label
                       htmlFor="my-modal-4"
-                      className="text-red-600 cursor-pointer"
+                      className="text-gray-300 cursor-pointer"
                     >
-                      <div className="flex flex-row space-x-2 ">
+                      <div className="flex flex-row space-x-2">
                         <p className="py-1 text-xs uppercase tracking-widest">
-                          Delete note
+                          Pin note
                         </p>
-                        <AiFillDelete size={20} className="pt-1" />
+                        <BsFillPinAngleFill size={20} className="pt-[3px]" />
                       </div>
                     </label>
                   </a>
@@ -172,6 +185,17 @@ export default function NoteDetails({
                           Attach labels
                         </p>
                         <BsTagsFill size={20} className="pt-[3px]" />
+                      </div>
+                    </label>
+                  </a>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                  <a className="cursor-not-allowed active:!bg-transparent">
+                    <label htmlFor="my-modal-4" className="text-gray-600">
+                      <div className="flex flex-row space-x-2 cursor-not-allowed">
+                        <p className="py-1 text-xs uppercase tracking-widest">
+                          Share Note
+                        </p>
+                        <BsPeopleFill size={20} className="pt-[3px]" />
                       </div>
                     </label>
                   </a>
@@ -199,13 +223,19 @@ export default function NoteDetails({
                     </label>
                   </button>
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                  <a className="cursor-not-allowed active:!bg-transparent">
-                    <label htmlFor="my-modal-4" className="text-gray-600">
-                      <div className="flex flex-row space-x-2 cursor-not-allowed">
+                  <a
+                    className="active:!bg-gray-600 hover:!bg-gray-700"
+                    onClick={() => setOpen(true)}
+                  >
+                    <label
+                      htmlFor="my-modal-4"
+                      className="text-red-600 cursor-pointer"
+                    >
+                      <div className="flex flex-row space-x-2 ">
                         <p className="py-1 text-xs uppercase tracking-widest">
-                          Share Note
+                          Delete note
                         </p>
-                        <BsPeopleFill size={20} className="pt-[3px]" />
+                        <AiFillDelete size={20} className="pt-1" />
                       </div>
                     </label>
                   </a>

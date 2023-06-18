@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -61,6 +61,10 @@ export default function Home(): JSX.Element {
   const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
   const getPageInURL = findPageInURL.exec(location.pathname);
   
+  //using these refs to prevent appending the same array two times
+  const fetchedNotes = useRef(false);
+  const fetchedLabels = useRef(false);
+
   const fetchNotes = async () => { 
     if(getPageInURL) setPage(Number(getPageInURL[1]));
 
@@ -73,8 +77,11 @@ export default function Home(): JSX.Element {
 
       setTotalDocs(totalDocs);
       setHasNextPage(hasNextPage);
-
-      if (fields.length === 0) return append(docs);
+      
+      if (!fields.length && !fetchedNotes.current) {
+        fetchedNotes.current = true;
+        return append(docs);
+      }
       if (fields.length > 0) return replace(docs);
     } catch (err: any) {        
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
@@ -83,13 +90,16 @@ export default function Home(): JSX.Element {
 
   const fetchLabels = async () => {
     try {
-        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}`, { 
+        const { data: { docs, hasNextPage } } = await api.get(`/labels/${_id}`, { 
           params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
         });
 
         setHasNextPageLabel(hasNextPage);
 
-        if (labels.length === 0) appendLabels(docs);
+        if (!labels.length && !fetchedLabels.current) {
+          fetchedLabels.current = true;
+          appendLabels(docs);
+        } 
         else replaceLabels(docs);
     } catch (err: any) {
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
@@ -106,6 +116,10 @@ export default function Home(): JSX.Element {
           labels: [],
           image: "",
           state: JSON.stringify(default_editor_state),
+          settings: {
+            shared: false,
+            pinned: false
+          },
           author: _id,
         }
       );
@@ -134,7 +148,7 @@ export default function Home(): JSX.Element {
 
   const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL], fetchNotes, {
     refetchInterval: 300000,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: false
   });
 
   const { isFetching: labelIsFetching } = useQuery(["fetchLabels", delayedSearchLabel, pageLabel], fetchLabels, { 

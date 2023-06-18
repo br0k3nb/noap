@@ -9,6 +9,8 @@ import { NoteCtx } from "../../context/SelectedNoteCtx";
 import ghost from '../../assets/ghost.png';
 import Loader from "../../components/Loader";
 
+import { BsFillPinAngleFill } from "react-icons/bs";
+
 type Props = {
     page: number;
     search: string;
@@ -30,7 +32,10 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
     const handleNoteClick = (_id: string) => {
         noteContext?.setSelectedNote(_id);
         setExpanded(window.outerWidth <= 1030 ? true : false);
-    }
+    };
+
+    const unpinnedNotes = notes.filter(note => !note?.settings?.pinned);
+    const pinnedNotes = notes.filter(note => note?.settings && note?.settings.pinned);
 
     return (
         <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900">
@@ -40,78 +45,48 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                         <p className="mt-2 text-xl animate-pulse">Loading notes...</p>
                     </div>
                 ) : (
-                    <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 xxs:mb-20">
+                    <>
                         {notes.length > 0 ? (
-                            <>
-                                {notes.map((val, idx) => {
-                                    const { image, labels, _id, body, createdAt, updatedAt, title } = val;
-                                    const { color, type, fontColor, name } = labels[0] || {};
-
-                                    return (
-                                        <a className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} onClick={() => handleNoteClick(_id)} key={_id}>
-                                            <div className={`rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500 ${noteContext?.selectedNote === _id && "!border-gray-300"}`}>
-                                                <p className="text-lg px-4 mb-3 truncate">{title}</p>
-                                                <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
-                                                    <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
-                                                        {/* using this conditions because for some reason the string truncation isn't working properly */}
-                                                        {
-                                                            labels.length && image === '' ? (body.length >= 135 ? body.slice(0,114).concat('...') : body) :
-                                                            !labels.length && image === '' ? (body.length >= 135 ? body.slice(0,131).concat('...') : body) :
-                                                            labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : 
-                                                            !labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : body
-                                                        }
-                                                    </div>
-                                                    {labels && labels.length > 0 && (
-                                                        <div className="mt-1">
-                                                            {type === "default" ? (
-                                                                    <div className="flex space-x-1">
-                                                                        <p 
-                                                                            className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
-                                                                            style={{ backgroundColor: color, borderColor: color, color: fontColor }}
-                                                                        >
-                                                                            {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
-                                                                        </p>
-                                                                        {labels.length > 1 && (
-                                                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
-                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
-                                                                        </div>
-                                                                        )}
-                                                                    </div> 
-                                                                ) : (
-                                                                    <div className="flex space-x-1">
-                                                                        <p 
-                                                                            className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
-                                                                            style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
-                                                                        >
-                                                                            {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
-                                                                        </p>
-                                                                        {labels.length > 1 && (
-                                                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
-                                                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
-                                                                        </div>
-                                                                        )}
-                                                                    </div>
-                                                                )
-                                                            }
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <p className="text-xs tracking-tighter mt-2 px-4 pb-[0.04rem]">
-                                                    {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
-                                                </p>
-                                                {image !== '' && (
-                                                    <div className="h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg">
-                                                        <img 
-                                                            src={image}
-                                                            className="rounded-b-[6.5px] object-cover !h-[3.50rem] min-w-[98.9%]"
+                            <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 mb-48">  
+                                {/* <div className="w-full"> */}
+                                    {pinnedNotes.length > 0 && (
+                                        <div className="mb-10">
+                                            <div className="mt-2 mb-8 flex flex-row space-x-2 justify-center items-center text-gray-300">
+                                                <p className="uppercase text-xs tracking-widest">Pinned notes</p>
+                                                <BsFillPinAngleFill />
+                                            </div>
+                                            <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3">
+                                                {pinnedNotes.map((pinnedNotes, idx) => {
+                                                    return (
+                                                        <Cards  
+                                                            key={pinnedNotes._id}
+                                                            notes={pinnedNotes}
+                                                            idx={idx}
+                                                            noteContext={noteContext}
+                                                            handleNoteClick={handleNoteClick}
+                                                            days={days}
+                                                            hours={hours}
                                                         />
-                                                    </div>
-                                                )}
-                                                </div>
-                                            </a>
-                                        );
-                                    })}
-                            </>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                {/* </div> */}
+                                {unpinnedNotes.map((unpinnedNotes, idx) => {
+                                    return (
+                                        <Cards  
+                                            key={unpinnedNotes._id}
+                                            notes={unpinnedNotes}
+                                            idx={idx}
+                                            noteContext={noteContext}
+                                            handleNoteClick={handleNoteClick}
+                                            days={days}
+                                            hours={hours}
+                                        />
+                                    )  
+                                })}
+                            </div>
                             ) : (
                                 <div className="flex flex-col space-y-3 justify-center items-center mt-6 mx-auto">
                                     <img src={ghost} className="w-56 opacity-30 md:w-80 lg:w-56"/>
@@ -137,9 +112,97 @@ export default function CardNotes({ notes, addNewNote, isFetching, setExpanded, 
                                 </div>  
                             )
                         }
-                    </div>
+                    </>
                 )
             }
         </div>
+    );
+}
+
+type CardsProps = {
+    notes: any;
+    idx: number;
+    noteContext: any;
+    days: (date: string) => string;
+    hours: (date: string) => string;
+    handleNoteClick:  (_id: string) => void;
+
+};
+
+export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours }: CardsProps) {
+    const { image, labels, _id, body, createdAt, updatedAt, title } = notes;
+    const { color, type, fontColor, name } = labels[0] || {};
+
+    return (
+        <a 
+            className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} 
+            onClick={() => handleNoteClick(_id)} 
+            key={_id}
+        >
+            <div 
+                className={`
+                    rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500
+                    ${noteContext?.selectedNote === _id && "!border-gray-300"}
+                `}
+            >
+                <p className="text-lg px-4 mb-3 truncate">{title}</p>
+                <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
+                    <div className="!w-[135px] overflow-ellipsis overflow-hidden !mb-1">
+                        {/* using this conditions because for some reason the string truncation isn't working properly */}
+                        {
+                            labels.length && image === '' ? (body.length >= 135 ? body.slice(0,114).concat('...') : body) :
+                            !labels.length && image === '' ? (body.length >= 135 ? body.slice(0,131).concat('...') : body) :
+                            labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : 
+                            !labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : body
+                        }
+                    </div>
+                    {labels && labels.length > 0 && (
+                        <div className="mt-1">
+                            {type === "default" ? (
+                                    <div className="flex space-x-1">
+                                        <p 
+                                            className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
+                                            style={{ backgroundColor: color, borderColor: color, color: fontColor }}
+                                        >
+                                            {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
+                                        </p>
+                                        {labels.length > 1 && (
+                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
+                                        </div>
+                                        )}
+                                    </div> 
+                                ) : (
+                                    <div className="flex space-x-1">
+                                        <p 
+                                            className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
+                                            style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
+                                        >
+                                            {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
+                                        </p>
+                                        {labels.length > 1 && (
+                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
+                                        </div>
+                                        )}
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )}
+                </div>
+                <p className="text-xs tracking-tighter mt-2 px-4 pb-[0.04rem]">
+                    {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
+                </p>
+                {image !== '' && (
+                    <div className="h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg">
+                        <img 
+                            src={image}
+                            className="rounded-b-[6.5px] object-cover !h-[3.50rem] min-w-[98.9%]"
+                        />
+                    </div>
+                )}
+            </div>
+        </a>
     );
 }

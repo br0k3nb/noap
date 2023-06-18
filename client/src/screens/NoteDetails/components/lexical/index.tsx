@@ -68,7 +68,7 @@ export default function App({ notes }: Props): JSX.Element {
           const compressState = pack({ state });
           const resultState = unpack(compressState);
 
-          const {data: { message }} = await api.patch("/edit",
+          const { data: { message } } = await api.patch("/edit",
             {
               title,
               body: removeBottomBarText ? removeBottomBarText.slice(0,136) : '',
