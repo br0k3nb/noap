@@ -28,5 +28,15 @@ export default new mongoose.Schema({
     googleAccount: {
         type: Boolean,
         required: false
+    },
+    settings: {
+        showPinnedNotesInFolder: {
+            type: Boolean,
+            required: false
+        },
+        language: {
+            type: String,
+            required: false
+        }
     }
 });

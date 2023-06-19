@@ -20,8 +20,7 @@ router.post("/verify-user", verifyUser, UserController.verifyUser);
 router.post("/2fa/qrcode", verifyUser, UserController.generate2FAQrcode);
 router.patch("/convert/account/email", UserController.convertIntoNormalAccount);
 router.patch("/convert/account/google", UserController.convertIntoGoogleAccount);
-
-// unpinNote
+router.post("/settings/pin-notes-folder/:id", verifyUser, UserController.showPinnedNotesInFolder);
 
 //Notes
 router.post("/add", verifyUser, NoteController.add);
