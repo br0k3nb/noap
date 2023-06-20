@@ -1,5 +1,5 @@
 import { useState, useContext, Dispatch, SetStateAction } from "react";
-import { useForm, FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
+import { useForm, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend } from "react-hook-form";
 
 import {
   AiOutlineFullscreen,
@@ -32,10 +32,15 @@ import moment from "moment";
 import "moment/locale/pt-br";
 
 type Props = {
+  setPinnedNotesPage: Dispatch<SetStateAction<number>>;
   labels: FieldArrayWithId<Labels, "labels", "id">[];
+  appendPinNotes: UseFieldArrayAppend<Notes, "note">;
+  pinNotes: FieldArrayWithId<Notes, "note", "id">[];
   notes: FieldArrayWithId<Notes, "note", "id">[];
   setExpanded: Dispatch<SetStateAction<boolean>>;
+  append: UseFieldArrayAppend<Notes, "note">;
   deleteNote: (_id: string) => Promise<void>;
+  removePinNotes: UseFieldArrayRemove;
   remove: UseFieldArrayRemove;
   labelIsFetching: boolean;
   expanded: boolean;
@@ -44,11 +49,16 @@ type Props = {
 export default function NoteDetails({
   notes,
   deleteNote,
+  append,
   remove,
+  pinNotes,
   expanded,
   setExpanded,
-  labelIsFetching,
   labels,
+  appendPinNotes,
+  removePinNotes,
+  labelIsFetching,
+  setPinnedNotesPage
 }: Props) {
   const selectedNote = useContext(NoteCtx);
   const { fetchNotes } = useContext(RefetchCtx) as any;
@@ -60,6 +70,7 @@ export default function NoteDetails({
   const { register, reset, handleSubmit} = useForm();
 
   const note = notes.find(({ _id }) => _id === selectedNote?.selectedNote);
+  const pinNote = pinNotes.find(({ _id }) => _id === selectedNote?.selectedNote);
 
   const removeNote = () => {
     selectedNote?.setSelectedNote(null);
@@ -103,8 +114,32 @@ export default function NoteDetails({
 
   const handlePinNote = async () => {
     try {
-      const { data: { message } } = await api.post(`/note/pin-note/${note?._id}`);
+      const getNoteId = () => {
+        if(note) return note?._id;
+        else return pinNote?._id;
+      };
+
+      const { data: { message } } = await api.post(`/note/pin-note/${getNoteId()}`, {
+        condition: note ? !note?.settings.pinned : !pinNote?.settings.pinned
+      });
+
       toastAlert({ icon: "success", title: message, timer: 2000 });
+
+      if(pinNote?.settings.pinned) {
+        append(pinNote);
+
+        if(pinNotes.length === 1) {
+          setPinnedNotesPage((prevPage) => prevPage - 1);
+          removePinNotes(pinNotes.indexOf(pinNote as FieldArrayWithId<Notes, "note", "id">));
+        }
+        else removePinNotes(pinNotes.indexOf(pinNote as FieldArrayWithId<Notes, "note", "id">));
+      }
+      else {
+        appendPinNotes(note as FieldArrayWithId<Notes, "note", "id">);
+        remove(notes.indexOf(note as FieldArrayWithId<Notes, "note", "id">));
+      }
+
+      fetchNotes();
     } catch (err: any) {
       console.log(err);
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
@@ -164,10 +199,22 @@ export default function NoteDetails({
                       className="text-gray-300 cursor-pointer"
                     >
                       <div className="flex flex-row space-x-2">
-                        <p className="py-1 text-xs uppercase tracking-widest">
-                          Pin note
-                        </p>
-                        <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                        {note?.settings.pinned || pinNote?.settings.pinned ? (
+                          <>
+                            <p className="py-1 text-xs uppercase tracking-widest">
+                              Unpin note
+                            </p>
+                            <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                          </>
+                        ) : (
+                          <>  
+                            <p className="py-1 text-xs uppercase tracking-widest">
+                              Pin note
+                            </p>
+                            <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                          </>
+                        )}
+                        
                       </div>
                     </label>
                   </a>
@@ -210,9 +257,7 @@ export default function NoteDetails({
                     >
                       <div className="flex flex-row space-x-2">
                         <p className="py-1 text-xs uppercase tracking-widest">
-                          {showBottomBar
-                            ? "Hide bottom bar"
-                            : "Show bottom bar"}
+                          {showBottomBar ? "Hide bottom bar" : "Show bottom bar"}
                         </p>
                         {showBottomBar ? (
                           <BsArrowDown size={20} className="pt-[3px]" />
@@ -282,7 +327,7 @@ export default function NoteDetails({
               setShowBottomBar={setShowBottomBar}
               showBottomBar={showBottomBar}
             >
-              <TextEditor notes={notes} />
+              <TextEditor notes={notes} pinNotes={pinNotes} />
             </ToggleBottomBarContext>
           </NoteExpandedCtx>
         </div>

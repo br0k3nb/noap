@@ -1,9 +1,10 @@
 import { SetStateAction, Dispatch, useState, useContext } from 'react';
-
 import { LuLanguages } from "react-icons/lu";
 
 import Modal from '../../../../components/Modal';
 import { toastAlert } from '../../../../components/Alert/Alert';
+import { ShowPinNoteInFolderCtx } from '../../../../context/ShowPinNotesInFolder';
+
 import api from '../../../../services/api';
 
 type Props = {
@@ -12,11 +13,12 @@ type Props = {
 }
 
 export default function SettingsModal({ open, setOpen }: Props) {
+    const token = JSON.parse(localStorage.getItem("user_token") || "{}");
+
+    const { showPinnedNotesInFolder, setShowPinnedNotesInFolder } = useContext(ShowPinNoteInFolderCtx) as any;
 
     const [showLoader, setShowLoader] = useState(false);
-    const [toogleShowInFolderCheckbox, setToggleShowInFolderCheckbox] = useState(false);
-
-    const token = JSON.parse(localStorage.getItem("user_token") || "{}");
+    const [toogleShowInFolderCheckbox, setToggleShowInFolderCheckbox] = useState(showPinnedNotesInFolder);
 
     const handleShowPinnedNotesInFolder = async () => {
         setShowLoader(true);
@@ -26,15 +28,16 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 condition: toogleShowInFolderCheckbox
             });
 
-            toastAlert({ icon: 'success', title: message, timer: 3000 });
-
+            setShowPinnedNotesInFolder(!toogleShowInFolderCheckbox);
+            
             localStorage.setItem("user_token", JSON.stringify({
                 ...token,
-                showPinnedNotesInFolder: toogleShowInFolderCheckbox
+                settings: {
+                    showPinnedNotesInFolder: !toogleShowInFolderCheckbox
+                }
             }));
             
-            console.log(toogleShowInFolderCheckbox);
-
+            toastAlert({ icon: 'success', title: message, timer: 3000 });
         } catch (err: any) {
             console.log(err);
             toastAlert({ icon: 'error', title: err.message, timer: 3000 });
@@ -42,8 +45,6 @@ export default function SettingsModal({ open, setOpen }: Props) {
             setShowLoader(false);
         }
     };
-
-    console.log(token);
 
     return (
         <Modal
@@ -62,12 +63,13 @@ export default function SettingsModal({ open, setOpen }: Props) {
                             {showLoader ? "Loading..." : "Show pinned notes in a folder"}
                         </span> 
                         <input
-                            disabled={showLoader ? true : false}
                             type="checkbox"
+                            disabled={showLoader ? true : false}
+                            checked={toogleShowInFolderCheckbox}
                             className={`checkbox ${showLoader && "cursor-not-allowed"}`}
-                            onChange={() => {
+                            onChange={(e) => {
+                                setToggleShowInFolderCheckbox(e.target.checked);
                                 handleShowPinnedNotesInFolder()
-                                setToggleShowInFolderCheckbox(!toogleShowInFolderCheckbox);
                             }} 
                         />
                     </label>

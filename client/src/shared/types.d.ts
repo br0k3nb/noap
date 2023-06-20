@@ -18,7 +18,7 @@ declare type Notes = {
       }] | [];
       settings: {
         shared: boolean;
-        pinned?: boolean;
+        pinned: boolean;
         permissions?: string[];
       };
       updatedAt?: string;
