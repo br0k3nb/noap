@@ -8,71 +8,193 @@ export default {
             const { author, page } = req.params;
             if(!author || !page) return res.status(404).json({ message: "Access denied!" });
 
-            const { search, limit } = req.query;
+            const { search, limit, pinnedNotesPage } = req.query;
 
             const searchRegex = new RegExp(search, 'i');
 
-            const aggregate = Note.aggregate(
-                [
-                    {
-                        $match: {
-                            author,
-                            $or: [
-                                { 'settings.pinned': false },
-                                { title: searchRegex },
-                                { 'labels.name': searchRegex }
-                            ],
+            if(!search.length) {
+                const aggregate = Note.aggregate(
+                    [
+                        {
+                            $match: {
+                                author,
+                                'settings.pinned': false
+                            }
+                        }, 
+                        {
+                            $lookup: {
+                              from: 'noteStates', 
+                              localField: 'state', 
+                              foreignField: '_id', 
+                              as: 'state'
+                            }
+                        }, 
+                        {
+                            $unwind: {
+                                path: '$state', 
+                                preserveNullAndEmptyArrays: false
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "labels",
+                                localField: "labels",
+                                foreignField: "_id",
+                                as: "labels"
+                            }
+                        },
+                        {   $unwind: {
+                                path: '$labels',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$_id",
+                                author: { $first: "$author" },
+                                title: { $first: "$title"},
+                                body: { $first: "$body"},
+                                image: { $first: "$image" },
+                                state: { $first: "$state" },
+                                settings: { $first: "$settings" },
+                                labels: { $push: "$labels" },
+                                createdAt: { $first: "$createdAt" },
+                                updatedAt: { $first: "$updatedAt" }
+                            }
+                        },
+                        {
+                            $sort: { createdAt: 1 }
                         }
-                    }, 
-                    {
-                        $lookup: {
-                          from: 'noteStates', 
-                          localField: 'state', 
-                          foreignField: '_id', 
-                          as: 'state'
-                        }
-                    }, 
-                    {
-                        $unwind: {
-                            path: '$state', 
-                            preserveNullAndEmptyArrays: false
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "labels",
-                            localField: "labels",
-                            foreignField: "_id",
-                            as: "labels"
-                        }
-                    },
-                    {   $unwind: {
-                            path: '$labels',
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: "$_id",
-                            author: { $first: "$author" },
-                            title: { $first: "$title"},
-                            body: { $first: "$body"},
-                            image: { $first: "$image" },
-                            state: { $first: "$state" },
-                            settings: { $first: "$settings" },
-                            labels: { $push: "$labels" },
-                            createdAt: { $first: "$createdAt" },
-                            updatedAt: { $first: "$updatedAt" }
-                        }
-                    },
-                    {
-                        $sort: { createdAt: 1 }
-                    }
-                ]
-            );
+                    ]
+                );
 
-            const notes = await Note.aggregatePaginate(aggregate, { page, limit });
-            res.status(200).json(notes);
+                const aggregatePinnedNotes = Note.aggregate(
+                    [
+                        {
+                            $match: {
+                                author,
+                                'settings.pinned': true
+                            }
+                        },
+                        {
+                            $lookup: {
+                              from: 'noteStates', 
+                              localField: 'state', 
+                              foreignField: '_id', 
+                              as: 'state'
+                            }
+                        }, 
+                        {
+                            $unwind: {
+                                path: '$state', 
+                                preserveNullAndEmptyArrays: false
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "labels",
+                                localField: "labels",
+                                foreignField: "_id",
+                                as: "labels"
+                            }
+                        },
+                        {   $unwind: {
+                                path: '$labels',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$_id",
+                                author: { $first: "$author" },
+                                title: { $first: "$title"},
+                                body: { $first: "$body"},
+                                image: { $first: "$image" },
+                                state: { $first: "$state" },
+                                settings: { $first: "$settings" },
+                                labels: { $push: "$labels" },
+                                createdAt: { $first: "$createdAt" },
+                                updatedAt: { $first: "$updatedAt" }
+                            }
+                        },
+                        {
+                            $sort: { createdAt: 1 }
+                        }
+                    ]
+                );    
+
+                const notes = await Note.aggregatePaginate(aggregate, { page, limit });
+                const pinnedNotes = await Note.aggregatePaginate(aggregatePinnedNotes, { 
+                    page: pinnedNotesPage, 
+                    limit: 10
+                });
+
+                return res.status(200).json({ notes, pinnedNotes });
+            };
+
+            if(search.length > 0) {
+                const aggregate = Note.aggregate(
+                    [
+                        {
+                            $match: {
+                                author,
+                                $or: [
+                                    { title: searchRegex },
+                                    { 'labels.name': searchRegex }
+                                ],
+                            }
+                        }, 
+                        {
+                            $lookup: {
+                              from: 'noteStates', 
+                              localField: 'state', 
+                              foreignField: '_id', 
+                              as: 'state'
+                            }
+                        }, 
+                        {
+                            $unwind: {
+                                path: '$state', 
+                                preserveNullAndEmptyArrays: false
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "labels",
+                                localField: "labels",
+                                foreignField: "_id",
+                                as: "labels"
+                            }
+                        },
+                        {   $unwind: {
+                                path: '$labels',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$_id",
+                                author: { $first: "$author" },
+                                title: { $first: "$title"},
+                                body: { $first: "$body"},
+                                image: { $first: "$image" },
+                                state: { $first: "$state" },
+                                settings: { $first: "$settings" },
+                                labels: { $push: "$labels" },
+                                createdAt: { $first: "$createdAt" },
+                                updatedAt: { $first: "$updatedAt" }
+                            }
+                        },
+                        {
+                            $sort: { createdAt: 1 }
+                        }
+                    ]
+                );
+
+                const notes = await Note.aggregatePaginate(aggregate, { page, limit });
+                return res.status(200).json({ notes, pinnedNotes: {} });
+            }
+
         } catch (err) {
             res.status(400).json({ message: err });
         }
@@ -202,29 +324,15 @@ export default {
     async pinNote(req, res) {
         try {
             const { noteId } = req.params;
+            const { condition } = req.body;
             
             await Note.findByIdAndUpdate({ _id: noteId }, { 
                 settings: {
-                    pinned: true
+                    pinned: condition
                 }
             });  
 
-            res.status(200).json({ message: 'Note pinned!' });
-        } catch (err) {
-            res.status(400).json({ message: 'Error, please try again later!' });
-        }
-    },
-    async unpinNote(req, res) {
-        try {
-            const { noteId } = req.params;
-            
-            await Note.findByIdAndUpdate({ _id: noteId }, { 
-                settings: {
-                    pinned: false
-                }
-            });  
-
-            res.status(200).json({ message: 'Note unpinned!' });
+            res.status(200).json({ message: `${condition ? "Note pinned!" : "Note unpinned!"}` });
         } catch (err) {
             res.status(400).json({ message: 'Error, please try again later!' });
         }

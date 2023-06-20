@@ -30,7 +30,6 @@ router.delete("/delete/:id", verifyUser, NoteController.delete);
 router.get("/notes/:page/:author", verifyUser, NoteController.view);
 router.post("/note/add/label", verifyUser, NoteController.addLabel);
 router.post("/note/pin-note/:noteId", verifyUser, NoteController.pinNote);
-router.post("/note/unpin-note/:noteId", verifyUser, NoteController.unpinNote);
 router.delete("/note/delete/label/:id/:noteId", verifyUser, NoteController.deleteLabel);
 router.delete("/note/delete-all/label/:noteId", verifyUser, NoteController.deleteAllLabels);
 
