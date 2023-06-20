@@ -2,16 +2,19 @@ import { useState, useContext, SetStateAction, Dispatch } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
-import moment from "moment";
-import "moment/locale/pt-br";
+import { BsFillPinAngleFill } from "react-icons/bs";
+import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md';
+
+import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import ghost from '../../assets/ghost.png';
 import Loader from "../../components/Loader";
+
 import { NoteCtx } from "../../context/SelectedNoteCtx";
 import { ShowPinNoteInFolderCtx } from "../../context/ShowPinNotesInFolder";
 
-import { BsFillPinAngleFill } from "react-icons/bs";
-import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md';
+import moment from "moment";
+import "moment/locale/pt-br";
 
 type Props = {
     page: number;
@@ -45,8 +48,11 @@ export default function CardNotes({
     const location = useLocation();
 
     const [pinWasClicked, setPinWasClicked] = useState(false);
+    const [viewPort, setViewPort] = useState({width: window.innerWidth});
 
     const baseURL = location.pathname.slice(0, (location.pathname.length - String(page).length));
+
+    useUpdateViewport(setViewPort, 500);
 
     const hours = (date: string) => moment(date).format("LT");
     const days = (date: string) => moment(date).format("ll");
@@ -71,7 +77,14 @@ export default function CardNotes({
                                     <>
                                         <div className="mt-2">
                                             {showPinnedNotesInFolder ? (
-                                                <div className="collapse border border-base-300 bg-gray-900 rounded-lg !w-[360px]">
+                                                <div 
+                                                    className="collapse border border-base-300 bg-gray-900 rounded-lg"
+                                                    style={{
+                                                        width: viewPort.width <= 1023 
+                                                            ? (viewPort.width <= 640 ? viewPort.width - 18 : viewPort.width - 78)
+                                                            : 360
+                                                    }}
+                                                >
                                                     <input 
                                                         readOnly
                                                         type="checkbox"
@@ -97,7 +110,7 @@ export default function CardNotes({
                                                         </div>
                                                     </div>
                                                     <div className="collapse-content">
-                                                        <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3">
+                                                        <div className="flex flex-row flex-wrap my-5 gap-y-6 gap-x-3">
                                                             {pinnedNotes.map((pinnedNotes, idx) => {
                                                                 return (
                                                                     <Cards  
@@ -105,7 +118,7 @@ export default function CardNotes({
                                                                         idx={idx}
                                                                         notes={pinnedNotes}
                                                                         noteContext={noteContext}
-                                                                        customWidth={"!w-[149px]"}
+                                                                        customWidth={"!w-[157px] xxs:!w-[165px]"}
                                                                         handleNoteClick={handleNoteClick}
                                                                         days={days}
                                                                         hours={hours}
@@ -173,9 +186,14 @@ export default function CardNotes({
                                         </div>
                                         <div 
                                             className={`
-                                                w-[330px] border border-transparent border-t-gray-600 mb-5 mx-auto
+                                                border border-transparent border-t-gray-600 mb-5 mx-auto
                                                 ${showPinnedNotesInFolder && "mt-3"}
                                             `}
+                                            style={{
+                                                width: viewPort.width <= 1023 
+                                                    ? (viewPort.width <= 640 ? viewPort.width - 45 : viewPort.width - 110)
+                                                    : 330
+                                            }}
                                         />
                                     </>
                                 )}
@@ -262,8 +280,8 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     >
                         {/* using this conditions because for some reason the string truncation isn't working properly */}
                         {
-                            labels.length && image === '' ? (body.length >= 135 ? body.slice(0,114).concat('...') : body) :
-                            !labels.length && image === '' ? (body.length >= 135 ? body.slice(0,131).concat('...') : body) :
+                            labels.length && image === '' ? (body.length >= 135 ? body.slice(0,113).concat('...') : body) :
+                            !labels.length && image === '' ? (body.length >= 135 ? body.slice(0,130).concat('...') : body) :
                             labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 84).concat('...') : body) : 
                             !labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : body
                         }

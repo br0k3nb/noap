@@ -163,7 +163,7 @@ export default function NoteDetails({
     >
       {selectedNote?.selectedNote !== null && (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
-          <div className="flex flex-row"> 
+          <div className="flex flex-row mb-1"> 
             <div
               className="mr-2 tooltip tooltip-right !text-gray-200"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
