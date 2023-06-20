@@ -23,6 +23,7 @@ import ConfirmationModal from '../../../components/ConfirmationModal';
 import AccountSettingsModal from './components/AccountSettingsModal';
 import logo from '../../../assets/logo/logo-white-no-bg.png';
 import TwoFactAuthModal from './components/TwoFactAuthModal';
+import SettingsModal from './components/SettingsModal';
 import SvgLoader from '../../../components/SvgLoader';
 import LabelModal from './components/LabelModal';
 
@@ -40,25 +41,26 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
   const [ openAuthModal, setOpenAuthModal ] = useState(false);
   const [ openLabelModal, setOpenLabelModal ] = useState(false);
   const [ openSettingsModal, setOpenSettingsModal ] = useState(false);
+  const [ openAccSettingsModal, setOpenAccSettingsModal ] = useState(false);
   const [ openSignOutConfirmationModal, setOpenSignOutConfirmationModal ] = useState(false);
   const [ deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const navigate = useNavigate();
   useUpdateViewport(setDeviceScreenSize, 500);
 
-  const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+  const parsedUserToken = JSON.parse(localStorage.getItem("user_token") || "{}");
   const { googleAccount, name } = parsedUserToken;
 
   const accSettingsModalProps = {
     setUserIsAuth,
-    openSettingsModal,
+    openAccSettingsModal,
     open: openAuthModal,
-    setOpenSettingsModal,
+    setOpenAccSettingsModal,
     setOpen: setOpenAuthModal
   }
 
   const signOutUser = () => {
-    window.localStorage.removeItem("user_token");
+    localStorage.removeItem("user_token");
     navigate("/");
   };
 
@@ -90,6 +92,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
           customCancelButtonText: "Go back"
         }}
       />
+      <SettingsModal
+        open={openSettingsModal}
+        setOpen={setOpenSettingsModal}
+      />
       {deviceScreenSize.width > 640  ? ( 
           <div className={`fixed ${!navbar && "flex xxs:hidden"}`}>
             <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-gray-900 justify-end">
@@ -106,7 +112,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                     <li>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
-                        onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenSettingsModal(true)}
+                        onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenAccSettingsModal(true)}
                       >
                         <label htmlFor="my-modal-4">
                           <div className="flex flex-row space-x-2">
@@ -178,13 +184,14 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 >
                   <BsFillTrashFill className="text-gray-300/60" size={22} />
                 </button>
-              
-                <button
-                  className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
-                  disabled={true}
-                >
-                  <BsGearWide className="text-gray-300/60" size={22} />
-                </button>
+                <div className="tooltip tooltip-right text-gray-300" data-tip="Settings">
+                  <button
+                    className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                    onClick={() => setOpenSettingsModal(true)}
+                  >
+                    <BsGearWide className="text-gray-300" size={22} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -211,7 +218,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                     <li>
                       <a
                         className="active:!bg-gray-600 rounded-xl text-gray-300"
-                        onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenSettingsModal(true)}
+                        onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenAccSettingsModal(true)}
                       >
                         <div className="flex flex-row space-x-2">
                           <span className='xxs:text-sm'>Change login information</span>  

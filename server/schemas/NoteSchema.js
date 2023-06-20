@@ -30,6 +30,10 @@ export default new mongoose.Schema({
         permissions: {
             type: mongoose.Schema.Types.Mixed,
             required: false
+        },
+        pinned: {
+            type: Boolean,
+            required: false
         }
     },
     author: {

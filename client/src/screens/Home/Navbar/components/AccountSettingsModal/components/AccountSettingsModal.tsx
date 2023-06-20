@@ -6,13 +6,13 @@ import OptionsModal from './OptionsModal/OptionsModal';
 
 type Props = {
     open: boolean;
-    openSettingsModal: boolean;
+    openAccSettingsModal: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     setUserIsAuth: Dispatch<SetStateAction<boolean>>;
-    setOpenSettingsModal: Dispatch<SetStateAction<boolean>>;
+    setOpenAccSettingsModal: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function index({ open, setOpen, setUserIsAuth, setOpenSettingsModal, openSettingsModal }: Props) {
+export default function index({ open, setOpen, setUserIsAuth, setOpenAccSettingsModal, openAccSettingsModal }: Props) {
     const { register, handleSubmit, reset, formState } = useForm();
     const { errors } = formState;
 
@@ -24,12 +24,12 @@ export default function index({ open, setOpen, setUserIsAuth, setOpenSettingsMod
         register,
         handleSubmit,
         setAuth: setUserIsAuth,
-        setOpenSettings: setOpenSettingsModal
+        setOpenSettings: setOpenAccSettingsModal
     }
 
     const optionsModalProps = {
-        open: openSettingsModal,
-        setOpen: setOpenSettingsModal,
+        open: openAccSettingsModal,
+        setOpen: setOpenAccSettingsModal,
         register,
         reset,
         handleSubmit,

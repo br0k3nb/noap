@@ -5,7 +5,6 @@ import { HexColorPicker } from "react-colorful";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { BsThreeDotsVertical, BsSearch, BsFilter } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
-import { RiArrowGoBackFill } from "react-icons/ri";
 
 import Modal from '../../../../components/Modal';
 import SvgLoader from '../../../../components/SvgLoader';

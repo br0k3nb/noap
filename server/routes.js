@@ -20,6 +20,7 @@ router.post("/verify-user", verifyUser, UserController.verifyUser);
 router.post("/2fa/qrcode", verifyUser, UserController.generate2FAQrcode);
 router.patch("/convert/account/email", UserController.convertIntoNormalAccount);
 router.patch("/convert/account/google", UserController.convertIntoGoogleAccount);
+router.post("/settings/pin-notes-folder/:id", verifyUser, UserController.showPinnedNotesInFolder);
 
 //Notes
 router.post("/add", verifyUser, NoteController.add);
@@ -28,6 +29,7 @@ router.get("/note/:id", verifyUser, NoteController.getNote);
 router.delete("/delete/:id", verifyUser, NoteController.delete);
 router.get("/notes/:page/:author", verifyUser, NoteController.view);
 router.post("/note/add/label", verifyUser, NoteController.addLabel);
+router.post("/note/pin-note/:noteId", verifyUser, NoteController.pinNote);
 router.delete("/note/delete/label/:id/:noteId", verifyUser, NoteController.deleteLabel);
 router.delete("/note/delete-all/label/:noteId", verifyUser, NoteController.deleteAllLabels);
 

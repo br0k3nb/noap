@@ -16,6 +16,11 @@ declare type Notes = {
         color: string;
         fontColor: string;
       }] | [];
+      settings: {
+        shared: boolean;
+        pinned: boolean;
+        permissions?: string[];
+      };
       updatedAt?: string;
       createdAt: string;
     }[];

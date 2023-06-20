@@ -1,5 +1,5 @@
 import { useState, useContext, Dispatch, SetStateAction } from "react";
-import { useForm, FieldArrayWithId, UseFieldArrayRemove } from "react-hook-form";
+import { useForm, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend } from "react-hook-form";
 
 import {
   AiOutlineFullscreen,
@@ -12,14 +12,17 @@ import {
   BsPeopleFill,
   BsArrowDown,
   BsArrowUp,
+  BsFillPinAngleFill
 } from "react-icons/bs";
 
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical";
 
-import { NoteCtx } from "../../context/SelectedNoteCtx";
+import api from "../../services/api";
 import { RefetchCtx } from "../../context/RefetchCtx";
+import { NoteCtx } from "../../context/SelectedNoteCtx";
+import { toastAlert } from "../../components/Alert/Alert";
 import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 import ToggleBottomBarContext from "../../context/ToggleBottomBar";
 
@@ -29,10 +32,15 @@ import moment from "moment";
 import "moment/locale/pt-br";
 
 type Props = {
+  setPinnedNotesPage: Dispatch<SetStateAction<number>>;
   labels: FieldArrayWithId<Labels, "labels", "id">[];
+  appendPinNotes: UseFieldArrayAppend<Notes, "note">;
+  pinNotes: FieldArrayWithId<Notes, "note", "id">[];
   notes: FieldArrayWithId<Notes, "note", "id">[];
   setExpanded: Dispatch<SetStateAction<boolean>>;
+  append: UseFieldArrayAppend<Notes, "note">;
   deleteNote: (_id: string) => Promise<void>;
+  removePinNotes: UseFieldArrayRemove;
   remove: UseFieldArrayRemove;
   labelIsFetching: boolean;
   expanded: boolean;
@@ -41,11 +49,16 @@ type Props = {
 export default function NoteDetails({
   notes,
   deleteNote,
+  append,
   remove,
+  pinNotes,
   expanded,
   setExpanded,
-  labelIsFetching,
   labels,
+  appendPinNotes,
+  removePinNotes,
+  labelIsFetching,
+  setPinnedNotesPage
 }: Props) {
   const selectedNote = useContext(NoteCtx);
   const { fetchNotes } = useContext(RefetchCtx) as any;
@@ -57,6 +70,7 @@ export default function NoteDetails({
   const { register, reset, handleSubmit} = useForm();
 
   const note = notes.find(({ _id }) => _id === selectedNote?.selectedNote);
+  const pinNote = pinNotes.find(({ _id }) => _id === selectedNote?.selectedNote);
 
   const removeNote = () => {
     selectedNote?.setSelectedNote(null);
@@ -96,7 +110,41 @@ export default function NoteDetails({
     
     reset(fieldsToReset);
     setOpenlabelModal(true);
-  }
+  };
+
+  const handlePinNote = async () => {
+    try {
+      const getNoteId = () => {
+        if(note) return note?._id;
+        else return pinNote?._id;
+      };
+
+      const { data: { message } } = await api.post(`/note/pin-note/${getNoteId()}`, {
+        condition: note ? !note?.settings.pinned : !pinNote?.settings.pinned
+      });
+
+      toastAlert({ icon: "success", title: message, timer: 2000 });
+
+      if(pinNote?.settings.pinned) {
+        append(pinNote);
+
+        if(pinNotes.length === 1) {
+          setPinnedNotesPage((prevPage) => prevPage - 1);
+          removePinNotes(pinNotes.indexOf(pinNote as FieldArrayWithId<Notes, "note", "id">));
+        }
+        else removePinNotes(pinNotes.indexOf(pinNote as FieldArrayWithId<Notes, "note", "id">));
+      }
+      else {
+        appendPinNotes(note as FieldArrayWithId<Notes, "note", "id">);
+        remove(notes.indexOf(note as FieldArrayWithId<Notes, "note", "id">));
+      }
+
+      fetchNotes();
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    }
+  };
 
   const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
@@ -115,7 +163,7 @@ export default function NoteDetails({
     >
       {selectedNote?.selectedNote !== null && (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
-          <div className="flex flex-row"> 
+          <div className="flex flex-row mb-1"> 
             <div
               className="mr-2 tooltip tooltip-right !text-gray-200"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
@@ -142,19 +190,31 @@ export default function NoteDetails({
                 className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800 border border-gray-500"
               >
                 <li>
-                  <a
+                <a
                     className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => setOpen(true)}
+                    onClick={() => handlePinNote()}
                   >
                     <label
                       htmlFor="my-modal-4"
-                      className="text-red-600 cursor-pointer"
+                      className="text-gray-300 cursor-pointer"
                     >
-                      <div className="flex flex-row space-x-2 ">
-                        <p className="py-1 text-xs uppercase tracking-widest">
-                          Delete note
-                        </p>
-                        <AiFillDelete size={20} className="pt-1" />
+                      <div className="flex flex-row space-x-2">
+                        {note?.settings.pinned || pinNote?.settings.pinned ? (
+                          <>
+                            <p className="py-1 text-xs uppercase tracking-widest">
+                              Unpin note
+                            </p>
+                            <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                          </>
+                        ) : (
+                          <>  
+                            <p className="py-1 text-xs uppercase tracking-widest">
+                              Pin note
+                            </p>
+                            <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                          </>
+                        )}
+                        
                       </div>
                     </label>
                   </a>
@@ -176,6 +236,17 @@ export default function NoteDetails({
                     </label>
                   </a>
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                  <a className="cursor-not-allowed active:!bg-transparent">
+                    <label htmlFor="my-modal-4" className="text-gray-600">
+                      <div className="flex flex-row space-x-2 cursor-not-allowed">
+                        <p className="py-1 text-xs uppercase tracking-widest">
+                          Share Note
+                        </p>
+                        <BsPeopleFill size={20} className="pt-[3px]" />
+                      </div>
+                    </label>
+                  </a>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <button
                     className="active:!bg-gray-600 hover:!bg-gray-700"
                     onClick={() => setShowBottomBar(showBottomBar ? false : true)}
@@ -186,9 +257,7 @@ export default function NoteDetails({
                     >
                       <div className="flex flex-row space-x-2">
                         <p className="py-1 text-xs uppercase tracking-widest">
-                          {showBottomBar
-                            ? "Hide bottom bar"
-                            : "Show bottom bar"}
+                          {showBottomBar ? "Hide bottom bar" : "Show bottom bar"}
                         </p>
                         {showBottomBar ? (
                           <BsArrowDown size={20} className="pt-[3px]" />
@@ -199,13 +268,19 @@ export default function NoteDetails({
                     </label>
                   </button>
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                  <a className="cursor-not-allowed active:!bg-transparent">
-                    <label htmlFor="my-modal-4" className="text-gray-600">
-                      <div className="flex flex-row space-x-2 cursor-not-allowed">
+                  <a
+                    className="active:!bg-gray-600 hover:!bg-gray-700"
+                    onClick={() => setOpen(true)}
+                  >
+                    <label
+                      htmlFor="my-modal-4"
+                      className="text-red-600 cursor-pointer"
+                    >
+                      <div className="flex flex-row space-x-2 ">
                         <p className="py-1 text-xs uppercase tracking-widest">
-                          Share Note
+                          Delete note
                         </p>
-                        <BsPeopleFill size={20} className="pt-[3px]" />
+                        <AiFillDelete size={20} className="pt-1" />
                       </div>
                     </label>
                   </a>
@@ -252,7 +327,7 @@ export default function NoteDetails({
               setShowBottomBar={setShowBottomBar}
               showBottomBar={showBottomBar}
             >
-              <TextEditor notes={notes} />
+              <TextEditor notes={notes} pinNotes={pinNotes} />
             </ToggleBottomBarContext>
           </NoteExpandedCtx>
         </div>

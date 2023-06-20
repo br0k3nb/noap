@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 
@@ -14,6 +14,7 @@ import api from "../../services/api";
 import { useDebounce } from "../../hooks/useDebounce";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
+import ShowPinNoteInFolderContext from "../../context/ShowPinNotesInFolder";
 import SelectedNoteContext from "../../context/SelectedNoteCtx";
 import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
@@ -25,11 +26,17 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
+  const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+  const { settings: { showPinnedNotesInFolder }} = token;
+
+  const [showPinNoteInFolder, setShowPinnedNotesInFolder] = useState(showPinnedNotesInFolder);
   const [ screenSize, setScreenSize ] = useState<any>({width: window.innerWidth});
+  const [ pinnedNotesHasNextPage, setPinnedNotesHasNextPage ] = useState(false);
   const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
   const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
   const [ hasNextPageLabel, setHasNextPageLabel ] = useState(false);
   const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);  
+  const [ pinnedNotesPage, setPinnedNotesPage ] = useState(1);
   const [ hasNextPage, setHasNextPage ] = useState(false);
   const [ searchLabel, setSearchLabel ] = useState('');
   const [ pageLabel, setPageLabel ] = useState(1);
@@ -42,13 +49,18 @@ export default function Home(): JSX.Element {
   const delayedSearch = useDebounce(search, 500);
   useUpdateViewport(setScreenSize, 500);
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   const { control } = useForm<Notes>();
   const { control: labelsControl } = useForm<Labels>();
+  const { control: pinnedNotesControl } = useForm<Notes>();
 
   const { fields, append, replace, remove } = useFieldArray({ control, name: "note" });
+
+  const { fields: pinNotes, append: appendPinNotes, replace: replacePinNotes, remove: removePinNotes } = useFieldArray({ 
+    control: pinnedNotesControl, 
+    name: "note"
+  });
 
   const { fields: labels, append: appendLabels, replace: replaceLabels, remove: removeLabels } = useFieldArray({
     control: labelsControl,
@@ -61,35 +73,75 @@ export default function Home(): JSX.Element {
   const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
   const getPageInURL = findPageInURL.exec(location.pathname);
   
+  const prevPinNotesPage = useRef(1);
+
+  //using these refs to prevent appending the same array two times
+  const fetchedNotes = useRef(false);
+  const fetchedLabels = useRef(false);
+
   const fetchNotes = async () => { 
     if(getPageInURL) setPage(Number(getPageInURL[1]));
 
     const pageUrl = getPageInURL ? getPageInURL[1] : 1;
 
     try {
-      const { data: { docs, totalDocs, hasNextPage } } = await api.get(`/notes/${pageUrl}/${_id}`, { 
-        params: { search: delayedSearch, limit: 10 }
+      const { 
+        data: { 
+          notes: { docs, totalDocs, hasNextPage },
+          pinnedNotes: { 
+            docs: pinDocs,
+            // totalDocs: pinTotalDocs,
+            hasNextPage: pinHasNextPage
+          }
+        }
+      } = await api.get(`/notes/${pageUrl}/${_id}`, {
+        params: { 
+          pinnedNotesPage: pinnedNotesPage,
+          search: delayedSearch, 
+          limit: 10 
+        }
       });
 
       setTotalDocs(totalDocs);
       setHasNextPage(hasNextPage);
+      setPinnedNotesHasNextPage(pinHasNextPage);
+      
+      if(!pinDocs) replacePinNotes([]);
+      else if (!pinNotes.length && pinDocs.length > 0) appendPinNotes(pinDocs);
+      else replacePinNotes(pinDocs);
 
-      if (fields.length === 0) return append(docs);
-      if (fields.length > 0) return replace(docs);
-    } catch (err: any) {        
+      if (!fields.length && !fetchedNotes.current) {
+        fetchedNotes.current = true;
+        return append(docs);
+      }
+
+      //only replace the array if the pinnedNotesPage doesn't change
+      if (fields.length > 0 && prevPinNotesPage.current === pinnedNotesPage) {
+        console.log("teste");
+        return replace(docs);
+      }
+    } catch (err: any) {       
+        console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
     }
   };
 
   const fetchLabels = async () => {
     try {
-        const {data: { docs, hasNextPage }} = await api.get(`/labels/${_id}`, { 
-          params: { search: delayedSearchLabel, page: pageLabel, limit: 10 }
+        const { data: { docs, hasNextPage } } = await api.get(`/labels/${_id}`, { 
+          params: { 
+            search: delayedSearchLabel,
+            page: pageLabel,
+            limit: 10
+          }
         });
 
         setHasNextPageLabel(hasNextPage);
 
-        if (labels.length === 0) appendLabels(docs);
+        if (!labels.length && !fetchedLabels.current) {
+          fetchedLabels.current = true;
+          appendLabels(docs);
+        } 
         else replaceLabels(docs);
     } catch (err: any) {
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
@@ -106,6 +158,10 @@ export default function Home(): JSX.Element {
           labels: [],
           image: "",
           state: JSON.stringify(default_editor_state),
+          settings: {
+            shared: false,
+            pinned: false
+          },
           author: _id,
         }
       );
@@ -127,14 +183,9 @@ export default function Home(): JSX.Element {
     }
   };
 
-  const signOutUser = () => {
-    window.localStorage.removeItem("user_token");
-    navigate("/");
-  };
-
-  const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL], fetchNotes, {
+  const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL, pinnedNotesPage], fetchNotes, {
     refetchInterval: 300000,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: false
   });
 
   const { isFetching: labelIsFetching } = useQuery(["fetchLabels", delayedSearchLabel, pageLabel], fetchLabels, { 
@@ -153,8 +204,12 @@ export default function Home(): JSX.Element {
     addNewNote,
     hasNextPage,
     notes: fields,
+    pinnedNotes: pinNotes,
     expanded: noteIsExpanded,
-    setExpanded: setNoteIsExpanded
+    setExpanded: setNoteIsExpanded,
+    pinnedNotesPage: pinnedNotesPage,
+    setPinnedNotesPage: setPinnedNotesPage,
+    pinnedNotesHasNextPage: pinnedNotesHasNextPage
   };
 
   const navLabelCtxProps = {
@@ -172,45 +227,58 @@ export default function Home(): JSX.Element {
 
   return (
     <div className="!h-screen">
-      <SelectedNoteContext selectedNote={selectedNote} setSelectedNote={setSelectedNote}>
-        <LabelsCtx {...navLabelCtxProps}>
-          <Nav
-            labels={labels}
-            navbar={navbar}
-            addNewNote={addNewNote} 
-            expanded={noteIsExpanded} 
-            showSvgLoader={showLoaderOnNavbar}
-          />
-        </LabelsCtx>
-        <div
-          className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
-          id="dark"
+      <SelectedNoteContext 
+        selectedNote={selectedNote} 
+        setSelectedNote={setSelectedNote}
+      >
+        <ShowPinNoteInFolderContext 
+          showPinnedNotesInFolder={showPinNoteInFolder}
+          setShowPinnedNotesInFolder={setShowPinnedNotesInFolder}
         >
-          <div className="flex flex-row h-screen">
-            <Notes {...notesProps}/>
-            <NavbarContext navbar={navbar} setNavbar={setNavbar}>
-              <RefetchContext fetchNotes={fetchNotes} isFetching={isFetching}>
-                <LabelsCtx  
-                  pageLabel={pageLabel}
-                  searchLabel={searchLabel}
-                  setPageLabel={setPageLabel}
-                  setSearchLabel={setSearchLabel}
-                  hasNextPageLabel={hasNextPageLabel}
-                >
-                  <NoteDetails 
-                    notes={fields} 
-                    remove={remove}
-                    labels={labels}
-                    expanded={noteIsExpanded}
-                    deleteNote={deleteNote} 
-                    setExpanded={setNoteIsExpanded}
-                    labelIsFetching={labelIsFetching}
-                  />
-                </LabelsCtx>
-              </RefetchContext>
-            </NavbarContext>
+          <LabelsCtx {...navLabelCtxProps}>
+            <Nav
+              labels={labels}
+              navbar={navbar}
+              addNewNote={addNewNote} 
+              expanded={noteIsExpanded} 
+              showSvgLoader={showLoaderOnNavbar}
+            />
+          </LabelsCtx>
+          <div
+            id="dark"
+            className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
+          >
+            <div className="flex flex-row h-screen">
+              <Notes {...notesProps}/>
+              <NavbarContext navbar={navbar} setNavbar={setNavbar}>
+                <RefetchContext fetchNotes={fetchNotes} isFetching={isFetching}>
+                  <LabelsCtx  
+                    pageLabel={pageLabel}
+                    searchLabel={searchLabel}
+                    setPageLabel={setPageLabel}
+                    setSearchLabel={setSearchLabel}
+                    hasNextPageLabel={hasNextPageLabel}
+                  >
+                    <NoteDetails 
+                      notes={fields} 
+                      remove={remove}
+                      append={append}
+                      labels={labels}
+                      pinNotes={pinNotes}
+                      expanded={noteIsExpanded}
+                      deleteNote={deleteNote} 
+                      appendPinNotes={appendPinNotes}
+                      removePinNotes={removePinNotes}
+                      setExpanded={setNoteIsExpanded}
+                      labelIsFetching={labelIsFetching}
+                      setPinnedNotesPage={setPinnedNotesPage}
+                    />
+                  </LabelsCtx>
+                </RefetchContext>
+              </NavbarContext>
+            </div>
           </div>
-        </div>
+        </ShowPinNoteInFolderContext>
       </SelectedNoteContext>
     </div>
   );

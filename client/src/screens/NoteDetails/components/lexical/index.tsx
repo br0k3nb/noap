@@ -21,9 +21,12 @@ import api from "../../../../services/api";
 
 import Editor from "./components/Editor/Editor";
 
-type Props = { notes: FieldArrayWithId<Notes, "note", "id">[] };
+type Props = { 
+  notes: FieldArrayWithId<Notes, "note", "id">[];
+  pinNotes: FieldArrayWithId<Notes, "note", "id">[];
+};
 
-export default function App({ notes }: Props): JSX.Element {
+export default function App({ notes, pinNotes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
   const lastSelectedNotes = useRef<string | null | undefined>(null);
 
@@ -35,6 +38,7 @@ export default function App({ notes }: Props): JSX.Element {
   const refetchNoteCtx = useContext(RefetchCtx);
   
   const note = notes.find(({_id}) => _id === noteContext?.selectedNote);
+  const pinNote = pinNotes.find(({_id}) => _id === noteContext?.selectedNote);
   
   useEffect(() => { lastSelectedNotes.current = noteContext?.selectedNote }, [noteContext?.selectedNote]);
     
@@ -68,14 +72,14 @@ export default function App({ notes }: Props): JSX.Element {
           const compressState = pack({ state });
           const resultState = unpack(compressState);
 
-          const {data: { message }} = await api.patch("/edit",
+          const { data: { message } } = await api.patch("/edit",
             {
               title,
               body: removeBottomBarText ? removeBottomBarText.slice(0,136) : '',
               image: imageSrc,
               state: resultState.state,
               _id: noteContext?.selectedNote,
-              stateId: note?.state._id
+              stateId: note ?  note?.state._id : pinNote?.state._id
             }
           );
           
@@ -105,9 +109,14 @@ export default function App({ notes }: Props): JSX.Element {
 
     if(lastSelectedNotes.current !== noteContext?.selectedNote) {
       setTimeout(() => {
-        reset({ title: note?.title });
+        reset({ title: note ? note?.title : pinNote?.title });
 
-        const editorState = editor.parseEditorState((note?.state.state as string));
+        const getState = () => {
+          if(note) return note.state.state;
+          else return pinNote?.state.state;
+        };
+
+        const editorState = editor.parseEditorState((getState() as string));
         editor.setEditorState(editorState);
         editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
       }); 
@@ -123,7 +132,7 @@ export default function App({ notes }: Props): JSX.Element {
               {/* @ts-ignore */}
               <UpdatePlugin />  
               <Editor 
-                note={note} 
+                note={note ? note : pinNote} 
                 ref={editorRef} 
                 save={saveNote} 
                 register={register} 
