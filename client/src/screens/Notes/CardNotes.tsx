@@ -63,7 +63,7 @@ export default function CardNotes({
     };
 
     return (
-        <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900">
+        <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900  overflow-x-hidden">
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">
                         <Loader />
@@ -72,13 +72,13 @@ export default function CardNotes({
                 ) : (
                     <>
                         {notes.length > 0 ? (
-                            <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 mb-48">  
+                            <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 mb-48 xxs:mb-64">  
                                 {(pinnedNotes.length > 0 && page === 1) && (
                                     <>
                                         <div className="mt-2">
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="collapse border border-base-300 bg-gray-900 rounded-lg"
+                                                    className="collapse bg-gray-900 rounded-lg"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 18 : viewPort.width - 78)
@@ -125,7 +125,7 @@ export default function CardNotes({
                                                                     />
                                                                 )
                                                             })} 
-                                                            <div className="flex flex-row items-center space-x-5 justify-center w-full mt-5">
+                                                            <div className="flex flex-row items-center space-x-6 justify-center w-full mt-5">
                                                                 <button 
                                                                     className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesPage > 1 ? false : true}
@@ -164,7 +164,7 @@ export default function CardNotes({
                                                                 />
                                                             )
                                                         })} 
-                                                        <div className="flex flex-row items-center space-x-5 justify-center w-full mt-4">
+                                                        <div className="flex flex-row items-center space-x-6 justify-center w-full mt-4">
                                                                 <button 
                                                                     className="text-gray-300 uppercase text-xs tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesPage > 1 ? false : true}
@@ -338,7 +338,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     >
                         <img 
                             src={image}
-                            className="rounded-b-[6.5px] object-cover !h-[3.49rem] min-w-[98.9%]"
+                            className="rounded-b-[6.5px] object-cover !h-[3.50rem] min-w-[98.9%]"
                         />
                     </div>
                 )}

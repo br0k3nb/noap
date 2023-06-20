@@ -64,7 +64,7 @@ export default function Verify2FAModal({ open, setOpen, useNav, customSetter, cu
                 onClose: () => setOpen(false)
             }}
         >
-            <div className="px-6 mt-5">
+            <div className="px-6 mt-5 text-gray-300">
                 <div className="mb-5">
                     <p className="text-sm uppercase tracking-widest mb-3">Authenticate</p>
                     <p className="text-gray-500 text-sm xxs:text-xs mb-3">

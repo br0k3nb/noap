@@ -36,7 +36,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                     showPinnedNotesInFolder: !toogleShowInFolderCheckbox
                 }
             }));
-            
+
             toastAlert({ icon: 'success', title: message, timer: 3000 });
         } catch (err: any) {
             console.log(err);
@@ -52,7 +52,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
             title='Settings'
             setOpen={setOpen}
             options={{
-                modalWrapperClassName: "w-[25rem] !px-0",
+                modalWrapperClassName: "w-[25rem] xxs:w-[21rem] !px-0",
                 titleWrapperClassName: "!px-6"
             }}
         >
@@ -76,7 +76,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 </div>
                 <p className='uppercase text-xs tracking-widest text-center mb-4 mt-6'>Coming soon</p>
                 <button
-                    className='px-3 py-[0.95rem] bg-gray-700/80 w-[21.8rem] rounded-full cursor-not-allowed'
+                    className='px-3 py-[0.95rem] bg-gray-700/80 w-[21.8rem] xxs:w-[17.9rem] rounded-full cursor-not-allowed'
                     disabled={true}
                 >
                     <div className="px-2 flex flex-row space-x-3 text-gray-400">

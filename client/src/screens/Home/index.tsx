@@ -27,9 +27,9 @@ import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
   const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-  const { settings: { showPinnedNotesInFolder }} = token;
+  const showPinInFolder = token?.settings ? token?.settings?.showPinnedNotesInFolder : false;
 
-  const [showPinNoteInFolder, setShowPinnedNotesInFolder] = useState(showPinnedNotesInFolder);
+  const [showPinNoteInFolder, setShowPinnedNotesInFolder] = useState(showPinInFolder);
   const [ screenSize, setScreenSize ] = useState<any>({width: window.innerWidth});
   const [ pinnedNotesHasNextPage, setPinnedNotesHasNextPage ] = useState(false);
   const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
@@ -90,7 +90,6 @@ export default function Home(): JSX.Element {
           notes: { docs, totalDocs, hasNextPage },
           pinnedNotes: { 
             docs: pinDocs,
-            // totalDocs: pinTotalDocs,
             hasNextPage: pinHasNextPage
           }
         }
@@ -117,7 +116,6 @@ export default function Home(): JSX.Element {
 
       //only replace the array if the pinnedNotesPage doesn't change
       if (fields.length > 0 && prevPinNotesPage.current === pinnedNotesPage) {
-        console.log("teste");
         return replace(docs);
       }
     } catch (err: any) {       

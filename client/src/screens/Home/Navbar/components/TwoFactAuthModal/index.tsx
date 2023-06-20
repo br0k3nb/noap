@@ -103,7 +103,7 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
                 onClose: () => setOpen(false)
             }}
         >
-            <div className="px-6 mt-5">
+            <div className="px-6 mt-5 text-gray-300">
                 <ConfirmationModal
                     mainText=""
                     open={openConfirmationModal}

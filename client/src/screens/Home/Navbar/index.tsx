@@ -253,7 +253,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
               </div>
               <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[92px]"/>
               <div className="flex flex-col items-center absolute top-28">
-                <a className="flex items-center justify-center  hover:bg-gray-900 px-[1.29rem] py-3 rounded" onClick={() => addNewNote()}>
+                <a 
+                  className="flex items-center justify-center  hover:bg-gray-900 px-[1.29rem] py-3 rounded" 
+                  onClick={() => addNewNote()}
+                >
                   {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: true }} /> ) : ( 
                     <div className="flex flex-row text-gray-300">
                       <BsJournalPlus size={20} /> 
@@ -262,7 +265,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                   )}
                 </a>
                 <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/>
-                <a className="flex items-center justify-center  hover:bg-gray-900 px-[1.9rem] py-3 rounded" onClick={() => setOpenLabelModal(true)}>
+                <a 
+                  className="flex items-center justify-center  hover:bg-gray-900 px-[1.9rem] py-3 rounded" 
+                  onClick={() => setOpenLabelModal(true)}
+                >
                   <div className="flex flex-row space-x-2 text-gray-300">
                     <BsTagFill className="text-gray-300" size={20} />
                     <p className='my-auto text-xs uppercase tracking-widest'>Labels</p>
@@ -290,11 +296,11 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 </button>
                 <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/>
                 <button
-                  className="flex items-center justify-center w-16 h-12 hover:bg-gray-700 disabled:!bg-transparent disabled:cursor-not-allowed"
-                  disabled={true}
+                  className="flex items-center justify-center hover:bg-gray-700 px-[1.79rem] py-3 rounded text-gray-300"
+                  onClick={() => setOpenSettingsModal(true)}
                 >
-                  <div className="flex flex-row text-gray-400">
-                    <BsGearWide className="text-gray-300/60" size={22} />
+                  <div className="flex flex-row">
+                    <BsGearWide size={22} />
                     <p className='ml-2 my-auto text-xs uppercase tracking-widest'>Settings</p>
                   </div>
                 </button>
