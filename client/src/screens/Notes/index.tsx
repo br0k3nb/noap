@@ -14,6 +14,7 @@ type Props = {
   totalDocs: number;
   isFetching: boolean;
   hasNextPage: boolean;
+  totalPinnedDocs: number;
   pinnedNotesPage: number;
   pinnedNotesHasNextPage: boolean;
   addNewNote: () => Promise<void>;
@@ -41,13 +42,27 @@ export default function Notes({
     pinnedNotes,
     setExpanded, 
     hasNextPage, 
+    totalPinnedDocs,
     pinnedNotesPage,
     setPinnedNotesPage,
     pinnedNotesHasNextPage
 }: Props) {
     const [ showSearch, setShowSearch ] = useState(false);
     
-    const navTopBarProps = { hasNextPage, navbar, page, search, setNavbar, setPage, setSearch, setShowSearch, showSearch, totalDocs };
+    const navTopBarProps = { 
+        hasNextPage, 
+        navbar, 
+        page, 
+        search, 
+        setNavbar, 
+        setPage, 
+        setSearch, 
+        setShowSearch, 
+        showSearch, 
+        totalDocs: totalDocs + totalPinnedDocs,
+        pinnedNotes
+    };
+
     const cardNotesProps = { 
         page, 
         notes, 

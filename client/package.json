@@ -13,6 +13,7 @@
     "@lexical/file": "^0.11.1",
     "@lexical/react": "^0.11.1",
     "@react-oauth/google": "^0.10.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/katex": "^0.16.0",
     "@types/lodash-es": "^4.17.7",
     "@types/prettier": "^2.7.2",

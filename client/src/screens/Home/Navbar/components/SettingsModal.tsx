@@ -59,7 +59,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
             <div className="px-6 mt-5">
                 <div className="form-control bg-gray-900 px-3 py-2 rounded-full">
                     <label className="label cursor-pointer px-2">
-                        <span className="label-text uppercase text-[11px] tracking-widest">
+                        <span className="label-text uppercase text-[11px] text-gray-300 tracking-widest">
                             {showLoader ? "Loading..." : "Show pinned notes in a folder"}
                         </span> 
                         <input
@@ -74,7 +74,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                         />
                     </label>
                 </div>
-                <p className='uppercase text-xs tracking-widest text-center mb-4 mt-6'>Coming soon</p>
+                <p className='text-gray-400 uppercase text-xs tracking-widest text-center mb-4 mt-6'>Coming soon</p>
                 <button
                     className='px-3 py-[0.95rem] bg-gray-700/80 w-[21.8rem] xxs:w-[17.9rem] rounded-full cursor-not-allowed'
                     disabled={true}

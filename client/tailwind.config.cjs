@@ -18,10 +18,17 @@ module.exports = {
       animation: {
         'custom-spin': 'spin 1s cubic-bezier(0.25, 0.1, 0.25, 1.0) ',
       },
+      lineClamp: {
+        7: "7",
+        8: "8",
+        9: "9",
+        10: "10"
+      }
     },
   },
   plugins: [
     require("daisyui"),
-    require('tailwind-scrollbar')
+    require("tailwind-scrollbar"),
+    require("@tailwindcss/line-clamp")
   ],
 }

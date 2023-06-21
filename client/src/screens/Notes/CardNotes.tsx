@@ -63,7 +63,7 @@ export default function CardNotes({
     };
 
     return (
-        <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900  overflow-x-hidden">
+        <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 overflow-x-hidden">
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">
                         <Loader />
@@ -72,17 +72,17 @@ export default function CardNotes({
                 ) : (
                     <>
                         {notes.length > 0 ? (
-                            <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3 mb-48 xxs:mb-64">  
+                            <div className="w-fit xxs:!w-screen lg:!w-[360px] mx-auto">
                                 {(pinnedNotes.length > 0 && page === 1) && (
                                     <>
-                                        <div className="mt-2">
+                                        <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"}`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="collapse bg-gray-900 rounded-lg"
+                                                    className="collapse border border-transparent bg-gray-900 rounded-lg ml-2 lg:ml-0 hover:border-gray-700 transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
-                                                            ? (viewPort.width <= 640 ? viewPort.width - 18 : viewPort.width - 78)
-                                                            : 360
+                                                            ? (viewPort.width <= 640 ? viewPort.width - 37.5 : viewPort.width - 78)
+                                                            : 344
                                                     }}
                                                 >
                                                     <input 
@@ -91,7 +91,7 @@ export default function CardNotes({
                                                         onClick={() => setPinWasClicked(!pinWasClicked)}
                                                     />
                                                     <div className="collapse-title">
-                                                        <div className="mt-2 mb-2 flex flex-row space-x-2 justify-center items-center text-gray-300">
+                                                        <div className="!ml-6 mt-2 mb-2 flex flex-row space-x-2 justify-center items-center text-gray-300">
                                                             <p className="uppercase text-xs tracking-widest">Pinned notes</p>
                                                             <BsFillPinAngleFill />
                                                             <div className="absolute right-2">
@@ -110,7 +110,7 @@ export default function CardNotes({
                                                         </div>
                                                     </div>
                                                     <div className="collapse-content">
-                                                        <div className="flex flex-row flex-wrap my-5 gap-y-6 gap-x-3">
+                                                        <div className="flex flex-row flex-wrap my-5 gap-y-6 gap-x-3 justify-center items-center">
                                                             {pinnedNotes.map((pinnedNotes, idx) => {
                                                                 return (
                                                                     <Cards  
@@ -118,7 +118,7 @@ export default function CardNotes({
                                                                         idx={idx}
                                                                         notes={pinnedNotes}
                                                                         noteContext={noteContext}
-                                                                        customWidth={"!w-[157px] xxs:!w-[165px]"}
+                                                                        customWidth={"!w-[145px] xxs:!w-[144.5px]"}
                                                                         handleNoteClick={handleNoteClick}
                                                                         days={days}
                                                                         hours={hours}
@@ -145,12 +145,12 @@ export default function CardNotes({
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="!w-[360px]">
+                                                <div className="xxs:px-2">
                                                     <div className="mt-2 mb-10 flex flex-row space-x-2 justify-center items-center text-gray-300">
                                                         <p className="uppercase text-xs tracking-widest">Pinned notes</p>
                                                         <BsFillPinAngleFill />
                                                     </div> 
-                                                    <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-3">
+                                                    <div className="flex flex-row flex-wrap px-2 xxs:px-0 my-5 gap-y-6 gap-x-3 mb-9 justify-center items-center">
                                                         {pinnedNotes.map((pinnedNotes, idx) => {
                                                             return (
                                                                 <Cards  
@@ -186,8 +186,8 @@ export default function CardNotes({
                                         </div>
                                         <div 
                                             className={`
-                                                border border-transparent border-t-gray-600 mb-5 mx-auto
-                                                ${showPinnedNotesInFolder && "mt-3"}
+                                                border border-transparent border-t-gray-700 mb-10 mx-auto
+                                                ${showPinnedNotesInFolder && "mt-7 !mb-7"}
                                             `}
                                             style={{
                                                 width: viewPort.width <= 1023 
@@ -197,19 +197,21 @@ export default function CardNotes({
                                         />
                                     </>
                                 )}
-                                {notes.map((unpinnedNotes, idx) => {
-                                    return (
-                                        <Cards  
-                                            key={unpinnedNotes._id}
-                                            idx={idx}
-                                            days={days}
-                                            hours={hours}
-                                            notes={unpinnedNotes}
-                                            noteContext={noteContext}
-                                            handleNoteClick={handleNoteClick}
-                                        />
-                                    )  
-                                })}
+                                <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-4 lg:gap-x-3 mb-48 xxs:mb-64 justify-center items-center">
+                                    {notes.map((unpinnedNotes, idx) => {
+                                        return (
+                                            <Cards  
+                                                key={unpinnedNotes._id}
+                                                idx={idx}
+                                                days={days}
+                                                hours={hours}
+                                                notes={unpinnedNotes}
+                                                noteContext={noteContext}
+                                                handleNoteClick={handleNoteClick}
+                                            />
+                                        )  
+                                    })}
+                                </div>
                             </div>
                             ) : (
                                 <div className="flex flex-col space-y-3 justify-center items-center mt-6 mx-auto">
@@ -259,13 +261,13 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
 
     return (
         <a 
-            className={`mx-auto flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} 
+            className={`flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} 
             onClick={() => handleNoteClick(_id)} 
             key={_id}
         >
             <div 
                 className={`
-                    rounded-lg h-[18.4rem] w-[165px] xxs:w-[161px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500
+                    rounded-lg h-[18.4rem] w-[165px] xxs:!w-[159.5px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500
                     ${noteContext?.selectedNote === _id && "!border-gray-300"}
                     ${customWidth && customWidth}
                 `}
@@ -274,17 +276,14 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                 <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
                     <div 
                         className={`
-                            !w-[135px] overflow-ellipsis overflow-hidden !mb-1
-                            ${customWidth && "!w-[117.5px]"}
+                            w-[130px] !mb-1 line-clamp-7
+                            ${!labels.length && image === '' && "!line-clamp-8"}
+                            ${labels.length && image !== '' && "!line-clamp-5"}
+                            ${!labels.length && image !== '' && "!line-clamp-6"}
+                            ${customWidth && "!w-[113px]"}
                         `}
                     >
-                        {/* using this conditions because for some reason the string truncation isn't working properly */}
-                        {
-                            labels.length && image === '' ? (body.length >= 135 ? body.slice(0,113).concat('...') : body) :
-                            !labels.length && image === '' ? (body.length >= 135 ? body.slice(0,130).concat('...') : body) :
-                            labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 84).concat('...') : body) : 
-                            !labels.length && image !== '' ? (body.length >= 135 ? body.slice(0, 73).concat('...') : body) : body
-                        }
+                        {body}
                     </div>
                     {labels && labels.length > 0 && (
                         <div className="mt-1">
@@ -321,24 +320,14 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                         </div>
                     )}
                 </div>
-                <p 
-                    className={`
-                        text-xs tracking-tighter mt-2 px-4 pb-[0.04rem]
-                        ${customWidth && "!text-[11px]"}
-                    `}
-                >
+                <p className={`text-xs tracking-tighter mt-2 px-4 pb-[0.04rem] xxs:text-[11px] ${customWidth && "!text-[11px]"}`}>
                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                 </p>
                 {image !== '' && (
-                    <div 
-                        className={`
-                            h-[56px] mt-3 w-[165px] xxs:w-[161px] rounded-b-lg
-                            ${customWidth && customWidth}
-                        `}
-                    >
+                    <div className={`h-[56px] mt-3 w-[165px] xxs:w-[9.97rem] rounded-b-lg ${customWidth && customWidth}`}>
                         <img 
                             src={image}
-                            className="rounded-b-[6.5px] object-cover !h-[3.50rem] min-w-[98.9%]"
+                            className="rounded-b-[6.5px] object-cover !h-[3.514rem] min-w-[98.9%]"
                         />
                     </div>
                 )}

@@ -27,6 +27,8 @@ import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
   const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+  const { _id } = token;
+
   const showPinInFolder = token?.settings ? token?.settings?.showPinnedNotesInFolder : false;
 
   const [showPinNoteInFolder, setShowPinnedNotesInFolder] = useState(showPinInFolder);
@@ -37,6 +39,7 @@ export default function Home(): JSX.Element {
   const [ hasNextPageLabel, setHasNextPageLabel ] = useState(false);
   const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);  
   const [ pinnedNotesPage, setPinnedNotesPage ] = useState(1);
+  const [ totalPinnedDocs, setTotalPinnedDocs] = useState(0);
   const [ hasNextPage, setHasNextPage ] = useState(false);
   const [ searchLabel, setSearchLabel ] = useState('');
   const [ pageLabel, setPageLabel ] = useState(1);
@@ -66,10 +69,7 @@ export default function Home(): JSX.Element {
     control: labelsControl,
     name: "labels",
   });
-
-  const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-  const { _id } = parsedUserToken;
-
+  
   const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
   const getPageInURL = findPageInURL.exec(location.pathname);
   
@@ -90,6 +90,7 @@ export default function Home(): JSX.Element {
           notes: { docs, totalDocs, hasNextPage },
           pinnedNotes: { 
             docs: pinDocs,
+            totalDocs: totalPinnedDocs,
             hasNextPage: pinHasNextPage
           }
         }
@@ -103,6 +104,7 @@ export default function Home(): JSX.Element {
 
       setTotalDocs(totalDocs);
       setHasNextPage(hasNextPage);
+      setTotalPinnedDocs(totalPinnedDocs);
       setPinnedNotesHasNextPage(pinHasNextPage);
       
       if(!pinDocs) replacePinNotes([]);
@@ -202,6 +204,7 @@ export default function Home(): JSX.Element {
     addNewNote,
     hasNextPage,
     notes: fields,
+    totalPinnedDocs,
     pinnedNotes: pinNotes,
     expanded: noteIsExpanded,
     setExpanded: setNoteIsExpanded,
