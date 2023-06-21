@@ -118,7 +118,7 @@ export default function CardNotes({
                                                                         idx={idx}
                                                                         notes={pinnedNotes}
                                                                         noteContext={noteContext}
-                                                                        customWidth={"!w-[145px] xxs:!w-[144.5px]"}
+                                                                        customWidth={"!w-[145px] xxs:!w-[143px]"}
                                                                         handleNoteClick={handleNoteClick}
                                                                         days={days}
                                                                         hours={hours}
@@ -131,14 +131,15 @@ export default function CardNotes({
                                                                     disabled={pinnedNotesPage > 1 ? false : true}
                                                                     onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
                                                                 >
-                                                                    Go to previous page
+                                                                    prev page
                                                                 </button>
+                                                                <p className="text-[11px] uppercase text-gray-400">OR</p>
                                                                 <button 
                                                                     className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesHasNextPage ? false : true}
                                                                     onClick={() => setPinnedNotesPage(pinnedNotesPage + 1)}
                                                                 >
-                                                                    Go to next page
+                                                                    next page
                                                                 </button>
                                                             </div>
                                                         </div>
