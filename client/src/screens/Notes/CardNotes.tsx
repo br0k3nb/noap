@@ -118,7 +118,7 @@ export default function CardNotes({
                                                                         idx={idx}
                                                                         notes={pinnedNotes}
                                                                         noteContext={noteContext}
-                                                                        customWidth={"!w-[145px] xxs:!w-[143px]"}
+                                                                        customWidth={"!w-[145px] xxs:!w-[142.5px]"}
                                                                         handleNoteClick={handleNoteClick}
                                                                         days={days}
                                                                         hours={hours}
@@ -325,7 +325,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                 </p>
                 {image !== '' && (
-                    <div className={`h-[56px] mt-3 w-[165px] xxs:w-[9.97rem] rounded-b-lg ${customWidth && customWidth}`}>
+                    <div className={`h-[56px] mt-3 w-[165px] xxs:w-[9.914rem] rounded-b-lg ${customWidth && "xxs:!w-[8.87rem]"}`}>
                         <img 
                             src={image}
                             className="rounded-b-[6.5px] object-cover !h-[3.514rem] min-w-[98.9%]"
