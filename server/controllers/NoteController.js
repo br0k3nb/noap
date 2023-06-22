@@ -210,21 +210,22 @@ export default {
     },
     async add(req , res) {
         try {
-            const { title, body, image, state, author } = req.body;
+            const { title, body, image, state, author, settings } = req.body;
 
             const { _id } = await NoteState.create({ state });
-            const { _id: noteId } = await Note.create({ 
+            const { _id: noteId } = await Note.create({
                 title, 
-                body, 
-                image, 
-                state: _id, 
-                author, 
-                settings: { shared: false }
+                body,
+                image,
+                state: _id,
+                author,
+                settings
             });
 
             await NoteState.findOneAndUpdate({ _id }, { noteId });
             res.status(200).json({ message: 'Saved susccessfuly!' });
         } catch (err) {
+            console.log(err);
             res.status(400).json({ message: 'Error creating a new note, please try again or later' });
         }
     },
