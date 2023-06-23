@@ -165,21 +165,22 @@ export default function CardNotes({
                                                                 />
                                                             )
                                                         })} 
-                                                        <div className="flex flex-row items-center space-x-6 justify-center w-full mt-4">
-                                                                <button 
-                                                                    className="text-gray-300 uppercase text-xs tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                    disabled={pinnedNotesPage > 1 ? false : true}
-                                                                    onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
-                                                                >
-                                                                    Go to previous page
-                                                                </button>
-                                                                <button 
-                                                                    className="text-gray-300 uppercase text-xs tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                    disabled={pinnedNotesHasNextPage ? false : true}
-                                                                    onClick={() => setPinnedNotesPage(pinnedNotesPage + 1)}
-                                                                >
-                                                                    Go to next page
-                                                                </button>
+                                                        <div className="flex flex-row items-center space-x-6 justify-center w-full mt-5">
+                                                            <button 
+                                                                className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
+                                                                disabled={pinnedNotesPage > 1 ? false : true}
+                                                                onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
+                                                            >
+                                                                prev page
+                                                            </button>
+                                                            <p className="text-[11px] uppercase text-gray-400">OR</p>
+                                                            <button 
+                                                                className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
+                                                                disabled={pinnedNotesHasNextPage ? false : true}
+                                                                onClick={() => setPinnedNotesPage(pinnedNotesPage + 1)}
+                                                            >
+                                                                next page
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -268,9 +269,9 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
         >
             <div 
                 className={`
-                    rounded-lg h-[18.4rem] w-[165px] xxs:!w-[159.5px] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500
+                    rounded-lg h-[18.4rem] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500
                     ${noteContext?.selectedNote === _id && "!border-gray-300"}
-                    ${customWidth && customWidth}
+                    ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}
             >
                 <p className="text-lg px-4 mb-3 truncate">{title}</p>
@@ -325,10 +326,10 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                 </p>
                 {image !== '' && (
-                    <div className={`h-[56px] mt-3 w-[165px] xxs:w-[9.914rem] rounded-b-lg ${customWidth && "xxs:!w-[8.87rem]"}`}>
+                    <div className={`h-[56px] mt-3 rounded-b-lg ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[165px] xxs:!w-[9.98rem]"}`}>
                         <img 
                             src={image}
-                            className="rounded-b-[6.5px] object-cover !h-[3.514rem] min-w-[98.9%]"
+                            className="rounded-b-[6.5px] object-cover !h-[3.49rem] xxs:!h-[3.52rem] min-w-[98.9%]"
                         />
                     </div>
                 )}
