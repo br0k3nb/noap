@@ -23,8 +23,8 @@ export default function SignIn() {
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
 
-  const [ svgLoader, setSvgLoader ] = useState("");
-  const [ openTFAModal, setOpenTFAModal ] = useState(false);
+  const [svgLoader, setSvgLoader] = useState("");
+  const [openTFAModal, setOpenTFAModal] = useState(false);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),

@@ -47,7 +47,7 @@ export default function Notes({
     setPinnedNotesPage,
     pinnedNotesHasNextPage
 }: Props) {
-    const [ showSearch, setShowSearch ] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
     
     const navTopBarProps = { 
         hasNextPage, 

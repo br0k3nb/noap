@@ -32,21 +32,21 @@ export default function Home(): JSX.Element {
   const showPinInFolder = token?.settings ? token?.settings?.showPinnedNotesInFolder : false;
 
   const [showPinNoteInFolder, setShowPinnedNotesInFolder] = useState(showPinInFolder);
-  const [ screenSize, setScreenSize ] = useState<any>({width: window.innerWidth});
-  const [ pinnedNotesHasNextPage, setPinnedNotesHasNextPage ] = useState(false);
-  const [ selectedNote, setSelectedNote ] = useState<string | null>(null);
-  const [ showLoaderOnNavbar, setShowLoaderOnNavbar ] = useState(false);
-  const [ hasNextPageLabel, setHasNextPageLabel ] = useState(false);
-  const [ noteIsExpanded, setNoteIsExpanded ] = useState(false);  
-  const [ pinnedNotesPage, setPinnedNotesPage ] = useState(1);
-  const [ totalPinnedDocs, setTotalPinnedDocs] = useState(0);
-  const [ hasNextPage, setHasNextPage ] = useState(false);
-  const [ searchLabel, setSearchLabel ] = useState('');
-  const [ pageLabel, setPageLabel ] = useState(1);
-  const [ totalDocs, setTotalDocs ] = useState(0);
-  const [ navbar, setNavbar ] = useState(false);
-  const [ search, setSearch ] = useState('');
-  const [ page, setPage ] = useState(1);
+  const [screenSize, setScreenSize] = useState<any>({width: window.innerWidth});
+  const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<string | null>(null);
+  const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);
+  const [hasNextPageLabel, setHasNextPageLabel] = useState(false);
+  const [noteIsExpanded, setNoteIsExpanded] = useState(false);  
+  const [pinnedNotesPage, setPinnedNotesPage] = useState(1);
+  const [totalPinnedDocs, setTotalPinnedDocs] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [searchLabel, setSearchLabel] = useState('');
+  const [pageLabel, setPageLabel] = useState(1);
+  const [totalDocs, setTotalDocs] = useState(0);
+  const [navbar, setNavbar] = useState(false);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   const delayedSearchLabel = useDebounce(searchLabel, 500);
   const delayedSearch = useDebounce(search, 500);

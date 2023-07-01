@@ -35,19 +35,19 @@ type Label = {
 }
 
 export default function LabelModal({ open, setOpen, token, labels }: Props) {
-    const [ loader, setLoader ] = useState(false);
-    const [ color, setColor ] = useState("#0e63b9");
-    const [ fontColor, setFontColor ] = useState("#ffffff");
-    const [ deleteModal, setDeleteModal ] = useState(false);
-    const [ selectedStyle, setSelectedStyle ] = useState('');
-    const [ editId, setEditId ] = useState<string | null>(null);
-    const [ showSearchBar, setShowSearchBar ] = useState(false);
-    const [ showColorPicker, setShowColorPicker ] = useState('');
-    const [ showGoBackButton, setShowGoBackButton ] = useState(false);
-    const [ showDropDown, setShowDropDown ] = useState<number | null>(null);
-    const [ createLabel, setCreateLabel ] = useState<string | boolean>(false);
-    const [ selectedLabel, setSelectedLabel ] = useState<string | null>(null);
-    const [ goBackButtonAction, setGoBackButtonAction ] = useState<any>({action: null});
+    const [loader, setLoader] = useState(false);
+    const [color, setColor] = useState("#0e63b9");
+    const [fontColor, setFontColor] = useState("#ffffff");
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [selectedStyle, setSelectedStyle] = useState('');
+    const [editId, setEditId] = useState<string | null>(null);
+    const [showSearchBar, setShowSearchBar] = useState(false);
+    const [showColorPicker, setShowColorPicker] = useState('');
+    const [showGoBackButton, setShowGoBackButton] = useState(false);
+    const [showDropDown, setShowDropDown] = useState<number | null>(null);
+    const [createLabel, setCreateLabel] = useState<string | boolean>(false);
+    const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
+    const [goBackButtonAction, setGoBackButtonAction] = useState<any>({action: null});
 
     const { handleSubmit, register, formState, reset } = useForm<Label>();
     const { errors } = formState;

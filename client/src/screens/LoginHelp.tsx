@@ -16,13 +16,13 @@ import SvgLoader from '../components/SvgLoader';
 import api from '../services/api';
 
 export default function LoginHelp() {
-  const [ timer, setTimer ] = useState('');
-  const [ userId, setUserId ] = useState('');
-  const [ loader, setLoader ] = useState(false);
-  const [ wasChanged, setWasChanged ] = useState(false);
-  const [ needHelpWith, setNeedHelpWith ] = useState("");
-  const [ openTFAModal, setOpenTFAModal ] = useState(false);
-  const [ triggerCode, setTriggerCode ] = useState<boolean | string>(false);
+  const [timer, setTimer] = useState('');
+  const [userId, setUserId] = useState('');
+  const [loader, setLoader] = useState(false);
+  const [wasChanged, setWasChanged] = useState(false);
+  const [needHelpWith, setNeedHelpWith] = useState("");
+  const [openTFAModal, setOpenTFAModal] = useState(false);
+  const [triggerCode, setTriggerCode] = useState<boolean | string>(false);
 
   const { handleSubmit, register, reset, formState } = useForm();
   const { errors } = formState;
@@ -33,7 +33,7 @@ export default function LoginHelp() {
     setLoader(true);
 
     try {
-      const {data: { message, userId: _id, code }} = await api.post('/find-user', {
+      const { data: { message, userId: _id, code } } = await api.post('/find-user', {
         email, 
         remove2FA: needHelpWith 
       });
@@ -43,16 +43,14 @@ export default function LoginHelp() {
         setTriggerCode(true);
         toastAlert({ icon: 'success', title: message, timer: 2000 });
       }
-
-      setLoader(false);
       setUserId(_id);
     } catch (err: any) {
-      setLoader(false);
-
       const { message, code, spam } = err;
       if(code) setTimer(code === 3 ? 'maximum' : code === 4 && spam);
 
       toastAlert({ icon: 'error', title: message, timer: 2500 });
+    } finally {
+      setLoader(false);
     }
   };
 

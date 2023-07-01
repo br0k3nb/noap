@@ -15,13 +15,13 @@ export default function SignUp () {
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
 
-  const [ wasSubmited, setWasSubmitted ] = useState(false);
+  const [wasSubmited, setWasSubmitted] = useState(false);
   const navigate = useNavigate();
 
   const handleForm = async ({ name, email, password }: FieldValues) => {
     setWasSubmitted(true);
     try {
-      const {data: { message }} = await api.post("/sign-up", { name, email, password });
+      const { data: { message } } = await api.post("/sign-up", { name, email, password });
       toastAlert({icon: 'success', title: message, timer: 2500});
       setWasSubmitted(false);
 

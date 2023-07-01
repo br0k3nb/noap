@@ -6,6 +6,7 @@ import Modal from '../../../../../../../components/Modal'
 import ChangePassword from './ChangePassword';
 import LinkGoogleAccount from './LinkGoogleAccount';
 import IsGoogleAccount from './IsGoogleAccount';
+import TwoFactAuthModal from '../../../TwoFactAuthModal';
 
 type Props = {
     open: boolean;
@@ -17,13 +18,13 @@ type Props = {
 }
 
 export default function OptionsModal({ open, setOpen, register, handleSubmit, reset, errors }: Props) {
-  const [ showForm, setShowForm ] = useState(false);
-  const [ changeAccountInfo, setChangeAccountInfo ] = useState('');
-  const [ showGoBackButton, setShowGoBackButton ] = useState(false);
-  const [ goBackButtonAction, setGoBackButtonAction ] = useState<any>({action: null});
+  const [showForm, setShowForm] = useState(false);
+  const [changeAccountInfo, setChangeAccountInfo] = useState('');
+  const [showGoBackButton, setShowGoBackButton] = useState(false);
+  const [goBackButtonAction, setGoBackButtonAction] = useState<any>({ action: null });
 
-    const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { googleAccount } = parsedUserToken;
+    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+    const { googleAccount } = token;
 
     const handleModalClose = () => {
       setOpen(false);
@@ -39,7 +40,7 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
       setGoBackButtonAction({
         action: () => {
           setChangeAccountInfo('');
-          setGoBackButtonAction({action: null})
+          setGoBackButtonAction({ action: null })
         }
       })
     };
@@ -50,7 +51,7 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
       setGoBackButtonAction({
         action: () => {
           setChangeAccountInfo('');
-          setGoBackButtonAction({action: null})
+          setGoBackButtonAction({ action: null })
         }
       })
     };

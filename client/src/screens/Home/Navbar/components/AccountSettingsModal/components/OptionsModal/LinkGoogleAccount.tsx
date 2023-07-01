@@ -10,11 +10,11 @@ import SvgLoader from '../../../../../../../components/SvgLoader';
 import api from '../../../../../../../services/api';
 
 export default function LinkGoogleAccount() {
-    const [ showSvgLoader, setshowSvgLoader ] = useState(false);
-    const [ redirect, setRedirect ] = useState(false);
+    const [showSvgLoader, setshowSvgLoader] = useState(false);
+    const [redirect, setRedirect] = useState(false);
 
-    const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id } = parsedUserToken;
+    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+    const { _id } = token;
 
     const navigate = useNavigate();
 

@@ -15,10 +15,10 @@ type Props = {
 }
 
 export default function ChangePassword({ register, handleSubmit, errors, reset }: Props) {
-    const [ showSvgLoader, setshowSvgLoader ] = useState(false);
+    const [showSvgLoader, setshowSvgLoader] = useState(false);
 
-    const parsedUserToken = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id } = parsedUserToken;
+    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
+    const { _id } = token;
 
     const changePassword = async ({ password, confirmPassword }: FieldValues) => {
         setshowSvgLoader(true);

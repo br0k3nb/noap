@@ -13,8 +13,6 @@ import {
   BsShieldLockFill
 } from "react-icons/bs";
 
-import { Tb2Fa } from "react-icons/tb";
-
 import { motion } from 'framer-motion';
 
 import useUpdateViewport from '../../../hooks/useUpdateViewport';
@@ -36,14 +34,14 @@ type NavProps = {
 };
 
 export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, labels }: NavProps) {
-  const [ userIsAuth, setUserIsAuth ] = useState(false);
-  const [ open2FAModal, setOpen2FAModal ] = useState(false);
-  const [ openAuthModal, setOpenAuthModal ] = useState(false);
-  const [ openLabelModal, setOpenLabelModal ] = useState(false);
-  const [ openSettingsModal, setOpenSettingsModal ] = useState(false);
-  const [ openAccSettingsModal, setOpenAccSettingsModal ] = useState(false);
-  const [ openSignOutConfirmationModal, setOpenSignOutConfirmationModal ] = useState(false);
-  const [ deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [userIsAuth, setUserIsAuth] = useState(false);
+  const [open2FAModal, setOpen2FAModal] = useState(false);
+  const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [openLabelModal, setOpenLabelModal] = useState(false);
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
+  const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
+  const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
+  const [deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const navigate = useNavigate();
   useUpdateViewport(setDeviceScreenSize, 500);
@@ -258,7 +256,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                   onClick={() => addNewNote()}
                 >
                   {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: true }} /> ) : ( 
-                    <div className="flex flex-row text-gray-300">
+                    <div className="flex flex-row text-gray-300 cursor-pointer">
                       <BsJournalPlus size={20} /> 
                       <p className='ml-2 my-auto text-xs uppercase tracking-widest'>New note</p>
                     </div>
@@ -269,7 +267,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                   className="flex items-center justify-center  hover:bg-gray-900 px-[1.9rem] py-3 rounded" 
                   onClick={() => setOpenLabelModal(true)}
                 >
-                  <div className="flex flex-row space-x-2 text-gray-300">
+                  <div className="flex flex-row space-x-2 text-gray-300 cursor-pointer">
                     <BsTagFill className="text-gray-300" size={20} />
                     <p className='my-auto text-xs uppercase tracking-widest'>Labels</p>
                   </div>

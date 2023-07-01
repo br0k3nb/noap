@@ -14,16 +14,17 @@ import qrCodePlaceholder from "../../../../../assets/qrcode_placeholder.svg"
 
 type TwoFactAuthModalType = {
     open: boolean;
+    customCloseFn?: () => any;
     setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalType) {
-    const [ page, setPage ] = useState(0);
-    const [ TFACode, setTFACode ] = useState("");
-    const [ isVerified, setIsVerified ] = useState(false);
-    const [ showSvgLoader, setShowSvgLoader ] = useState(false);
-    const [ qrcodeImage, setQrcodeImage ] = useState<string | null>(null);
-    const [ openConfirmationModal, setOpenConfirmationModal ] = useState(false);
+export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : TwoFactAuthModalType) {
+    const [page, setPage] = useState(0);
+    const [TFACode, setTFACode] = useState("");
+    const [isVerified, setIsVerified] = useState(false);
+    const [showSvgLoader, setShowSvgLoader] = useState(false);
+    const [qrcodeImage, setQrcodeImage] = useState<string | null>(null);
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
 
     const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
     const { _id: userId, TFAEnabled } = token;
@@ -54,7 +55,7 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
         setShowSvgLoader(true);
         
         try {
-            const { data: { message }} = await api.post("/2fa/verify", { userId, TFACode });
+            const { data: { message } } = await api.post("/2fa/verify", { userId, TFACode });
 
             localStorage.setItem("user_token", JSON.stringify({ ...token, TFAEnabled: true }));
 
@@ -71,7 +72,7 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
         setShowSvgLoader(true);
 
         try {
-            const {data: { message }} = await api.post("/2fa/remove", { userId });
+            const { data: { message } } = await api.post("/2fa/remove", { userId });
 
             localStorage.setItem("user_token", JSON.stringify({ ...token, TFAEnabled: false }));
             
@@ -100,7 +101,7 @@ export default function TwoFactAuthModal ({ open, setOpen } : TwoFactAuthModalTy
                     ${(page == 2 || TFAEnabled && isVerified) && "!w-[23rem]"}
                     ${(TFAEnabled && !isVerified) && "!w-[22.5rem]"}
                 `,
-                onClose: () => setOpen(false)
+                onClose: () =>  customCloseFn ? customCloseFn() : setOpen(false)
             }}
         >
             <div className="px-6 mt-5 text-gray-300">

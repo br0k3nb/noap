@@ -116,7 +116,7 @@ export default function NoteDetails({
     try {
       const getNoteId = () => {
         if(note) return note?._id;
-        else return pinNote?._id;
+        return pinNote?._id;
       };
 
       const { data: { message } } = await api.post(`/note/pin-note/${getNoteId()}`, {
@@ -190,7 +190,7 @@ export default function NoteDetails({
                 className="dropdown-content menu p-2 shadow  rounded-box w-52 bg-gray-800 border border-gray-500"
               >
                 <li>
-                <a
+                  <a
                     className="active:!bg-gray-600 hover:!bg-gray-700"
                     onClick={() => handlePinNote()}
                   >
@@ -256,7 +256,7 @@ export default function NoteDetails({
                       className="text-gray-300 cursor-pointer"
                     >
                       <div className="flex flex-row space-x-2">
-                        <p className="py-1 text-xs uppercase tracking-widest">
+                        <p className="py-1 text-[11px] uppercase tracking-widest">
                           {showBottomBar ? "Hide bottom bar" : "Show bottom bar"}
                         </p>
                         {showBottomBar ? (

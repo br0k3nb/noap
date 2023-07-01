@@ -10,13 +10,22 @@ import Modal from "./Modal";
 type Props = {
     open: boolean;
     customUserId?: { _id: string };
-    useNav: boolean | string;
+    useNav?: boolean | string;
     customSetterContent?: any;
     setOpen: Dispatch<SetStateAction<boolean>>;
     customSetter?: Dispatch<SetStateAction<any>>;
+    customOnCloseFn?: () => void;
 }
 
-export default function Verify2FAModal({ open, setOpen, useNav, customSetter, customSetterContent, customUserId }: Props) {
+export default function Verify2FAModal({ 
+    open, 
+    setOpen, 
+    useNav, 
+    customSetter, 
+    customSetterContent, 
+    customUserId, 
+    customOnCloseFn 
+}: Props) {
     const [ TFACode, setTFACode ] = useState<string | null>(null);
     const [ showSvgLoader, setShowSvgLoader ] = useState(false);
 
@@ -43,7 +52,8 @@ export default function Verify2FAModal({ open, setOpen, useNav, customSetter, cu
             setShowSvgLoader(false);
 
             if(useNav) navigate(useNav as string)
-            if(customSetter && customSetterContent) customSetter(customSetterContent);
+            if(customSetter && customSetterContent) 
+                customSetter(customSetterContent ? customSetterContent : true);
             
             setOpen(false);
         } catch (err: any) {
@@ -61,7 +71,7 @@ export default function Verify2FAModal({ open, setOpen, useNav, customSetter, cu
                 titleWrapperClassName: "px-6",
                 titleCustomClassName: "xxs:text-[19.5px]",
                 modalWrapperClassName: "!px-0 xxs:w-[19rem] w-[22.5rem]",
-                onClose: () => setOpen(false)
+                onClose: () => customOnCloseFn ? customOnCloseFn() : setOpen(false)
             }}
         >
             <div className="px-6 mt-5 text-gray-300">
