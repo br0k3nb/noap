@@ -28,7 +28,7 @@ export default function SignIn() {
 
   const [svgLoader, setSvgLoader] = useState("");
   const [openTFAModal, setOpenTFAModal] = useState(false);
-  const [userData, setUserData] = useState({ _id: "" });
+  const [userData, setUserData] = useState({ _id: "", token: "" });
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -62,10 +62,9 @@ export default function SignIn() {
       toastAlert({ icon: "success", title: `${message}`, timer: 2000 });
       setSvgLoader("");
 
-      localStorage.setItem("user_token", JSON.stringify({ name: userName, token, _id, googleAccount }));
+      localStorage.setItem("@NOAP:SYSTEM", JSON.stringify(token));
       setUserDataContext({
         _id,
-        token,
         message, 
         settings,
         TFAEnabled,
@@ -103,7 +102,7 @@ export default function SignIn() {
   };
 
   const userTFAAuth = () => {
-    localStorage.setItem("user_token", JSON.stringify(userData));
+    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify(userData.token));
     auth.setUserLoggedIn(true);
   };
 
