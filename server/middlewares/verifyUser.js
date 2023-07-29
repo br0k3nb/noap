@@ -3,8 +3,8 @@ import 'dotenv/config';
 
 export default (req, res, next) => {
   const authorization = req.headers.authorization;
-
-  if (!authorization) return res.status(401).json({ message: "Authentication token wasn't found" });
+  
+  if (!authorization) return res.status(401).json({ message: "Authentication token wasn't found", code: 1 });
 
   const scheme = authorization.slice(0,6);
 

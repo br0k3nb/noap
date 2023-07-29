@@ -60,10 +60,7 @@ export default {
             if(comparePasswords) {
                 const payload = {
                     iss: "login-form",
-                    sub: { 
-                        _id, 
-                        name
-                    },
+                    sub: { _id, name, googleAccount: false },
                     exp: Math.floor(Date.now() / 1000 + SEVEN_DAYS_IN_MS),
                 };
 
@@ -73,10 +70,11 @@ export default {
                     { algorithm: 'HS256' }
                 );
 
-                res.status(200).json({ message: 'Success', token, _id, name, TFAEnabled, settings });
+                res.status(200).json({ token, _id, name, TFAEnabled, settings });
             }
             else res.status(404).json({ message: 'Wrong email or password combination!' });
         } catch (err) {
+            console.log(err);
             res.status(400).json({ message: err });
         }
     },
@@ -100,7 +98,7 @@ export default {
 
                 const payload = { 
                     iss: "login-form", 
-                    sub: { _id, name }, 
+                    sub: { _id, name, googleAccount }, 
                     exp: Math.floor(Date.now() / 1000 + SEVEN_DAYS_IN_MS) 
                 };
 
@@ -126,7 +124,7 @@ export default {
 
                 const payload = { 
                     iss: "login-form", 
-                    sub: { _id, name }, 
+                    sub: { _id, name, googleAccount }, 
                     exp: Math.floor(Date.now() / 1000 + SEVEN_DAYS_IN_MS) 
                 };
 
@@ -138,6 +136,28 @@ export default {
 
                 res.status(200).json({ message: 'Success', token, _id, name, googleAccount, TFAEnabled, settings });
             }
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({ message: err });
+        }
+    },
+    async verifyIfTokenIsValid(req , res) {
+        try {
+            const { token } = req.body
+
+            jwt.verify(token, `${process.env.SECRET}`, async (err, data) => {
+                if(data) {
+                    const findUser = await User.findById(data.sub._id);
+
+                    const userDataObj = {
+                        ...data.sub,
+                        TFAEnabled: findUser.TFAStatus ? true : false,
+                        settings: { ...findUser.settings }
+                    };
+
+                    return res.status(200).json(userDataObj);
+                }
+            });
         } catch (err) {
             console.log(err);
             res.status(400).json({ message: err });
@@ -350,7 +370,6 @@ export default {
     async verify2FAcode(res, req) {
         try {
             const { userId, TFACode } = res.body;
-
             const getTFA = await TFA.find({ userId });
 
             const isAValidTFACode = speakeasy.totp.verify({
