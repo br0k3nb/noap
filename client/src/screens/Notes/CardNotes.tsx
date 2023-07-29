@@ -11,7 +11,7 @@ import ghost from '../../assets/ghost.png';
 import Loader from "../../components/Loader";
 
 import { NoteCtx } from "../../context/SelectedNoteCtx";
-import { ShowPinNoteInFolderCtx } from "../../context/ShowPinNotesInFolder";
+import { UserDataCtx } from "../../context/UserDataContext";
 
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -41,8 +41,7 @@ export default function CardNotes({
     setPinnedNotesPage,
     pinnedNotesHasNextPage
  }: Props) {
-
-    const { showPinnedNotesInFolder } = useContext(ShowPinNoteInFolderCtx) || {};
+    const { userData: { settings: { showPinnedNotesInFolder }} } = useContext(UserDataCtx) as any;
 
     const noteContext = useContext(NoteCtx);
     const location = useLocation();

@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { FieldArrayWithId } from 'react-hook-form';
 
 import { BiLock } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
 import { 
   BsJournalPlus, 
   BsTagFill, 
@@ -16,6 +15,9 @@ import {
 import { motion } from 'framer-motion';
 
 import useUpdateViewport from '../../../hooks/useUpdateViewport';
+import useAuth from '../../../hooks/useAuth';
+
+import { UserDataCtx } from '../../../context/UserDataContext';
 
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import AccountSettingsModal from './components/AccountSettingsModal';
@@ -43,11 +45,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
   const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
   const [deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
-  const navigate = useNavigate();
+  const auth = useAuth();
   useUpdateViewport(setDeviceScreenSize, 500);
 
-  const parsedUserToken = JSON.parse(localStorage.getItem("user_token") || "{}");
-  const { googleAccount, name } = parsedUserToken;
+  const { userData: { _id, googleAccount, name } } = useContext(UserDataCtx) as any;
 
   const accSettingsModalProps = {
     setUserIsAuth,
@@ -57,11 +58,6 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
     setOpen: setOpenAuthModal
   }
 
-  const signOutUser = () => {
-    localStorage.removeItem("user_token");
-    navigate("/");
-  };
-
   const hide = { x: -140, transitionEnd: { display: "none" }};
   const show = { display: "block", x: 0 };
 
@@ -70,7 +66,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
       <AccountSettingsModal {...accSettingsModalProps} />
       <LabelModal 
         open={openLabelModal} 
-        token={parsedUserToken} 
+        userId={ _id } 
         setOpen={setOpenLabelModal} 
         labels={labels}
       />
@@ -81,7 +77,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
       <ConfirmationModal
         open={openSignOutConfirmationModal}
         setOpen={setOpenSignOutConfirmationModal}
-        deleteButtonAction={signOutUser}
+        deleteButtonAction={() => auth.signOut()}
         mainText='Are you sure you want to sign out ?'
         options={{ 
           customDeleteButtonText: "Sign out",

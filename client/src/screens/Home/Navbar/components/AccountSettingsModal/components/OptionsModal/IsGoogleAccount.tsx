@@ -8,20 +8,18 @@ import SvgLoader from '../../../../../../../components/SvgLoader';
 import api from '../../../../../../../services/api';
 
 type Props = {
-    reset: UseFormReset<FieldValues>;
-    errors: FieldErrors<FieldValues>;
-    register: UseFormRegister<FieldValues>;
-    handleSubmit: UseFormHandleSubmit<FieldValues>;
-    showForm: boolean;
-    setShowForm: Dispatch<SetStateAction<boolean>>;
+  _id: string;
+  showForm: boolean;
+  reset: UseFormReset<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  register: UseFormRegister<FieldValues>;
+  handleSubmit: UseFormHandleSubmit<FieldValues>;
+  setShowForm: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function IsGoogleAccount({ register, reset, handleSubmit, errors, showForm, setShowForm }: Props) {
+export default function IsGoogleAccount({ register, reset, handleSubmit, errors, showForm, setShowForm, _id }: Props) {
     const [showSvgLoader, setshowSvgLoader] = useState(false);
     const [redirect, setRedirect] = useState(false);
-
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id } = token;
 
     const navigate = useNavigate();
 
@@ -31,7 +29,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
         try {
           if(password !== confirmPassword) {
             setshowSvgLoader(false);
-            return toastAlert({icon: 'error', title: "Passwords don't match!", timer: 2500});
+            return toastAlert({ icon: 'error', title: "Passwords don't match!", timer: 2500 });
           }
           
           const convertAccount = await api.patch(`/convert/account/email}`, { password, _id });
@@ -43,7 +41,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
     
           setTimeout(() => {
             navigate('/');
-            window.localStorage.removeItem("user_token");
+            window.localStorage.removeItem("@NOAP:SYSTEM");
           }, 2000);
         } catch (err: any) {
           setshowSvgLoader(false);

@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import {
   Route,
   Routes,
@@ -9,31 +11,42 @@ import LoginHelp from "../screens/LoginHelp";
 import Home from "../screens/Home/index";
 import Page404 from "../screens/Page404";
 
-import AuthProvider from "../context/authCtx";
+import AuthProvider from "../context/AuthCtx";
 import LoginRedirect from "./components/LoginRedirect";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserDataContext from '../context/UserDataContext';
+
+const defaultValue = { _id: "", name: "", settings: { }, TFAEnabled: true };
 
 export default function RoutesApp() {
+  const [userData, setUserData] = useState(defaultValue);
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<LoginRedirect />} />
+      <UserDataContext
+        userData={ userData }
+        //@ts-ignore
+        setUserData={ setUserData }
+      >
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LoginRedirect />} />
 
-          <Route
-            path="/notes/page/:page"
-            element={<ProtectedRoute />}
-          >
-            <Route index element={<Home />} />
-          </Route>
+            <Route
+              path="/notes/page/:page"
+              element={<ProtectedRoute />}
+            >
+              <Route index element={<Home />} />
+            </Route>
 
-          <Route path="/help" element={<LoginHelp />} />
+            <Route path="/help" element={<LoginHelp />} />
 
-          <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/sign-up" element={<SignUp />} />
 
-          <Route path="/*" element={<Page404 />} />
-        </Routes>
-      </AuthProvider>
+            <Route path="/*" element={<Page404 />} />
+          </Routes>
+        </AuthProvider>
+      </UserDataContext>
     </BrowserRouter>
   );
 }

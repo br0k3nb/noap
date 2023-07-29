@@ -4,7 +4,7 @@ import { RiArrowGoBackFill } from "react-icons/ri";
 
 type Props = {
     open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
+    setOpen?: Dispatch<SetStateAction<boolean>>;
     title?: string;
     children: any;
     options?: {
@@ -62,7 +62,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                     <label 
                                         htmlFor="my-modal-3"
                                         className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
-                                        onClick={() => onClose ? onClose() : setOpen(false)}
+                                        onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                     >
                                         ✕
                                     </label>
@@ -71,7 +71,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 <label 
                                     htmlFor="my-modal-3"
                                     className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
-                                    onClick={() => onClose ? onClose() : setOpen(false)}
+                                    onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                 >
                                     ✕
                                 </label>

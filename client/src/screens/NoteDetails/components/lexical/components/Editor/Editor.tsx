@@ -67,15 +67,15 @@ type Props = {
 const defaultScreenSize = { width: window.innerWidth, height: window.innerHeight };
 
 const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: any) => {
-    const [ editor ] = useLexicalComposerContext();
+    const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
     const noteExpanded = useContext(ExpandedCtx);
 
-    const [ titleFocused, setTitleFocused ] = useState(false);
-    const [ isSmallWidthViewport, setIsSmallWidthViewport ] = useState<boolean>(false);
-    const [ currentScreenSize, setCurrentScreenSize ] = useState<any>(defaultScreenSize);
-    const [ floatingAnchorElem, setFloatingAnchorElem ] = useState<HTMLDivElement | null>(null);
+    const [titleFocused, setTitleFocused] = useState(false);
+    const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
+    const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
+    const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
 
     const {settings: { isRichText }} = useSettings();
 

@@ -7,6 +7,7 @@ import SvgLoader from '../../../../../../../components/SvgLoader';
 import api from '../../../../../../../services/api';
 
 type Props = {
+    _id: string;
     reset: UseFormReset<FieldValues>;
     errors: FieldErrors<FieldValues>;
     register: UseFormRegister<FieldValues>;
@@ -14,11 +15,8 @@ type Props = {
     setChangeAccountInfo: Dispatch<SetStateAction<string>>;
 }
 
-export default function ChangePassword({ register, handleSubmit, errors, reset }: Props) {
+export default function ChangePassword({ register, handleSubmit, errors, reset, _id }: Props) {
     const [showSvgLoader, setshowSvgLoader] = useState(false);
-
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id } = token;
 
     const changePassword = async ({ password, confirmPassword }: FieldValues) => {
         setshowSvgLoader(true);
@@ -29,14 +27,14 @@ export default function ChangePassword({ register, handleSubmit, errors, reset }
             return toastAlert({ icon: 'error', title: "Passwords don't match!", timer: 2500 });
           }
           
-          const changeP = await api.patch('/change-pass', { password, userId: _id});
+          const { data: message } = await api.patch('/change-pass', { password, userId: _id});
     
           setshowSvgLoader(false);
           reset({ password: '', confirmPassword: '' });
-          toastAlert({icon: 'success', title: `${changeP.data.message}`, timer: 2500});
+          toastAlert({ icon: 'success', title: message, timer: 2500} );
         } catch (err: any) {
           setshowSvgLoader(false);
-          toastAlert({icon: 'error', title: `${err.message}`, timer: 2500});
+          toastAlert({ icon: 'error', title: err.message, timer: 2500 });
         }
     };    
 

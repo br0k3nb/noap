@@ -9,12 +9,9 @@ import SvgLoader from '../../../../../../../components/SvgLoader';
 
 import api from '../../../../../../../services/api';
 
-export default function LinkGoogleAccount() {
+export default function LinkGoogleAccount({ _id } : { _id: string }) {
     const [showSvgLoader, setshowSvgLoader] = useState(false);
     const [redirect, setRedirect] = useState(false);
-
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id } = token;
 
     const navigate = useNavigate();
 
@@ -41,19 +38,19 @@ export default function LinkGoogleAccount() {
             const { email, name, id } = userData.data;
 
             const createUser = await api.patch(`/convert/account/google`, { email, name, id, _id });
-            toastAlert({icon: 'success', title: `${createUser.data.message}`, timer: 3000});
+            toastAlert({ icon: 'success', title: `${createUser.data.message}`, timer: 3000 });
             
             setshowSvgLoader(false);
             setRedirect(true);
 
             setTimeout(() => {
                 navigate('/');
-                window.localStorage.removeItem("user_token");
+                localStorage.removeItem("@NOAP:SYSTEM");
             }, 2000);
         }
         } catch (err: any) {
             setshowSvgLoader(false);
-            toastAlert({ icon: "error", title: `${err?.message}`, timer: 3000 });
+            toastAlert({ icon: "error", title: err?.message, timer: 3000 });
         }
     };
 

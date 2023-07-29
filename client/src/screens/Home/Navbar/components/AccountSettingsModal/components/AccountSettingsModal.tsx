@@ -10,9 +10,10 @@ type Props = {
     setOpen: Dispatch<SetStateAction<boolean>>;
     setUserIsAuth: Dispatch<SetStateAction<boolean>>;
     setOpenAccSettingsModal: Dispatch<SetStateAction<boolean>>;
+    customOnCloseFunction?: () => any;
 };
 
-export default function index({ open, setOpen, setUserIsAuth, setOpenAccSettingsModal, openAccSettingsModal }: Props) {
+export default function index({ open, setOpen, setUserIsAuth, setOpenAccSettingsModal, openAccSettingsModal, customOnCloseFunction }: Props) {
     const { register, handleSubmit, reset, formState } = useForm();
     const { errors } = formState;
 
@@ -23,6 +24,7 @@ export default function index({ open, setOpen, setUserIsAuth, setOpenAccSettings
         setOpen,
         register,
         handleSubmit,
+        customOnCloseFunction,
         setAuth: setUserIsAuth,
         setOpenSettings: setOpenAccSettingsModal
     }
@@ -30,6 +32,7 @@ export default function index({ open, setOpen, setUserIsAuth, setOpenAccSettings
     const optionsModalProps = {
         open: openAccSettingsModal,
         setOpen: setOpenAccSettingsModal,
+        customOnCloseFunction,
         register,
         reset,
         handleSubmit,

@@ -1,5 +1,7 @@
-import { useState, Dispatch, SetStateAction } from 'react'
+import { useState, Dispatch, SetStateAction, useContext, useEffect } from 'react'
 import { UseFormRegister, UseFormHandleSubmit, FieldValues, FieldErrors, UseFormReset } from "react-hook-form";
+
+import { UserDataCtx } from '../../../../../../context/UserDataContext';
 
 import Modal from '../../../../../../components/Modal'
 import SvgLoader from '../../../../../../components/SvgLoader';
@@ -17,14 +19,14 @@ type Props = {
     handleSubmit: UseFormHandleSubmit<FieldValues>;
     reset: UseFormReset<FieldValues>;
     errors: FieldErrors<FieldValues>;
+    customOnCloseFunction?: () => any;
 }
 
-export default function AuthUser({ setAuth, register, reset, handleSubmit, errors, open, setOpen, setOpenSettings }: Props) {
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id, TFAEnabled } = token;
+export default function AuthUser({ setAuth, register, reset, handleSubmit, errors, open, setOpen, setOpenSettings, customOnCloseFunction }: Props) {
+    const { userData } = useContext(UserDataCtx) as any;
+    const { _id, TFAEnabled } = userData;
 
     const [showSvgLoader, setshowSvgLoader] = useState(false);
-    const [open2FAModal, setOpen2FAModal] = useState(open && TFAEnabled ? true : false);
     const [TFAValidated, setTFAValidated] = useState(false);
 
     const authUser = async ({ password }: FieldValues) => {
@@ -47,8 +49,10 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
     };
 
     const handleModalClose = () => {
-        reset({ password: '' });
-        setOpen(false);
+      if(customOnCloseFunction) customOnCloseFunction();
+
+      reset({ password: '' });
+      setOpen(false);
     };
 
     const modalProps = {
@@ -99,10 +103,9 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
             </Modal>
           ) : (
             <Verify2FAModal
-              open={open2FAModal}
-              setOpen={setOpen2FAModal}
+              open={open}
               customSetter={setTFAValidated}
-              customOnCloseFn={() => setOpen(false)}
+              customOnCloseFn={() => handleModalClose()}
             />
           )}
       </>

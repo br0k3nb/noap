@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from "react-hook-form";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -16,15 +16,19 @@ import useAuth from "../hooks/useAuth";
 import note from "../assets/main.svg";
 import noapLogo from "../assets/logo/logo-white-no-bg.png";
 
+import { UserDataCtx } from "../context/UserDataContext";
+
 export default function SignIn() {
   const navigate = useNavigate();
   const auth = useAuth();
+  const { setUserData: setUserDataContext } = useContext(UserDataCtx) as any;
 
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
 
   const [svgLoader, setSvgLoader] = useState("");
   const [openTFAModal, setOpenTFAModal] = useState(false);
+  const [userData, setUserData] = useState({ _id: "" });
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -43,12 +47,32 @@ export default function SignIn() {
         }
       );
 
-      const {data: { message, name: userName, token, _id, googleAccount }} = await api.post("/sign-in/google", { email, name, id });
+      const { 
+        data: {
+          _id,
+          token,
+          message,
+          settings,
+          TFAEnabled,
+          googleAccount,
+          name: userName
+        }
+      } = await api.post("/sign-in/google", { email, name, id });
+
       toastAlert({ icon: "success", title: `${message}`, timer: 2000 });
       setSvgLoader("");
 
-      window.localStorage.setItem("user_token", JSON.stringify({ name: userName, token, _id, googleAccount }));
-      navigate("/notes/page/1");
+      localStorage.setItem("user_token", JSON.stringify({ name: userName, token, _id, googleAccount }));
+      setUserDataContext({
+        _id,
+        token,
+        message, 
+        settings,
+        TFAEnabled,
+        googleAccount,
+        name: userName
+      });
+      auth.setUserLoggedIn(true);
     } catch (err: any) {
       setSvgLoader("");
       toastAlert({ icon: "error", title: err.message, timer: 3000 });
@@ -60,6 +84,8 @@ export default function SignIn() {
 
     const callback = (data: any, err: any) => {
       if (!err && data) {
+        setUserData(data);
+
         const { TFAEnabled } = data;
 
         if(TFAEnabled) setOpenTFAModal(true);
@@ -73,7 +99,12 @@ export default function SignIn() {
       }
     }
 
-    await auth?.signIn({ email, password, callback });
+    await auth.signIn({ email, password, callback });
+  };
+
+  const userTFAAuth = () => {
+    localStorage.setItem("user_token", JSON.stringify(userData));
+    auth.setUserLoggedIn(true);
   };
 
   return (
@@ -84,9 +115,10 @@ export default function SignIn() {
       className="flex flex-row h-screen bg-slate-800"
     >
       <Verify2FAModal
+        customUserId={{ _id: userData._id }}
         open={openTFAModal}
+        customFn={userTFAAuth}
         setOpen={setOpenTFAModal}
-        useNav={"/notes/page/1"}
       />
       <img src={note} className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-slate-800 opacity-90" draggable={false} />
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">

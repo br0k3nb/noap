@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction, useContext } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 import api from "../../../../../services/api";
@@ -11,6 +11,8 @@ import ConfirmationModal from "../../../../../components/ConfirmationModal";
 
 import googlePlayButton from "../../../../../assets/google_play.svg";
 import qrCodePlaceholder from "../../../../../assets/qrcode_placeholder.svg"
+
+import { UserDataCtx } from "../../../../../context/UserDataContext";
 
 type TwoFactAuthModalType = {
     open: boolean;
@@ -26,8 +28,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
     const [qrcodeImage, setQrcodeImage] = useState<string | null>(null);
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
 
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { _id: userId, TFAEnabled } = token;
+    const { userData: { _id: userId, TFAEnabled }, setUserData } = useContext(UserDataCtx) as any;
 
     const { ref: numberRef, onKeyUp: onKeyUpNumber } = useInputMask("999-999");
 
@@ -57,7 +58,12 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
         try {
             const { data: { message } } = await api.post("/2fa/verify", { userId, TFACode });
 
-            localStorage.setItem("user_token", JSON.stringify({ ...token, TFAEnabled: true }));
+            setUserData((prevUserData: any) => {
+                return {
+                    ...prevUserData,
+                    TFAEnabled: true
+                }
+            });
 
             toastAlert({ icon: "success", title: message, timer: 4000 });
             setShowSvgLoader(false);
@@ -74,7 +80,12 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
         try {
             const { data: { message } } = await api.post("/2fa/remove", { userId });
 
-            localStorage.setItem("user_token", JSON.stringify({ ...token, TFAEnabled: false }));
+            setUserData((prevUserData: any) => {
+                return {
+                    ...prevUserData,
+                    TFAEnabled: false
+                }
+            });
             
             toastAlert({ icon: "success", title: message, timer: 2000 });
             setShowSvgLoader(false);

@@ -1,5 +1,7 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
+
+import { UserDataCtx } from '../context/UserDataContext';
 
 import { useInputMask } from "../hooks/useInputMask";
 import { toastAlert } from './Alert/Alert';
@@ -12,24 +14,28 @@ type Props = {
     customUserId?: { _id: string };
     useNav?: boolean | string;
     customSetterContent?: any;
-    setOpen: Dispatch<SetStateAction<boolean>>;
+    setOpen?: Dispatch<SetStateAction<boolean>>;
     customSetter?: Dispatch<SetStateAction<any>>;
     customOnCloseFn?: () => void;
+    customFn?: () => any;
 }
 
 export default function Verify2FAModal({ 
-    open, 
-    setOpen, 
-    useNav, 
-    customSetter, 
-    customSetterContent, 
-    customUserId, 
-    customOnCloseFn 
+    open,
+    useNav,
+    setOpen,
+    customFn,
+    customSetter,
+    customUserId,
+    customOnCloseFn,
+    customSetterContent
 }: Props) {
-    const [ TFACode, setTFACode ] = useState<string | null>(null);
-    const [ showSvgLoader, setShowSvgLoader ] = useState(false);
-
-    const token = customUserId ? customUserId : JSON.parse(window.localStorage.getItem("user_token") || "{}");
+    const [TFACode, setTFACode] = useState<string | null>(null);
+    const [showSvgLoader, setShowSvgLoader] = useState(false);
+     
+    const { userData } = useContext(UserDataCtx) as any;
+    
+    const token = customUserId ? customUserId : { _id: userData._id };
     const { _id: userId } = token;
 
     const { ref: numberRef, onKeyUp: onKeyUpNumber } = useInputMask("999-999");
@@ -38,24 +44,24 @@ export default function Verify2FAModal({
 
     const handleInputChange = (data: string) => {
         const stringWithoutHifen = data.replace("-", "");
-    
+
         if(stringWithoutHifen.length < 7) setTFACode(stringWithoutHifen);
     };
 
     const handleVerifyButton = async () => {
         setShowSvgLoader(true);
-
+        
         try {
             const { data: { message }} = await api.post("/2fa/verify", { userId, TFACode });
 
             toastAlert({ icon: "success", title: message, timer: 4000 });
             setShowSvgLoader(false);
 
+            if(customFn) customFn();
             if(useNav) navigate(useNav as string)
-            if(customSetter && customSetterContent) 
-                customSetter(customSetterContent ? customSetterContent : true);
+            if(customSetter) customSetter(customSetterContent ? customSetterContent : true);
             
-            setOpen(false);
+            if(setOpen) setOpen(false);
         } catch (err: any) {
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
             setShowSvgLoader(false);
@@ -71,7 +77,7 @@ export default function Verify2FAModal({
                 titleWrapperClassName: "px-6",
                 titleCustomClassName: "xxs:text-[19.5px]",
                 modalWrapperClassName: "!px-0 xxs:w-[19rem] w-[22.5rem]",
-                onClose: () => customOnCloseFn ? customOnCloseFn() : setOpen(false)
+                onClose: () => customOnCloseFn ? customOnCloseFn() : setOpen && setOpen(false)
             }}
         >
             <div className="px-6 mt-5 text-gray-300">
@@ -79,8 +85,14 @@ export default function Verify2FAModal({
                     <p className="text-sm uppercase tracking-widest mb-3">Authenticate</p>
                     <p className="text-gray-500 text-sm xxs:text-xs mb-3">
                         This account has 2FA enabled and to access it, your have to enter the 2FA code.
-                    </p> 
-                    <div className="flex flex-col justify-center items-center">
+                    </p>
+                    <form 
+                        className="flex flex-col justify-center items-center"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            TFACode?.length === 6 && handleVerifyButton()
+                        }}
+                    >
                         <p className="text-xs uppercase tracking-widest mb-2 mt-5">Please, insert the code here</p>
                         <input
                             max={6}
@@ -102,7 +114,7 @@ export default function Verify2FAModal({
                                 }}/>
                             ) : ("Verify")}  
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </Modal>

@@ -20,7 +20,7 @@ import api from '../../../../services/api';
 type Props = {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    token: { googleAccount: boolean; token: string; name: string; _id: string; };
+    userId: string;
     labels: FieldArrayWithId<Labels, "labels", "id">[];
 }
 
@@ -34,7 +34,7 @@ type Label = {
     default: string;
 }
 
-export default function LabelModal({ open, setOpen, token, labels }: Props) {
+export default function LabelModal({ open, setOpen, userId, labels }: Props) {
     const [loader, setLoader] = useState(false);
     const [color, setColor] = useState("#0e63b9");
     const [fontColor, setFontColor] = useState("#ffffff");
@@ -104,14 +104,14 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         }
 
         try {
-            const newLabel = await api.post(`/label/add/${token._id}`, { color, fontColor, name, selectedStyle });
+            const newLabel = await api.post(`/label/add/${userId}`, { color, fontColor, name, selectedStyle });
             toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
             
             setLoader(false);
             fetchLabels();
         } catch (err: any) {
             setLoader(false);
-            toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
+            toastAlert({ icon: 'error', title: err.message, timer: 3000 });
         }
     };
     
@@ -165,7 +165,7 @@ export default function LabelModal({ open, setOpen, token, labels }: Props) {
         }        
         
         try {
-            const editL = await api.patch(`/label/edit/${token._id}`, {
+            const editL = await api.patch(`/label/edit/${userId}`, {
                 name: editName,
                 _id: editId,
                 color,

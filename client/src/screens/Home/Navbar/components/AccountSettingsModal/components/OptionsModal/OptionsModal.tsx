@@ -1,32 +1,34 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useContext } from 'react';
 import { UseFormRegister, UseFormHandleSubmit, FieldValues, FieldErrors, UseFormReset } from "react-hook-form";
 
 import Modal from '../../../../../../../components/Modal'
 
+import { UserDataCtx } from '../../../../../../../context/UserDataContext';
+
 import ChangePassword from './ChangePassword';
 import LinkGoogleAccount from './LinkGoogleAccount';
 import IsGoogleAccount from './IsGoogleAccount';
-import TwoFactAuthModal from '../../../TwoFactAuthModal';
 
 type Props = {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
-    register: UseFormRegister<FieldValues>;
-    handleSubmit: UseFormHandleSubmit<FieldValues>;
-    reset: UseFormReset<FieldValues>;
-    errors: FieldErrors<FieldValues>;
+  handleSubmit: UseFormHandleSubmit<FieldValues>;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  register: UseFormRegister<FieldValues>;
+  customOnCloseFunction?: () => any;
+  reset: UseFormReset<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  open: boolean;
 }
 
-export default function OptionsModal({ open, setOpen, register, handleSubmit, reset, errors }: Props) {
-  const [showForm, setShowForm] = useState(false);
-  const [changeAccountInfo, setChangeAccountInfo] = useState('');
-  const [showGoBackButton, setShowGoBackButton] = useState(false);
-  const [goBackButtonAction, setGoBackButtonAction] = useState<any>({ action: null });
+export default function OptionsModal({ open, setOpen, register, handleSubmit, reset, errors, customOnCloseFunction }: Props) {
+    const [showForm, setShowForm] = useState(false);
+    const [changeAccountInfo, setChangeAccountInfo] = useState('');
+    const [showGoBackButton, setShowGoBackButton] = useState(false);
+    const [goBackButtonAction, setGoBackButtonAction] = useState<any>({ action: null });
 
-    const token = JSON.parse(window.localStorage.getItem("user_token") || "{}");
-    const { googleAccount } = token;
+    const { userData: { googleAccount, _id } } = useContext(UserDataCtx) as any;
 
     const handleModalClose = () => {
+      if(customOnCloseFunction) customOnCloseFunction();
       setOpen(false);
       setTimeout(() => {
         setChangeAccountInfo('');
@@ -65,12 +67,12 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
           showGoBackButton: showGoBackButton,
           goBackButtonAction: goBackButtonAction.action,
           titleWrapperClassName: "px-6 mb-5",
-          modalWrapperClassName: "!px-0 text-gray-100 !w-[22rem] font-light xxs:!w-[19.4rem]",
+          modalWrapperClassName: `!px-0 text-gray-100 !w-[22rem] ${googleAccount && "!w-[24rem]"} font-light xxs:!w-[19.4rem]`,
         }
     };
 
-    const changePasswordModalProps = { register, handleSubmit, reset, errors, setChangeAccountInfo };
-    const IsGoogleAccountProps = { register, handleSubmit, reset, errors, showForm, setShowForm }
+    const changePasswordModalProps = { register, handleSubmit, reset, errors, setChangeAccountInfo, _id };
+    const IsGoogleAccountProps = { register, handleSubmit, reset, errors, showForm, setShowForm, _id }
 
     return (  
       <Modal {...modalProps}>
@@ -100,7 +102,7 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
         ) : changeAccountInfo === "password" && !googleAccount ? (
             <ChangePassword {...changePasswordModalProps} />
         ) : changeAccountInfo === "google" && !googleAccount ? (
-            <LinkGoogleAccount />
+            <LinkGoogleAccount _id={ _id }/>
         ) : (
             <IsGoogleAccount {...IsGoogleAccountProps} />
         )}
