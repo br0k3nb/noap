@@ -62,7 +62,7 @@ export default function SignIn() {
       toastAlert({ icon: "success", title: `${message}`, timer: 2000 });
       setSvgLoader("");
 
-      localStorage.setItem("@NOAP:SYSTEM", JSON.stringify(token));
+      localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({token}));
       setUserDataContext({
         _id,
         message, 
@@ -102,7 +102,7 @@ export default function SignIn() {
   };
 
   const userTFAAuth = () => {
-    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify(userData.token));
+    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({token: userData.token}));
     auth.setUserLoggedIn(true);
   };
 
