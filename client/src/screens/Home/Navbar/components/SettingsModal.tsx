@@ -25,10 +25,11 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const { userData, setUserData } = useContext(UserDataCtx) as any;
     const { _id, googleAccount, settings: { showPinnedNotesInFolder, noteTextExpanded } } = userData;
 
-    const [showLoader, setShowLoader] = useState(false);
     const [userIsAuth, setUserIsAuth] = useState(false);
     const [openTFAModal, setOpenTFAModal] = useState(false);
     const [openAuthModal, setOpenAuthModal] = useState(false);
+    const [showNTCLoader, setShowNTCLoader] = useState(false);
+    const [showSPNIFLoader, setShowSPNIFLoader] = useState(false);
     const [showOpenDoorIcon, setShowOpenDoorIcon] = useState(false);
     const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
     const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
@@ -36,7 +37,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const navigate = useNavigate();
 
     const handleShowPinnedNotesInFolder = async (state: boolean) => {
-        setShowLoader(true);
+        setShowSPNIFLoader(true);
 
         try {
             const { data: { message } } = await api.post(`/settings/pin-notes-folder/${_id}`, {
@@ -58,12 +59,12 @@ export default function SettingsModal({ open, setOpen }: Props) {
             console.log(err);
             toastAlert({ icon: 'error', title: err.message, timer: 3000 });
         } finally {
-            setShowLoader(false);
+            setShowSPNIFLoader(false);
         }
     };
 
     const handleNoteTextCondition = async () => {
-        setShowLoader(true);
+        setShowNTCLoader(true);
 
         try {
             const { data: { message } } = await api.post(`/settings/note-text/${_id}`, {
@@ -85,7 +86,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
             console.log(err);
             toastAlert({ icon: 'error', title: err.message, timer: 3000 });
         } finally {
-            setShowLoader(false);
+            setShowNTCLoader(false);
         }
     };
 
@@ -184,15 +185,15 @@ export default function SettingsModal({ open, setOpen }: Props) {
                             <label className="label cursor-pointer px-2 transition-all duration-500 tracking-widest">
                                 <div className="flex flex-row space-x-2">
                                     <span className="label-text uppercase text-[11px] xxs:!text-[9px] text-gray-300 py-[9px]">
-                                        {showLoader ? "Loading..." : "Show pinned notes in a folder"}
+                                        {showSPNIFLoader ? "Loading..." : "Show pinned notes in a folder"}
                                     </span> 
-                                    {!showLoader && (<AiFillFolderOpen size={22} className='mt-[9px]'/>)}
+                                    {!showSPNIFLoader && (<AiFillFolderOpen size={22} className='mt-[9px]'/>)}
                                 </div>
                                 <input
                                     type="checkbox"
-                                    disabled={showLoader ? true : false}
+                                    disabled={showSPNIFLoader ? true : false}
                                     checked={showPinnedNotesInFolder ? showPinnedNotesInFolder : false}
-                                    className={`checkbox ${showLoader && "cursor-not-allowed"}`}
+                                    className={`checkbox ${showSPNIFLoader && "cursor-not-allowed"}`}
                                     onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)} 
                                 />
                             </label>
@@ -205,13 +206,17 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 <div className="flex flex-row justify-center space-x-2">
                                     {!noteTextExpanded ? (
                                         <>  
-                                            <p className='pt-[3px]'>Note text centred</p>
-                                            <FiAlignJustify size={22} />    
+                                            <p className='pt-[3px]'>
+                                                {showNTCLoader ? "Loading..." : "Note text centred"}
+                                            </p>
+                                            {!showNTCLoader && (<FiAlignJustify size={22} />)} 
                                         </>
                                     ) : (
                                         <>
-                                            <p className='pt-[3px]'>Note text expanded</p>
-                                            <RiTextSpacing size={22} />
+                                            <p className='pt-[3px]'>
+                                                {showNTCLoader ? "Loading..." : "Note text expanded"}
+                                            </p>
+                                            {!showNTCLoader && (<RiTextSpacing size={22} />)}
                                         </>
                                     )}
                                 </div>
