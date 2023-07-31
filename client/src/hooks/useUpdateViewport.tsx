@@ -4,7 +4,7 @@ export default function useUpdateViewport (setter: Dispatch<SetStateAction<any>>
     useEffect(() => {
         const updateViewPortWidth = () => {
             setTimeout(() => {
-                setter({width: window.innerWidth, height: window.innerHeight});
+                setter({ width: window.innerWidth, height: window.innerHeight });
             }, dalay); 
         }
         

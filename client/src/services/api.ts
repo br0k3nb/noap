@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-// const config =  { host: 'localhost', port: 3001 };
-// const { host, port } = config;
-
-// const api = axios.create({ baseURL: ` http://${host}:${port}/` });
+// const api = axios.create({ baseURL: ` http://localhost:3001/` });
 
 const api = axios.create({ baseURL: `https://noap-api.vercel.app/` });
 

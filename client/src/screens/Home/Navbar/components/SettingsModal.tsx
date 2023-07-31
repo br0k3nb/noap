@@ -2,6 +2,9 @@ import { SetStateAction, Dispatch, useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 
 import { BsDoorOpenFill, BsDoorClosedFill, BsShieldLockFill } from "react-icons/bs";
+import { AiFillFolderOpen } from 'react-icons/ai';
+import { FiAlignJustify } from 'react-icons/fi';
+import { RiTextSpacing } from 'react-icons/ri';
 import { BiLock } from "react-icons/bi";
 
 import Modal from '../../../../components/Modal';
@@ -20,7 +23,7 @@ type Props = {
 
 export default function SettingsModal({ open, setOpen }: Props) {
     const { userData, setUserData } = useContext(UserDataCtx) as any;
-    const { _id, googleAccount, settings: { showPinnedNotesInFolder } } = userData;
+    const { _id, googleAccount, settings: { showPinnedNotesInFolder, noteTextExpanded } } = userData;
 
     const [showLoader, setShowLoader] = useState(false);
     const [userIsAuth, setUserIsAuth] = useState(false);
@@ -46,6 +49,33 @@ export default function SettingsModal({ open, setOpen }: Props) {
                     settings: {
                         ...prevUserData.settings,
                         showPinnedNotesInFolder: !state
+                    }
+                }
+            });
+
+            toastAlert({ icon: 'success', title: message, timer: 3000 });
+        } catch (err: any) {
+            console.log(err);
+            toastAlert({ icon: 'error', title: err.message, timer: 3000 });
+        } finally {
+            setShowLoader(false);
+        }
+    };
+
+    const handleNoteTextCondition = async () => {
+        setShowLoader(true);
+
+        try {
+            const { data: { message } } = await api.post(`/settings/note-text/${_id}`, {
+                condition: !noteTextExpanded
+            });
+
+            setUserData((prevUserData: any) => {
+                return {
+                    ...prevUserData,
+                    settings: {
+                        ...prevUserData.settings,
+                        noteTextExpanded: !noteTextExpanded
                     }
                 }
             });
@@ -110,7 +140,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 title='Settings'
                 setOpen={setOpen}
                 options={{
-                    modalWrapperClassName: "w-[25rem] xxs:w-[21rem] !px-0 !max-h-[50rem]",
+                    modalWrapperClassName: "w-[25rem] xxs:w-[22rem] !px-0 !max-h-[50rem]",
                     titleWrapperClassName: "!px-6"
                 }}
             >
@@ -152,20 +182,61 @@ export default function SettingsModal({ open, setOpen }: Props) {
                         </div>
                         <div className="form-control bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:border-gray-500 px-3 rounded-full">
                             <label className="label cursor-pointer px-2 transition-all duration-500 tracking-widest">
-                                <span className="label-text uppercase text-[11px] xxs:!text-[10px] text-gray-300 py-[9px]">
-                                    {showLoader ? "Loading..." : "Show pinned notes in a folder"}
-                                </span> 
+                                <div className="flex flex-row space-x-2">
+                                    <span className="label-text uppercase text-[11px] xxs:!text-[9px] text-gray-300 py-[9px]">
+                                        {showLoader ? "Loading..." : "Show pinned notes in a folder"}
+                                    </span> 
+                                    {!showLoader && (<AiFillFolderOpen size={22} className='mt-[9px]'/>)}
+                                </div>
                                 <input
                                     type="checkbox"
                                     disabled={showLoader ? true : false}
                                     checked={showPinnedNotesInFolder ? showPinnedNotesInFolder : false}
                                     className={`checkbox ${showLoader && "cursor-not-allowed"}`}
-                                    onChange={(e) => {
-                                        handleShowPinnedNotesInFolder(!e.target.checked)
-                                    }} 
+                                    onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)} 
                                 />
                             </label>
-                        </div>
+                        </div>   
+                        <div className="bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
+                            <div 
+                                className='text-xs text-gray-300 uppercase tracking-wide py-[16.5px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
+                                onClick={() => handleNoteTextCondition()}
+                            >                                
+                                <div className="flex flex-row justify-center space-x-2">
+                                    {!noteTextExpanded ? (
+                                        <>  
+                                            <p className='pt-[3px]'>Note text centred</p>
+                                            <FiAlignJustify size={22} />    
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className='pt-[3px]'>Note text expanded</p>
+                                            <RiTextSpacing size={22} />
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>                     
+                        {/* <button
+                            className="active:!bg-gray-600 hover:!bg-gray-700"
+                            onClick={() => setShowBottomBar(showBottomBar ? false : true)}
+                        >
+                            <label
+                            htmlFor="my-modal-4"
+                            className="text-gray-300 cursor-pointer"
+                            >
+                            <div className="flex flex-row space-x-2">
+                                <p className="py-1 text-xs uppercase tracking-widest">
+                                {showBottomBar ? "Spread text" : "Center text"}
+                                </p>
+                                {showBottomBar ? (
+                                <RiTextSpacing size={20} className="pt-[3px]" />
+                                ) : (
+                                <FiAlignJustify size={20} className="pt-[3px]" />
+                                )}
+                            </div>
+                            </label>
+                        </button> */}
                         <div 
                             className="bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full"
                             onMouseEnter={() => setTimeout(() => setShowOpenDoorIcon(true), 200)}

@@ -14,9 +14,7 @@ import type {
 import { $applyNodeReplacement, createEditor, DecoratorNode } from "lexical";
 import { Suspense, lazy } from "react";
 
-const ImageComponent = lazy(
-  () => import("./ImageComponent")
-);
+const ImageComponent = lazy(() => import("./ImageComponent"));
 
 export interface ImagePayload {
   altText: string;
@@ -83,9 +81,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, width, maxWidth, caption, src, showCaption } = 
-    serializedNode;
-
+    const { altText, height, width, maxWidth, caption, src, showCaption } = serializedNode;
+    
     const node = $createImageNode({
       altText,
       height,
@@ -94,10 +91,10 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       src,
       width,
     });
-
+    
     const nestedEditor = node.__caption;
     const editorState = nestedEditor.parseEditorState(caption.editorState);
-
+    
     if (!editorState.isEmpty()) nestedEditor.setEditorState(editorState);
 
     return node;
@@ -175,9 +172,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     const span = document.createElement("span");
     const theme = config.theme;
     const className = theme.image;
-    if (className !== undefined) {
-      span.className = className;
-    }
+    if (className) span.className = className;
+
     return span;
   }
 
@@ -198,7 +194,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return (
      <>
         <Suspense fallback={null}>
-          {/* @ts-ignore */}
           <ImageComponent
             src={this.__src}
             altText={this.__altText}
@@ -217,7 +212,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 }
 
 export function $createImageNode(payload: ImagePayload): ImageNode { 
-  const { src, altText, maxWidth, width, height, showCaption, caption, captionsEnabled, key } = payload;
+  const { src, altText, maxWidth, width, height, showCaption, caption, captionsEnabled, key } = payload;  
   return $applyNodeReplacement(
     new ImageNode(
       src,

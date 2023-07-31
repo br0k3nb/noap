@@ -50,6 +50,9 @@
     shadow-md 
     focus:outline-none;
   }
+  .PlaygroundEditorTheme__indent {
+    @apply xxs:!ps-0
+  }
 }
 
 * {

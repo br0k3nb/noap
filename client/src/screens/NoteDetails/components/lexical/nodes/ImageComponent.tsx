@@ -52,7 +52,11 @@ import Placeholder from "../ui/Placeholder";
 import { $isImageNode } from "./ImageNode";
 
 import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import { UserDataCtx } from "../../../../../context/UserDataContext";
+
 import Modal from "../../../../../components/Modal";
+
+import useUpdateViewport from "../../../../../hooks/useUpdateViewport";
 
 const imageCache = new Set();
 
@@ -123,15 +127,17 @@ export default function ImageComponent({
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const activeEditorRef = useRef<LexicalEditor | null>(null);
-  const [ isSelected, setSelected, clearSelection ] = useLexicalNodeSelection(nodeKey);
+  const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
   const { isCollabActive } = useCollaborationContext();
-  const [ editor ] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext();
 
-  const [ hover, setHover ] = useState(false);
-  const [ isResizing, setIsResizing ] = useState<boolean>(false);
-  const [ openFullscreenModal, setOpenFullscreenModal ] = useState(false);
-  const [ selection, setSelection ] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
-  const [ currentScreenSize, setCurrentScreenSize ] = useState(window.innerWidth);
+  const [hover, setHover] = useState(false);
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
+  const [selection, setSelection] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
+  const [currentScreenSize, setCurrentScreenSize] = useState({ width: window.innerWidth });
+
+  useUpdateViewport(setCurrentScreenSize, 500);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -164,7 +170,7 @@ export default function ImageComponent({
           return true;
         } 
 
-        else if ( buttonElem !== null && buttonElem !== document.activeElement) {
+        else if (buttonElem !== null && buttonElem !== document.activeElement) {
           event.preventDefault();
           buttonElem.focus();
           return true;
@@ -265,13 +271,6 @@ export default function ImageComponent({
     setSelected
   ]);
 
-  useEffect(() => {
-    const updateScreenSize = () => setTimeout(() => setCurrentScreenSize(window.innerWidth), 500);
-    window.addEventListener("resize", updateScreenSize);
-
-    return () => window.removeEventListener("resize", updateScreenSize);
-  }, []);
-
   const setShowCaption = () => {
     editor.update(() => {
       const node = $getNodeByKey(nodeKey);
@@ -279,10 +278,7 @@ export default function ImageComponent({
     });
   };  
 
-  const onResizeEnd = (
-    nextWidth: "inherit" | number,
-    nextHeight: "inherit" | number
-  ) => {
+  const onResizeEnd = (nextWidth: "inherit" | number, nextHeight: "inherit" | number) => {
     // Delay hiding the resize bars for click case
     setTimeout(() => setIsResizing(false), 200);
 
@@ -300,6 +296,12 @@ export default function ImageComponent({
   const isFocused = isSelected || isResizing;
 
   const noteExpanded = useContext(ExpandedCtx);
+  const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
+
+  const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
+  const noteTextCondition = TweentyPercentMarginOfScreen < 944 ? TweentyPercentMarginOfScreen : 943;
+
+  const imageOverflow = typeof width === "number" && (width - noteTextCondition) > 0  ? (width - noteTextCondition) : 0;
 
   const donwloadImage = (srcLink: string) => {
     const a = Object.assign(document.createElement("a"), { href: srcLink, style:"display:none", download: "image" });
@@ -310,7 +312,7 @@ export default function ImageComponent({
   }
 
   const resizeBar = typeof width === "number" && width <= 257;
-  const defaultStyle = "z-10 !rounded-lg !object-cover xxs:!max-h-96 xxs:!w-screen sm:!max-h-96 lg:!object-fill xl:!max-h-screen";
+  const defaultStyle = "z-10 !rounded-lg !object-cover xxs:!max-h-96 xxs:!w-screen sm:!max-h-96 xl:!object-fill xl:!max-h-screen";
 
   return (
     <Suspense fallback={"loading..."}>
@@ -327,8 +329,8 @@ export default function ImageComponent({
           src={src}
           height={"inherit"}
           className={"!rounded-xl mt-6"}
-          width={currentScreenSize - 100}
-          maxWidth={700}
+          width={currentScreenSize.width - 100}
+          maxWidth={1200}
         />
       </Modal>
       <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
@@ -359,7 +361,7 @@ export default function ImageComponent({
                     </li> */}
                     <li className="text-xs uppercase tracking-widest">
                       <a className="active:!bg-gray-600" onClick={() => donwloadImage(src)}>
-                        <div className="flex flex-row space-x-2">
+                        <div className="flex flex-row space-x-2 text-gray-300">
                           <span>Download</span>
                           <BsFillFileEarmarkArrowDownFill size={16}/>
                         </div>
@@ -367,8 +369,8 @@ export default function ImageComponent({
                     </li>
                     <li className="text-xs uppercase tracking-widest">
                       <a className="active:!bg-gray-600" onClick={() => setOpenFullscreenModal(true)}>
-                        <div className="flex flex-row space-x-2">
-                          <span className="my-auto">Fullscreen</span>
+                        <div className="flex flex-row space-x-2 text-gray-300">
+                          <span className="my-auto text-[11px]">Fullscreen</span>
                           <AiOutlineFullscreen size={20}/>
                         </div>
                       </a>
@@ -379,7 +381,7 @@ export default function ImageComponent({
                         className="active:!bg-gray-600"
                         onClick={() => setSelected(true)}
                       >
-                        <div className="flex flex-row space-x-2">
+                        <div className="flex flex-row space-x-2 text-gray-300">
                           <span>Delete</span>
                           <BsTrash size={16}/>
                         </div>
@@ -393,14 +395,24 @@ export default function ImageComponent({
               className={
                 isFocused
                   ? `${defaultStyle} focused ${$isNodeSelection(selection) ? "draggable" : ""}`
-                  : `${defaultStyle} ${hover && "mb-[0.365rem]"}`
+                  : `${defaultStyle}`
               }
               src={src}
               altText={altText}
               imageRef={imageRef}
               width={width}
               height={height}
-              maxWidth={!noteExpanded?.expanded ? currentScreenSize - 495 : currentScreenSize - 58}
+              maxWidth={
+                !noteExpanded?.expanded ? (
+                  currentScreenSize.width > 1430 && (noteTextExpanded && !imageOverflow) ? noteTextCondition : 
+                  currentScreenSize.width > 1430 && (noteTextExpanded && imageOverflow) ? noteTextCondition - imageOverflow :
+                  (!noteTextExpanded && imageOverflow) ? currentScreenSize.width - 580 : 
+                  currentScreenSize.width
+                ) : (
+                  !noteTextExpanded && currentScreenSize.width <= 640 ? currentScreenSize.width - 60: 
+                  currentScreenSize.width > 1000 && (noteTextExpanded && imageOverflow) ? (noteTextCondition - imageOverflow) : 
+                  noteTextCondition
+              )}
             />
         </div>
         {showCaption && (
@@ -427,14 +439,14 @@ export default function ImageComponent({
             </LexicalNestedComposer>
           </div>
         )}
-        {(resizable && $isNodeSelection(selection)) && (isFocused && currentScreenSize > 640) && (
+        {(resizable && $isNodeSelection(selection)) && (isFocused && currentScreenSize.width > 640) && (
           <ImageResizer
             showCaption={showCaption}
             setShowCaption={setShowCaption}
             editor={editor}
             buttonRef={buttonRef}
             imageRef={imageRef}
-            maxWidth={!noteExpanded?.expanded ? currentScreenSize - 495 : currentScreenSize - 58}
+            maxWidth={!noteExpanded?.expanded ? currentScreenSize.width - 495 : currentScreenSize.width - 58}
             onResizeStart={onResizeStart}
             onResizeEnd={onResizeEnd}
             captionsEnabled={captionsEnabled}

@@ -51,6 +51,7 @@ import YouTubePlugin from "../../plugins/YouTubePlugin";
 import { UseFormRegister, FieldValues } from "react-hook-form";
 
 import { ExpandedCtx } from "../../../../../../context/NoteExpandedCtx";
+import { UserDataCtx } from "../../../../../../context/UserDataContext";
 
 import TitleInput from "./Title";
 import BottomBar from "./BottomBar";
@@ -71,6 +72,7 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
     const { historyState } = useSharedHistoryContext();
 
     const noteExpanded = useContext(ExpandedCtx);
+    const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
 
     const [titleFocused, setTitleFocused] = useState(false);
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
@@ -98,6 +100,9 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
     const disableToolbar = () => setTitleFocused(true);
 
     const editorHeight = currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65;
+
+    const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
+    const noteTextCondition = TweentyPercentMarginOfScreen < 1001 ? TweentyPercentMarginOfScreen : 1000;
 
     return (
       <div className="!h-screen !w-screen">
@@ -138,21 +143,27 @@ const Editor = forwardRef(({ save, register, saveSpinner, note }: Props, ref: an
                       </div>
                       <div
                         onClick={() => setTitleFocused(false)}
-                        className="xxs:mb-5 mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col"
-                        style={!noteExpanded?.expanded ? { width: currentScreenSize.width - 430 } : { width: currentScreenSize.width }}
+                        className="xxs:mb-5 mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col mx-auto"
+                        style={
+                          !noteExpanded?.expanded ? { 
+                            width: noteTextExpanded && currentScreenSize.width > 1430 ? noteTextCondition : currentScreenSize.width - 430 
+                          } : { 
+                            width: noteTextExpanded && currentScreenSize.width > 1000 ? noteTextCondition : currentScreenSize.width 
+                          }
+                        }
                       >
                         <div className="mb-20">
                           <ContentEditable />
                         </div>
-                        <div className="xxs:mt-20">
-                          <BottomBar 
-                            note={note}
-                            save={save}
-                            editor={editor}
-                            saveSpinner={saveSpinner}
-                            currentScreenSize={currentScreenSize.width}
-                          />
-                        </div>
+                      </div>
+                      <div className="xxs:mt-20">
+                        <BottomBar 
+                          note={note}
+                          save={save}
+                          editor={editor}
+                          saveSpinner={saveSpinner}
+                          currentScreenSize={currentScreenSize.width}
+                        />
                       </div>
                     </div>
                   </div>

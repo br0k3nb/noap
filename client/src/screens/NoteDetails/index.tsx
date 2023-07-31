@@ -15,6 +15,10 @@ import {
   BsFillPinAngleFill
 } from "react-icons/bs";
 
+import { FiAlignJustify } from 'react-icons/fi';
+
+import { RiTextSpacing } from 'react-icons/ri';
+
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical";
@@ -274,7 +278,7 @@ export default function NoteDetails({
                   >
                     <label
                       htmlFor="my-modal-4"
-                      className="text-red-600 cursor-pointer"
+                      className="text-red-500/90 cursor-pointer"
                     >
                       <div className="flex flex-row space-x-2 ">
                         <p className="py-1 text-xs uppercase tracking-widest">

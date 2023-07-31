@@ -59,10 +59,10 @@ export default function SignIn() {
         }
       } = await api.post("/sign-in/google", { email, name, id });
 
-      toastAlert({ icon: "success", title: `${message}`, timer: 2000 });
+      toastAlert({ icon: "success", title: message, timer: 2000 });
       setSvgLoader("");
 
-      localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({token}));
+      localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({ token }));
       setUserDataContext({
         _id,
         message, 
