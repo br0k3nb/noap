@@ -52,7 +52,7 @@ export default {
                             $group: {
                                 _id: "$_id",
                                 author: { $first: "$author" },
-                                title: { $first: "$title"},
+                                name: { $first: "$name"},
                                 body: { $first: "$body"},
                                 image: { $first: "$image" },
                                 state: { $first: "$state" },
@@ -210,11 +210,11 @@ export default {
     },
     async add(req , res) {
         try {
-            const { title, body, image, state, author, settings } = req.body;
+            const { name, body, image, state, author, settings } = req.body;
 
             const { _id } = await NoteState.create({ state });
             const { _id: noteId } = await Note.create({
-                title, 
+                name, 
                 body,
                 image,
                 state: _id,
@@ -334,6 +334,18 @@ export default {
             });  
 
             res.status(200).json({ message: `${condition ? "Note pinned!" : "Note unpinned!"}` });
+        } catch (err) {
+            res.status(400).json({ message: 'Error, please try again later!' });
+        }
+    },
+    async renameNote(req, res) {
+        try {
+            const { id } = req.params;
+            const { name } = req.body;
+            
+            await Note.findByIdAndUpdate({ _id: id }, { name });  
+
+            res.status(200).json({ message: "Updated!" });
         } catch (err) {
             res.status(400).json({ message: 'Error, please try again later!' });
         }
