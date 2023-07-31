@@ -21,6 +21,7 @@ router.post("/2fa/qrcode", verifyUser, UserController.generate2FAQrcode);
 router.post("/verify-token", verifyUser, UserController.verifyIfTokenIsValid);
 router.patch("/convert/account/email", UserController.convertIntoNormalAccount);
 router.patch("/convert/account/google", UserController.convertIntoGoogleAccount);
+router.post("/settings/note-text/:id", verifyUser, UserController.noteTextExpandedOrCondensed);
 router.post("/settings/pin-notes-folder/:id", verifyUser, UserController.showPinnedNotesInFolder);
 
 //Notes

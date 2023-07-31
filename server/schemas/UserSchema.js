@@ -34,6 +34,10 @@ export default new mongoose.Schema({
             type: Boolean,
             required: false
         },
+        noteTextExpanded: {
+            type: Boolean,
+            required: true
+        },
         language: {
             type: String,
             required: false

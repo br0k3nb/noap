@@ -411,7 +411,34 @@ export default {
             const { id } = res.params;
             const { condition } = res.body;
 
-            await User.findByIdAndUpdate({ _id: id }, { settings: { showPinnedNotesInFolder: condition } });
+            const getUserData = await User.findById(id);
+
+            await User.findByIdAndUpdate({ _id: id }, {
+                settings: {
+                    ...getUserData.settings,
+                    showPinnedNotesInFolder: condition
+                }
+            });
+
+            return req.status(200).json({ message: "Updated!" });
+        } catch (err) {
+            console.log(err);
+            req.status(400).json({ message: err });
+        }
+    },
+    async noteTextExpandedOrCondensed(res, req) {
+        try {
+            const { id } = res.params;
+            const { condition } = res.body;
+
+            const getUserData = await User.findById(id);
+
+            await User.findByIdAndUpdate({ _id: id }, {
+                settings: {
+                    ...getUserData.settings,
+                    noteTextExpanded: condition
+                }
+            });
 
             return req.status(200).json({ message: "Updated!" });
         } catch (err) {
