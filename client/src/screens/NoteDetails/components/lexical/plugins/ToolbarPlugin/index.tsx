@@ -375,33 +375,33 @@ function FontDropDown({
   );
 }
 
-export default function ToolbarPlugin({ titleFocused }: any) {
-  const [ editor ] = useLexicalComposerContext();
+export default function ToolbarPlugin() {
+  const [editor] = useLexicalComposerContext();
   
-  const [ modal, showModal ] = useModal();
+  const [modal, showModal] = useModal();
 
-  const [ activeEditor, setActiveEditor ] = useState(editor);
-  const [ blockType, setBlockType ] = useState<keyof typeof blockTypeToBlockName>('paragraph');
-  const [ selectedElementKey, setSelectedElementKey ] = useState<NodeKey | null>(null);
-  const [ fontSize, setFontSize ] = useState<string>('14px');
-  const [ fontColor, setFontColor ] = useState<string>('#000');
-  const [ bgColor, setBgColor ] = useState<string>('#374151');
-  const [ fontFamily, setFontFamily ] = useState<string>('Arial');
-  const [ isLink, setIsLink ] = useState(false);
-  const [ isBold, setIsBold ] = useState(false);
-  const [ isItalic, setIsItalic ] = useState(false);
-  const [ isUnderline, setIsUnderline ] = useState(false);
-  const [ isStrikethrough, setIsStrikethrough ] = useState(false);
-  const [ isSubscript, setIsSubscript ] = useState(false);
-  const [ isSuperscript, setIsSuperscript ] = useState(false);
-  const [ isCode, setIsCode ] = useState(false);
-  const [ canUndo, setCanUndo ] = useState(false);
-  const [ canRedo, setCanRedo ] = useState(false);
-  const [ isRTL, setIsRTL ] = useState(false);
-  const [ codeLanguage, setCodeLanguage ] = useState<string>('');
-  const [ isEditable, setIsEditable ] = useState(!titleFocused ? () => editor.isEditable() : false);
-  const [ screenSize, setScreenSize ] = useState<number>(0);
-  const [ fontSizeInputText, setFontSizeInputText ] = useState(14);
+  const [activeEditor, setActiveEditor] = useState(editor);
+  const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>('paragraph');
+  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
+  const [fontSize, setFontSize] = useState<string>('14px');
+  const [fontColor, setFontColor] = useState<string>('#000');
+  const [bgColor, setBgColor] = useState<string>('#374151');
+  const [fontFamily, setFontFamily] = useState<string>('Roboto');
+  const [isLink, setIsLink] = useState(false);
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isSubscript, setIsSubscript] = useState(false);
+  const [isSuperscript, setIsSuperscript] = useState(false);
+  const [isCode, setIsCode] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+  const [isRTL, setIsRTL] = useState(false);
+  const [codeLanguage, setCodeLanguage] = useState<string>('');
+  const [isEditable, setIsEditable] = useState(() => editor.isEditable());
+  const [screenSize, setScreenSize] = useState<number>(0);
+  const [fontSizeInputText, setFontSizeInputText] = useState(14);
 
   const prevNodeKey = useRef<null | string>(null);
 
@@ -608,8 +608,8 @@ export default function ToolbarPlugin({ titleFocused }: any) {
 
   return (
     <div 
-      className="toolbar !h-[2.50rem] mt-[0.31rem] !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
-      style={screenSize !== 0 ? {width: screenSize}: undefined}
+      className="toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
+      style={screenSize !== 0 ? { width: screenSize }: undefined}
     >
       <button
         disabled={!canUndo || !isEditable}

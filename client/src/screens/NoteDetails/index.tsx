@@ -1,11 +1,11 @@
-import { useState, useContext, Dispatch, SetStateAction } from "react";
-import { useForm, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend } from "react-hook-form";
+import { useState, useEffect, useContext, Dispatch, SetStateAction } from "react";
+import { useForm, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend, FieldValues } from "react-hook-form";
 
 import {
   AiOutlineFullscreen,
   AiOutlineFullscreenExit,
   AiFillDelete,
-  AiOutlineEllipsis,
+  AiOutlineEllipsis
 } from "react-icons/ai";
 import {
   BsTagsFill,
@@ -15,9 +15,7 @@ import {
   BsFillPinAngleFill
 } from "react-icons/bs";
 
-import { FiAlignJustify } from 'react-icons/fi';
-
-import { RiTextSpacing } from 'react-icons/ri';
+import { BiEditAlt } from 'react-icons/bi';
 
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
@@ -29,6 +27,8 @@ import { NoteCtx } from "../../context/SelectedNoteCtx";
 import { toastAlert } from "../../components/Alert/Alert";
 import NoteExpandedCtx from "../../context/NoteExpandedCtx";
 import ToggleBottomBarContext from "../../context/ToggleBottomBar";
+
+import Modal from "../../components/Modal";
 
 import noNoteSelected from "../../assets/select-note.svg";
 
@@ -70,11 +70,16 @@ export default function NoteDetails({
   const [open, setOpen] = useState(false);
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [openLabelModal, setOpenlabelModal] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+  const [renameNote, setRenameNote] = useState(false);
 
-  const { register, reset, handleSubmit} = useForm();
+  const { register, reset, handleSubmit } = useForm();
+  const { register: registerNoteName, reset: resetNoteName, handleSubmit: handleSubmitNoteName } = useForm();
 
   const note = notes.find(({ _id }) => _id === selectedNote?.selectedNote);
   const pinNote = pinNotes.find(({ _id }) => _id === selectedNote?.selectedNote);
+
+  useEffect(() => { resetNoteName({ name: note ? (note?.name) : (pinNote?.name) }) }, [note, pinNote]);
 
   const removeNote = () => {
     selectedNote?.setSelectedNote(null);
@@ -150,12 +155,28 @@ export default function NoteDetails({
     }
   };
 
-  const hours = (date: string) => moment(date).format("LT");
+  // const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
 
   const lastUpdated = () => {
     if (!note?.updatedAt) return note?.createdAt;
     return note?.updatedAt;
+  };
+
+  const handleRenameNote = async (data: FieldValues) => {
+    const noteId = note ? note._id : pinNote?._id;
+    setShowLoader(true);
+
+    try {
+      await api.post(`/note/rename/${noteId}`, { name: data.name });
+      await fetchNotes();
+
+      toastAlert({ icon: "success", title: "Updated!", timer: 2000 });
+    } catch (err: any) {
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    } finally {
+      setShowLoader(false);
+    }
   };
 
   return (
@@ -167,7 +188,7 @@ export default function NoteDetails({
     >
       {selectedNote?.selectedNote !== null && (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
-          <div className="flex flex-row mb-1"> 
+          <div className="flex flex-row mb-1 mt-1"> 
             <div
               className="mr-2 tooltip tooltip-right !text-gray-200"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
@@ -272,6 +293,23 @@ export default function NoteDetails({
                     </label>
                   </button>
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                  <button
+                    className="active:!bg-gray-600 hover:!bg-gray-700"
+                    onClick={() => setRenameNote(!renameNote)}
+                  >
+                    <label
+                      htmlFor="my-modal-4"
+                      className="text-gray-300 cursor-pointer"
+                    >
+                      <div className="flex flex-row space-x-2">
+                        <p className="py-1 text-xs uppercase tracking-widest">
+                          Rename note
+                        </p>
+                        <BiEditAlt size={22} className="pt-[3px]" />
+                      </div>
+                    </label>
+                  </button>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <a
                     className="active:!bg-gray-600 hover:!bg-gray-700"
                     onClick={() => setOpen(true)}
@@ -315,10 +353,45 @@ export default function NoteDetails({
             register={register}
             handleSubmit={handleSubmit}
           />
+          <Modal
+            open={renameNote}
+            setOpen={setRenameNote}
+            title="Rename note"
+            options={{
+              titleWrapperClassName: "!px-6",
+              modalWrapperClassName: "px-0 w-[25rem]",
+              showCloseTooltip: true
+            }}
+          >
+            <div className="px-6">
+              <form onSubmit={handleSubmitNoteName(handleRenameNote)} className="mt-5">
+                <label 
+                  htmlFor="notename"
+                  className="text-[15px] tracking-widest uppercase ml-1"
+                >
+                  Note name
+                </label>
+                <input 
+                  id="notename"
+                  className="sign-text-inputs bg-stone-900 text-gray-300 placeholder:text-gray-300 mt-2 mb-3"
+                  type="text"
+                  {...registerNoteName("name")}
+                />
+                <button className="my-3 text-gray-300 rounded-full bg-green-700 hover:bg-green-600 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full">
+                  {showLoader ? (<p className="animate-pulse text-gray-300">Loading...</p>) : "Save name"}
+                </button>
+              </form>
+            </div>
+          </Modal>
           <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
+            <div className="flex flex-row">
+              <p className="px-2 text-sm xxs:text-[10px] xxs:px-0 text-gray-300">
+                Editing now {" "} - {note ? note?.name?.slice(0, 24) : pinNote?.name?.slice(0, 24)}
+              </p>
+            </div>
+            <div className="mx-1 h-[21px] w-[1px] border border-gray-500"></div>
             <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
-              Last updated on {days(lastUpdated() as string)} at{" "}
-              {hours(lastUpdated() as string)}
+              Last updated on {days(lastUpdated() as string)}
             </p>
           </div>
         </div>

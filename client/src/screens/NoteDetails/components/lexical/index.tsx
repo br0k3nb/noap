@@ -19,7 +19,7 @@ import { NoteCtx } from "../../../../context/SelectedNoteCtx";
 
 import api from "../../../../services/api";
 
-import Editor from "./components/Editor/Editor";
+import Editor from "./components/Editor";
 
 type Props = { 
   notes: FieldArrayWithId<Notes, "note", "id">[];
@@ -47,8 +47,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
 
       let imageSrc = '';
       
-      const title = editorRef?.current.firstChild.children[0].childNodes[0].children[0].value;
-      const body = editorRef?.current.firstChild.children[1].innerHTML;
+      const body = editorRef?.current.firstChild.children[0].innerHTML;
 
       const findImages = body.match(/<img[^>]+>/gm);
 
@@ -74,7 +73,6 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
 
           const { data: { message } } = await api.patch("/edit",
             {
-              title,
               body: removeBottomBarText ? removeBottomBarText.slice(0,136) : '',
               image: imageSrc,
               state: resultState.state,
@@ -105,12 +103,10 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
   };
 
   const UpdatePlugin = () => {
-    const [ editor ] = useLexicalComposerContext();
+    const [editor] = useLexicalComposerContext();
 
     if(lastSelectedNotes.current !== noteContext?.selectedNote) {
       setTimeout(() => {
-        reset({ title: note ? note?.title : pinNote?.title });
-
         const getState = () => {
           if(note) return note.state.state;
           else return pinNote?.state.state;
@@ -134,8 +130,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
               <Editor 
                 note={note ? note : pinNote} 
                 ref={editorRef} 
-                save={saveNote} 
-                register={register} 
+                save={saveNote}
                 saveSpinner={saveSpinner} 
               />
             </div>

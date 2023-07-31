@@ -86,8 +86,9 @@
   color: rgb(224, 224, 224);
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
-  padding: 8px 8px 8px 46px;
-  line-height: 1.53;
+  padding: 8px 0px 8px 46px !important;
+  padding-right: 50px !important;
+  line-height: 1.60;
   font-size: 13px;
   tab-size: 2;
   white-space: pre;
@@ -372,6 +373,7 @@
 
 .PlaygroundEditorTheme__tokenComment {
   color: slategray;
+  white-space: normal;
 }
 .PlaygroundEditorTheme__tokenPunctuation {
   color: #f1f1f1;

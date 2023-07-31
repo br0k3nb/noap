@@ -58,7 +58,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 </div>
                             )}
                             {showCloseTooltip ? (
-                                <div className="tooltip tooltip-bottom" data-tip="Close">
+                                <div className="tooltip tooltip-bottom uppercase tracking-wide before:!text-[11.5px]" data-tip="Close">
                                     <label 
                                         htmlFor="my-modal-3"
                                         className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}

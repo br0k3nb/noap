@@ -2,7 +2,7 @@ declare type Notes = {
     readonly note: {
       _id: string;
       userId: string;
-      title?: string;
+      name?: string;
       body: string;
       image?: string;
       state: {

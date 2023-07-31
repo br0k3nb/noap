@@ -16,7 +16,8 @@ module.exports = {
     },
     extend: {
       animation: {
-        'custom-spin': 'spin 1s cubic-bezier(0.25, 0.1, 0.25, 1.0) ',
+        'custom-spin': 'spin 1s cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+        'custom-pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1)'
       },
       lineClamp: {
         7: "7",

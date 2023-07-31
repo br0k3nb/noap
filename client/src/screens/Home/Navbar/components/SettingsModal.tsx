@@ -76,7 +76,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                     ...prevUserData,
                     settings: {
                         ...prevUserData.settings,
-                        noteTextExpanded: !noteTextExpanded
+                        noteTextExpanded: noteTextExpanded ? false : true
                     }
                 }
             });

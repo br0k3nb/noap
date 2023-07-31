@@ -257,7 +257,7 @@ type CardsProps = {
 };
 
 export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, customWidth}: CardsProps) {
-    const { image, labels, _id, body, createdAt, updatedAt, title } = notes;
+    const { image, labels, _id, body, createdAt, updatedAt, name: noteName } = notes;
     const { color, type, fontColor, name } = labels[0] || {};
 
     return (
@@ -273,7 +273,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}
             >
-                <p className="text-lg px-4 mb-3 truncate">{title}</p>
+                <p className="text-lg px-4 mb-3 truncate">{noteName}</p>
                 <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
                     <div 
                         className={`

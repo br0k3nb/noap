@@ -1,19 +1,19 @@
 import { useState, useContext } from "react";
 import { AiFillSave } from "react-icons/ai";
 import { BsXLg } from 'react-icons/bs';
-import { MdDeleteForever, MdOutlineSettings, MdNewLabel } from "react-icons/md";
+import { MdDeleteForever, MdOutlineSettings } from "react-icons/md";
 
 import { LexicalEditor, EditorState } from "lexical";
 
-import { RefetchCtx } from "../../../../../../context/RefetchCtx";
-import { ExpandedCtx } from "../../../../../../context/NoteExpandedCtx";
-import { ToggleBottomBarCtx } from "../../../../../../context/ToggleBottomBar";
+import { RefetchCtx } from "../../../../../context/RefetchCtx";
+import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import { ToggleBottomBarCtx } from "../../../../../context/ToggleBottomBar";
 
-import { toastAlert } from "../../../../../../components/Alert/Alert";
-import ConfirmationModal from "../../../../../../components/ConfirmationModal";
-import SvgLoader from "../../../../../../components/SvgLoader";
+import { toastAlert } from "../../../../../components/Alert/Alert";
+import ConfirmationModal from "../../../../../components/ConfirmationModal";
+import SvgLoader from "../../../../../components/SvgLoader";
 
-import api from "../../../../../../services/api";
+import api from "../../../../../services/api";
 
 type BottomBarProps = {
     save: (currentState: EditorState) => Promise<void>;

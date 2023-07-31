@@ -153,7 +153,7 @@ export default function Home(): JSX.Element {
 
     try {
       await api.post(`/add`, {
-          title: "Untitled",
+          name: "Unnamed note",
           body: "",
           labels: [],
           image: "",
