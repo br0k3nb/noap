@@ -107,7 +107,7 @@ export default {
                             $group: {
                                 _id: "$_id",
                                 author: { $first: "$author" },
-                                title: { $first: "$title"},
+                                name: { $first: "$name"},
                                 body: { $first: "$body"},
                                 image: { $first: "$image" },
                                 state: { $first: "$state" },
