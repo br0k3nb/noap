@@ -51,7 +51,7 @@ import ImageResizer from "../ui/ImageResizer";
 import Placeholder from "../ui/Placeholder";
 import { $isImageNode } from "./ImageNode";
 
-import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import { NoteSettingsCtx } from "../../../../../context/NoteSettingsCtx";
 import { UserDataCtx } from "../../../../../context/UserDataContext";
 
 import Modal from "../../../../../components/Modal";
@@ -295,7 +295,7 @@ export default function ImageComponent({
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = isSelected || isResizing;
 
-  const noteExpanded = useContext(ExpandedCtx);
+  const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
   const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
 
   const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
@@ -403,7 +403,7 @@ export default function ImageComponent({
               width={width}
               height={height}
               maxWidth={
-                !noteExpanded?.expanded ? (
+                !expanded ? (
                   currentScreenSize.width > 1430 && (noteTextExpanded && !imageOverflow) ? noteTextCondition : 
                   currentScreenSize.width > 1430 && (noteTextExpanded && imageOverflow) ? noteTextCondition - imageOverflow :
                   (!noteTextExpanded && imageOverflow) ? currentScreenSize.width - 580 : 
@@ -446,7 +446,7 @@ export default function ImageComponent({
             editor={editor}
             buttonRef={buttonRef}
             imageRef={imageRef}
-            maxWidth={!noteExpanded?.expanded ? currentScreenSize.width - 495 : currentScreenSize.width - 58}
+            maxWidth={!expanded ? currentScreenSize.width - 495 : currentScreenSize.width - 58}
             onResizeStart={onResizeStart}
             onResizeEnd={onResizeEnd}
             captionsEnabled={captionsEnabled}
