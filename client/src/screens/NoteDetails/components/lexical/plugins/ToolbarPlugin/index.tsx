@@ -65,7 +65,7 @@ import checkIcon from "../../images/icons/square-check.svg";
 import quoteIcon from "../../images/icons/chat-square-quote.svg";
 import codeBlockIcon from "../../images/icons/code.svg";
 
-import { ExpandedCtx } from "../../../../../../context/NoteExpandedCtx";
+import { NoteSettingsCtx } from "../../../../../../context/NoteSettingsCtx";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -564,7 +564,7 @@ export default function ToolbarPlugin() {
     [activeEditor, selectedElementKey],
   );
 
-  const noteIsExpanded = useContext(ExpandedCtx);
+  const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
   const reg = new RegExp(/^\d+/, "gi");
   const getFontSize = reg.exec(fontSize);
 
@@ -603,7 +603,7 @@ export default function ToolbarPlugin() {
   }
 
   addEventListener("resize", () => setTimeout(() => {
-    setScreenSize(!noteIsExpanded?.expanded ? window.outerWidth - 440 : 0)
+    setScreenSize(!expanded ? window.outerWidth - 440 : 0)
   }, 500));
 
   return (

@@ -1,6 +1,6 @@
 import { ReactNode, useContext } from "react";
 
-import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import { NoteSettingsCtx } from "../../../../../context/NoteSettingsCtx";
 
 import "./Placeholder.css";
 
@@ -15,13 +15,13 @@ export default function Placeholder({
   className,
   customRef
 }: Props): JSX.Element {
-  const expandedCtx = useContext(ExpandedCtx);
+  const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
   const editorDiv = customRef.current && customRef.current.getBoundingClientRect();
 
   return (
     <div 
       className={className ||  `Placeholder__root text-gray-400 `} 
-      style={!expandedCtx?.expanded ? { 
+      style={!expanded ? { 
           left: editorDiv?.x && editorDiv?.x - 410
         } : { 
           left: editorDiv?.x && editorDiv?.x + 30

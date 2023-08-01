@@ -48,7 +48,7 @@ import { CAN_USE_DOM } from "../shared/canUseDOM";
 import TwitterPlugin from "../plugins/TwitterPlugin";
 import YouTubePlugin from "../plugins/YouTubePlugin";
 
-import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import { NoteSettingsCtx } from "../../../../../context/NoteSettingsCtx";
 import { UserDataCtx } from "../../../../../context/UserDataContext";
 
 import BottomBar from "./BottomBar";
@@ -67,7 +67,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
-    const noteExpanded = useContext(ExpandedCtx);
+    const { noteSettings: { expanded, readMode } } = useContext(NoteSettingsCtx) as any;
     const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
 
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
@@ -93,6 +93,11 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       return () => window.removeEventListener("resize", updateViewPortWidth);
     }, [isSmallWidthViewport]);
 
+    useEffect(() => {
+      if(readMode) editor.setEditable(false);
+      else editor.setEditable(true);
+    }, [readMode]);
+
     const editorHeight = currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65;
 
     const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
@@ -100,7 +105,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
     return (
       <div className="!h-screen !w-screen">
-        <ToolbarPlugin />
+        {!readMode && <ToolbarPlugin />}
         <div className="editor-container plain-text">
           <DragDropPaste />
           <AutoFocusPlugin />
@@ -117,7 +122,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                   <div className="editor" ref={ref}>
                     <div
                       className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden"                     
-                      style={!noteExpanded?.expanded ? { 
+                      style={!expanded ? { 
                           width: currentScreenSize.width - 440,
                           height: editorHeight
                         } : {
@@ -127,9 +132,9 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                       }  
                     >
                       <div                        
-                        className="xxs:mb-5 mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col mx-auto"
+                        className="mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col mx-auto"
                         style={
-                          !noteExpanded?.expanded ? { 
+                          !expanded ? { 
                             width: noteTextExpanded && currentScreenSize.width > 1430 ? noteTextCondition : currentScreenSize.width - 430 
                           } : { 
                             width: noteTextExpanded && currentScreenSize.width > 1000 ? noteTextCondition : currentScreenSize.width 
@@ -140,15 +145,17 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                           <ContentEditable />
                         </div>
                       </div>
-                      <div className="xxs:mt-20">
-                        <BottomBar 
-                          note={note}
-                          save={save}
-                          editor={editor}
-                          saveSpinner={saveSpinner}
-                          currentScreenSize={currentScreenSize.width}
-                        />
-                      </div>
+                      {!readMode && (
+                        <div className="xxs:mt-20">
+                          <BottomBar 
+                            note={note}
+                            save={save}
+                            editor={editor}
+                            saveSpinner={saveSpinner}
+                            currentScreenSize={currentScreenSize.width}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 }

@@ -28,7 +28,7 @@ import "../../styles/themes/light.css";
 export default function Home(): JSX.Element {
   const { userData: { _id } } = useContext(UserDataCtx) as any;
 
-  const [screenSize, setScreenSize] = useState<any>({width: window.innerWidth});
+  const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);

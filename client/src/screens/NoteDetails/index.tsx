@@ -5,7 +5,9 @@ import {
   AiOutlineFullscreen,
   AiOutlineFullscreenExit,
   AiFillDelete,
-  AiOutlineEllipsis
+  AiOutlineEllipsis,
+  AiFillRead,
+  AiFillEdit
 } from "react-icons/ai";
 import {
   BsTagsFill,
@@ -15,7 +17,7 @@ import {
   BsFillPinAngleFill
 } from "react-icons/bs";
 
-import { BiEditAlt } from 'react-icons/bi';
+import { BiRename } from 'react-icons/bi';
 
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
@@ -25,8 +27,7 @@ import api from "../../services/api";
 import { RefetchCtx } from "../../context/RefetchCtx";
 import { NoteCtx } from "../../context/SelectedNoteCtx";
 import { toastAlert } from "../../components/Alert/Alert";
-import NoteExpandedCtx from "../../context/NoteExpandedCtx";
-import ToggleBottomBarContext from "../../context/ToggleBottomBar";
+import NoteSettingsContext from "../../context/NoteSettingsCtx";
 
 import Modal from "../../components/Modal";
 
@@ -50,6 +51,13 @@ type Props = {
   expanded: boolean;
 };
 
+const default_note_settings = {
+  showBottomBar: true,
+  expanded: false,
+  readMode: false,
+  shared: false
+};
+
 export default function NoteDetails({
   notes,
   deleteNote,
@@ -64,38 +72,120 @@ export default function NoteDetails({
   labelIsFetching,
   setPinnedNotesPage
 }: Props) {
-  const selectedNote = useContext(NoteCtx);
+  const { selectedNote, setSelectedNote } = useContext(NoteCtx) || {};
   const { fetchNotes } = useContext(RefetchCtx) as any;
 
   const [open, setOpen] = useState(false);
-  const [showBottomBar, setShowBottomBar] = useState(true);
-  const [openLabelModal, setOpenlabelModal] = useState(false);
+  const [readMode, setReadMode] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const [renameNote, setRenameNote] = useState(false);
+  const [showBottomBar, setShowBottomBar] = useState(true);
+  const [openLabelModal, setOpenlabelModal] = useState(false);
+  const [noteSettings, setNoteSettings] = useState(default_note_settings);
 
   const { register, reset, handleSubmit } = useForm();
   const { register: registerNoteName, reset: resetNoteName, handleSubmit: handleSubmitNoteName } = useForm();
 
-  const note = notes.find(({ _id }) => _id === selectedNote?.selectedNote);
-  const pinNote = pinNotes.find(({ _id }) => _id === selectedNote?.selectedNote);
+  const note = notes.find(({ _id }) => _id === selectedNote);
+  const pinNote = pinNotes.find(({ _id }) => _id === selectedNote);
 
   useEffect(() => { resetNoteName({ name: note ? (note?.name) : (pinNote?.name) }) }, [note, pinNote]);
 
+  const controlRKeyPressListener = (e: any) => {
+    if ((e.keyCode == 82 && e.ctrlKey) && selectedNote) {
+      e.preventDefault();
+      handleToggleReadMode();
+    }
+  };
+
+  document.onkeydown = controlRKeyPressListener;
+  
   const removeNote = () => {
-    selectedNote?.setSelectedNote(null);
+    if(setSelectedNote) setSelectedNote(null);
     setExpanded(false);
     setOpen(false);
 
-    deleteNote(selectedNote?.selectedNote as string);
+    deleteNote(selectedNote as string);
     remove(notes.indexOf(note as FieldArrayWithId<Notes, "note", "id">));
     setTimeout(() => fetchNotes(), 500);
   };
 
   const handleExpand = () => {
-    if (window.outerWidth <= 1030 && selectedNote?.selectedNote !== null) {
-      selectedNote?.setSelectedNote(null);
+    if (window.outerWidth <= 1030 && selectedNote !== null) {
+      if(readMode) {
+        document.exitFullscreen();
+        handleToggleBottomBar();
+        
+        setReadMode(!readMode);
+        setNoteSettings((prevNoteSettings) => {
+          return {
+            ...prevNoteSettings,
+            readMode: !readMode
+          }
+        });
+      }
+      if(setSelectedNote) setSelectedNote(null);
+
       setExpanded(false);
-    } else setExpanded(!expanded);
+      setNoteSettings((prevNoteSettings) => {
+        return {
+          ...prevNoteSettings,
+          expanded: false
+        }
+      });
+    } else { 
+      if(readMode) {
+        document.exitFullscreen();
+        handleToggleBottomBar();
+        
+        setReadMode(!readMode);
+        setNoteSettings((prevNoteSettings) => {
+          return {
+            ...prevNoteSettings,
+            readMode: !readMode
+          }
+        });
+      }
+
+      setExpanded(!expanded);
+      setNoteSettings((prevNoteSettings) => {
+        return {
+          ...prevNoteSettings,
+          expanded: !expanded
+        }
+      });
+    };
+  };
+
+  const handleToggleBottomBar = () => {
+    setShowBottomBar(!showBottomBar);
+    setNoteSettings((prevNoteSettings) => {
+      return {
+        ...prevNoteSettings,
+        showBottomBar: !showBottomBar
+      }
+    });
+  };
+
+  const handleToggleReadMode = () => {
+    setReadMode(!readMode);
+    setNoteSettings((prevNoteSettings) => {
+      return {
+        ...prevNoteSettings,
+        readMode: !readMode
+      }
+    });
+
+    if(!readMode) {      
+      document.getElementById("root")?.requestFullscreen();
+      if(!expanded) handleExpand();
+      if(showBottomBar) handleToggleBottomBar();
+
+    } else {
+      document.exitFullscreen();
+      if(expanded && window.outerWidth > 1030) handleExpand();
+      if(!showBottomBar) handleToggleBottomBar();
+    }
   };
 
   const handleOpenLabelModal = () => {
@@ -186,7 +276,7 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {selectedNote?.selectedNote !== null && (
+      {selectedNote !== null && (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
@@ -261,6 +351,23 @@ export default function NoteDetails({
                     </label>
                   </a>
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                  <button
+                    className="active:!bg-gray-600 hover:!bg-gray-700"
+                    onClick={() => handleToggleReadMode()}
+                  >
+                    <label
+                      htmlFor="my-modal-4"
+                      className="text-gray-300 cursor-pointer"
+                    >
+                      <div className="flex flex-row space-x-2">
+                        <p className="py-1 text-xs uppercase tracking-widest">
+                          {readMode ? "Edit mode" : "Read mode"}
+                        </p>
+                        {!readMode ? <AiFillRead size={22} className="pt-[3px]" /> : <AiFillEdit size={22} className="pt-[3px]" />}
+                      </div>
+                    </label>
+                  </button>
+                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <a className="cursor-not-allowed active:!bg-transparent">
                     <label htmlFor="my-modal-4" className="text-gray-600">
                       <div className="flex flex-row space-x-2 cursor-not-allowed">
@@ -274,7 +381,7 @@ export default function NoteDetails({
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <button
                     className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => setShowBottomBar(showBottomBar ? false : true)}
+                    onClick={() => handleToggleBottomBar()}
                   >
                     <label
                       htmlFor="my-modal-4"
@@ -305,7 +412,7 @@ export default function NoteDetails({
                         <p className="py-1 text-xs uppercase tracking-widest">
                           Rename note
                         </p>
-                        <BiEditAlt size={22} className="pt-[3px]" />
+                        <BiRename size={22} className="pt-[2px]" />
                       </div>
                     </label>
                   </button>
@@ -349,7 +456,7 @@ export default function NoteDetails({
             setChecked={setOpenlabelModal}
             isFetching={labelIsFetching}
             labels={labels}
-            selectedNote={selectedNote?.selectedNote}
+            selectedNote={selectedNote}
             register={register}
             handleSubmit={handleSubmit}
           />
@@ -386,10 +493,10 @@ export default function NoteDetails({
           <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
             <div className="flex flex-row">
               <p className="px-2 text-sm xxs:text-[10px] xxs:px-0 text-gray-300">
-                Editing now {" "} - {note ? note?.name?.slice(0, 24) : pinNote?.name?.slice(0, 24)}
+                {!readMode ? "Editing" : "Reading"} - {note ? note?.name?.slice(0, 24) : pinNote?.name?.slice(0, 24)}
               </p>
             </div>
-            <div className="mx-1 h-[21px] w-[1px] border border-gray-500"></div>
+            <div className="mx-1 h-[21px] xxs:!h-[13.5px] xxs:mt-[3px] xxs:mx-2 w-[1px] border border-transparent border-r-gray-500" />
             <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
               Last updated on {days(lastUpdated() as string)}
             </p>
@@ -397,16 +504,14 @@ export default function NoteDetails({
         </div>
       )}
 
-      {selectedNote?.selectedNote !== null ? (
+      {selectedNote !== null ? (
         <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
-          <NoteExpandedCtx expanded={expanded} setExpanded={setExpanded}>
-            <ToggleBottomBarContext
-              setShowBottomBar={setShowBottomBar}
-              showBottomBar={showBottomBar}
+            <NoteSettingsContext
+              noteSettings={noteSettings}
+              setNoteSettings={setNoteSettings}
             >
               <TextEditor notes={notes} pinNotes={pinNotes} />
-            </ToggleBottomBarContext>
-          </NoteExpandedCtx>
+            </NoteSettingsContext>
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center my-auto">

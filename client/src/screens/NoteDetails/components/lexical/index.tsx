@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useContext } from "react";
-import { FieldArrayWithId, useForm } from "react-hook-form";
+import { FieldArrayWithId } from "react-hook-form";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -30,17 +30,15 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
   const lastSelectedNotes = useRef<string | null | undefined>(null);
 
-  const [ saveSpinner, setSaveSpinner ] = useState(false);
-
-  const { reset, register } = useForm({});
+  const [saveSpinner, setSaveSpinner] = useState(false);
   
-  const noteContext = useContext(NoteCtx);
+  const { selectedNote } = useContext(NoteCtx) || {};
   const refetchNoteCtx = useContext(RefetchCtx);
   
-  const note = notes.find(({_id}) => _id === noteContext?.selectedNote);
-  const pinNote = pinNotes.find(({_id}) => _id === noteContext?.selectedNote);
+  const note = notes.find(({_id}) => _id === selectedNote);
+  const pinNote = pinNotes.find(({_id}) => _id === selectedNote);
   
-  useEffect(() => { lastSelectedNotes.current = noteContext?.selectedNote }, [noteContext?.selectedNote]);
+  useEffect(() => { lastSelectedNotes.current = selectedNote }, [selectedNote]);
     
     const saveNote = async (currentState: any) => {
       setSaveSpinner(true);
@@ -76,7 +74,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
               body: removeBottomBarText ? removeBottomBarText.slice(0,136) : '',
               image: imageSrc,
               state: resultState.state,
-              _id: noteContext?.selectedNote,
+              _id: selectedNote,
               stateId: note ?  note?.state._id : pinNote?.state._id
             }
           );
@@ -96,21 +94,19 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
     editorState: undefined,
     namespace: "Noap",
     nodes: [...PlaygroundNodes],
-    onError: (error: Error) => {
-      throw error;
-    },
+    onError: (error: Error) => { throw error },
     theme: PlaygroundEditorTheme,
   };
 
   const UpdatePlugin = () => {
     const [editor] = useLexicalComposerContext();
 
-    if(lastSelectedNotes.current !== noteContext?.selectedNote) {
+    if(lastSelectedNotes.current !== selectedNote) {
       setTimeout(() => {
         const getState = () => {
           if(note) return note.state.state;
           else return pinNote?.state.state;
-        };
+        };        
 
         const editorState = editor.parseEditorState((getState() as string));
         editor.setEditorState(editorState);

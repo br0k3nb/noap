@@ -273,15 +273,15 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}
             >
-                <p className="text-lg px-4 mb-3 truncate">{noteName}</p>
-                <div className={`h-[196px] text-gray-300 flex flex-col px-4 ${image !== '' && "!h-[148px]"}`}>
+                <p className="text-lg px-3 mb-3 truncate">{noteName}</p>
+                <div className={`h-[196px] text-gray-300 flex flex-col px-2 ${image !== '' && "!h-[148px]"}`}>
                     <div 
                         className={`
-                            w-[130px] !mb-1 line-clamp-7
+                            w-[129px] !mb-1 line-clamp-7 pl-1
                             ${!labels.length && image === '' && "!line-clamp-8"}
                             ${labels.length && image !== '' && "!line-clamp-5"}
                             ${!labels.length && image !== '' && "!line-clamp-6"}
-                            ${customWidth && "!w-[113px]"}
+                            ${customWidth && "!w-[122px]"}
                         `}
                     >
                         {body}
@@ -321,7 +321,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                         </div>
                     )}
                 </div>
-                <p className={`text-xs tracking-tighter mt-2 px-4 pb-[0.04rem] xxs:text-[11px] ${customWidth && "!text-[11px]"}`}>
+                <p className={`text-xs tracking-tighter mt-2 px-4 pb-[0.04rem] xxs:text-[11px] ${customWidth && "!px-3 !text-[11px]"}`}>
                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                 </p>
                 {image !== '' && (

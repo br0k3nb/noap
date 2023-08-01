@@ -18,7 +18,7 @@ import {
   SerializedDecoratorBlockNode,
 } from "@lexical/react/LexicalDecoratorBlockNode";
 
-import { ExpandedCtx } from "../../../../../context/NoteExpandedCtx";
+import { NoteSettingsCtx } from '../../../../../context/NoteSettingsCtx';
 
 type YouTubeComponentProps = Readonly<{
   className: Readonly<{
@@ -36,7 +36,7 @@ function YouTubeComponent({
   nodeKey,
   videoID,
 }: YouTubeComponentProps) {
-  const noteContext = useContext(ExpandedCtx);
+  const { noteSettings: { expanded }} = useContext(NoteSettingsCtx) as any;
 
   const [ currentScreenSize, setCurrentScreenSize ] = useState(window.innerWidth);
 
@@ -59,7 +59,7 @@ function YouTubeComponent({
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}
         title="YouTube video"
-        style={{maxWidth: !noteContext?.expanded ? currentScreenSize - 495 : currentScreenSize - 58}}
+        style={{maxWidth: !expanded ? currentScreenSize - 495 : currentScreenSize - 58}}
       />
     </BlockWithAlignableContents>
   );
