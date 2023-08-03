@@ -103,7 +103,9 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
     const noteTextCondition = TweentyPercentMarginOfScreen < 1001 ? TweentyPercentMarginOfScreen : 1000;
 
-    const getNavbar = document.getElementById("pc-navbar");
+    //for some reason, typescript is throwing an error if this code is not set as any.
+    //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
+    const getNavbar = document.getElementById("pc-navbar") as any;
 
     return (
       <div className="!h-screen !w-screen">

@@ -92,7 +92,7 @@ export default function NoteDetails({
   useEffect(() => { resetNoteName({ name: note ? (note?.name) : (pinNote?.name) }) }, [note, pinNote]);
 
   const controlRKeyPressListener = (e: any) => {
-    if ((e.keyCode == 82 && e.ctrlKey) && selectedNote) {
+    if ((e.keyCode == 70 && e.ctrlKey) && selectedNote) {
       e.preventDefault();
       handleToggleReadMode();
     }

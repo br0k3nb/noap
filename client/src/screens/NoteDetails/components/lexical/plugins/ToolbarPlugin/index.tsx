@@ -601,8 +601,10 @@ export default function ToolbarPlugin() {
       }
     }
   }
-
-  const getNavbar = document.getElementById("pc-navbar");
+  
+  //for some reason, typescript is throwing an error if this code is not set as any.
+  //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
+  const getNavbar = document.getElementById("pc-navbar") as any;
 
   addEventListener("resize", () => setTimeout(() => {
     setScreenSize(!getNavbar?.checkVisibility() ? window.innerWidth : window.innerWidth - 442);
