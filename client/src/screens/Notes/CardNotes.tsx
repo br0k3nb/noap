@@ -277,11 +277,11 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                 <div className={`h-[196px] text-gray-300 flex flex-col px-2 ${image !== '' && "!h-[148px]"}`}>
                     <div 
                         className={`
-                            w-[129px] !mb-1 line-clamp-7 pl-1
+                            w-[143px] xxs:!w-[135px] !mb-1 line-clamp-7 pl-1
                             ${!labels.length && image === '' && "!line-clamp-8"}
                             ${labels.length && image !== '' && "!line-clamp-5"}
                             ${!labels.length && image !== '' && "!line-clamp-6"}
-                            ${customWidth && "!w-[122px]"}
+                            ${customWidth && "!w-[121px] xxs:!w-[122.5px] !pl-[5px]"}
                         `}
                     >
                         {body}

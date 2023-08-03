@@ -400,7 +400,7 @@ export default function ToolbarPlugin() {
   const [isRTL, setIsRTL] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState<string>('');
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const [screenSize, setScreenSize] = useState<number>(0);
+  const [screenSize, setScreenSize] = useState<number>(window.innerWidth);
   const [fontSizeInputText, setFontSizeInputText] = useState(14);
 
   const prevNodeKey = useRef<null | string>(null);
@@ -602,14 +602,16 @@ export default function ToolbarPlugin() {
     }
   }
 
+  const getNavbar = document.getElementById("pc-navbar");
+
   addEventListener("resize", () => setTimeout(() => {
-    setScreenSize(!expanded ? window.outerWidth - 440 : 0)
+    setScreenSize(!getNavbar?.checkVisibility() ? window.innerWidth : window.innerWidth - 442);
   }, 500));
 
   return (
     <div 
       className="toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
-      style={screenSize !== 0 ? { width: screenSize }: undefined}
+      style={{ width: screenSize }}
     >
       <button
         disabled={!canUndo || !isEditable}

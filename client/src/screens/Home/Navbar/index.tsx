@@ -92,7 +92,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
       />
       {deviceScreenSize.width > 640  ? ( 
           <div className={`fixed ${!navbar && "flex xxs:hidden"}`}>
-            <div className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-gray-900 justify-end">
+            <div id="pc-navbar" className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-gray-900 justify-end">
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
                 <div className="dropdown dropdown-right pt-[6.2px]">
                   <label tabIndex={0}>

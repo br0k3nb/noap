@@ -77,21 +77,21 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const { settings: { isRichText } } = useSettings();
     const customRef = useRef(null);
 
-    const placeholder = <Placeholder customRef={customRef}>Enter some text</Placeholder>;
-
     useEffect(() => {
       const updateViewPortWidth = () => {
-        const isNextSmallWidthViewport = CAN_USE_DOM && window.matchMedia("(max-width: 1025px)").matches;
-        
+        const isNextSmallWidthViewport = CAN_USE_DOM && matchMedia("(max-width: 1025px)").matches;
+      
         if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);
-        setTimeout(() => setCurrentScreenSize({ width: window.innerWidth, height: window.innerHeight }), 500);
+        setTimeout(() => setCurrentScreenSize({ width: innerWidth, height: innerHeight }));
+        console.log('riweuriwe');
       };
 
-      window.addEventListener("resize", updateViewPortWidth);
+      updateViewPortWidth();
+      addEventListener("resize", updateViewPortWidth);
       setTimeout(() => setFloatingAnchorElem(ref?.current));
 
-      return () => window.removeEventListener("resize", updateViewPortWidth);
-    }, [isSmallWidthViewport]);
+      return () => removeEventListener("resize", updateViewPortWidth);
+    }, [isSmallWidthViewport, expanded]);
 
     useEffect(() => {
       if(readMode) editor.setEditable(false);
@@ -103,18 +103,20 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
     const noteTextCondition = TweentyPercentMarginOfScreen < 1001 ? TweentyPercentMarginOfScreen : 1000;
 
+    const getNavbar = document.getElementById("pc-navbar");
+
     return (
       <div className="!h-screen !w-screen">
         {!readMode && <ToolbarPlugin />}
         <div className="editor-container plain-text">
           <DragDropPaste />
-          <AutoFocusPlugin />
           <ComponentPickerPlugin />
           <AutoEmbedPlugin />
           <HashtagPlugin />
           <EmojisPlugin />
           <EmojiPickerPlugin />
           <AutoLinkPlugin />
+          <AutoFocusPlugin />
           {isRichText && (
             <>
               <RichTextPlugin
@@ -122,8 +124,8 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                   <div className="editor" ref={ref}>
                     <div
                       className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden"                     
-                      style={!expanded ? { 
-                          width: currentScreenSize.width - 440,
+                      style={!expanded && getNavbar?.checkVisibility() ? { 
+                          width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
                           height: editorHeight
                         } : {
                           width: currentScreenSize.width,
@@ -134,10 +136,10 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                       <div                        
                         className="mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col mx-auto"
                         style={
-                          !expanded ? { 
-                            width: noteTextExpanded && currentScreenSize.width > 1430 ? noteTextCondition : currentScreenSize.width - 430 
+                          !expanded && getNavbar?.checkVisibility() ? { 
+                            width: noteTextExpanded && currentScreenSize.width > 1430 ? noteTextCondition : currentScreenSize.width - 435
                           } : { 
-                            width: noteTextExpanded && currentScreenSize.width > 1000 ? noteTextCondition : currentScreenSize.width 
+                            width: noteTextExpanded && currentScreenSize.width > 1000 ? noteTextCondition : currentScreenSize.width
                           }
                         }
                       >
@@ -159,7 +161,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                     </div>
                   </div>
                 }
-                placeholder={placeholder}
+                placeholder={<Placeholder customRef={customRef}>Enter some text</Placeholder>}
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <FloatingTextFormatToolbarPlugin />
