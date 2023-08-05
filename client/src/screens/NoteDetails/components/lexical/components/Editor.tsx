@@ -83,7 +83,6 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       
         if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);
         setTimeout(() => setCurrentScreenSize({ width: innerWidth, height: innerHeight }));
-        console.log('riweuriwe');
       };
 
       updateViewPortWidth();

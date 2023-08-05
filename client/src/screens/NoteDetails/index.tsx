@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, Dispatch, SetStateAction } from "react";
+import { useState, useEffect, useContext, useRef, Dispatch, SetStateAction } from "react";
 import { useForm, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend, FieldValues } from "react-hook-form";
 
 import {
@@ -89,17 +89,36 @@ export default function NoteDetails({
   const note = notes.find(({ _id }) => _id === selectedNote);
   const pinNote = pinNotes.find(({ _id }) => _id === selectedNote);
 
+  const fullscreenChangeCallbackWasCalled = useRef(false);
+
   useEffect(() => { resetNoteName({ name: note ? (note?.name) : (pinNote?.name) }) }, [note, pinNote]);
 
-  const controlRKeyPressListener = (e: any) => {
+  const controlRKeyPressListener = (e: KeyboardEvent) => {  
     if ((e.keyCode == 70 && e.ctrlKey) && selectedNote) {
       e.preventDefault();
-      handleToggleReadMode();
+      handleToggleReadMode(readMode ? "edit" : "full");
     }
   };
-
-  document.onkeydown = controlRKeyPressListener;
   
+  onkeydown = controlRKeyPressListener;
+
+  addEventListener('fullscreenchange', (e) => {
+    if ((!document.fullscreenElement && readMode) && !fullscreenChangeCallbackWasCalled.current) {
+      fullscreenChangeCallbackWasCalled.current = true;
+      handleToggleReadMode("edit");
+    }
+  });
+
+  const handleReverseReadMode = (condition?: boolean) => {
+    setReadMode(condition !== undefined ? condition : !readMode);
+    setNoteSettings((prevNoteSettings) => {
+      return {
+        ...prevNoteSettings,
+        readMode: condition !== undefined ? condition : !readMode
+      }
+    });
+  };
+
   const removeNote = () => {
     if(setSelectedNote) setSelectedNote(null);
     setExpanded(false);
@@ -112,18 +131,6 @@ export default function NoteDetails({
 
   const handleExpand = () => {
     if (window.outerWidth <= 1030 && selectedNote !== null) {
-      if(readMode) {
-        document.exitFullscreen();
-        handleToggleBottomBar();
-        
-        setReadMode(!readMode);
-        setNoteSettings((prevNoteSettings) => {
-          return {
-            ...prevNoteSettings,
-            readMode: !readMode
-          }
-        });
-      }
       if(setSelectedNote) setSelectedNote(null);
 
       setExpanded(false);
@@ -134,19 +141,6 @@ export default function NoteDetails({
         }
       });
     } else { 
-      if(readMode) {
-        document.exitFullscreen();
-        handleToggleBottomBar();
-        
-        setReadMode(!readMode);
-        setNoteSettings((prevNoteSettings) => {
-          return {
-            ...prevNoteSettings,
-            readMode: !readMode
-          }
-        });
-      }
-
       setExpanded(!expanded);
       setNoteSettings((prevNoteSettings) => {
         return {
@@ -167,25 +161,21 @@ export default function NoteDetails({
     });
   };
 
-  const handleToggleReadMode = () => {
-    setReadMode(!readMode);
-    setNoteSettings((prevNoteSettings) => {
-      return {
-        ...prevNoteSettings,
-        readMode: !readMode
-      }
-    });
+  const handleToggleReadMode = (state?: string) => {
+    if(state && state === "edit") {
+      if(fullscreenChangeCallbackWasCalled.current) fullscreenChangeCallbackWasCalled.current = false;
+      else document.exitFullscreen();
+      handleReverseReadMode(false);
+      handleExpand();
 
-    if(!readMode) {      
-      document.getElementById("root")?.requestFullscreen();
-      if(!expanded) handleExpand();
-      if(showBottomBar) handleToggleBottomBar();
-
-    } else {
-      document.exitFullscreen();
-      if(expanded && window.outerWidth > 1030) handleExpand();
       if(!showBottomBar) handleToggleBottomBar();
-    }
+      return;
+    } 
+
+    document.getElementById("root")?.requestFullscreen();
+    if(!expanded) handleExpand();
+    if(showBottomBar) handleToggleBottomBar();
+    handleReverseReadMode();
   };
 
   const handleOpenLabelModal = () => {
@@ -353,7 +343,7 @@ export default function NoteDetails({
                   <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <button
                     className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => handleToggleReadMode()}
+                    onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
                   >
                     <label
                       htmlFor="my-modal-4"
