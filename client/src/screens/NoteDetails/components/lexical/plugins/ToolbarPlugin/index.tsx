@@ -1,5 +1,5 @@
-import type { LexicalEditor, NodeKey } from "lexical";
-import { useCallback, useEffect, useState, useContext, useRef } from "react";
+import type { LexicalEditor, NodeKey, TextNode, ElementNode } from "lexical";
+import { useCallback, useEffect, useState, useContext, useRef, Dispatch, SetStateAction } from "react";
 
 import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, CODE_LANGUAGE_MAP, getLanguageFriendlyName } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -27,6 +27,9 @@ import {
   $getSelection,
   $isRangeSelection,
   $isRootOrShadowRoot,
+  $isParagraphNode,
+  $getTextContent,
+  $isLineBreakNode,
   $isTextNode,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
@@ -127,6 +130,22 @@ const FONT_SIZE_OPTIONS: [string, string][] = [
   ["60px", "60px"],
   ["72px", "72px"],
   ["96px", "96px"]
+];
+
+const fontFamilyOptionsArray = [
+  "Arial", 
+  "Amatic SC",
+  "Bangers",
+  "Courier New",
+  "Dancing Script",
+  "Georgia",
+  "Montserrat",
+  "Nanum Gothic Coding",
+  "Roboto",
+  "Reenie Beanie",
+  "Source Code Pro",
+  "Trebuchet MS",
+  "Times New Roman"
 ];
 
 function dropDownActiveClass(active: boolean) {
@@ -300,16 +319,19 @@ function FontDropDown({
   style,
   disabled = false,
   isFontSizeModal,
+  setLastSelectedFontFamily
 }: {
   editor: LexicalEditor;
   value: string;
   style: string;
   disabled?: boolean;
   isFontSizeModal?: boolean;
+  setLastSelectedFontFamily?: Dispatch<SetStateAction<string>>;
 }): JSX.Element {
 
   const handleClick = useCallback(
     (option: string, styleType?: string) => {
+      if(!isFontSizeModal && setLastSelectedFontFamily) setLastSelectedFontFamily(option);
       editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
@@ -376,6 +398,8 @@ function FontDropDown({
 }
 
 export default function ToolbarPlugin() {
+  const default_font_style = 'Roboto';
+
   const [editor] = useLexicalComposerContext();
   
   const [modal, showModal] = useModal();
@@ -386,7 +410,7 @@ export default function ToolbarPlugin() {
   const [fontSize, setFontSize] = useState<string>('14px');
   const [fontColor, setFontColor] = useState<string>('#000');
   const [bgColor, setBgColor] = useState<string>('#374151');
-  const [fontFamily, setFontFamily] = useState<string>('Roboto');
+  const [fontFamily, setFontFamily] = useState<string>(default_font_style);
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -401,9 +425,39 @@ export default function ToolbarPlugin() {
   const [codeLanguage, setCodeLanguage] = useState<string>('');
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [screenSize, setScreenSize] = useState<number>(window.innerWidth);
-  const [fontSizeInputText, setFontSizeInputText] = useState(14);
+  const [lastSelectedFontFamily, setLastSelectedFontFamily] = useState('');
 
   const prevNodeKey = useRef<null | string>(null);
+  const prevSelection = useRef<string | null>(null);
+  const prevElementKey = useRef<null | string>(null);
+  const prevNodeType = useRef<null | TextNode | ElementNode>(null);
+  
+  const handleUpdateFont = (fontFamily: string) => {
+    editor.update(() => {
+      const selection = $getSelection();
+
+      if ($isRangeSelection(selection)) {
+        const node = getSelectedNode(selection);
+
+        if(node.__type === 'text' && node.__key !== prevElementKey.current) {
+          if(node.__text.length === 1) selection.focus.offset = 0;
+
+          $patchStyleText(selection, {
+            ["font-family"] : fontFamily,
+          });
+
+          if(selection.focus.offset !== selection.anchor.offset) {
+            selection.focus.offset = selection.focus.offset + 1;
+            selection.anchor.offset = selection.anchor.offset + 1;
+          }
+          
+        }
+
+        prevElementKey.current = node.__key;
+        prevNodeType.current = node;
+      }
+    });
+  };
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -464,13 +518,45 @@ export default function ToolbarPlugin() {
       if(!prevNodeKey || prevNodeKey.current !== anchorNode.getKey()) {
         setFontSize($getSelectionStyleValueForProperty(selection, "font-size", fontSize));
       }
+
+      const findPosition = new RegExp(/(font-family:.+?);/, "g");
+      const extractString = findPosition.exec(selection.style);
+
+      const selectionFontStyle = extractString ? extractString[1].slice(13, extractString[1].length) : '';
+
+      if(selectionFontStyle || lastSelectedFontFamily) {
+        if(selectionFontStyle) {
+          handleUpdateFont(selectionFontStyle);
+          setFontFamily(selectionFontStyle);
+        }
+        else {
+          const condition = prevSelection.current ? prevSelection.current : lastSelectedFontFamily;
+          handleUpdateFont(condition);
+          setFontFamily(condition);
+        }
+      }
+
       setFontColor($getSelectionStyleValueForProperty(selection, "color", "#000"));
-      setFontFamily($getSelectionStyleValueForProperty(selection, "font-family", fontFamily));
       setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#374151"));
 
       prevNodeKey.current = anchorNode.getKey();
+      if(selection._cachedNodes) {
+        const selecStyle = selection.style;
+
+        if(!selecStyle && prevSelection.current) {
+          handleUpdateFont(prevSelection.current);
+          setFontFamily(prevSelection.current);
+        }
+    
+        if(selectionFontStyle) prevSelection.current = selectionFontStyle;
+        else prevSelection.current = !selecStyle && lastSelectedFontFamily ? lastSelectedFontFamily : default_font_style;
+
+        if(!lastSelectedFontFamily.length && selectionFontStyle.length > 0) {
+          setLastSelectedFontFamily(selectionFontStyle);
+        }
+      }
     }
-  }, [activeEditor]);
+  }, [activeEditor, lastSelectedFontFamily]);
 
   useEffect(() => {
     return editor.registerCommand(
@@ -579,7 +665,7 @@ export default function ToolbarPlugin() {
         }
       });
     },
-    [editor, fontSizeInputText]
+    [editor]
   );
 
   const handleIncrementFontSizeButton = () => {
@@ -670,6 +756,7 @@ export default function ToolbarPlugin() {
             style={"font-family"} 
             value={fontFamily} 
             editor={editor} 
+            setLastSelectedFontFamily={setLastSelectedFontFamily}
           />
           <Divider />
           <div className="mx-1 flex flex-row space-x-2">

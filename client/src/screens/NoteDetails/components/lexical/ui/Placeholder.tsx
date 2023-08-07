@@ -19,7 +19,7 @@ export default function Placeholder({
   const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
   const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
 
-  const editorDiv = customRef.current && customRef.current.getBoundingClientRect();
+  const editorDiv = customRef && (customRef.current && customRef.current.getBoundingClientRect());
   const verifyEditorDivRef = editorDiv?.x !== undefined && typeof editorDiv?.x === "number";
 
   return (

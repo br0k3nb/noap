@@ -165,10 +165,11 @@ export default function NoteDetails({
     if(state && state === "edit") {
       if(fullscreenChangeCallbackWasCalled.current) fullscreenChangeCallbackWasCalled.current = false;
       else document.exitFullscreen();
-      handleReverseReadMode(false);
-      handleExpand();
 
+      if(outerWidth > 1030) handleExpand();
       if(!showBottomBar) handleToggleBottomBar();
+
+      handleReverseReadMode(false);
       return;
     } 
 

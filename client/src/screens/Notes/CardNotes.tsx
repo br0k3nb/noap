@@ -47,7 +47,7 @@ export default function CardNotes({
     const location = useLocation();
 
     const [pinWasClicked, setPinWasClicked] = useState(false);
-    const [viewPort, setViewPort] = useState({width: window.innerWidth});
+    const [viewPort, setViewPort] = useState({ width: window.innerWidth });
 
     const baseURL = location.pathname.slice(0, (location.pathname.length - String(page).length));
 
@@ -77,10 +77,10 @@ export default function CardNotes({
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"}`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="collapse border border-transparent bg-gray-900 rounded-lg ml-2 lg:ml-0 hover:border-gray-700 transition-all duration-700 ease-in-out"
+                                                    className="collapse border border-transparent bg-gray-900 rounded-lg lg:ml-0 hover:border-gray-700 transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
-                                                            ? (viewPort.width <= 640 ? viewPort.width - 37.5 : viewPort.width - 78)
+                                                            ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
                                                             : 344
                                                     }}
                                                 >
@@ -192,7 +192,7 @@ export default function CardNotes({
                                             `}
                                             style={{
                                                 width: viewPort.width <= 1023 
-                                                    ? (viewPort.width <= 640 ? viewPort.width - 45 : viewPort.width - 110)
+                                                    ? (viewPort.width <= 640 ? viewPort.width - 45 : viewPort.width - 140)
                                                     : 330
                                             }}
                                         />
@@ -277,7 +277,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                 <div className={`h-[196px] text-gray-300 flex flex-col px-2 ${image !== '' && "!h-[148px]"}`}>
                     <div 
                         className={`
-                            w-[143px] xxs:!w-[135px] !mb-1 line-clamp-7 pl-1
+                            w-[143px] xxs:w-[135px] !mb-1 line-clamp-7 pl-1
                             ${!labels.length && image === '' && "!line-clamp-8"}
                             ${labels.length && image !== '' && "!line-clamp-5"}
                             ${!labels.length && image !== '' && "!line-clamp-6"}
@@ -323,9 +323,9 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                 </div>
                 <p className={`text-xs tracking-tighter mt-2 px-4 pb-[0.04rem] xxs:text-[11px] ${customWidth && "!px-3 !text-[11px]"}`}>
                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
-                </p>
+                </p>    
                 {image !== '' && (
-                    <div className={`h-[56px] mt-3 rounded-b-lg ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[165px] xxs:!w-[9.98rem]"}`}>
+                    <div className={`h-[56px] mt-3 rounded-b-lg ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[164px] xxs:!w-[9.98rem]"}`}>
                         <img 
                             src={image}
                             className="rounded-b-[6.5px] object-cover !h-[3.49rem] xxs:!h-[3.52rem] min-w-[98.9%]"

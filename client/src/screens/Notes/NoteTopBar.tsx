@@ -21,17 +21,17 @@ type Props = {
 }
 
 export default function NoteTopBar({ 
-        page, 
-        search, 
-        navbar, 
-        totalDocs, 
-        showSearch, 
-        hasNextPage, 
-        setNavbar, 
-        setPage, 
-        setSearch, 
-        setShowSearch 
-    }: Props) {
+    page, 
+    search, 
+    navbar, 
+    totalDocs, 
+    showSearch, 
+    hasNextPage, 
+    setNavbar, 
+    setPage, 
+    setSearch, 
+    setShowSearch 
+}: Props) {
         
     const { selectedNote, setSelectedNote } = useContext(NoteCtx) as any;
     const location = useLocation();
