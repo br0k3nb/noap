@@ -112,7 +112,7 @@ export default function ImageComponent({
   resizable,
   showCaption,
   caption,
-  captionsEnabled,
+  captionsEnabled
 }: {
   src: string;
   altText: string;
@@ -136,8 +136,11 @@ export default function ImageComponent({
   const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
   const [selection, setSelection] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
   const [currentScreenSize, setCurrentScreenSize] = useState({ width: window.innerWidth });
-
+  
   useUpdateViewport(setCurrentScreenSize, 500);
+
+  const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
+  const editorWidth = rootEditorDiv.clientWidth;
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -284,7 +287,14 @@ export default function ImageComponent({
 
     editor.update(() => {
       const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) node.setWidthAndHeight(nextWidth, nextHeight);
+
+      const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
+      const editorWidth = rootEditorDiv.clientWidth;
+     
+      if ($isImageNode(node)) {
+        if(nextWidth !== 'inherit' && editorWidth < nextWidth) node.setWidthAndHeight(editorWidth, nextHeight);
+        else node.setWidthAndHeight(nextWidth, nextHeight);
+      }
     });
   };
 
@@ -296,12 +306,10 @@ export default function ImageComponent({
   const isFocused = isSelected || isResizing;
 
   const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
-  const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
-
-  const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
-  const noteTextCondition = TweentyPercentMarginOfScreen < 944 ? TweentyPercentMarginOfScreen : 943;
-
-  const imageOverflow = typeof width === "number" && (width - noteTextCondition) > 0  ? (width - noteTextCondition) : 0;
+  // const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
+  // const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
+  // const noteTextCondition = TweentyPercentMarginOfScreen < 944 ? TweentyPercentMarginOfScreen : 943;
+  // const imageOverflow = typeof width === "number" && (width - noteTextCondition) > 0  ? (width - noteTextCondition) : 0;
 
   const donwloadImage = (srcLink: string) => {
     const a = Object.assign(document.createElement("a"), { href: srcLink, style:"display:none", download: "image" });
@@ -402,17 +410,7 @@ export default function ImageComponent({
               imageRef={imageRef}
               width={width}
               height={height}
-              maxWidth={
-                !expanded ? (
-                  currentScreenSize.width > 1430 && (noteTextExpanded && !imageOverflow) ? noteTextCondition : 
-                  currentScreenSize.width > 1430 && (noteTextExpanded && imageOverflow) ? noteTextCondition - imageOverflow :
-                  (!noteTextExpanded && imageOverflow) ? currentScreenSize.width - 580 : 
-                  currentScreenSize.width
-                ) : (
-                  !noteTextExpanded && currentScreenSize.width <= 640 ? currentScreenSize.width - 60: 
-                  currentScreenSize.width > 1000 && (noteTextExpanded && imageOverflow) ? (noteTextCondition - imageOverflow) : 
-                  noteTextCondition
-              )}
+              maxWidth={currentScreenSize.width <= 640 ? editorWidth - 56 : editorWidth - 56}
             />
         </div>
         {showCaption && (

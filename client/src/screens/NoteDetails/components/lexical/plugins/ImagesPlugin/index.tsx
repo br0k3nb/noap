@@ -43,13 +43,8 @@ const getDOMSelection = (targetWindow: Window | null): Selection | null =>
 export const INSERT_IMAGE_COMMAND =
   createCommand("INSERT_IMAGE_COMMAND");
 
-export function InsertImageUriDialogBody({
-  onClick,
-}: {
-  onClick: (payload: InsertImagePayload) => void;
-}) {
+export function InsertImageUriDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
   const [src, setSrc] = useState("");
-  const [altText, setAltText] = useState("");
 
   const isDisabled = src === "";
 
@@ -62,21 +57,14 @@ export function InsertImageUriDialogBody({
         value={src}
         data-test-id="image-modal-url-input"
       />
-      <TextInput
-        label="Alt Text"
-        placeholder="Random unsplash image"
-        onChange={setAltText}
-        value={altText}
-        data-test-id="image-modal-alt-text-input"
-      />
       <DialogActions>
         <Button
-          data-test-id="image-modal-confirm-btn"
+          className="!bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
+          data-test-id="image-modal-file-upload-btn"
           disabled={isDisabled}
-          className="!bg-gray-700"
-          onClick={() => onClick({ altText, src })}
+          onClick={() => onClick({ src, altText: '' })}
         >
-          Confirm
+          <p className="py-[3px]">Confirm</p>
         </Button>
       </DialogActions>
     </>
@@ -84,9 +72,8 @@ export function InsertImageUriDialogBody({
 }
 
 export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
-  const [ src, setSrc ] = useState("");
-  const [ altText, setAltText ] = useState("");
-  const [ loader, setLoader ] = useState(false);
+  const [src, setSrc] = useState("");
+  const [loader, setLoader] = useState(false);
 
   const isDisabled = src === "";
 
@@ -123,34 +110,31 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
   };
 
   return (
-    <>
-      <p className="text-red-500 uppercase text-xs tracking-widest xxs:mb-2"> (Max size 5mb) </p>
-      <FileInput label="Image Upload" onChange={loadImage} accept="image/*" data-test-id="image-modal-file-upload" />
-      <TextInput
-        label="Alt Text"
-        placeholder="Descriptive alternative text"
-        onChange={setAltText}
-        value={altText}
-        data-test-id="image-modal-alt-text-input"
+    <div className="w-[320px] xxs:w-[275px]">
+      <FileInput 
+        label="Upload image"
+        onChange={loadImage} 
+        accept="image/*"
+        data-test-id="image-modal-file-upload"
       />
       <DialogActions>
         {loader ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "bg-gray-700 py-3 px-3 rounded-lg" }}/>) : (
           <Button
-            className="!bg-gray-700 !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
+            className="!bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
             data-test-id="image-modal-file-upload-btn"
             disabled={isDisabled}
-            onClick={() => onClick({ altText, src })}
+            onClick={() => onClick({ src, altText: '' })}
           >
             <p className="py-[3px]">Confirm</p>
           </Button>
         )}
       </DialogActions>
-    </>
+    </div>
   );
 }
 
 export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: LexicalEditor; onClose: () => void; }) {
-  const [ mode, setMode ] = useState<null | "url" | "file">(null);
+  const [mode, setMode] = useState<null | "url" | "file">(null);
   const hasModifier = useRef(false);
 
   useEffect(() => {
@@ -169,7 +153,9 @@ export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: Lex
   return (
     <>
       {!mode && (
-        <DialogButtonsList>
+        <DialogButtonsList
+          customClassName={"!mt-1 !mb-0"}
+        >
           <Button
             data-test-id="image-modal-option-url"
             className="bg-gray-700 hover:!bg-gray-600 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
@@ -182,7 +168,7 @@ export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: Lex
           </Button>
           <Button
             data-test-id="image-modal-option-file"
-            className="bg-gray-700 hover:!bg-gray-600 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+            className="!mb-2 bg-gray-700 hover:!bg-gray-600 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
             onClick={() => setMode("file")}
           >
             <div className="flex w-[55px] justify-between">
@@ -199,7 +185,7 @@ export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: Lex
 }
 
 export default function ImagesPlugin({captionsEnabled} : {captionsEnabled?: boolean}): JSX.Element | null {
-  const [ editor ] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {

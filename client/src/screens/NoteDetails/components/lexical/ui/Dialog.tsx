@@ -5,10 +5,11 @@ import "./Dialog.css";
 type Props = Readonly<{
   "data-test-id"?: string;
   children: ReactNode;
+  customClassName?: string;
 }>;
 
-export function DialogButtonsList({ children }: Props): JSX.Element {
-  return <div className="DialogButtonsList">{children}</div>;
+export function DialogButtonsList({ children, customClassName }: Props): JSX.Element {
+  return <div className={`DialogButtonsList ${customClassName}`}>{children}</div>;
 }
 
 export function DialogActions({

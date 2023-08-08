@@ -325,12 +325,10 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     {!updatedAt ? days(createdAt) + " at " + hours(createdAt) : days(updatedAt) + " at " + hours(updatedAt)}
                 </p>    
                 {image !== '' && (
-                    <div className={`h-[56px] mt-3 rounded-b-lg ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[164px] xxs:!w-[9.98rem]"}`}>
-                        <img 
-                            src={image}
-                            className="rounded-b-[6.5px] object-cover !h-[3.49rem] xxs:!h-[3.52rem] min-w-[98.9%]"
-                        />
-                    </div>
+                    <img 
+                        src={image}
+                        className={`mt-3 rounded-b-[6.5px] object-cover !h-[3.49rem] ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[164px] xxs:!w-[9.98rem]"} xxs:!h-[3.52rem] min-w-[98.9%]`}
+                    />
                 )}
             </div>
         </a>
