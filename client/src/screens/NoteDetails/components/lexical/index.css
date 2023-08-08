@@ -1456,9 +1456,9 @@ i.format {
 }
 
 .excalidraw-button {
-  border: 0;
-  padding: 0;
-  margin: 0;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
   background-color: transparent;
 }
 

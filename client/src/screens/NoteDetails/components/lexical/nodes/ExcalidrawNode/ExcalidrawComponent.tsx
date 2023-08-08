@@ -20,22 +20,16 @@ import { $isExcalidrawNode } from ".";
 import ExcalidrawImage from "./ExcalidrawImage";
 import ExcalidrawModal from "./ExcalidrawModal";
 
-export default function ExcalidrawComponent({
-  nodeKey,
-  data,
-}: {
-  data: string;
-  nodeKey: NodeKey;
-}): JSX.Element {
+export default function ExcalidrawComponent({ nodeKey, data }: { data: string; nodeKey: NodeKey; }) {
   const [editor] = useLexicalComposerContext();
-  const [isModalOpen, setModalOpen] = useState<boolean>(
-    data === "[]" && editor.isEditable()
-  );
+
+  const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
+
   const imageContainerRef = useRef<HTMLImageElement | null>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const buttonRef = useRef<HTMLAnchorElement | null>(null);
   const captionButtonRef = useRef<HTMLButtonElement | null>(null);
-  const [isSelected, setSelected, clearSelection] =
-    useLexicalNodeSelection(nodeKey);
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(data === "[]" && editor.isEditable());
   const [isResizing, setIsResizing] = useState<boolean>(false);
 
   const onDelete = useCallback(
@@ -44,9 +38,8 @@ export default function ExcalidrawComponent({
         event.preventDefault();
         editor.update(() => {
           const node = $getNodeByKey(nodeKey);
-          if ($isExcalidrawNode(node)) {
-            node.remove();
-          }
+          if ($isExcalidrawNode(node)) node.remove();
+
           setSelected(false);
         });
       }
@@ -57,11 +50,8 @@ export default function ExcalidrawComponent({
 
   // Set editor to readOnly if excalidraw is open to prevent unwanted changes
   useEffect(() => {
-    if (isModalOpen) {
-      editor.setEditable(false);
-    } else {
-      editor.setEditable(true);
-    }
+    if (isModalOpen) editor.setEditable(false);
+    else editor.setEditable(true);
   }, [isModalOpen, editor]);
 
   useEffect(() => {
@@ -72,18 +62,13 @@ export default function ExcalidrawComponent({
           const buttonElem = buttonRef.current;
           const eventTarget = event.target;
 
-          if (isResizing) {
-            return true;
-          }
+          if (isResizing) return true;
 
           if (buttonElem !== null && buttonElem.contains(eventTarget as Node)) {
-            if (!event.shiftKey) {
-              clearSelection();
-            }
+            if (!event.shiftKey) clearSelection();
             setSelected(!isSelected);
-            if (event.detail > 1) {
-              setModalOpen(true);
-            }
+
+            if (event.detail > 1) setModalOpen(true);
             return true;
           }
 
@@ -108,37 +93,27 @@ export default function ExcalidrawComponent({
     setModalOpen(false);
     return editor.update(() => {
       const node = $getNodeByKey(nodeKey);
-      if ($isExcalidrawNode(node)) {
-        node.remove();
-      }
+      if ($isExcalidrawNode(node)) node.remove();
     });
   }, [editor, nodeKey]);
 
   const setData = (newData: ReadonlyArray<ExcalidrawElementFragment>) => {
-    if (!editor.isEditable()) {
-      return;
-    }
+    if (!editor.isEditable()) return;
+
     return editor.update(() => {
       const node = $getNodeByKey(nodeKey);
       if ($isExcalidrawNode(node)) {
-        if (newData.length > 0) {
-          node.setData(JSON.stringify(newData));
-        } else {
-          node.remove();
-        }
+        if (newData.length > 0) node.setData(JSON.stringify(newData));
+        else node.remove();
       }
     });
   };
 
-  const onResizeStart = () => {
-    setIsResizing(true);
-  };
+  const onResizeStart = () => setIsResizing(true);
 
   const onResizeEnd = () => {
     // Delay hiding the resize bars for click case
-    setTimeout(() => {
-      setIsResizing(false);
-    }, 200);
+    setTimeout(() => { setIsResizing(false) }, 200);
   };
 
   const elements = useMemo(() => JSON.parse(data), [data]);
@@ -156,7 +131,7 @@ export default function ExcalidrawComponent({
         closeOnClickOutside={true}
       />
       {elements.length > 0 && (
-        <button
+        <a
           ref={buttonRef}
           className={`excalidraw-button ${isSelected ? "selected" : ""}`}
         >
@@ -174,10 +149,10 @@ export default function ExcalidrawComponent({
               editor={editor}
               onResizeStart={onResizeStart}
               onResizeEnd={onResizeEnd}
-              captionsEnabled={true}
+              captionsEnabled={false}
             />
           )}
-        </button>
+        </a>
       )}
     </>
   );

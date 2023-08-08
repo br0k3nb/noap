@@ -55,6 +55,11 @@
   }
 }
 
+@font-face {
+  font-family: "Virgil";
+  src: url("./assets/fonts/Virgil.woff2") format('woff22');
+}
+
 * {
   font-family: "Ubuntu";
 }

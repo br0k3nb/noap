@@ -141,7 +141,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 title='Settings'
                 setOpen={setOpen}
                 options={{
-                    modalWrapperClassName: "w-[25rem] xxs:w-[22rem] !px-0 !max-h-[50rem]",
+                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] !px-0 !max-h-[50rem]",
                     titleWrapperClassName: "!px-6"
                 }}
             >
@@ -185,7 +185,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                             <label className="label cursor-pointer px-2 transition-all duration-500 tracking-widest">
                                 <div className="flex flex-row space-x-2">
                                     <span className="label-text uppercase text-[11px] xxs:!text-[9px] text-gray-300 py-[9px]">
-                                        {showSPNIFLoader ? "Loading..." : "Show pinned notes in a folder"}
+                                        {showSPNIFLoader ? "Loading..." : "Show pinned notes in folder"}
                                     </span> 
                                     {!showSPNIFLoader && (<AiFillFolderOpen size={22} className='mt-[9px]'/>)}
                                 </div>
@@ -222,26 +222,6 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 </div>
                             </div>
                         </div>                     
-                        {/* <button
-                            className="active:!bg-gray-600 hover:!bg-gray-700"
-                            onClick={() => setShowBottomBar(showBottomBar ? false : true)}
-                        >
-                            <label
-                            htmlFor="my-modal-4"
-                            className="text-gray-300 cursor-pointer"
-                            >
-                            <div className="flex flex-row space-x-2">
-                                <p className="py-1 text-xs uppercase tracking-widest">
-                                {showBottomBar ? "Spread text" : "Center text"}
-                                </p>
-                                {showBottomBar ? (
-                                <RiTextSpacing size={20} className="pt-[3px]" />
-                                ) : (
-                                <FiAlignJustify size={20} className="pt-[3px]" />
-                                )}
-                            </div>
-                            </label>
-                        </button> */}
                         <div 
                             className="bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full"
                             onMouseEnter={() => setTimeout(() => setShowOpenDoorIcon(true), 200)}

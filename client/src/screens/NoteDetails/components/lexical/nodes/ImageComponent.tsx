@@ -81,6 +81,7 @@ function LazyImage({
   width,
   height,
   maxWidth,
+  maxHeight
 }: {
   altText?: string;
   className?: string | null;
@@ -89,6 +90,7 @@ function LazyImage({
   maxWidth: number | string;
   src: string;
   width: "inherit" | number;
+  maxHeight?: number | string;
 }): JSX.Element {
   useSuspenseImage(src);
   return (
@@ -97,7 +99,7 @@ function LazyImage({
       src={src}
       alt={altText}
       ref={imageRef}
-      style={{ height, maxWidth, width }}
+      style={{ height, maxWidth, width, maxHeight: maxHeight ? maxHeight : '' }}
       draggable="false"
     />
   );
@@ -112,17 +114,19 @@ export default function ImageComponent({
   resizable,
   showCaption,
   caption,
-  captionsEnabled
+  captionsEnabled,
+  isAExcalidrawImage
 }: {
   src: string;
   altText: string;
   nodeKey: NodeKey;
   resizable: boolean;
   showCaption: boolean;
-  caption: LexicalEditor;
+  caption?: LexicalEditor;
   captionsEnabled: boolean;
   width: "inherit" | number;
   height: "inherit" | number;
+  isAExcalidrawImage?: boolean
 }): JSX.Element {
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -135,7 +139,7 @@ export default function ImageComponent({
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
   const [selection, setSelection] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
-  const [currentScreenSize, setCurrentScreenSize] = useState({ width: window.innerWidth });
+  const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth, height: innerHeight });
   
   useUpdateViewport(setCurrentScreenSize, 500);
 
@@ -169,7 +173,7 @@ export default function ImageComponent({
         if (showCaption) {
           $setSelection(null);
           event.preventDefault();
-          caption.focus();
+          if(caption) caption.focus();
           return true;
         } 
 
@@ -335,7 +339,8 @@ export default function ImageComponent({
       >
         <LazyImage
           src={src}
-          height={"inherit"}
+          maxHeight={currentScreenSize.width <= 640 ? currentScreenSize.height - 220 : currentScreenSize.height - 400}
+          height={'inherit'}
           className={"!rounded-xl mt-6"}
           width={currentScreenSize.width - 100}
           maxWidth={1200}
@@ -383,18 +388,20 @@ export default function ImageComponent({
                         </div>
                       </a>
                     </li>
-                    <li className="text-xs uppercase tracking-widest">
-                      <a
-                        id="delete"
-                        className="active:!bg-gray-600"
-                        onClick={() => setSelected(true)}
-                      >
-                        <div className="flex flex-row space-x-2 text-gray-300">
-                          <span>Delete</span>
-                          <BsTrash size={16}/>
-                        </div>
-                      </a>
-                    </li>
+                    {!isAExcalidrawImage && (
+                      <li className="text-xs uppercase tracking-widest">
+                        <a
+                          id="delete"
+                          className="active:!bg-gray-600"
+                          onClick={() => setSelected(true)}
+                        >
+                          <div className="flex flex-row space-x-2 text-gray-300">
+                            <span>Delete</span>
+                            <BsTrash size={16}/>
+                          </div>
+                        </a>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -413,7 +420,7 @@ export default function ImageComponent({
               maxWidth={currentScreenSize.width <= 640 ? editorWidth - 56 : editorWidth - 56}
             />
         </div>
-        {showCaption && (
+        {(showCaption && caption) && (
           <div className="image-caption-container rounded-b-lg">
             <LexicalNestedComposer initialEditor={caption}>
               <AutoFocusPlugin />

@@ -1,11 +1,8 @@
-import { exportToSvg } from "@excalidraw/excalidraw";
-import {
-  ExcalidrawElement,
-  NonDeleted,
-} from "@excalidraw/excalidraw/types/element/types";
-import { AppState } from "@excalidraw/excalidraw/types/types";
-import * as React from "react";
 import { useEffect, useState } from "react";
+
+import { exportToCanvas } from "@excalidraw/excalidraw";
+import { ExcalidrawElement, NonDeleted } from "@excalidraw/excalidraw/types/element/types";
+import { AppState } from "@excalidraw/excalidraw/types/types";
 
 type ImageType = "svg" | "canvas";
 
@@ -29,7 +26,7 @@ type Props = {
   /**
    * The ref object to be used to render the image
    */
-  imageContainerRef: { current: null | HTMLDivElement };
+  imageContainerRef: { current: null | HTMLImageElement };
   /**
    * The type of image to be rendered
    */
@@ -44,25 +41,6 @@ type Props = {
   width?: number | null;
 };
 
-// exportToSvg has fonts from excalidraw.com
-// We don't want them to be used in open source
-const removeStyleFromSvg_HACK = (svg: SVGElement) => {
-  const styleTag = svg?.firstElementChild?.firstElementChild;
-
-  // Generated SVG is getting double-sized by height and width attributes
-  // We want to match the real size of the SVG element
-  const viewBox = svg.getAttribute("viewBox");
-  if (viewBox != null) {
-    const viewBoxDimensions = viewBox.split(" ");
-    svg.setAttribute("width", viewBoxDimensions[2]);
-    svg.setAttribute("height", viewBoxDimensions[3]);
-  }
-
-  if (styleTag && styleTag.tagName === "style") {
-    styleTag.remove();
-  }
-};
-
 /**
  * @explorer-desc
  * A component for rendering Excalidraw elements as a static image
@@ -70,33 +48,30 @@ const removeStyleFromSvg_HACK = (svg: SVGElement) => {
 export default function ExcalidrawImage({
   elements,
   imageContainerRef,
-  appState = null,
-  rootClassName = null,
+  appState = null  
 }: Props): JSX.Element {
-  const [Svg, setSvg] = useState<SVGElement | null>(null);
+  const [imageURL, setImageURL] = useState('');
 
   useEffect(() => {
     const setContent = async () => {
-      const svg: SVGElement = await exportToSvg({
-        elements,
-        files: null,
-      });
-      removeStyleFromSvg_HACK(svg);
+      const canvas = await exportToCanvas({ elements, files: null });
+      const ctx = canvas.getContext("2d");
 
-      svg.setAttribute("width", "100%");
-      svg.setAttribute("height", "100%");
-      svg.setAttribute("display", "block");
-
-      setSvg(svg);
+      if(ctx) {
+        ctx.font = "30px Virgil";
+        setImageURL(canvas.toDataURL());
+      }
     };
     setContent();
   }, [elements, appState]);
 
   return (
-    <div
-      ref={imageContainerRef}
-      className={rootClassName ?? ""}
-      dangerouslySetInnerHTML={{ __html: Svg?.outerHTML ?? "" }}
-    />
+    <div>
+      <img 
+        src={imageURL} 
+        ref={imageContainerRef}
+        className="!rounded-lg !object-cover xxs:!max-h-96 xxs:!w-screen sm:!max-h-96 xl:!object-fill xl:!max-h-screen"
+      />
+    </div>
   );
 }

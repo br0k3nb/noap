@@ -365,7 +365,7 @@ function FontDropDown({
       `}
       disabled={disabled}
       buttonClassName={`toolbar-item  ` + style}
-      buttonLabelClassName={`${isFontSizeModal && "pl-2 pr-1"}`}
+      buttonLabelClassName={`${isFontSizeModal && "!pl-[11px] pr-1"}`}
       buttonLabel={isFontSizeModal ? parseFontSizeToNumber(value) as string : value}
       buttonIconClassName={!isFontSizeModal ? "icon block-type font-family comp-picker" : ""}
       useCustomButton={isFontSizeModal ? true : false}
@@ -385,7 +385,7 @@ function FontDropDown({
             >
               <p 
                 style={{fontFamily: option}} 
-                className={`text-start py-[14px] px-2 ${isFontSizeModal && "!text-center !px-0"}`}
+                className={`text-start py-[14px] px-2 ${isFontSizeModal && "!text-center "}`}
               >
                 {isFontSizeModal ? parseFontSizeToNumber(text) : text}
               </p>
@@ -650,7 +650,7 @@ export default function ToolbarPlugin() {
     [activeEditor, selectedElementKey],
   );
 
-  const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
+  // const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
   const reg = new RegExp(/^\d+/, "gi");
   const getFontSize = reg.exec(fontSize);
 

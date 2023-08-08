@@ -7,7 +7,8 @@ import {
   AiFillDelete,
   AiOutlineEllipsis,
   AiFillRead,
-  AiFillEdit
+  AiFillEdit,
+  AiFillInfoCircle
 } from "react-icons/ai";
 import {
   BsTagsFill,
@@ -81,6 +82,7 @@ export default function NoteDetails({
   const [renameNote, setRenameNote] = useState(false);
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [openLabelModal, setOpenlabelModal] = useState(false);
+  const [openNoteInfoModal, setOpenNoteInfoModal] = useState(false);
   const [noteSettings, setNoteSettings] = useState(default_note_settings);
 
   const { register, reset, handleSubmit } = useForm();
@@ -102,7 +104,7 @@ export default function NoteDetails({
   
   onkeydown = controlRKeyPressListener;
 
-  addEventListener('fullscreenchange', (e) => {
+  addEventListener('fullscreenchange', () => {
     if ((!document.fullscreenElement && readMode) && !fullscreenChangeCallbackWasCalled.current) {
       fullscreenChangeCallbackWasCalled.current = true;
       handleToggleReadMode("edit");
@@ -132,6 +134,7 @@ export default function NoteDetails({
   const handleExpand = () => {
     if (window.outerWidth <= 1030 && selectedNote !== null) {
       if(setSelectedNote) setSelectedNote(null);
+      if(readMode) document.exitFullscreen();
 
       setExpanded(false);
       setNoteSettings((prevNoteSettings) => {
@@ -268,10 +271,10 @@ export default function NoteDetails({
       `}
     >
       {selectedNote !== null && (
-        <div className="flex flex-row justify-between mt-0 py-[7.5px] px-4 mb-[4.8px]">
+        <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
-              className="mr-2 tooltip tooltip-right !text-gray-200"
+              className="tooltip tooltip-right !text-gray-200"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
             >
               <button className="hover:bg-stone-600 px-1 py-1 rounded" onClick={() => handleExpand()}>
@@ -282,6 +285,38 @@ export default function NoteDetails({
                 )}
               </button>
             </div>
+            
+            {innerWidth > 1030 && (
+              <>
+                <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
+                <div
+                  className="tooltip tooltip-right !text-gray-200"
+                  data-tip={`${!note?.settings.pinned || pinNote?.settings.pinned ? "Pin note" : "Unpin note"}`}
+                >
+                  <a onClick={() => handlePinNote()} >
+                    <div className="flex flex-row space-x-2 hover:bg-stone-600 rounded px-1 py-1">
+                        {note?.settings.pinned || pinNote?.settings.pinned ? (
+                          <BsFillPinAngleFill size={20} className="pt-[1px]" />
+                        ) : ( 
+                          <BsFillPinAngleFill size={20} className="pt-[1px]" /> 
+                        )}
+                      </div>
+                    </a>
+                </div>
+                <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
+                <div
+                  className="tooltip tooltip-right !text-gray-200"
+                  data-tip={`Attach labels`}
+                >
+                  <a onClick={() => handleOpenLabelModal()}>
+                    <div className="hover:bg-stone-600 rounded px-1 py-1">
+                      <BsTagsFill size={20} className="pt-[1px]" />
+                    </div>
+                  </a>
+                </div>
+              </>
+            )}
+            <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
             <div className="dropdown hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px]">
               <label tabIndex={0}>
                 <div
@@ -304,61 +339,61 @@ export default function NoteDetails({
                       htmlFor="my-modal-4"
                       className="text-gray-300 cursor-pointer"
                     >
-                      <div className="flex flex-row space-x-2">
-                        {note?.settings.pinned || pinNote?.settings.pinned ? (
-                          <>
-                            <p className="py-1 text-xs uppercase tracking-widest">
-                              Unpin note
-                            </p>
-                            <BsFillPinAngleFill size={20} className="pt-[3px]" />
-                          </>
-                        ) : (
-                          <>  
-                            <p className="py-1 text-xs uppercase tracking-widest">
-                              Pin note
-                            </p>
-                            <BsFillPinAngleFill size={20} className="pt-[3px]" />
-                          </>
-                        )}
-                        
-                      </div>
-                    </label>
-                  </a>
-                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                  <a
-                    className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => handleOpenLabelModal()}
-                  >
-                    <label
-                      htmlFor="my-modal-4"
-                      className="text-gray-300 cursor-pointer"
+                        <div className="flex flex-row space-x-2">
+                          {note?.settings.pinned || pinNote?.settings.pinned ? (
+                            <>
+                              <p className="py-1 text-xs uppercase tracking-widest">
+                                Unpin note
+                              </p>
+                              <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                            </>
+                          ) : (
+                            <>  
+                              <p className="py-1 text-xs uppercase tracking-widest">
+                                Pin note
+                              </p>
+                              <BsFillPinAngleFill size={20} className="pt-[3px]" />
+                            </>
+                          )}
+                          
+                        </div>
+                      </label>
+                    </a>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <a
+                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      onClick={() => handleOpenLabelModal()}
                     >
-                      <div className="flex flex-row space-x-2">
-                        <p className="py-1 text-xs uppercase tracking-widest">
-                          Attach labels
-                        </p>
-                        <BsTagsFill size={20} className="pt-[3px]" />
-                      </div>
-                    </label>
-                  </a>
-                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                  <button
-                    className="active:!bg-gray-600 hover:!bg-gray-700"
-                    onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
-                  >
-                    <label
-                      htmlFor="my-modal-4"
-                      className="text-gray-300 cursor-pointer"
+                      <label
+                        htmlFor="my-modal-4"
+                        className="text-gray-300 cursor-pointer"
+                      >
+                        <div className="flex flex-row space-x-2">
+                          <p className="py-1 text-xs uppercase tracking-widest">
+                            Attach labels
+                          </p>
+                          <BsTagsFill size={20} className="pt-[3px]" />
+                        </div>
+                      </label>
+                    </a>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <button
+                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
                     >
-                      <div className="flex flex-row space-x-2">
-                        <p className="py-1 text-xs uppercase tracking-widest">
-                          {readMode ? "Edit mode" : "Read mode"}
-                        </p>
-                        {!readMode ? <AiFillRead size={22} className="pt-[3px]" /> : <AiFillEdit size={22} className="pt-[3px]" />}
-                      </div>
-                    </label>
-                  </button>
-                  <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                      <label
+                        htmlFor="my-modal-4"
+                        className="text-gray-300 cursor-pointer"
+                      >
+                        <div className="flex flex-row space-x-2">
+                          <p className="py-1 text-xs uppercase tracking-widest">
+                            {readMode ? "Edit mode" : "Read mode"}
+                          </p>
+                          {!readMode ? <AiFillRead size={22} className="pt-[3px]" /> : <AiFillEdit size={22} className="pt-[3px]" />}
+                        </div>
+                      </label>
+                    </button>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
                   <a className="cursor-not-allowed active:!bg-transparent">
                     <label htmlFor="my-modal-4" className="text-gray-600">
                       <div className="flex flex-row space-x-2 cursor-not-allowed">
@@ -457,7 +492,7 @@ export default function NoteDetails({
             title="Rename note"
             options={{
               titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "px-0 w-[25rem]",
+              modalWrapperClassName: "px-0 w-[25rem] xxs:!w-[20rem]",
               showCloseTooltip: true
             }}
           >
@@ -481,17 +516,54 @@ export default function NoteDetails({
               </form>
             </div>
           </Modal>
-          <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
-            <div className="flex flex-row">
-              <p className="px-2 text-sm xxs:text-[10px] xxs:px-0 text-gray-300">
-                {!readMode ? "Editing" : "Reading"} - {note ? note?.name?.slice(0, 24) : pinNote?.name?.slice(0, 24)}
+          <Modal
+            open={openNoteInfoModal}
+            setOpen={setOpenNoteInfoModal}
+            title="Note info"
+            options={{
+              titleWrapperClassName: "!px-6",
+              modalWrapperClassName: "px-0 w-[19rem]",
+              showCloseTooltip: true
+            }}
+          >
+            <div className="px-8 mt-5">
+                <div className="flex flex-row justify-between">
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Note name: </p>
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">
+                    {note ? note?.name?.slice(0, 16) : pinNote?.name?.slice(0, 16)}
+                  </p>
+                </div>
+                <div className="flex flex-row justify-between mt-3">
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Mode: </p>
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">{readMode ? "Read mode" : "Edit mode"}</p>
+                </div>
+                <div className="flex flex-row justify-between mt-3">
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Shared: </p>
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">false</p>
+                </div>
+                <div className="flex flex-row justify-between mt-3">
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Contributors: </p>
+                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">You</p>
+                </div>
+            </div>
+          </Modal>
+          {innerWidth > 640 ? (
+            <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
+              <div className="flex flex-row">
+                <p className="px-2 text-sm xxs:text-[10px] xxs:px-0 text-gray-300">
+                  {!readMode ? "Editing" : "Reading"} - {note ? note?.name?.slice(0, 24) : pinNote?.name?.slice(0, 24)}
+                </p>
+              </div>
+              <div className="mx-1 h-[21px] xxs:!h-[13.5px] xxs:mt-[3px] xxs:mx-2 w-[1px] border border-transparent border-r-gray-500" />
+              <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
+                Last updated on {days(lastUpdated() as string)}
               </p>
             </div>
-            <div className="mx-1 h-[21px] xxs:!h-[13.5px] xxs:mt-[3px] xxs:mx-2 w-[1px] border border-transparent border-r-gray-500" />
-            <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
-              Last updated on {days(lastUpdated() as string)}
-            </p>
-          </div>
+          ) : (
+            <div className="flex flex-row justify-start mr-[14px] py-2 absolute right-0">
+              <AiFillInfoCircle size={22} onClick={() => setOpenNoteInfoModal(true)}/>
+            </div>
+          )}
         </div>
       )}
 

@@ -1,26 +1,17 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import { ReactPortal, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import "./ExcalidrawModal.css";
+import {
+  AiFillDelete,
+  AiFillSave
+} from "react-icons/ai";
 
 import { Excalidraw } from "@excalidraw/excalidraw";
-import * as React from "react";
-import {
-  ReactPortal,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
 import { createPortal } from "react-dom";
 
 import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
+
+import "./ExcalidrawModal.css";
 
 export type ExcalidrawElementFragment = {
   isDeleted?: boolean;
@@ -61,13 +52,10 @@ export default function ExcalidrawModal({
   const excaliDrawModelRef = useRef<HTMLDivElement | null>(null);
 
   const [discardModalOpen, setDiscardModalOpen] = useState(false);
-  const [elements, setElements] =
-    useState<ReadonlyArray<ExcalidrawElementFragment>>(initialElements);
+  const [elements, setElements] = useState<ReadonlyArray<ExcalidrawElementFragment>>(initialElements);
 
   useEffect(() => {
-    if (excaliDrawModelRef.current !== null) {
-      excaliDrawModelRef.current.focus();
-    }
+    if (excaliDrawModelRef.current !== null) excaliDrawModelRef.current.focus();
   }, []);
 
   useEffect(() => {
@@ -102,9 +90,7 @@ export default function ExcalidrawModal({
     const currentModalRef = excaliDrawModelRef.current;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onDelete();
-      }
+      if (event.key === "Escape") onDelete();
     };
 
     if (currentModalRef !== null) {
@@ -119,12 +105,8 @@ export default function ExcalidrawModal({
   }, [elements, onDelete]);
 
   const save = () => {
-    if (elements.filter((el) => !el.isDeleted).length > 0) {
-      onSave(elements);
-    } else {
-      // delete node if the scene is clear
-      onDelete();
-    }
+    if (elements.filter((el) => !el.isDeleted).length > 0) onSave(elements);
+    else onDelete();
   };
 
   const discard = () => {
@@ -140,37 +122,37 @@ export default function ExcalidrawModal({
   function ShowDiscardDialog(): JSX.Element {
     return (
       <Modal
-        title="Discard"
-        onClose={() => {
-          setDiscardModalOpen(false);
-        }}
+        title="Delete"
+        onClose={() => setDiscardModalOpen(false)}
         closeOnClickOutside={true}
       >
-        Are you sure you want to discard the changes?
-        <div className="ExcalidrawModal__discardModal">
-          <Button
-            onClick={() => {
-              setDiscardModalOpen(false);
-              onDelete();
-            }}
-          >
-            Discard
-          </Button>{" "}
-          <Button
-            onClick={() => {
-              setDiscardModalOpen(false);
-            }}
-          >
-            Cancel
-          </Button>
+        <div className="w-[300px]">
+          <p className="text-xs text-gray-300 uppercase tracking-widest">
+            Are you sure you want to delete the node?
+          </p>
+          <div className="flex flex-row justify-around mt-6">
+            <Button
+              className="bg-gray-700 hover:!bg-red-700 transition-all duration-300 ease-in-out text-xs uppercase tracking-widest py-3"
+              onClick={() => {
+                setDiscardModalOpen(false);
+                onDelete();
+              }}
+            >
+              Delete
+            </Button>{" "}
+            <Button
+              className="bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out text-xs uppercase tracking-widest py-3"
+              onClick={() => setDiscardModalOpen(false)}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       </Modal>
     );
   }
 
-  if (isShown === false) {
-    return null;
-  }
+  if (isShown === false) return null;
 
   const onChange = (els: ReadonlyArray<ExcalidrawElementFragment>) => {
     setElements(els);
@@ -187,11 +169,11 @@ export default function ExcalidrawModal({
   return createPortal(
     <div className="ExcalidrawModal__overlay" role="dialog">
       <div
-        className="ExcalidrawModal__modal"
+        className="ExcalidrawModal__modal xxs:!w-[350px]"
         ref={excaliDrawModelRef}
         tabIndex={-1}
       >
-        <div className="ExcalidrawModal__row">
+        <div className="ExcalidrawModal__row xxs:!w-[350px]">
           {discardModalOpen && <ShowDiscardDialog />}
           <_Excalidraw
             onChange={onChange}
@@ -202,10 +184,16 @@ export default function ExcalidrawModal({
           />
           <div className="ExcalidrawModal__actions">
             <button className="action-button" onClick={discard}>
-              Discard
+              <div className="flex flex-row space-x-2">
+                <p className="text-[12.5px] uppercase tracking-wide">delete</p>
+                <AiFillDelete className="mt-[1px]"/>
+              </div>
             </button>
             <button className="action-button" onClick={save}>
-              Save
+              <div className="flex flex-row space-x-2">
+                <p className="text-[12.5px] uppercase tracking-wide">save</p>
+                <AiFillSave className="mt-[1px]"/>
+              </div>
             </button>
           </div>
         </div>
