@@ -139,7 +139,7 @@ export default {
                             $match: {
                                 author,
                                 $or: [
-                                    { title: searchRegex },
+                                    { name: searchRegex },
                                     { 'labels.name': searchRegex }
                                 ],
                             }
