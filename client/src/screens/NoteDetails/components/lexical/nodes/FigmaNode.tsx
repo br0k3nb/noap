@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import type {
   EditorConfig,
   ElementFormatType,
@@ -8,28 +10,25 @@ import type {
 } from "lexical";
 
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents";
-import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
-} from "@lexical/react/LexicalDecoratorBlockNode";
-import * as React from "react";
+import { DecoratorBlockNode, SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
+
+import useUpdateViewport from "../../../../../hooks/useUpdateViewport";
 
 type FigmaComponentProps = Readonly<{
-  className: Readonly<{
-    base: string;
-    focus: string;
-  }>;
+  className: Readonly<{ base: string; focus: string; }>;
   format: ElementFormatType | null;
   nodeKey: NodeKey;
   documentID: string;
 }>;
 
-function FigmaComponent({
-  className,
-  format,
-  nodeKey,
-  documentID,
-}: FigmaComponentProps) {
+function FigmaComponent({ className, format, nodeKey, documentID }: FigmaComponentProps) {
+  const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth });
+
+  useUpdateViewport(setCurrentScreenSize, 500);
+
+  const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
+  const editorWidth = rootEditorDiv.clientWidth;
+
   return (
     <BlockWithAlignableContents
       className={className}
@@ -37,10 +36,13 @@ function FigmaComponent({
       nodeKey={nodeKey}
     >
       <iframe
-        width="560"
-        height="315"
-        src={`https://www.figma.com/embed?embed_host=lexical&url=\
-          https://www.figma.com/file/${documentID}`}
+        className="!rounded-lg border border-gray-500"
+        width={currentScreenSize.width <= 640 ? editorWidth - 56 : editorWidth - 56 < 700 ? editorWidth - 56 : 700 }
+        height="415"
+        src={`
+          https://www.figma.com/embed?embed_host=lexical&url=\
+          https://www.figma.com/file/${documentID}
+        `}
         allowFullScreen={true}
       />
     </BlockWithAlignableContents>

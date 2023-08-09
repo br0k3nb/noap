@@ -61,8 +61,8 @@ function DropDownItems({
   dropDownRef: Ref<HTMLDivElement>;
   onClose: () => void;
 }) {
-  const [ items, setItems ] = useState<React.RefObject<HTMLButtonElement>[]>();
-  const [ highlightedItem, setHighlightedItem ] = useState<React.RefObject<HTMLButtonElement>>();
+  const [items, setItems] = useState<React.RefObject<HTMLButtonElement>[]>();
+  const [highlightedItem, setHighlightedItem] = useState<React.RefObject<HTMLButtonElement>>();
 
   const registerItem = useCallback(
     (itemRef: React.RefObject<HTMLButtonElement>) => {
@@ -143,8 +143,8 @@ export default function DropDown({
   stopCloseOnClickSelf?: boolean;
 }): JSX.Element {
   const dropDownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<any>(null);
-  const [ showDropDown, setShowDropDown ] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [showDropDown, setShowDropDown] = useState(false);
 
   const handleClose = () => {
     setShowDropDown(false);
@@ -155,11 +155,12 @@ export default function DropDown({
     const button = buttonRef.current;
     const dropDown = dropDownRef.current;
 
-    if (showDropDown && button !== null && dropDown !== null) {
+    if (showDropDown && button !== null && dropDown !== null) {   
       const { top, left } = button.getBoundingClientRect();
+      const calculateSpacing = button.clientWidth === 50 ? 3 : button.clientWidth <= 35 ? 12 : 6.5;
 
-      const usingCustomButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20) - 9}px`;
-      const usingDefaultButton = `${Math.min(left, window.innerWidth - dropDown.offsetWidth - 20)}px`;
+      const usingCustomButton = `${Math.min(left, innerWidth - dropDown.offsetWidth - 20) - calculateSpacing}px`;
+      const usingDefaultButton = `${Math.min(left, innerWidth - dropDown.offsetWidth - 20)}px`;
 
       dropDown.style.top = `${top + 40}px`;
       dropDown.style.left = useCustomButton ? usingCustomButton : usingDefaultButton;
@@ -195,9 +196,7 @@ export default function DropDown({
         >
           {buttonIconClassName && <span className={buttonIconClassName} />}
           {buttonLabel && 
-            <span 
-              className={`text dropdown-button-text ${buttonLabelClassName && buttonLabelClassName}`}
-            >
+            <span className={`text dropdown-button-text ${buttonLabelClassName && buttonLabelClassName}`}>
               {buttonLabel}
             </span>
           }
@@ -211,9 +210,7 @@ export default function DropDown({
         >
           <div className="my-1 mr-1 text-gray-200">
             {(buttonLabel && !customButtonLabel) ? (
-              <span 
-                className={`text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}
-              >
+              <span className={`text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}>
                 {buttonLabel}
               </span>
             ) : customButtonLabel}

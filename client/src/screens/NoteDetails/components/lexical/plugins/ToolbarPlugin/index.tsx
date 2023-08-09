@@ -1,5 +1,5 @@
 import type { LexicalEditor, NodeKey, TextNode, ElementNode } from "lexical";
-import { useCallback, useEffect, useState, useContext, useRef, Dispatch, SetStateAction } from "react";
+import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 
 import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, CODE_LANGUAGE_MAP, getLanguageFriendlyName } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -27,9 +27,6 @@ import {
   $getSelection,
   $isRangeSelection,
   $isRootOrShadowRoot,
-  $isParagraphNode,
-  $getTextContent,
-  $isLineBreakNode,
   $isTextNode,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
@@ -68,7 +65,7 @@ import checkIcon from "../../images/icons/square-check.svg";
 import quoteIcon from "../../images/icons/chat-square-quote.svg";
 import codeBlockIcon from "../../images/icons/code.svg";
 
-import { NoteSettingsCtx } from "../../../../../../context/NoteSettingsCtx";
+import useUpdateViewport from "../../../../../../hooks/useUpdateViewport";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -129,23 +126,8 @@ const FONT_SIZE_OPTIONS: [string, string][] = [
   ["48px", "48px"],
   ["60px", "60px"],
   ["72px", "72px"],
-  ["96px", "96px"]
-];
-
-const fontFamilyOptionsArray = [
-  "Arial", 
-  "Amatic SC",
-  "Bangers",
-  "Courier New",
-  "Dancing Script",
-  "Georgia",
-  "Montserrat",
-  "Nanum Gothic Coding",
-  "Roboto",
-  "Reenie Beanie",
-  "Source Code Pro",
-  "Trebuchet MS",
-  "Times New Roman"
+  ["96px", "96px"],
+  ["100px", "100px"]
 ];
 
 function dropDownActiveClass(active: boolean) {
@@ -224,6 +206,8 @@ function BlockFormatDropDown({
     }
   };
 
+  const default_dropdown_item_classname = "rounded-lg !w-[9.90rem] hover:!bg-gray-700 !mt-[1px] !py-[11px]";
+
   return (
     <DropDown
       disabled={disabled}
@@ -234,41 +218,45 @@ function BlockFormatDropDown({
       buttonAriaLabel="Formatting options for text style"
     >
       <DropDownItem 
-        className={`!w-[85%] mx-auto item hover:!bg-gray-700 my-1 !py-3 ${dropDownActiveClass(blockType === "paragraph")}`} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "paragraph")} 
         onClick={formatParagraph}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon paragraph comp-picker" src={paragraphIcon} />
-          <span className="text ">Normal</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="w-[18px] h-5 paragraph comp-picker" src={paragraphIcon} />
+          <span className="text-[15px] text-gray-300">Normal</span>
         </div>
       </DropDownItem>
+      <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.40rem] mx-auto" />
       <DropDownItem 
-        className={"!w-[85%] mx-auto item hover:!bg-gray-700 my-1 !py-3 " + dropDownActiveClass(blockType === "h1")} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "h1")} 
         onClick={() => formatHeading("h1")}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon comp-picker" src={h1Icon} />
-          <span className="text">Heading 1</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="comp-picker w-[19px] h-5 mt-[1.5px]" src={h1Icon} />
+          <span className="text-[15px] text-gray-300">Heading 1</span>
         </div>
       </DropDownItem>
+      <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
       <DropDownItem 
-        className={"!w-[85%] mx-auto item hover:!bg-gray-700 item my-1 !py-3 " + dropDownActiveClass(blockType === "h2")} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "h2")} 
         onClick={() => formatHeading("h2")}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon comp-picker" src={h2Icon} />
-          <span className="text">Heading 2</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="comp-picker w-[19px] h-5 mt-[1.5px]" src={h2Icon} />
+          <span className="text-[15px] text-gray-300">Heading 2</span>
         </div>
       </DropDownItem>
+      <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
       <DropDownItem 
-        className={"!w-[85%] mx-auto item hover:!bg-gray-700 item my-1 !py-3 " + dropDownActiveClass(blockType === "h3")} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "h3")} 
         onClick={() => formatHeading("h3")}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon comp-picker" src={h3Icon} />
-          <span className="text">Heading 3</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="comp-picker w-[19px] h-5 mt-[1.5px]" src={h3Icon} />
+          <span className="text-[15px] text-gray-300">Heading 3</span>
         </div>
       </DropDownItem>
+      <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
       {/* <DropDownItem className={"item " + dropDownActiveClass(blockType === "bullet")} onClick={formatBulletList}>
         <i className="icon bullet-list comp-picker" />
         <span className="text">Bullet List</span>
@@ -277,32 +265,33 @@ function BlockFormatDropDown({
         <i className="icon numbered-list comp-picker" />
         <span className="text">Numbered List</span>
       </DropDownItem> */}
-      {/* <div className="border border-transparent border-t-gray-700 mx-3 my-1"/> */}
       <DropDownItem 
-        className={"!w-[85%] mx-auto item hover:!bg-gray-700 item my-1 !py-3 " + dropDownActiveClass(blockType === "check")} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "check")} 
         onClick={formatCheckList}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon comp-picker" src={checkIcon} />
-          <span className="text">Check List</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="comp-picker w-[18p  x] h-5 mt-[1.5px]" src={checkIcon} />
+          <span className="text-[15px] text-gray-300">Check List</span>
         </div>
       </DropDownItem>
+      <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
       <DropDownItem 
-        className={"!w-[85%] mx-auto item hover:!bg-gray-700 item my-1 !py-3 " + dropDownActiveClass(blockType === "quote")} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "quote")} 
         onClick={formatQuote}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon quote comp-picker" src={quoteIcon} />
-          <span className="text">Quote</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="quote comp-picker w-[19px] h-5 mt-[1.5px]" src={quoteIcon} />
+          <span className="text-[15px] text-gray-300">Quote</span>
         </div>
       </DropDownItem>
+      <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
       <DropDownItem 
-        className={"!w-[85%] mx-auto item hover:!bg-gray-700 item my-1 !py-3 " + dropDownActiveClass(blockType === "code")} 
+        className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "code")} 
         onClick={formatCode}
       >
-        <div className="flex flex-row ml-10">
-          <img className="icon code comp-picker" src={codeBlockIcon}/>
-          <span className="text">Code Block</span>
+        <div className="flex flex-row space-x-2 ml-3">
+          <img className="code comp-picker w-[19px] h-5 mt-[1.5px]" src={codeBlockIcon}/>
+          <span className="text-[15px] text-gray-300">Code Block</span>
         </div>
       </DropDownItem>
     </DropDown>
@@ -317,8 +306,9 @@ function FontDropDown({
   editor,
   value,
   style,
-  disabled = false,
+  setFontSize,
   isFontSizeModal,
+  disabled = false,
   setLastSelectedFontFamily
 }: {
   editor: LexicalEditor;
@@ -327,11 +317,14 @@ function FontDropDown({
   disabled?: boolean;
   isFontSizeModal?: boolean;
   setLastSelectedFontFamily?: Dispatch<SetStateAction<string>>;
+  setFontSize?: Dispatch<SetStateAction<string>>;
 }): JSX.Element {
 
   const handleClick = useCallback(
     (option: string, styleType?: string) => {
       if(!isFontSizeModal && setLastSelectedFontFamily) setLastSelectedFontFamily(option);
+      if(isFontSizeModal && setFontSize) setFontSize(option);
+
       editor.update(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
@@ -361,7 +354,7 @@ function FontDropDown({
       modalClassName={`
         !max-h-[338px] overflow-scroll scrollbar-track-transparent scrollbar-thumb-gray-900
         ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-        ${isFontSizeModal && "!w-16 xxs:!w-[58px] overflow-x-hidden"}
+        ${isFontSizeModal && "!w-14 xxs:!w-[58px] overflow-x-hidden"}
       `}
       disabled={disabled}
       buttonClassName={`toolbar-item  ` + style}
@@ -371,24 +364,33 @@ function FontDropDown({
       useCustomButton={isFontSizeModal ? true : false}
     >
       {(!isFontSizeModal ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
-        ([option, text]) => (
+        ([option, text], index: number) => (
           <DropDownItem
-            className={`item !pb-0 !pt-0 mx-auto ${style !== "font-family" && "!w-14"} `}
+            className="item !p-0 !m-0"
             onClick={() => handleClick(option)}
             key={option}
           >
             <div 
-              className={`bg-gray-800 hover:!bg-gray-700 my-1 rounded-lg
-                ${!isFontSizeModal ? "!mx-2 w-screen" : "!w-[50px]"}
+              className={`
+                rounded-lg hover:!bg-gray-700 
+                ${isFontSizeModal ? "!w-[53px]" : "w-[183px]"} 
                 ${dropDownActiveClass(value === option)}
               `}
-            >
+            > 
               <p 
                 style={{fontFamily: option}} 
-                className={`text-start py-[14px] px-2 ${isFontSizeModal && "!text-center "}`}
+                className={`text-start py-[14px] ${isFontSizeModal ? "!text-center" : "ml-4"}`}
               >
                 {isFontSizeModal ? parseFontSizeToNumber(text) : text}
               </p>
+              {(isFontSizeModal && index !== (FONT_SIZE_OPTIONS.length - 1)) && (
+                <div 
+                  className={`
+                    h-[1px] border border-transparent border-t-gray-600 mx-auto
+                    ${isFontSizeModal ? "w-[38px]" : "w-[158px]"}
+                  `}
+                />
+              )}
             </div>
           </DropDownItem>
         )
@@ -423,8 +425,8 @@ export default function ToolbarPlugin() {
   const [canRedo, setCanRedo] = useState(false);
   const [isRTL, setIsRTL] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState<string>('');
+  const [screenSize, setScreenSize] = useState({ width: innerWidth });
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const [screenSize, setScreenSize] = useState<number>(window.innerWidth);
   const [lastSelectedFontFamily, setLastSelectedFontFamily] = useState('');
 
   const prevNodeKey = useRef<null | string>(null);
@@ -624,12 +626,12 @@ export default function ToolbarPlugin() {
   }, [activeEditor]);
 
   const onFontColorSelect = useCallback(
-    (value: string) => {applyStyleText({color: value})},
+    (value: string) => { applyStyleText({ color: value }) },
     [applyStyleText]
   );
 
   const onBgColorSelect = useCallback(
-    (value: string) => {applyStyleText({'background-color': value})},
+    (value: string) => { applyStyleText({ 'background-color': value }) },
     [applyStyleText]
   );
 
@@ -650,7 +652,6 @@ export default function ToolbarPlugin() {
     [activeEditor, selectedElementKey],
   );
 
-  // const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
   const reg = new RegExp(/^\d+/, "gi");
   const getFontSize = reg.exec(fontSize);
 
@@ -692,14 +693,14 @@ export default function ToolbarPlugin() {
   //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
   const getNavbar = document.getElementById("pc-navbar") as any;
 
-  addEventListener("resize", () => setTimeout(() => {
-    setScreenSize(!getNavbar?.checkVisibility() ? window.innerWidth : window.innerWidth - 442);
-  }, 500));
+  useUpdateViewport(setScreenSize, 500);
 
   return (
     <div 
       className="toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent"
-      style={{ width: screenSize }}
+      style={{ 
+        width: !getNavbar?.checkVisibility() ? screenSize.width : screenSize.width - 442
+      }}
     >
       <button
         disabled={!canUndo || !isEditable}
@@ -767,6 +768,7 @@ export default function ToolbarPlugin() {
               +
             </button>
             <FontDropDown
+              setFontSize={setFontSize}
               isFontSizeModal={true}
               disabled={!isEditable} 
               style={"font-size"} 
@@ -844,7 +846,18 @@ export default function ToolbarPlugin() {
             onChange={onBgColorSelect}
             title="bg color"
           />
+          {/* const default_dropdown_item_classname = "rounded-lg !w-[9.90rem] hover:!bg-gray-700 !mt-[1px] !py-[11px]"; */}
+           {/* <DropDownItem 
+            className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "code")} 
+            onClick={formatCode}
+          >
+            <div className="flex flex-row space-x-2 ml-3">
+              <img className="code comp-picker w-[19px] h-5 mt-[1.5px]" src={codeBlockIcon}/>
+              <span className="text-[15px] text-gray-300">Code Block</span>
+            </div>
+          </DropDownItem> */}
           <DropDown
+            modalClassName="!w-[200px]"     
             disabled={!isEditable}
             buttonClassName="toolbar-item spaced"
             buttonLabel=""
@@ -852,35 +865,48 @@ export default function ToolbarPlugin() {
             buttonIconClassName="icon dropdown-more comp-picker"
           >
             <DropDownItem
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND,"strikethrough")}
-              className={"item " + dropDownActiveClass(isStrikethrough)}
+              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")}
+              className={"rounded-lg !w-[12.36rem] hover:!bg-gray-700 !mt-[1px] !py-[11px] " + dropDownActiveClass(isStrikethrough)}
               title="Strikethrough"
               aria-label="Format text with a strikethrough"
             >
-              <i className="icon strikethrough comp-picker" />
-              <span className="text">Strikethrough</span>
+              <div className="flex flex-row space-x-2 ml-3">
+                <i className="strikethrough comp-picker w-[18px] h-4 mt-[3px]" />
+                <span className="text-[15px] text-gray-300">Strikethrough</span>
+              </div>
             </DropDownItem>
             <DropDownItem
               onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript")}
-              className={"item " + dropDownActiveClass(isSubscript)}
+              className={"rounded-lg !w-[12.36rem] hover:!bg-gray-700 !mt-[1px] !py-[11px] " + dropDownActiveClass(isSubscript)}
               title="Subscript"
               aria-label="Format text with a subscript"
             >
-              <i className="icon subscript comp-picker" />
-              <span className="text">Subscript</span>
+              <div className="flex flex-row space-x-2 ml-3">
+                <i className="subscript comp-picker w-[18px] h-4 mt-[3px]" />
+                <span className="text-[15px] text-gray-300">Subscript</span>
+              </div>
             </DropDownItem>
             <DropDownItem
               onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript")}
-              className={"item " + dropDownActiveClass(isSuperscript)}
+              className={"rounded-lg !w-[12.36rem] hover:!bg-gray-700 !mt-[1px] !py-[11px] " + dropDownActiveClass(isSuperscript)}
               title="Superscript"
               aria-label="Format text with a superscript"
-            >
-              <i className="icon superscript comp-picker" />
-              <span className="text">Superscript</span>
+            > 
+              <div className="flex flex-row space-x-2 ml-3">
+                <i className="icon superscript comp-picker w-[18px] h-4 mt-[3px]" />
+                <span className="text-[15px] text-gray-300">Superscript</span>
+              </div>
             </DropDownItem>
-            <DropDownItem onClick={clearFormatting} className="item" title="Clear text formatting" aria-label="Clear all text formatting">
-              <i className="icon clear comp-picker" />
-              <span className="text">Clear Formatting</span>
+            <DropDownItem 
+              onClick={clearFormatting} 
+              className="rounded-lg !w-[12.36rem] hover:!bg-gray-700 !mt-[1px] !py-[11px]" 
+              title="Clear text formatting" 
+              aria-label="Clear all text formatting"
+            >
+              <div className="flex flex-row space-x-2 ml-3">
+                <i className="clear comp-picker w-[17px] h-4 mt-[3px]" />
+                <span className="text-[15px] text-gray-300">Clear Formatting</span>
+              </div>
             </DropDownItem>
           </DropDown>
           <Divider />
@@ -986,7 +1012,7 @@ export default function ToolbarPlugin() {
           <span className="text">Indent</span>
         </DropDownItem>
       </DropDown>
-
+      
       {modal}
     </div>
   );

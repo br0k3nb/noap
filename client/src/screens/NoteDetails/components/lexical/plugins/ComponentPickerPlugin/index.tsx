@@ -77,10 +77,10 @@ function ComponentPickerMenuItem({
   onMouseEnter: () => void;
   option: ComponentPickerOption;
 }) {
-  let className = "item !bg-gray-800 !text-gray-300 hover:!bg-gray-500";
+  let className = "item !bg-gray-800 !text-gray-300 hover:!bg-gray-600 !py-3 !mx-[1.5px]";
   if (isSelected) className += " selected";
   return (
-    <div className="flex flex-row space-x-2 py-1">
+    <div className="flex flex-row space-x-2 hover:!bg-gray-600 rounded">
       <li
         key={option.key}
         tabIndex={-1}
@@ -100,9 +100,9 @@ function ComponentPickerMenuItem({
 }
 
 export default function ComponentPickerMenuPlugin(): JSX.Element {
-  const [ editor ] = useLexicalComposerContext();
-  const [ modal, showModal ] = useModal();
-  const [ queryString, setQueryString ] = useState<string | null>(null);
+  const [editor] = useLexicalComposerContext();
+  const [modal, showModal] = useModal();
+  const [queryString, setQueryString] = useState<string | null>(null);
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
     minLength: 0,
@@ -345,8 +345,8 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
             const getElPositionData = anchorElementRef.current.getBoundingClientRect();
             const { x, y } = getElPositionData;
 
-            const overflowXAxis = window.outerWidth - x < 176;
-            const overflowYAxis = window.outerHeight - y < 260;
+            const overflowXAxis = outerWidth - x < 176;
+            const overflowYAxis = outerHeight - y < 260;
 
             return anchorElementRef.current && options.length
             ? createPortal(
@@ -357,7 +357,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
                     : overflowXAxis && overflowYAxis && "!absolute !-left-52 !-top-48"}
                   `}
                 >
-                  <ul className="!h-[180px] border border-gray-600">
+                  <ul className="h-[200px] xxs:!h-[180px] border border-gray-600">
                     {options.map((option, i: number) => (
                       <div key={option.key}>
                         <ComponentPickerMenuItem

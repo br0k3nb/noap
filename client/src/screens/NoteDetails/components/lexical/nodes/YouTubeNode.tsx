@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import type {
   DOMConversionMap,
@@ -13,39 +13,24 @@ import type {
 } from "lexical";
 
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents";
-import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
-} from "@lexical/react/LexicalDecoratorBlockNode";
+import { DecoratorBlockNode, SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 
-import { NoteSettingsCtx } from '../../../../../context/NoteSettingsCtx';
+import useUpdateViewport from '../../../../../hooks/useUpdateViewport';
 
 type YouTubeComponentProps = Readonly<{
-  className: Readonly<{
-    base: string;
-    focus: string;
-  }>;
+  className: Readonly<{ base: string; focus: string; }>;
   format: ElementFormatType | null;
   nodeKey: NodeKey;
   videoID: string;
 }>;
 
-function YouTubeComponent({
-  className,
-  format,
-  nodeKey,
-  videoID,
-}: YouTubeComponentProps) {
-  const { noteSettings: { expanded }} = useContext(NoteSettingsCtx) as any;
+function YouTubeComponent({ className, format, nodeKey, videoID }: YouTubeComponentProps) {
+  const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth });
 
-  const [ currentScreenSize, setCurrentScreenSize ] = useState(window.innerWidth);
+  useUpdateViewport(setCurrentScreenSize, 500);
 
-  useEffect(() => {
-    const updateScreenSize = () => setTimeout(() => setCurrentScreenSize(window.innerWidth), 500);
-
-    window.addEventListener("resize", updateScreenSize);
-    return () => window.removeEventListener("resize", updateScreenSize);
-  }, []);
+  const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
+  const editorWidth = rootEditorDiv.clientWidth;
 
   return (
     <BlockWithAlignableContents
@@ -54,12 +39,14 @@ function YouTubeComponent({
       nodeKey={nodeKey}
     >
       <iframe
-        className="w-[700px] h-[415px] xxs:!h-[13.7rem] !object-cover rounded-lg"
+        className="w-[700px] h-[415px] xxs:!h-[15rem] !object-cover rounded-lg"
         src={`https://www.youtube.com/embed/${videoID}`}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}
         title="YouTube video"
-        style={{maxWidth: !expanded ? currentScreenSize - 495 : currentScreenSize - 58}}
+        style={{
+          maxWidth: currentScreenSize.width <= 640 ? editorWidth - 56 : editorWidth - 56 < 700 ? editorWidth - 56 : 700
+        }}
       />
     </BlockWithAlignableContents>
   );
@@ -74,14 +61,14 @@ export type SerializedYouTubeNode = Spread<
   SerializedDecoratorBlockNode
 >;
 
-function convertYoutubeElement(
-  domNode: HTMLElement
-): null | DOMConversionOutput {
+function convertYoutubeElement(domNode: HTMLElement): null | DOMConversionOutput {
   const videoID = domNode.getAttribute("data-lexical-youtube");
+
   if (videoID) {
     const node = $createYouTubeNode(videoID);
     return { node };
   }
+
   return null;
 }
 
@@ -119,8 +106,6 @@ export class YouTubeNode extends DecoratorBlockNode {
   exportDOM(): DOMExportOutput {
     const element = document.createElement("iframe");
     element.setAttribute("data-lexical-youtube", this.__id);
-    element.setAttribute("width", "560");
-    element.setAttribute("height", "315");
     element.setAttribute("src", `https://www.youtube.com/embed/${this.__id}`);
     element.setAttribute("frameborder", "0");
     element.setAttribute(
@@ -135,9 +120,8 @@ export class YouTubeNode extends DecoratorBlockNode {
   static importDOM(): DOMConversionMap | null {
     return {
       iframe: (domNode: HTMLElement) => {
-        if (!domNode.hasAttribute("data-lexical-youtube")) {
-          return null;
-        }
+        if (!domNode.hasAttribute("data-lexical-youtube")) return null;
+
         return {
           conversion: convertYoutubeElement,
           priority: 1,

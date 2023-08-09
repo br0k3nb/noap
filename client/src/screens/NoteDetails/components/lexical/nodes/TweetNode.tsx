@@ -17,6 +17,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import SvgLoader from '../../../../../components/SvgLoader';
 
+import useUpdateViewport from '../../../../../hooks/useUpdateViewport';
+
 const WIDGET_SCRIPT_URL = 'https://platform.twitter.com/widgets.js';
 
 type TweetComponentProps = Readonly<{
@@ -44,7 +46,7 @@ export function LoaderComponent() {
   )
 };
 
-function convertTweetElement( domNode: HTMLDivElement ): DOMConversionOutput | null {
+function convertTweetElement(domNode: HTMLDivElement): DOMConversionOutput | null {
   const id = domNode.getAttribute('data-lexical-tweet-id');
   if (id) {
     const node = $createTweetNode(id);
@@ -67,8 +69,10 @@ function TweetComponent({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const previousTweetIDRef = useRef<string>('');
 
-  const [ deviceScreenSize, setDeviceScreeSize ] = useState(window.innerWidth);
-  const [ isTweetLoading, setIsTweetLoading ] = useState(false);
+  const [deviceScreenSize, setDeviceScreeSize] = useState({ width: innerWidth });
+  const [isTweetLoading, setIsTweetLoading] = useState(false);
+
+  useUpdateViewport(setDeviceScreeSize, 500);
 
   const createTweet = useCallback(async () => {
     try {
@@ -102,13 +106,8 @@ function TweetComponent({
 
       if (previousTweetIDRef) previousTweetIDRef.current = tweetID;
     }
-
-    const updateViewPortWidth = () => setTimeout(() => setDeviceScreeSize(window.innerWidth), 500);
-    window.addEventListener("resize", updateViewPortWidth);
-
-    return () => window.removeEventListener("resize", updateViewPortWidth);
   }, [createTweet, onError, tweetID]);
-
+  
   return (
     <BlockWithAlignableContents
       className={className}
@@ -116,7 +115,10 @@ function TweetComponent({
       nodeKey={nodeKey}>
       {isTweetLoading ? <LoaderComponent /> : null}
       <div
-        style={{display: 'inline-block', width: deviceScreenSize > 640 ? "550px" : deviceScreenSize - 55}}
+        style={{
+          display: 'inline-block', 
+          width: deviceScreenSize.width > 640 ? "550px" : deviceScreenSize.width - 55
+        }}
         ref={containerRef}
       />
     </BlockWithAlignableContents>

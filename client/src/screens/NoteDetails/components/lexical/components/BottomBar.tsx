@@ -23,7 +23,7 @@ type BottomBarProps = {
 };
 
 export default function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {
-    const { noteSettings: { expanded, showBottomBar } } = useContext(NoteSettingsCtx) as any;
+    const { noteSettings: { showBottomBar } } = useContext(NoteSettingsCtx) as any;
     const refetch = useContext(RefetchCtx);
   
     const [open, setOpen] = useState(false);
@@ -57,7 +57,10 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
         toastAlert({ icon: "error", title: err.message, timer: 2000 });
       }
     }
-  
+
+    const rootEditorDiv = document.getElementById("editor-parent-container");
+    const editorWidth = rootEditorDiv ? rootEditorDiv.clientWidth : 0;
+
     return (
       <div className={`h-12 bg-gray-800 w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500 ${!showBottomBar && "hidden"}`}>
         <div className="px-2 py-[0.50rem]">
@@ -103,12 +106,9 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
             <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] !mr-2"/>
             <div 
               className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
-              style={
-                !expanded
-                  ? { width: currentScreenSize <= 1280 ? currentScreenSize - 650 : currentScreenSize - 710 } 
-                  : { width: currentScreenSize > 640 && currentScreenSize <= 1280 ? currentScreenSize - 150 
-                  : currentScreenSize <= 640 ? currentScreenSize - 150 : currentScreenSize - 280 }
-              }
+              style={{
+                width: currentScreenSize < 1280 ? editorWidth - 150 : editorWidth - 270
+              }}
             >
               {note?.labels && note?.labels.length > 0 ? (
                 <>

@@ -310,10 +310,6 @@ export default function ImageComponent({
   const isFocused = isSelected || isResizing;
 
   const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
-  // const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
-  // const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
-  // const noteTextCondition = TweentyPercentMarginOfScreen < 944 ? TweentyPercentMarginOfScreen : 943;
-  // const imageOverflow = typeof width === "number" && (width - noteTextCondition) > 0  ? (width - noteTextCondition) : 0;
 
   const donwloadImage = (srcLink: string) => {
     const a = Object.assign(document.createElement("a"), { href: srcLink, style:"display:none", download: "image" });

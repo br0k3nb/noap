@@ -17,7 +17,6 @@ export default function FigmaPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    //@ts-ignore
     if (!editor.hasNodes([FigmaNode])) {
       throw new Error("FigmaPlugin: FigmaNode not registered on editor");
     }
@@ -26,7 +25,7 @@ export default function FigmaPlugin(): JSX.Element | null {
       INSERT_FIGMA_COMMAND,
       (payload) => {
         const figmaNode = $createFigmaNode(payload);
-        //@ts-ignore
+        
         $insertNodeToNearestRoot(figmaNode);
         return true;
       },
