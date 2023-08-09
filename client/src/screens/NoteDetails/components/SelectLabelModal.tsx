@@ -54,7 +54,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 return toastAlert({ icon: "error", title: `Please, select a label!`, timer: 2000 });
             };
 
-            const {data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
+            const { data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
             toastAlert({icon: "success", title: message, timer: 2000});
             await refetch?.fetchNotes();
@@ -62,6 +62,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
         } catch (err: any) {
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
             setShowLoader(false);
+            console.log(err);
         }
     };
 
