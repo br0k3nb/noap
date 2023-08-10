@@ -5,7 +5,7 @@ import { $createHorizontalRuleNode, INSERT_HORIZONTAL_RULE_COMMAND } from "@lexi
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
 
 export default function HorizontalRulePlugin() {
-  const [ editor ] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
     return editor.registerCommand(
