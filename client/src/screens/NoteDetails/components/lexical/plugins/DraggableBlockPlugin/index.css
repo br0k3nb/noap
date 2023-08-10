@@ -30,7 +30,7 @@
   background: deepskyblue;
   margin-top: 46px !important;
   height: 5px;
-  width: 500px !important;
+  width: auto;
   position: absolute;
   left: 3px;
   top: 0;

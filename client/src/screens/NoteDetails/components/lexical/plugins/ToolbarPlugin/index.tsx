@@ -307,6 +307,7 @@ function FontDropDown({
   value,
   style,
   setFontSize,
+  setFontFamily,
   isFontSizeModal,
   disabled = false,
   setLastSelectedFontFamily
@@ -316,17 +317,20 @@ function FontDropDown({
   style: string;
   disabled?: boolean;
   isFontSizeModal?: boolean;
-  setLastSelectedFontFamily?: Dispatch<SetStateAction<string>>;
   setFontSize?: Dispatch<SetStateAction<string>>;
+  setFontFamily?: Dispatch<SetStateAction<string>>;
+  setLastSelectedFontFamily?: Dispatch<SetStateAction<string>>;
 }): JSX.Element {
 
   const handleClick = useCallback(
     (option: string, styleType?: string) => {
-      if(!isFontSizeModal && setLastSelectedFontFamily) setLastSelectedFontFamily(option);
+      if(!isFontSizeModal && setLastSelectedFontFamily) setLastSelectedFontFamily(option);  
+      if(!isFontSizeModal && setFontFamily) setFontFamily(option);
       if(isFontSizeModal && setFontSize) setFontSize(option);
 
       editor.update(() => {
         const selection = $getSelection();
+        
         if ($isRangeSelection(selection)) {
           $patchStyleText(selection, {
             [styleType ? styleType : style]: option,
@@ -757,6 +761,7 @@ export default function ToolbarPlugin() {
             style={"font-family"} 
             value={fontFamily} 
             editor={editor} 
+            setFontFamily={setFontFamily}
             setLastSelectedFontFamily={setLastSelectedFontFamily}
           />
           <Divider />

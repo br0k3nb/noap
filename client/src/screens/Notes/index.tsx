@@ -47,8 +47,8 @@ export default function Notes({
     setPinnedNotesPage,
     pinnedNotesHasNextPage
 }: Props) {
-    const [showSearch, setShowSearch] = useState(false);
-    
+    const [showSearch, setShowSearch] = useState(false);    
+
     const navTopBarProps = { 
         hasNextPage, 
         navbar, 
@@ -59,8 +59,11 @@ export default function Notes({
         setSearch, 
         setShowSearch, 
         showSearch, 
-        totalDocs: totalDocs + totalPinnedDocs,
-        pinnedNotes
+        totalDocs: 
+            totalDocs && totalPinnedDocs ? totalDocs + totalPinnedDocs 
+            : !totalDocs && totalPinnedDocs ? totalPinnedDocs : totalDocs
+        ,
+        pinnedNotes,
     };
 
     const cardNotesProps = { 

@@ -1,5 +1,3 @@
-import './index.css';
-
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {eventFiles} from '@lexical/rich-text';
 import {mergeRegister} from '@lexical/utils';
@@ -13,12 +11,16 @@ import {
   DROP_COMMAND,
   LexicalEditor,
 } from 'lexical';
-import {DragEvent as ReactDragEvent, useEffect, useRef, useState} from 'react';
-import {createPortal} from 'react-dom';
+import { DragEvent as ReactDragEvent, useEffect, useRef, useState, useContext } from 'react';
+import { createPortal } from 'react-dom';
 
-import {isHTMLElement} from '../../utils/guard';
-import {Point} from '../../utils/point';
-import {Rect} from '../../utils/rect';
+import { isHTMLElement } from '../../utils/guard';
+import { Point } from '../../utils/point';
+import { Rect } from '../../utils/rect';
+
+import { UserDataCtx } from '../../../../../../context/UserDataContext';
+
+import './index.css';
 
 const SPACE = 4;
 const TARGET_LINE_HALF_HEIGHT = 2;
@@ -97,9 +99,8 @@ function getBlockElement(
     }
   });
 
-  if((blockElem as any)?.children[0]?.parentElement.className ===
-   "PlaygroundEditorTheme__paragraph PlaygroundEditorTheme__ltr") {
-    customMargin = '47';
+  if((blockElem as any)?.children[0]?.parentElement.className.startsWith("PlaygroundEditorTheme__paragraph")) {
+    customMargin = `${(blockElem as any)?.clientHeight / 2 + 30}`;
   }
 
   else if ((blockElem as any)?.children[0]?.className.startsWith('PlaygroundEditorTheme__listItem')) {
@@ -146,7 +147,7 @@ function setDragImage(
   dataTransfer: DataTransfer,
   draggableBlockElem: HTMLElement,
 ) {
-  const {transform} = draggableBlockElem.style;
+  const { transform } = draggableBlockElem.style;
 
   // Remove dragImage borders
   draggableBlockElem.style.transform = 'translateZ(0)';
@@ -162,10 +163,8 @@ function setTargetLine(
   anchorElem: HTMLElement,
 ) {
   const targetStyle = window.getComputedStyle(targetBlockElem);
-  const {top: targetBlockElemTop, height: targetBlockElemHeight} =
-    targetBlockElem.getBoundingClientRect();
-  const {top: anchorTop, width: anchorWidth} =
-    anchorElem.getBoundingClientRect();
+  const { top: targetBlockElemTop, height: targetBlockElemHeight } = targetBlockElem.getBoundingClientRect();
+  const { top: anchorTop, width: anchorWidth } = anchorElem.getBoundingClientRect();
 
   let lineTop = targetBlockElemTop;
   // At the bottom of the target
@@ -177,9 +176,7 @@ function setTargetLine(
   const left = TEXT_BOX_HORIZONTAL_PADDING - SPACE;
 
   targetLineElem.style.transform = `translate(${left}px, ${top}px)`;
-  targetLineElem.style.width = `${
-    anchorWidth - (TEXT_BOX_HORIZONTAL_PADDING - SPACE) * 2
-  }px`;
+  targetLineElem.style.width = `${anchorWidth - (TEXT_BOX_HORIZONTAL_PADDING - SPACE) * 2}px`;
   targetLineElem.style.opacity = '.4';
 }
 
@@ -199,8 +196,8 @@ function useDraggableBlockMenu(
   const menuRef = useRef<HTMLDivElement>(null);
   const targetLineRef = useRef<HTMLDivElement>(null);
   const isDraggingBlockRef = useRef<boolean>(false);
-  const [draggableBlockElem, setDraggableBlockElem] =
-    useState<HTMLElement | null>(null);
+
+  const [draggableBlockElem, setDraggableBlockElem] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     function onMouseMove(event: MouseEvent) {
@@ -331,6 +328,11 @@ function useDraggableBlockMenu(
     hideTargetLine(targetLineRef.current);
   }
 
+  const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
+  const editorWidth = rootEditorDiv.clientWidth;
+
+  const { x } = rootEditorDiv.getBoundingClientRect();  
+  
   return createPortal(
     <>
       <div
@@ -338,13 +340,24 @@ function useDraggableBlockMenu(
         ref={menuRef}
         draggable={true}
         onDragStart={onDragStart}
-        style={(customMargin && Number(customMargin)) ? {marginTop: Number(customMargin)} : undefined}
+        style={
+          (customMargin && Number(customMargin)) ? { 
+            marginTop: Number(customMargin),
+            left:  x - 460 < 0 ? 0 : x - 460
+          } : { 
+            left:  x - 460 < 0 ? 0 : x - 460 
+          }
+        }
         onDragEnd={onDragEnd}
       >
         <div className={isEditable ? 'icon rounded-sm' : ''} />
       </div>
       <div 
-        className="draggable-block-target-line" 
+        className="draggable-block-target-line"
+        style={{ 
+          maxWidth: editorWidth - 50,
+          left: x - 440
+        }}
         ref={targetLineRef}
       />
     </>,
