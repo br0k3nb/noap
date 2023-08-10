@@ -105,9 +105,13 @@ function getBlockElement(
 
   else if ((blockElem as any)?.children[0]?.className.startsWith('PlaygroundEditorTheme__listItem')) {
     customMargin = `${(blockElem as any)?.clientHeight / 2 + 25}`
+  }  
+
+  else if ((blockElem as any)?.tagName === "HR") {
+    customMargin = `${(blockElem as any)?.clientHeight / 2 + 29}`
   }
-  
-  else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 30}`;
+    
+  else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 25}`;
 
   return blockElem;
 }

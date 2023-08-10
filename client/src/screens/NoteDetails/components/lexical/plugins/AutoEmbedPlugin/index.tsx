@@ -1,9 +1,10 @@
+import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+
 import type { LexicalEditor } from "lexical";
 
 import { AutoEmbedOption, EmbedConfig, EmbedMatchResult, LexicalAutoEmbedPlugin, URL_MATCHER } from "@lexical/react/LexicalAutoEmbedPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useMemo, useState } from "react";
-import * as ReactDOM from "react-dom";
 
 import useModal from "../../hooks/useModal";
 import Button from "../../ui/Button";
@@ -11,6 +12,10 @@ import { DialogActions } from "../../ui/Dialog";
 import { INSERT_FIGMA_COMMAND } from "../FigmaPlugin";
 import { INSERT_TWEET_COMMAND } from "../TwitterPlugin";
 import { INSERT_YOUTUBE_COMMAND } from "../YouTubePlugin";
+
+import twitterIcon from '../../images/icons/tweet.svg';
+import youtubeIcon from '../../images/icons/youtube.svg';
+import figmaIcon from '../../images/icons/figma.svg';
 
 interface PlaygroundEmbedConfig extends EmbedConfig {
   // Human readable name of the embeded content e.g. Tweet or Google Map.
@@ -32,7 +37,7 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
   contentName: "Youtube Video",
   exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-  icon: <i className="icon youtube comp-picker" />,
+  icon: <img className="comp-picker w-[20px] h-5 mt-[1px]" src={youtubeIcon} />,
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id),
   keywords: ["youtube", "video"],
   // Determine if a given URL is a match and return url data.
@@ -50,7 +55,7 @@ export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
 export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
   contentName: "Tweet",
   exampleUrl: "https://twitter.com/jack/status/20",
-  icon: <i className="icon tweet comp-picker" />,
+  icon: <img className="comp-picker w-[20px] h-5 mt-[1px]" src={twitterIcon} />,
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => editor.dispatchCommand(INSERT_TWEET_COMMAND, result.id),
   keywords: ["tweet", "twitter"],
   parseUrl: (text: string) => {
@@ -65,7 +70,7 @@ export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
 export const FigmaEmbedConfig: PlaygroundEmbedConfig = {
   contentName: "Figma Document",
   exampleUrl: "https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File",
-  icon: <i className="icon figma comp-picker" />,
+  icon: <img className="comp-picker w-[20px] h-5 mt-[1px]" src={figmaIcon} />,
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => editor.dispatchCommand(INSERT_FIGMA_COMMAND, result.id),
   keywords: ["figma", "figma.com", "mock-up"],
   parseUrl: (text: string) => {
@@ -198,7 +203,7 @@ export function AutoEmbedDialog({
       <DialogActions>
         <Button
           disabled={!embedResult}
-          className="!bg-gray-700"
+          className="!bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out cursor-pointer text-[13.5px] uppercase tracking-widest"
           onClick={onClick}
           data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
         >
@@ -240,10 +245,10 @@ export default function AutoEmbedPlugin(): JSX.Element {
           anchorElementRef, { selectedIndex, options, selectOptionAndCleanUp, setHighlightedIndex }
         ) =>
           anchorElementRef.current
-            ? ReactDOM.createPortal(
+            ? createPortal(
                 <div
                   className="typeahead-popover auto-embed-menu"
-                  style={{marginLeft: anchorElementRef.current.style.width, width: 200 }}
+                  style={{ marginLeft: anchorElementRef.current.style.width, width: 200 }}
                 >
                   <AutoEmbedMenu
                     options={options}

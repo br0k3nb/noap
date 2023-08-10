@@ -157,7 +157,7 @@ export default function DropDown({
 
     if (showDropDown && button !== null && dropDown !== null) {   
       const { top, left } = button.getBoundingClientRect();
-      const calculateSpacing = button.clientWidth === 50 ? 3 : button.clientWidth <= 35 ? 12 : 6.5;
+      const calculateSpacing = button.clientWidth === 50 ? 11 : button.clientWidth <= 35 ? 18.5 : 13;
 
       const usingCustomButton = `${Math.min(left, innerWidth - dropDown.offsetWidth - 20) - calculateSpacing}px`;
       const usingDefaultButton = `${Math.min(left, innerWidth - dropDown.offsetWidth - 20)}px`;

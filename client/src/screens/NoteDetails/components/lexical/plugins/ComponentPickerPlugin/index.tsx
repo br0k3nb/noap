@@ -30,9 +30,9 @@ import { EmbedConfigs } from "../AutoEmbedPlugin";
 import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 import { InsertEquationDialog } from "../EquationsPlugin";
 import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
-import { INSERT_IMAGE_COMMAND, InsertImageDialog } from "../ImagesPlugin";
-import { InsertPollDialog } from "../PollPlugin";
-import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
+import { InsertImageDialog } from "../ImagesPlugin";
+// import { InsertPollDialog } from "../PollPlugin";
+// import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
 
 class ComponentPickerOption extends MenuOption {
   // What shows up in the editor
@@ -79,8 +79,9 @@ function ComponentPickerMenuItem({
 }) {
   let className = "item !bg-gray-800 !text-gray-300 hover:!bg-gray-600 !py-3 !mx-[1.5px]";
   if (isSelected) className += " selected";
+
   return (
-    <div className="flex flex-row space-x-2 hover:!bg-gray-600 rounded">
+    <div className="hover:!bg-gray-600 rounded">
       <li
         key={option.key}
         tabIndex={-1}
@@ -92,8 +93,17 @@ function ComponentPickerMenuItem({
         onMouseEnter={onMouseEnter}
         onClick={onClick}
       >
-        {option.icon}
-        <span className="text">{option.title}</span>
+        {option.title.slice(0, 5) === "Embed" ? (
+          <>
+            {option.icon}
+            <span className="text ml-2">{option.title}</span>
+          </>
+        ) : (
+          <>
+            {option.icon}
+            <span className="text">{option.title}</span>
+          </>
+        )}
       </li>
     </div>
   );
@@ -183,18 +193,18 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
               }),
           })
       ),
-      // new ComponentPickerOption("Numbered List", {
-      //   icon: <i className="icon number" />,
-      //   keywords: ["numbered list", "ordered list", "ol"],
-      //   onSelect: () =>
-      //     editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined),
-      // }),
-      // new ComponentPickerOption("Bulleted List", {
-      //   icon: <i className="icon bullet" />,
-      //   keywords: ["bulleted list", "unordered list", "ul"],
-      //   onSelect: () =>
-      //     editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),
-      // }),
+      new ComponentPickerOption("Numbered List", {
+        icon: <i className="icon number comp-picker" />,
+        keywords: ["numbered list", "ordered list", "ol"],
+        onSelect: () =>
+          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined),
+      }),
+      new ComponentPickerOption("Bulleted List", {
+        icon: <i className="icon bullet comp-picker" />,
+        keywords: ["bulleted list", "unordered list", "ul"],
+        onSelect: () =>
+          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),
+      }),
       new ComponentPickerOption("Check List", {
         icon: <i className="icon check comp-picker" />,
         keywords: ["check list", "todo list"],
@@ -351,7 +361,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
             return anchorElementRef.current && options.length
             ? createPortal(
                 <div 
-                  className={`typeahead-popover component-picker-menu !bg-gray-800
+                  className={`typeahead-popover component-picker-menu !bg-gray-800 !w-[13rem]
                     ${overflowXAxis && !overflowYAxis ? "!absolute !-left-44"
                     : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5"
                     : overflowXAxis && overflowYAxis && "!absolute !-left-52 !-top-48"}
