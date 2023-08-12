@@ -744,8 +744,8 @@ export default function ToolbarPlugin() {
   else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
   return (
-    <div 
-      className="toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 !text-gray-50 border-b border-gray-600 border-t-0 border-t-transparent overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+    <div  
+      className="toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 dark:!bg-[#0f1011] !text-gray-50 border border-transparent border-b-gray-600 dark:border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
       style={{ 
         width: !getNavbar?.checkVisibility() ? screenSize.width : screenSize.width - 442
       }}

@@ -30,6 +30,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const [openAuthModal, setOpenAuthModal] = useState(false);
     const [showNTCLoader, setShowNTCLoader] = useState(false);
     const [showSPNIFLoader, setShowSPNIFLoader] = useState(false);
+    const [showThemeLoader, setShowThemeLoader] = useState(false);
     const [showOpenDoorIcon, setShowOpenDoorIcon] = useState(false);
     const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
     const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
@@ -87,6 +88,38 @@ export default function SettingsModal({ open, setOpen }: Props) {
             toastAlert({ icon: 'error', title: err.message, timer: 3000 });
         } finally {
             setShowNTCLoader(false);
+        }
+    };
+
+    const handleChangeTheme = async (value: string) => {
+        setShowThemeLoader(true);
+
+        try {
+            const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
+
+            const { data: { message } } = await api.patch(`/settings/change-theme/${_id}`, {
+                theme: value.startsWith("Dark") ? 'dark' : 'light'
+            });
+
+            if(!value.startsWith("Dark") && htmlElementHasDarkClass) document.documentElement.classList.remove("dark");
+            else document.documentElement.classList.add("dark");
+
+            setUserData((prevUserData: any) => {
+                return {
+                    ...prevUserData,
+                    settings: {
+                        ...prevUserData.settings,
+                        theme: value.startsWith("Dark") ? 'dark' : 'light'
+                    }
+                }
+            });
+
+            toastAlert({ icon: 'success', title: message, timer: 3000 });
+        } catch (err: any) {
+            console.log(err);
+            toastAlert({ icon: 'error', title: err.message, timer: 3000 });
+        } finally {
+            setShowThemeLoader(false);
         }
     };
 
@@ -157,7 +190,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                         customCancelButtonText: "Go back"
                     }}
                 />
-                <div className="px-6 mt-5 mb-2">
+                <div className="px-6 mt-5 mb-2 h-[16.9rem] overflow-y-scroll">
                     <div className="flex flex-col space-y-4">
                         <div className="bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
                             <div
@@ -182,46 +215,50 @@ export default function SettingsModal({ open, setOpen }: Props) {
                             </div>
                         </div>
                         <div className="form-control bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:border-gray-500 px-3 rounded-full">
-                            <label className="label cursor-pointer px-2 transition-all duration-500 tracking-widest">
+                            <label className="label cursor-pointer px-2 transition-all hover:!tracking-widest duration-300 ease-in-out tracking-wide">
                                 <div className="flex flex-row space-x-2">
-                                    <span className="label-text uppercase text-[11px] xxs:!text-[9px] text-gray-300 py-[9px]">
-                                        {showSPNIFLoader ? "Loading..." : "Show pinned notes in folder"}
+                                    <span className="label-text uppercase text-xs xxs:!text-[10px] text-gray-300 py-[10px]">
+                                        {showSPNIFLoader ? "Loading..." : "pinned notes in folder"}
                                     </span> 
-                                    {!showSPNIFLoader && (<AiFillFolderOpen size={22} className='mt-[9px]'/>)}
+                                    {!showSPNIFLoader && (<AiFillFolderOpen size={22} className='mt-[6px]'/>)}
                                 </div>
-                                <input
-                                    type="checkbox"
+                                <input 
+                                    type="checkbox" 
                                     disabled={showSPNIFLoader ? true : false}
                                     checked={showPinnedNotesInFolder ? showPinnedNotesInFolder : false}
-                                    className={`checkbox ${showSPNIFLoader && "cursor-not-allowed"}`}
-                                    onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)} 
+                                    className={`toggle ${showSPNIFLoader && "cursor-not-allowed"}`}
+                                    onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)}
                                 />
                             </label>
                         </div>   
                         <div className="bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
-                            <div 
-                                className='text-xs text-gray-300 uppercase tracking-wide py-[16.5px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
-                                onClick={() => handleNoteTextCondition()}
-                            >                                
-                                <div className="flex flex-row justify-center space-x-2">
-                                    {!noteTextExpanded ? (
-                                        <>  
-                                            <p className='pt-[3px]'>
-                                                {showNTCLoader ? "Loading..." : "Note text centred"}
-                                            </p>
-                                            {!showNTCLoader && (<FiAlignJustify size={22} />)} 
-                                        </>
-                                    ) : (
-                                        <>
-                                            <p className='pt-[3px]'>
-                                                {showNTCLoader ? "Loading..." : "Note text expanded"}
-                                            </p>
-                                            {!showNTCLoader && (<RiTextSpacing size={22} />)}
-                                        </>
-                                    )}
+                            <label className="label cursor-pointer px-2 transition-all hover:!tracking-widest duration-300 ease-in-out tracking-wide">
+                                <div className="flex flex-row space-x-2">
+                                    <span className="label-text uppercase text-xs xxs:!text-[10px] text-gray-300 py-[10px]">
+                                        {showNTCLoader ? "Loading..." : "Note text centred"}
+                                    </span> 
+                                    {!showNTCLoader && ( <FiAlignJustify size={22} className='mt-[6px]'/> )}
                                 </div>
-                            </div>
-                        </div>                     
+                                <input 
+                                    type="checkbox" 
+                                    disabled={showNTCLoader ? true : false}
+                                    checked={noteTextExpanded ? noteTextExpanded : false}
+                                    className={`toggle ${showNTCLoader && "cursor-not-allowed"}`}
+                                    onChange={() => handleNoteTextCondition()}
+                                />
+                            </label>
+                        </div>     
+                        <div>
+                            <select 
+                                id='theme-selector'
+                                className="select select-ghost border border-transparent focus:outline-0 w-full transition-all duration-500 hover:!border-gray-500 px-5 !h-[52px] rounded-full text-gray-300 text-xs uppercase tracking-wide hover:tracking-widest bg-gray-700/80 hover:!bg-gray-700"
+                                onChange={(e) => handleChangeTheme(e.target.value)}
+                            >
+                                <option disabled selected>Theme selector</option>
+                                <option>Dark - (Default)</option>
+                                <option>Light</option>
+                            </select>
+                        </div>
                         <div 
                             className="bg-gray-700/80 hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full"
                             onMouseEnter={() => setTimeout(() => setShowOpenDoorIcon(true), 200)}

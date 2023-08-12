@@ -68,7 +68,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const { historyState } = useSharedHistoryContext();
 
     const { noteSettings: { expanded, readMode } } = useContext(NoteSettingsCtx) as any;
-    const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
+    const { userData: { settings: { noteTextExpanded, noteBackgroundColor } } } = useContext(UserDataCtx) as any;
 
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
@@ -106,100 +106,110 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
     const getNavbar = document.getElementById("pc-navbar") as any;
 
-    return (
-      <div className="!h-screen !w-screen">
-        {!readMode && <ToolbarPlugin />}
-        <div className="editor-container plain-text">
-          <DragDropPaste />
-          <ComponentPickerPlugin />
-          <AutoEmbedPlugin />
-          <HashtagPlugin />
-          <EmojisPlugin />
-          <EmojiPickerPlugin />
-          <AutoLinkPlugin />
-          <AutoFocusPlugin />
-          {isRichText && (
-            <>
-              <RichTextPlugin
-                contentEditable={
-                  <div className="editor" ref={ref}>
-                    <div
-                      className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden" 
-                      id="editor-parent-container"                   
-                      style={!expanded && getNavbar?.checkVisibility() ? { 
-                          width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
-                          height: editorHeight
-                        } : {
-                          width: currentScreenSize.width,
-                          height: editorHeight
-                        }
-                      }  
-                    >
-                      <div                        
-                        className="mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col mx-auto"
-                        style={
-                          !expanded && getNavbar?.checkVisibility() ? { 
-                            width: noteTextExpanded && currentScreenSize.width > 1430 ? noteTextCondition : currentScreenSize.width - 435
-                          } : { 
-                            width: noteTextExpanded && currentScreenSize.width > 1000 ? noteTextCondition : currentScreenSize.width
-                          }
-                        }
-                      >
-                        <div className="mb-20" ref={customRef}>
-                          <ContentEditable />
-                        </div>
-                      </div>
-                      {!readMode && (
-                        <div className="xxs:mt-20">
-                          <BottomBar 
-                            note={note}
-                            save={save}
-                            editor={editor}
-                            saveSpinner={saveSpinner}
-                            currentScreenSize={currentScreenSize.width}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                }
-                placeholder={<Placeholder customRef={customRef}>Enter some text</Placeholder>}
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <FloatingTextFormatToolbarPlugin />
-              <CodeActionMenuPlugin />
-              <ListPlugin />
-              <CheckListPlugin />
-              <ListMaxIndentLevelPlugin maxDepth={7} />
-              <ImagesPlugin captionsEnabled={true} />
-              <HistoryPlugin externalHistoryState={historyState} />
-              <LinkPlugin />
-              <ClickableLinkPlugin />
-              {/* <AutocompletePlugin /> */}
-              {/* <PollPlugin /> */}
-              {/* <MarkdownShortcutPlugin /> */}
-              {/* <LexicalClickableLinkPlugin />
-              <ClickableLinkPlugin /> */}
-              <CodeHighlightPlugin />
-              <TwitterPlugin />
-              <YouTubePlugin />
-              <FigmaPlugin />
-              <HorizontalRulePlugin />
-              <EquationsPlugin />
-              <ExcalidrawPlugin />
-              <TabFocusPlugin />
-              <TabIndentationPlugin />
-              <CollapsiblePlugin />
+    console.log((noteBackgroundColor && currentScreenSize.width > 640 ) ? "100px, 100px, 100px, 100px !important" : 0);
 
-              {floatingAnchorElem && (
-                <>
-                  {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
-                  <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                </>
-              )}
-            </>
-          )}
-        </div>
+    return (
+      <div className="editor-container plain-text dark:!bg-[#0f1011]">
+        {!readMode && <ToolbarPlugin />}
+        <DragDropPaste />
+        <ComponentPickerPlugin />
+        <AutoEmbedPlugin />
+        <HashtagPlugin />
+        <EmojisPlugin />
+        <EmojiPickerPlugin />
+        <AutoLinkPlugin />
+        <AutoFocusPlugin />
+        {isRichText && (
+          <>
+            <RichTextPlugin
+              contentEditable={
+                <div className="editor dark:!bg-[#0f1011]" ref={ref}>
+                  <div
+                    className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden" 
+                    id="editor-parent-container"                   
+                    style={!expanded && getNavbar?.checkVisibility() ? { 
+                        width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
+                        height: editorHeight
+                      } : {
+                        width: currentScreenSize.width,
+                        height: editorHeight
+                      }
+                    }  
+                  >
+                    <div                        
+                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto rounded-xl py-10"
+                      style={
+                        !expanded && getNavbar?.checkVisibility() ? {
+                          marginTop: noteBackgroundColor && noteBackgroundColor !== "#0f1011" ? 50 : 0,
+                          marginBottom: noteBackgroundColor ? 90 : 80,
+                          paddingRight: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+                          paddingLeft: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+                          backgroundColor: noteBackgroundColor ? noteBackgroundColor : 'none',
+                          width: noteTextExpanded && currentScreenSize.width > 1430 ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) : currentScreenSize.width - 435
+                        } : { 
+                          marginTop: noteBackgroundColor ? 50 : 0,
+                          marginBottom: noteBackgroundColor ? 90 : 80,
+                          backgroundColor: noteBackgroundColor ? noteBackgroundColor : 'none',
+                          paddingRight: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+                          paddingLeft: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+                          width: noteTextExpanded && currentScreenSize.width > 1000 ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) : currentScreenSize.width
+                        }
+                      }
+                    >
+                      <div ref={customRef}>
+                          <ContentEditable />
+                      </div>
+                    </div>
+                    {!readMode && (
+                      <div className="xxs:mt-20">
+                        <BottomBar 
+                          note={note}
+                          save={save}
+                          editor={editor}
+                          saveSpinner={saveSpinner}
+                          currentScreenSize={currentScreenSize.width}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              }
+              placeholder={<Placeholder customRef={customRef}>Enter some text</Placeholder>}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <FloatingTextFormatToolbarPlugin />
+            <CodeActionMenuPlugin />
+            <ListPlugin />
+            <CheckListPlugin />
+            <ListMaxIndentLevelPlugin maxDepth={7} />
+            <ImagesPlugin captionsEnabled={true} />
+            <HistoryPlugin externalHistoryState={historyState} />
+            <LinkPlugin />
+            <ClickableLinkPlugin />
+            {/* <AutocompletePlugin /> */}
+            {/* <PollPlugin /> */}
+            {/* <MarkdownShortcutPlugin /> */}
+            {/* <LexicalClickableLinkPlugin />
+            <ClickableLinkPlugin /> */}
+            <CodeHighlightPlugin />
+            <TwitterPlugin />
+            <YouTubePlugin />
+            <FigmaPlugin />
+            <HorizontalRulePlugin />
+            <EquationsPlugin />
+            <ExcalidrawPlugin />
+            <TabFocusPlugin />
+            <TabIndentationPlugin />
+            <CollapsiblePlugin />
+
+            {floatingAnchorElem && (
+              <>
+                {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
+                <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+              </>
+            )}
+          </>
+        )}
       </div>
     );
   }

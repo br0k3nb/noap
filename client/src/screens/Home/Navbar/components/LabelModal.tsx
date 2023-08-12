@@ -64,7 +64,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
         hasNextPageLabel 
     } = labelData as any;
 
-    const deviceScreenSize = window.innerWidth;
+    const deviceScreenSize = innerWidth;
 
     const onAddNewLabelClick = () => {
         setCreateLabel(true);
@@ -309,7 +309,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                             <div className="text-gray-300 px-5 my-1">
                                 <div className=" !bg-gray-800 flex !justify-between">
                                     <button 
-                                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        className="btn !bg-gray-800  hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
                                         disabled={pageLabel === 1 ? true : false}
                                         onClick={() => setPageLabel(pageLabel - 1)}
                                     > 

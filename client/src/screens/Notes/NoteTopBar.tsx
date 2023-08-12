@@ -63,7 +63,9 @@ export default function NoteTopBar({
 
     return (
         <>
-            <div className="overflow-hidden flex flex-col pt-2 bg-gray-800 h-[100px]">
+            <div 
+                className="overflow-hidden flex flex-col pt-2 bg-gray-800 dark:bg-[#0f1011] h-[100px]"
+            >
                 <div className="flex flex-col mb-[4px]">
                     <div className="flex flex-row justify-between px-3 py-2 text-gray-200">
                         <div className="text-center flex flex-row space-x-1 px-2">
@@ -90,44 +92,44 @@ export default function NoteTopBar({
             <motion.div
                 animate={showSearch ? show : hide}
                 transition={{ duration: 0.4 }}
-                className={`bg-gray-800 px-6 pb-2 hidden ${showSearch && "!grid"}`}
+                className={`bg-gray-800 dark:bg-[#0f1011] px-6 pb-2 hidden ${showSearch && "!grid"}`}
             >
                 <input
-                    className="sign-text-inputs bg-stone-900 text-gray-300 h-10 border !border-gray-700 hover:!border-gray-600"
+                    className="sign-text-inputs bg-stone-900  text-gray-300 h-10 border !border-gray-700 hover:!border-gray-600"
                     onChange={({currentTarget}) => onInputChange(currentTarget)}
                     placeholder="Search for note names..."
                     value={search}
                 />
             </motion.div>
-            <div className="!bg-gray-800 border border-transparent border-t-gray-700 border-b-gray-700 text-gray-300">
-                <div className="btn-group !bg-gray-800 flex !justify-between px-6">
+            <div className="bg-gray-800 dark:!bg-[#0f1011] border border-transparent border-t-gray-700 border-b-gray-700 dark:border-t-[#404040] dark:border-b-[#404040] text-gray-300">
+                <div className="btn-group !bg-gray-800 dark:!bg-[#0f1011] flex !justify-between px-6">
                     {page === 1 ? (
                         <button 
-                            className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
+                            className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
                             disabled={true}
                         > 
                             <MdKeyboardDoubleArrowLeft size={18} />
                         </button>
                     ) : (
                         <Link 
-                            className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
+                            className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
                             onClick={() => handlePrevPageClick()}
                             to={baseURL + (page - 1)}
                         > 
                             <MdKeyboardDoubleArrowLeft size={18} />
                         </Link>
                     )}
-                    <p className="!bg-gray-800 uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
+                    <p className="!bg-gray-800 dark:!bg-[#0f1011] uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
                     {!hasNextPage ? (
                         <button 
-                            className="btn !bg-gray-800 !border-transparent disabled:text-gray-500"
+                            className="btn !bg-gray-800 dark:!bg-[#0f1011] !border-transparent disabled:text-gray-500"
                             disabled={true}
                         >
                             <MdKeyboardDoubleArrowRight size={18} />
                         </button>
                     ) : (
                         <Link 
-                            className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
+                            className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500"
                             onClick={() => handleNextPageClick()}
                             to={baseURL + (page + 1)}
                         > 

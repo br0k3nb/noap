@@ -80,7 +80,12 @@ export default function Notes({
     };  
 
     return (
-        <div className={`overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-gray-600 !bg-gray-800 ${expanded && "hidden"}`}>
+        <div 
+            className={`
+                overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-gray-600 dark:border-[#404040] bg-gray-800 dark:!bg-[#0f1011]
+                ${expanded && "hidden"}
+            `}
+        >
             <NoteTopBar {...navTopBarProps} />
             <CardNotes {...cardNotesProps} />
         </div>

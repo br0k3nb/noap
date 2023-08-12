@@ -26,7 +26,9 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
-  const { userData: { _id } } = useContext(UserDataCtx) as any;
+  const { userData: { _id, settings: { theme } } } = useContext(UserDataCtx) as any;  
+
+  console.log(theme);
 
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);

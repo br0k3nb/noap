@@ -16,6 +16,8 @@ interface ColorPickerProps {
   onChange?: (color: string) => void;
   stopCloseOnClickSelf?: boolean;
   title?: string;
+  alwaysOpened?: boolean;
+  customOnClickButtonFn?: (color: string) => any;
 }
 
 const basicColors = [
@@ -31,11 +33,16 @@ const basicColors = [
   "#50e3c2",
   "#b8e986",
   "#000000",
+  "#0f1011",
   "#4a4a4a",
   "#9b9b9b",
+  "#fff1c8",
+  "#fff8e3",
+  "#fffdf5",
   "#ffffff",
 ];
 
+const customWidth = innerWidth <= 640 ? 270.4 : 318.4;
 const WIDTH = 214;
 const HEIGHT = 150;
 
@@ -45,23 +52,23 @@ export default function ColorPicker({
   onChange,
   disabled = false,
   stopCloseOnClickSelf = true,
+  alwaysOpened,
+  customOnClickButtonFn,
   ...rest
-}: Readonly<ColorPickerProps>): JSX.Element {
+}: Readonly<ColorPickerProps>) {
   const [selfColor, setSelfColor] = useState(transformColor("hex", color));
   const [inputColor, setInputColor] = useState(color);
   const innerDivRef = useRef(null);
 
-  const saturationPosition = useMemo(
-    () => ({
-      x: (selfColor.hsv.s / 100) * WIDTH,
-      y: ((100 - selfColor.hsv.v) / 100) * HEIGHT,
+  const saturationPosition = useMemo(() => ({
+      x: alwaysOpened ? (selfColor.hsv.s / 100) * customWidth : (selfColor.hsv.s / 100) * WIDTH,
+      y: ((100 - selfColor.hsv.v) / 100) * HEIGHT
     }),
     [selfColor.hsv.s, selfColor.hsv.v]
   );
 
-  const huePosition = useMemo(
-    () => ({
-      x: (selfColor.hsv.h / 360) * WIDTH,
+  const huePosition = useMemo(() => ({
+     x: alwaysOpened ? (selfColor.hsv.s / 100) * customWidth : (selfColor.hsv.h / 360) * WIDTH 
     }),
     [selfColor.hsv]
   );
@@ -77,7 +84,7 @@ export default function ColorPicker({
   const onMoveSaturation = ({ x, y }: Position) => {
     const newHsv = {
       ...selfColor.hsv,
-      s: (x / WIDTH) * 100,
+      s: alwaysOpened ? (x / customWidth) * 100 : (x / WIDTH) * 100,
       v: 100 - (y / HEIGHT) * 100,
     };
 
@@ -87,7 +94,10 @@ export default function ColorPicker({
   };
 
   const onMoveHue = ({ x }: Position) => {
-    const newHsv = { ...selfColor.hsv, h: (x / WIDTH) * 360 };
+    const newHsv = { 
+      ...selfColor.hsv, 
+      h: alwaysOpened ? (x / customWidth) * 360 : (x / WIDTH) * 360
+    };
     const newColor = transformColor("hsv", newHsv);
 
     setSelfColor(newColor);
@@ -111,45 +121,115 @@ export default function ColorPicker({
   }, [color]);
 
   return (
-    <DropDown {...rest} disabled={disabled} stopCloseOnClickSelf={true}>
-      <div className="color-picker-wrapper !text-gray-200" style={{ width: WIDTH }} ref={innerDivRef}>
-        <TextInput label="Hex" onChange={onSetHex} value={inputColor} />
-        <div className="color-picker-basic-color">
-          {basicColors.map((basicColor) => (
-            <button
-              className={basicColor === selfColor.hex ? " active" : ""}
-              key={basicColor}
-              style={{ backgroundColor: basicColor }}
-              onClick={() => {
-                setInputColor(basicColor);
-                setSelfColor(transformColor("hex", basicColor));
-              }}
+    <>
+      {alwaysOpened ? (
+        <>
+          <div 
+            className="!w-[19.90rem] xxs:!w-[16.90rem] color-picker-wrapper !text-gray-200" 
+            style={ alwaysOpened ? { width: customWidth } : { width: WIDTH } } 
+            ref={innerDivRef}
+          >
+            <TextInput
+              label="Hex" 
+              onChange={onSetHex} 
+              value={inputColor} 
             />
-          ))}
-        </div>
-        <MoveWrapper
-          className="color-picker-saturation"
-          style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
-          onChange={onMoveSaturation}
+            <div className="color-picker-basic-color">
+              {basicColors.map((basicColor) => (
+                <button
+                  className={basicColor === selfColor.hex ? " active" : ""}
+                  key={basicColor}
+                  style={{ backgroundColor: basicColor }}
+                  onClick={() => {
+                    setInputColor(basicColor);
+                    setSelfColor(transformColor("hex", basicColor));
+                  }}
+                />
+              ))}
+            </div>
+            <MoveWrapper
+              className="color-picker-saturation"
+              style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
+              onChange={onMoveSaturation}
+            >
+              <div
+                className="color-picker-saturation_cursor"
+                style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
+              />
+            </MoveWrapper>
+            <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
+              <div
+                className="color-picker-hue_cursor"
+                style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
+              />
+            </MoveWrapper>
+            <div
+              className="color-picker-color"
+              style={{ backgroundColor: selfColor.hex }}
+            />
+          </div>
+          {children}
+          <button
+            className="my-3 text-black rounded-full bg-green-600 hover:bg-green-500 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+            onClick={() => customOnClickButtonFn && customOnClickButtonFn(selfColor.hex)}
+          >
+            Save color
+          </button>
+        </>
+      ) : (
+        <DropDown 
+          {...rest} 
+          disabled={disabled} 
+          stopCloseOnClickSelf={true}
         >
-          <div
-            className="color-picker-saturation_cursor"
-            style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
-          />
-        </MoveWrapper>
-        <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
-          <div
-            className="color-picker-hue_cursor"
-            style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
-          />
-        </MoveWrapper>
-        <div
-          className="color-picker-color"
-          style={{ backgroundColor: selfColor.hex }}
-        />
-      </div>
-      {children}
-    </DropDown>
+          <div 
+            className="color-picker-wrapper !text-gray-200" 
+            style={{ width: WIDTH }} 
+            ref={innerDivRef}
+          >
+            <TextInput
+              label="Hex" 
+              onChange={onSetHex} 
+              value={inputColor} 
+            />
+            <div className="color-picker-basic-color">
+              {basicColors.map((basicColor) => (
+                <button
+                  className={basicColor === selfColor.hex ? " active" : ""}
+                  key={basicColor}
+                  style={{ backgroundColor: basicColor }}
+                  onClick={() => {
+                    setInputColor(basicColor);
+                    setSelfColor(transformColor("hex", basicColor));
+                  }}
+                />
+              ))}
+            </div>
+            <MoveWrapper
+              className="color-picker-saturation"
+              style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
+              onChange={onMoveSaturation}
+            >
+              <div
+                className="color-picker-saturation_cursor"
+                style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
+              />
+            </MoveWrapper>
+            <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
+              <div
+                className="color-picker-hue_cursor"
+                style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
+              />
+            </MoveWrapper>
+            <div
+              className="color-picker-color"
+              style={{ backgroundColor: selfColor.hex }}
+            />
+          </div>
+          {children}
+        </DropDown>
+      )} 
+    </>
   );
 }
 
@@ -165,12 +245,7 @@ interface MoveWrapperProps {
   children: JSX.Element;
 }
 
-function MoveWrapper({
-  className,
-  style,
-  onChange,
-  children,
-}: MoveWrapperProps) {
+function MoveWrapper({ className, style, onChange,children }: MoveWrapperProps) {
   const divRef = useRef<HTMLDivElement>(null);
 
   const move = (e: React.MouseEvent | MouseEvent): void => {

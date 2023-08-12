@@ -28,6 +28,14 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
             if(Object.keys(token).length > 0) {
                 try {
                     const { data } = await api.post("/verify-token", { token: token?.token });
+                    
+                    const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
+                    
+                    if(!data.theme || (data.theme && data.theme === 'dark')) document.documentElement.classList.add("dark");
+                    else if (htmlElementHasDarkClass && (data.theme && data.theme === 'light')) {
+                        document.documentElement.classList.remove("dark");
+                    }
+
                     setUserData({ ...data });
                     
                     setUserLoggedIn(true);
@@ -52,10 +60,11 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
             try {
                 const { data } = await api.post("/sign-in", { email, password });
                 if(!data.TFAEnabled && !data?.googleAccount) {
-                    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({token: data.token}));
+                    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({ token: data.token }));
                     setUserLoggedIn(true);
                 }
                 
+                if(!data.theme || (data.theme && data.theme === 'dark')) document.documentElement.classList.add("dark");
                 setUserData(data);
                 setLoading(false);
                 
@@ -68,6 +77,9 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
             }
         },
         signOut: () => {
+            const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
+            if(htmlElementHasDarkClass) document.documentElement.classList.remove("dark");
+            
             localStorage.removeItem("@NOAP:SYSTEM");
             setUserLoggedIn(false);
         },

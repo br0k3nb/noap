@@ -62,14 +62,19 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
     const editorWidth = rootEditorDiv ? rootEditorDiv.clientWidth : 0;
 
     return (
-      <div className={`h-12 bg-gray-800 w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500 ${!showBottomBar && "hidden"}`}>
+      <div 
+        className={`
+          h-12 bg-gray-800 dark:!bg-[#0f1011] w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500 dark:border-t-[#404040]
+          ${!showBottomBar && "hidden"}
+        `}
+      >
         <div className="px-2 py-[0.50rem]">
           <div className="flex space-x-2">
             <div className="!mr-2">
               <div className="dropdown dropdown-top">
                 <label tabIndex={0}>
                   <div className='tooltip tooltip-right' data-tip="Label actions">
-                    <MdOutlineSettings size={30} className="px-1 rotate-180 bg-gray-600 rounded-full mt-[1px] cursor-pointer hover:bg-gray-700 transition-all duration-300 ease-in-out"/>
+                    <MdOutlineSettings size={30} className="px-1 rotate-180 bg-gray-600 dark:!bg-[#202020] rounded-full mt-[1px] cursor-pointer hover:bg-gray-700 transition-all duration-300 ease-in-out"/>
                   </div>
                 </label>
                 <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-60 !bg-gray-900 !z-50">
@@ -103,7 +108,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 </ul>
               </div>
             </div>  
-            <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] !mr-2"/>
+            <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] !mr-2"/>
             <div 
               className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
               style={{
@@ -163,13 +168,13 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                   })}
                 </>
               ) : ( 
-                <p className="text-xs uppercase tracking-widest mt-[2px] px-2 pt-1 h-[25px] bg-gray-900 rounded-full">No labels attached!</p> 
+                <p className="text-xs uppercase tracking-widest mt-[2px] px-2 pt-1 h-[25px] bg-gray-900 dark:!bg-[#202020] rounded-full">No labels attached!</p> 
               )}
             </div>
-              <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
+              <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
               <button
                 onClick={() => save(editor.getEditorState())}
-                className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-gray-600 px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 transition-all ease-in-out duration-500"
+                className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-gray-600 dark:!bg-[#202020] px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 transition-all ease-in-out duration-500"
               >
                 {saveSpinner ? ( 
                   <SvgLoader 

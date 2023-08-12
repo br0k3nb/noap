@@ -54,7 +54,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 return toastAlert({ icon: "error", title: `Please, select a label!`, timer: 2000 });
             };
 
-            const { data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
+            const { data: { message } } = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
             toastAlert({icon: "success", title: message, timer: 2000});
             await refetch?.fetchNotes();
@@ -116,7 +116,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 <motion.div
                     animate={!showSearchBar ? hide : show}
                     transition={{ duration: 0.4 }}
-                    className={`bg-gray-800 hidden ${showSearchBar && "!grid"} px-6`}
+                    className={`bg-gray-800 dark:!bg-[#0f1011] hidden ${showSearchBar && "!grid"} px-6`}
                 >
                     <input
                         className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
@@ -159,17 +159,19 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                             })}
                         </div>
                         <div className="text-gray-300 px-5 mt-2">
-                            <div className=" !bg-gray-800 flex !justify-between">
+                            <div className=" !bg-gray-800 dark:!bg-[#0f1011] flex !justify-between">
                                 <button 
-                                    className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                    className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
                                     disabled={pageLabel === 1 ? true : false}
                                     onClick={() => setPageLabel(pageLabel - 1)}
                                 > 
                                     <MdKeyboardDoubleArrowLeft size={18} />
                                 </button>
-                                <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
+                                <p className="!bg-gray-800 dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">
+                                    Page {pageLabel}
+                                </p>
                                 <button 
-                                    className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                    className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
                                     disabled={hasNextPageLabel ? false : true}
                                     onClick={() => setPageLabel(pageLabel + 1)}
                                 >

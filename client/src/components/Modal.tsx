@@ -40,14 +40,28 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                 className="modal-toggle"
             />
             <div className="modal">
-                <div className={`border border-gray-600 modal-box !bg-gray-800 relative transition-all duration-500 ${modalWrapperClassName && modalWrapperClassName}`}>
-                    <div className={`flex flex-row justify-between pb-5 border border-transparent border-b-gray-600 ${titleWrapperClassName && titleWrapperClassName}`}>
-                        {title && ( <h3 className={`text-2xl tracking-tight font-light text-gray-200 ${titleCustomClassName && titleCustomClassName}`}>{title}</h3> )}
+                <div 
+                    className={`
+                        border border-gray-600 modal-box !bg-gray-800 dark:!bg-[#0f1011] relative transition-all duration-500 
+                        ${modalWrapperClassName && modalWrapperClassName}
+                    `}
+                >
+                    <div 
+                        className={`
+                            flex flex-row justify-between pb-5 border border-transparent border-b-gray-600 
+                            ${titleWrapperClassName && titleWrapperClassName}
+                        `}
+                    >
+                        {title && ( 
+                            <h3 className={`text-2xl tracking-tight font-light text-gray-200 ${titleCustomClassName && titleCustomClassName}`}>
+                                {title}
+                            </h3> 
+                        )}
                         <div className="flex flex-row justify-between space-x-2">
                             {(showGoBackButton && goBackButtonAction) && (
                                 <div className="tooltip tooltip-bottom" data-tip="Go back">
                                     <div 
-                                        className="btn btn-sm btn-circle bg-gray-700 border border-gray-900"
+                                        className="btn btn-sm btn-circle bg-gray-700 dark:!bg-[#323232] border border-gray-900"
                                         onClick={() => goBackButtonAction()}
                                     >
                                         <RiArrowGoBackFill 
@@ -61,7 +75,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 <div className="tooltip tooltip-bottom uppercase tracking-wide before:!text-[11.5px]" data-tip="Close">
                                     <label 
                                         htmlFor="my-modal-3"
-                                        className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                        className={`btn btn-sm btn-circle bg-gray-700 dark:hover:!bg-[#484848] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                         onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                     >
                                         ✕
@@ -70,7 +84,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                             ) : ( 
                                 <label 
                                     htmlFor="my-modal-3"
-                                    className={`btn btn-sm btn-circle bg-gray-700 pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                    className={`btn btn-sm btn-circle bg-gray-700 dark:!bg-[#323232] dark:hover:!bg-[#484848] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                     onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                 >
                                     ✕

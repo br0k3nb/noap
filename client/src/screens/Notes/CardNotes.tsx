@@ -62,7 +62,9 @@ export default function CardNotes({
     };
 
     return (
-        <div className="bg-gray-800 text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 overflow-x-hidden">
+        <div 
+            className="bg-gray-800 dark:bg-[#0f1011] text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 overflow-x-hidden"
+        >
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">
                         <Loader />
@@ -74,10 +76,10 @@ export default function CardNotes({
                             <div className="w-fit xxs:!w-screen lg:!w-[360px] mx-auto">
                                 {(pinnedNotes.length > 0 && page === 1) && (
                                     <>
-                                        <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"}`}>
+                                        <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="collapse border border-transparent bg-gray-900 rounded-lg lg:ml-0 hover:border-gray-700 transition-all duration-700 ease-in-out"
+                                                    className="!z-0 collapse border border-transparent bg-gray-900 dark:!bg-[#181818] rounded-lg lg:ml-0 hover:border-gray-700 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
@@ -187,7 +189,7 @@ export default function CardNotes({
                                         </div>
                                         <div 
                                             className={`
-                                                border border-transparent border-t-gray-700 mb-10 mx-auto
+                                                border border-transparent border-t-gray-700 dark:!border-t-[#404040] mb-10 mx-auto
                                                 ${showPinnedNotesInFolder && "mt-7 !mb-7"}
                                             `}
                                             style={{
@@ -268,8 +270,8 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
         >
             <div 
                 className={`
-                    rounded-lg h-[18.4rem] border border-stone-900 bg-gray-700 pt-3 shadow-lg shadow-gray-900 hover:border transition duration-300 hover:border-gray-500
-                    ${noteContext?.selectedNote === _id && "!border-gray-300"}
+                    rounded-lg h-[18.4rem] border border-stone-900 dark:border-[#323232] bg-gray-700 dark:bg-[#181818] pt-3 shadow-lg shadow-gray-900 dark:shadow-transparent hover:border transition duration-300 hover:border-gray-500 dark:hover:border-gray-500
+                    ${noteContext?.selectedNote === _id && "!border-gray-400 dark:!border-[#626262]"}
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}
             >
@@ -297,7 +299,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                             {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
                                         </p>
                                         {labels.length > 1 && (
-                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 dark:!bg-[#343434] text-gray-300">
                                             <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
                                         </div>
                                         )}
@@ -311,7 +313,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                             {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
                                         </p>
                                         {labels.length > 1 && (
-                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 text-gray-300">
+                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 dark:!bg-[#343434] text-gray-300">
                                             <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
                                         </div>
                                         )}
