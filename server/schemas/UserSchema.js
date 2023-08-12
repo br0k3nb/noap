@@ -38,6 +38,14 @@ export default new mongoose.Schema({
             type: Boolean,
             required: true
         },
+        noteBackgroundColor: {
+            type: String,
+            required: false,
+        },
+        theme: {
+            type: String,
+            required: false,
+        },
         language: {
             type: String,
             required: false
