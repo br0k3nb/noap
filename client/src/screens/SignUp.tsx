@@ -22,13 +22,13 @@ export default function SignUp () {
     setWasSubmitted(true);
     try {
       const { data: { message } } = await api.post("/sign-up", { name, email, password });
-      toastAlert({icon: 'success', title: message, timer: 2500});
+      toastAlert({ icon: 'success', title: message, timer: 2500 });
       setWasSubmitted(false);
 
       setTimeout(() => navigate("/"), 1000);
     } catch (err: any) {
       setWasSubmitted(false);
-      toastAlert({ icon: 'error', title:`${err?.message}`, timer: 2000 });
+      toastAlert({ icon: 'error', title: err?.message, timer: 2000 });
     }
   };
 
