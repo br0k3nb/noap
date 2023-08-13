@@ -104,9 +104,15 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
     //for some reason, typescript is throwing an error if this code is not set as any.
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
-    const getNavbar = document.getElementById("pc-navbar") as any;
-
-    console.log((noteBackgroundColor && currentScreenSize.width > 640 ) ? "100px, 100px, 100px, 100px !important" : 0);
+    const getNavbar = document.getElementById("pc-navbar") as any;  
+    
+    const baseStyle = {
+      marginTop: noteBackgroundColor && noteBackgroundColor !== "#0f1011" ? 50 : 0,
+      marginBottom: noteBackgroundColor ? 90 : 80,
+      paddingRight: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      paddingLeft: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      backgroundColor: noteBackgroundColor ? noteBackgroundColor : 'none',
+    };
 
     return (
       <div className="editor-container plain-text dark:!bg-[#0f1011]">
@@ -137,22 +143,18 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                     }  
                   >
                     <div                        
-                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto rounded-xl py-10"
+                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10"
                       style={
                         !expanded && getNavbar?.checkVisibility() ? {
-                          marginTop: noteBackgroundColor && noteBackgroundColor !== "#0f1011" ? 50 : 0,
-                          marginBottom: noteBackgroundColor ? 90 : 80,
-                          paddingRight: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-                          paddingLeft: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-                          backgroundColor: noteBackgroundColor ? noteBackgroundColor : 'none',
-                          width: noteTextExpanded && currentScreenSize.width > 1430 ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) : currentScreenSize.width - 435
+                          ...baseStyle,
+                          width: noteTextExpanded && currentScreenSize.width > 1430 
+                            ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
+                            : currentScreenSize.width - 435
                         } : { 
-                          marginTop: noteBackgroundColor ? 50 : 0,
-                          marginBottom: noteBackgroundColor ? 90 : 80,
-                          backgroundColor: noteBackgroundColor ? noteBackgroundColor : 'none',
-                          paddingRight: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-                          paddingLeft: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-                          width: noteTextExpanded && currentScreenSize.width > 1000 ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) : currentScreenSize.width
+                          ...baseStyle,
+                          width: noteTextExpanded && currentScreenSize.width > 1000 
+                            ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
+                            : currentScreenSize.width
                         }
                       }
                     >

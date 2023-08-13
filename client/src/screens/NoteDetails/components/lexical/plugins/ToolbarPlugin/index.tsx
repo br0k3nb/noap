@@ -8,7 +8,7 @@ import {
   INSERT_CHECK_LIST_COMMAND, 
   INSERT_ORDERED_LIST_COMMAND, 
   INSERT_UNORDERED_LIST_COMMAND, 
-  ListNode, 
+  ListNode,
   REMOVE_LIST_COMMAND 
 } from '@lexical/list';
 
@@ -17,8 +17,19 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import { $createHeadingNode, $createQuoteNode, $isHeadingNode, HeadingTagType } from "@lexical/rich-text";
-import { $getSelectionStyleValueForProperty, $isParentElementRTL, $patchStyleText, $selectAll, $setBlocksType } from "@lexical/selection";
-import { $findMatchingParent, $getNearestBlockElementAncestorOrThrow,  $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
+import { 
+  $getSelectionStyleValueForProperty, 
+  $isParentElementRTL, 
+  $patchStyleText,
+  $selectAll, 
+  $setBlocksType 
+} from "@lexical/selection";
+import { 
+  $findMatchingParent, 
+  $getNearestBlockElementAncestorOrThrow,  
+  $getNearestNodeOfType, 
+  mergeRegister
+} from "@lexical/utils";
 
 import {
   $createParagraphNode,
@@ -452,7 +463,7 @@ export default function ToolbarPlugin() {
   const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>('paragraph');
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
   const [fontSize, setFontSize] = useState<string>('14px');
-  const [fontColor, setFontColor] = useState<string>('#000');
+  const [fontColor, setFontColor] = useState<string>('#000000');
   const [bgColor, setBgColor] = useState<string>('#374151');
   const [fontFamily, setFontFamily] = useState<string>(default_font_style);
   const [isLink, setIsLink] = useState(false);
@@ -643,7 +654,23 @@ export default function ToolbarPlugin() {
     (styles: Record<string, string>) => {
       activeEditor.update(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection)) $patchStyleText(selection, styles);
+
+        if ($isRangeSelection(selection)) {
+          const getNativeSelection = window.getSelection();
+          const getCurrentSelectedNode = $getNodeByKey(selection.anchor.key);
+        
+          if(getCurrentSelectedNode && getCurrentSelectedNode.__parent) {
+            const getParentOfCurrentSelectedNode = $getNodeByKey(getCurrentSelectedNode.__parent);
+            
+            if(getParentOfCurrentSelectedNode?.__type === "listitem") {
+              const getListElement = getNativeSelection?.anchorNode?.parentElement?.parentElement;
+              
+              if(getListElement) getListElement.style.color = styles?.color;
+            }
+          }
+
+          $patchStyleText(selection, styles);
+        }
       });
     },
     [activeEditor],

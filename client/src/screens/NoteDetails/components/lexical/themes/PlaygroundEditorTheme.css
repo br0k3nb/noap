@@ -234,6 +234,9 @@
     opacity: 1;
   }
 }
+.PlaygroundEditorTheme__listItem::marker {
+  color: inherit;
+}
 .PlaygroundEditorTheme__tableCellResizeRuler {
   display: block;
   position: absolute;

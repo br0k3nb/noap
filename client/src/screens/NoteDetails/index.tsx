@@ -593,7 +593,6 @@ export default function NoteDetails({
               titleWrapperClassName: "!px-6",
               titleCustomClassName: "xxs:!text-[20px]",
               modalWrapperClassName: "px-0 w-[23rem] xxs:!w-[20rem]",
-              showCloseTooltip: true
             }}
           >
             <div className="px-6 mt-5">            
@@ -604,7 +603,6 @@ export default function NoteDetails({
                 <ColorPicker
                   disabled={false}
                   color={'#000000'}
-                  title="text color"
                   alwaysOpened={true}
                   buttonIconClassName="icon font-color"
                   buttonAriaLabel="Formatting text color"

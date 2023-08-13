@@ -40,11 +40,11 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
             setOpen(false);
             setTimeout(() => setOpenSettings(true));
 
-            reset({password: ''});
-            toastAlert({icon: 'success', title: verify.data.message, timer: 2500});
+            reset({ password: '' });
+            toastAlert({ icon: 'success', title: verify.data.message, timer: 2500 });
         } catch (err: any) {
             setshowSvgLoader(false);
-            toastAlert({icon: 'error', title: err.message, timer: 2500});
+            toastAlert({ icon: 'error', title: err.message, timer: 2500 });
         }
     };
 
@@ -94,7 +94,7 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
                         maxLength: { value: 12, message: "Too many characters!" }
                       })}
                     />
-                    <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out w-full">
+                    <button className="bg-green-700 hover:bg-green-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out w-full">
                       {showSvgLoader ? ( <SvgLoader options={{showLoadingText: true}} /> ) : ("Confirm")}
                     </button>
                   </form>

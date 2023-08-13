@@ -68,7 +68,7 @@ export default function ColorPicker({
   );
 
   const huePosition = useMemo(() => ({
-     x: alwaysOpened ? (selfColor.hsv.s / 100) * customWidth : (selfColor.hsv.h / 360) * WIDTH 
+     x: alwaysOpened ? (selfColor.hsv.h / 360) * customWidth : (selfColor.hsv.h / 360) * WIDTH 
     }),
     [selfColor.hsv]
   );
@@ -125,7 +125,7 @@ export default function ColorPicker({
       {alwaysOpened ? (
         <>
           <div 
-            className="!w-[19.90rem] xxs:!w-[16.90rem] color-picker-wrapper !text-gray-200" 
+            className="color-picker-wrapper !text-gray-200" 
             style={ alwaysOpened ? { width: customWidth } : { width: WIDTH } } 
             ref={innerDivRef}
           >
@@ -154,19 +154,29 @@ export default function ColorPicker({
             >
               <div
                 className="color-picker-saturation_cursor"
-                style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
+                style={{ 
+                  backgroundColor: selfColor.hex, 
+                  left: saturationPosition.x, 
+                  top: saturationPosition.y
+                }}
               />
             </MoveWrapper>
-            <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
+            <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>              
               <div
                 className="color-picker-hue_cursor"
-                style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
+                style={{ 
+                  backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, 
+                  left: huePosition.x 
+              }}
               />
             </MoveWrapper>
-            <div
-              className="color-picker-color"
-              style={{ backgroundColor: selfColor.hex }}
-            />
+            <div className="flex flex-col mt-4">
+              <p className="text-xs uppercase text-gray-300 tracking-widest">Color preview</p>
+              <div
+                className="color-picker-color rounded-xl mt-2"
+                style={{ backgroundColor: selfColor.hex }}
+              />
+            </div>
           </div>
           {children}
           <button
@@ -245,7 +255,7 @@ interface MoveWrapperProps {
   children: JSX.Element;
 }
 
-function MoveWrapper({ className, style, onChange,children }: MoveWrapperProps) {
+function MoveWrapper({ className, style, onChange, children }: MoveWrapperProps) {
   const divRef = useRef<HTMLDivElement>(null);
 
   const move = (e: React.MouseEvent | MouseEvent): void => {
@@ -279,7 +289,12 @@ function MoveWrapper({ className, style, onChange,children }: MoveWrapperProps) 
   };
 
   return (
-    <div ref={divRef} className={className} style={style} onMouseDown={onMouseDown}>
+    <div 
+      ref={divRef} 
+      className={className} 
+      style={style} 
+      onMouseDown={onMouseDown}
+    >
       {children}
     </div>
   );
@@ -387,10 +402,7 @@ function rgb2hex({ b, g, r }: RGB): string {
   return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
 
-function transformColor<M extends keyof Color, C extends Color[M]>(
-  format: M,
-  color: C
-): Color {
+function transformColor<M extends keyof Color, C extends Color[M]>(format: M, color: C): Color {
   let hex: Color["hex"] = toHex("#121212");
   let rgb: Color["rgb"] = hex2rgb(hex);
   let hsv: Color["hsv"] = rgb2hsv(rgb);

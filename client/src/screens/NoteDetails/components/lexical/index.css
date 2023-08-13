@@ -43,7 +43,6 @@ header h1 {
   border-color: transparent;
   outline: transparent;
   border-radius: 0;
-  color: #ddd;
 }
 
 .editor-scroller {
@@ -79,7 +78,6 @@ pre {
   background: #222; 
   font-size: 12px;
   position: relative;
-  /* overflow: hidden; */
 }
 
 pre::-webkit-scrollbar {

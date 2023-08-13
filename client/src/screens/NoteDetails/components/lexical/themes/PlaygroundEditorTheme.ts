@@ -68,7 +68,7 @@ const theme: EditorThemeClasses = {
       'PlaygroundEditorTheme__ol4',
       'PlaygroundEditorTheme__ol5',
     ],
-    ul: 'PlaygroundEditorTheme__ul',
+    ul: 'PlaygroundEditorTheme__ul dark:!text-inherit',
   },
   ltr: 'PlaygroundEditorTheme__ltr',
   mark: 'PlaygroundEditorTheme__mark',
