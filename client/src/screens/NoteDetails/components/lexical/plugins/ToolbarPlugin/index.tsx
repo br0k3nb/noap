@@ -5,12 +5,12 @@ import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, CODE_LAN
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { 
   $isListNode, 
-  INSERT_CHECK_LIST_COMMAND, 
   INSERT_ORDERED_LIST_COMMAND, 
   INSERT_UNORDERED_LIST_COMMAND, 
   ListNode,
-  REMOVE_LIST_COMMAND 
-} from '@lexical/list';
+  REMOVE_LIST_COMMAND,
+  INSERT_CHECK_LIST_COMMAND
+} from '../../nodes/ListNode';
 
 import { INSERT_EMBED_COMMAND } from "@lexical/react/LexicalAutoEmbedPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -663,9 +663,13 @@ export default function ToolbarPlugin() {
             const getParentOfCurrentSelectedNode = $getNodeByKey(getCurrentSelectedNode.__parent);
             
             if(getParentOfCurrentSelectedNode?.__type === "listitem") {
-              const getListElement = getNativeSelection?.anchorNode?.parentElement?.parentElement;
+              const getOlOrULElement = getNativeSelection?.anchorNode?.parentElement?.parentElement?.parentElement;
               
-              if(getListElement) getListElement.style.color = styles?.color;
+              if(getOlOrULElement) {
+                const htmlCollectionToArray = [...getOlOrULElement?.children] as HTMLLIElement[];
+
+                htmlCollectionToArray.forEach(val => { val.style.color = styles?.color });
+              }
             }
           }
 

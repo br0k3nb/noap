@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, forwardRef, useContext } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { CheckListPlugin } from "../plugins/CustomCheckListPlugin";
+import { ListPlugin } from '../plugins/CustomListPlugin';
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -143,7 +143,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                     }  
                   >
                     <div                        
-                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10"
+                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10 rounded-xl"
                       style={
                         !expanded && getNavbar?.checkVisibility() ? {
                           ...baseStyle,

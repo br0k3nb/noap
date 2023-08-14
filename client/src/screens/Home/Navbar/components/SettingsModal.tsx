@@ -253,8 +253,9 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 id='theme-selector'
                                 className="select select-ghost border border-transparent focus:outline-0 w-full transition-all duration-500 hover:!border-gray-500 px-5 !h-[52px] rounded-full text-gray-300 text-xs uppercase tracking-wide hover:tracking-widest bg-gray-700/80 hover:!bg-gray-700"
                                 onChange={(e) => handleChangeTheme(e.target.value)}
+                                defaultValue={'theme'}
                             >
-                                <option disabled selected>Theme selector</option>
+                                <option disabled value={'theme'}>Theme selector</option>
                                 <option>Dark - (Default)</option>
                                 <option>Light</option>
                             </select>
