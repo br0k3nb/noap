@@ -1,5 +1,5 @@
 import type { LexicalEditor, NodeKey, TextNode, ElementNode } from "lexical";
-import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
+import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction, useContext } from "react";
 
 import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, CODE_LANGUAGE_MAP, getLanguageFriendlyName } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -96,6 +96,7 @@ import outdentIcon from '../../images/icons/outdent.svg';
 import indentIcon from '../../images/icons/indent.svg';
 
 import useUpdateViewport from "../../../../../../hooks/useUpdateViewport";
+import { UserDataCtx } from "../../../../../../context/UserDataContext";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -453,7 +454,10 @@ function FontDropDown({
 }
 
 export default function ToolbarPlugin() {
+  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+
   const default_font_style = 'Roboto';
+  const default_font_color = theme === "dark" ? '#ffffff' : '#000000';
 
   const [editor] = useLexicalComposerContext();
   
@@ -462,10 +466,10 @@ export default function ToolbarPlugin() {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>('paragraph');
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
-  const [fontSize, setFontSize] = useState<string>('14px');
-  const [fontColor, setFontColor] = useState<string>('#000000');
-  const [bgColor, setBgColor] = useState<string>('#374151');
-  const [fontFamily, setFontFamily] = useState<string>(default_font_style);
+  const [fontSize, setFontSize] = useState('14px');
+  const [fontColor, setFontColor] = useState(default_font_color);
+  const [bgColor, setBgColor] = useState('#374151');
+  const [fontFamily, setFontFamily] = useState(default_font_style);
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -476,40 +480,60 @@ export default function ToolbarPlugin() {
   const [isCode, setIsCode] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const [isRTL, setIsRTL] = useState(false);
-  const [codeLanguage, setCodeLanguage] = useState<string>('');
+  const [codeLanguage, setCodeLanguage] = useState('');
   const [screenSize, setScreenSize] = useState({ width: innerWidth });
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [lastSelectedFontFamily, setLastSelectedFontFamily] = useState('');
+  const [lastSelectedFontColor, setLastSelectedFontColor] = useState('');
 
   const prevNodeKey = useRef<null | string>(null);
-  const prevSelection = useRef<string | null>(null);
-  const prevElementKey = useRef<null | string>(null);
-  const prevNodeType = useRef<null | TextNode | ElementNode>(null);
-  
-  const handleUpdateFont = (fontFamily: string) => {
+  const prevFontColorSelection = useRef<string | null>(null);
+  const prevFontFamilySelection = useRef<string | null>(null);
+  const pervElKeyFontFamily = useRef<null | string>(null);
+  const pervElKeyFontColor = useRef<null | string>(null);
+
+  const handleUpdateFontFamily = (fontFamily: string) => {
     editor.update(() => {
       const selection = $getSelection();
 
       if ($isRangeSelection(selection)) {
         const node = getSelectedNode(selection);
+        
+        if(pervElKeyFontFamily.current !== node.__key) {
+          if(node.__text?.length === 1) selection.focus.offset = 0;
 
-        if(node.__type === 'text' && node.__key !== prevElementKey.current) {
-          if(node.__text.length === 1) selection.focus.offset = 0;
-
-          $patchStyleText(selection, {
-            ["font-family"] : fontFamily,
-          });
+          $patchStyleText(selection, { ["font-family"] : fontFamily });
 
           if(selection.focus.offset !== selection.anchor.offset) {
             selection.focus.offset = selection.focus.offset + 1;
             selection.anchor.offset = selection.anchor.offset + 1;
           }
-          
         }
 
-        prevElementKey.current = node.__key;
-        prevNodeType.current = node;
+        pervElKeyFontFamily.current = node.__key;
+      }
+    });
+  };
+
+  const handleUpdateFontColor = (fontFamily: string) => {
+    editor.update(() => {
+      const selection = $getSelection();
+
+      if ($isRangeSelection(selection)) {
+        const node = getSelectedNode(selection);
+        
+        if(pervElKeyFontColor.current !== node.__key) {
+          if(node.__text?.length === 1) selection.focus.offset = 0;
+
+          $patchStyleText(selection, { color : fontFamily });
+
+          if(selection.focus.offset !== selection.anchor.offset) {
+            selection.focus.offset = selection.focus.offset + 1;
+            selection.anchor.offset = selection.anchor.offset + 1;
+          }
+        }
+
+        pervElKeyFontColor.current = node.__key;
       }
     });
   };
@@ -541,7 +565,6 @@ export default function ToolbarPlugin() {
       setIsSubscript(selection.hasFormat("subscript"));
       setIsSuperscript(selection.hasFormat("superscript"));
       setIsCode(selection.hasFormat("code"));
-      setIsRTL($isParentElementRTL(selection));
 
       // Update links
       const node = getSelectedNode(selection);
@@ -576,42 +599,63 @@ export default function ToolbarPlugin() {
 
       const findPosition = new RegExp(/(font-family:.+?);/, "g");
       const extractString = findPosition.exec(selection.style);
+      const extractColor = selection.style.match(/(;color:.+?);/gi);
 
       const selectionFontStyle = extractString ? extractString[1].slice(13, extractString[1].length) : '';
-
-      if(selectionFontStyle || lastSelectedFontFamily) {
+      const selectionFontColor = extractColor ? extractColor[0].slice(8, extractColor[0].length - 1) : '';      
+      
+      if((selectionFontStyle || lastSelectedFontFamily)) {
         if(selectionFontStyle) {
-          handleUpdateFont(selectionFontStyle);
+          handleUpdateFontFamily(selectionFontStyle);
           setFontFamily(selectionFontStyle);
         }
         else {
-          const condition = prevSelection.current ? prevSelection.current : lastSelectedFontFamily;
-          handleUpdateFont(condition);
-          setFontFamily(condition);
+          const fontFamilyCondition = prevFontFamilySelection.current ? prevFontFamilySelection.current : lastSelectedFontFamily;
+
+          handleUpdateFontFamily(fontFamilyCondition);
+          setFontFamily(fontFamilyCondition);
         }
       }
 
-      setFontColor($getSelectionStyleValueForProperty(selection, "color", "#000"));
+      if((selectionFontColor || lastSelectedFontColor)) {
+        if(selectionFontColor) {
+          handleUpdateFontColor(selectionFontColor);
+          setFontColor(selectionFontColor);
+        } else {
+          const fontColorCondition = prevFontColorSelection.current ? prevFontColorSelection.current : lastSelectedFontColor;
+         
+          handleUpdateFontColor(fontColorCondition);
+          setFontColor(fontColorCondition);
+        }
+      }
+
       setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#374151"));
 
       prevNodeKey.current = anchorNode.getKey();
       if(selection._cachedNodes) {
         const selecStyle = selection.style;
 
-        if(!selecStyle && prevSelection.current) {
-          handleUpdateFont(prevSelection.current);
-          setFontFamily(prevSelection.current);
+        if(!selecStyle && prevFontFamilySelection.current) {
+          handleUpdateFontFamily(prevFontFamilySelection.current);
+          setFontFamily(prevFontFamilySelection.current);
+        }
+
+        if(!selecStyle && prevFontColorSelection.current) {
+          handleUpdateFontColor(prevFontColorSelection.current);
+          setFontColor(prevFontColorSelection.current);
         }
     
-        if(selectionFontStyle) prevSelection.current = selectionFontStyle;
-        else prevSelection.current = !selecStyle && lastSelectedFontFamily ? lastSelectedFontFamily : default_font_style;
+        if(selectionFontStyle) prevFontFamilySelection.current = selectionFontStyle;
+        else prevFontFamilySelection.current = !selecStyle && lastSelectedFontFamily ? lastSelectedFontFamily : default_font_style;
 
-        if(!lastSelectedFontFamily.length && selectionFontStyle.length > 0) {
-          setLastSelectedFontFamily(selectionFontStyle);
-        }
+        if(selectionFontColor) prevFontColorSelection.current = selectionFontColor;
+        else prevFontColorSelection.current = lastSelectedFontColor ? lastSelectedFontColor : default_font_color;
+
+        if(!lastSelectedFontFamily.length && selectionFontStyle.length > 0) setLastSelectedFontFamily(selectionFontStyle);
+        if(!lastSelectedFontColor && selectionFontColor) setLastSelectedFontColor(selectionFontColor);
       }
     }
-  }, [activeEditor, lastSelectedFontFamily]);
+  }, [activeEditor, lastSelectedFontFamily, lastSelectedFontColor]);
 
   useEffect(() => {
     return editor.registerCommand(
@@ -663,13 +707,9 @@ export default function ToolbarPlugin() {
             const getParentOfCurrentSelectedNode = $getNodeByKey(getCurrentSelectedNode.__parent);
             
             if(getParentOfCurrentSelectedNode?.__type === "listitem") {
-              const getOlOrULElement = getNativeSelection?.anchorNode?.parentElement?.parentElement?.parentElement;
+              const liHTMLElement = getNativeSelection?.anchorNode?.parentElement?.parentElement;
               
-              if(getOlOrULElement) {
-                const htmlCollectionToArray = [...getOlOrULElement?.children] as HTMLLIElement[];
-
-                htmlCollectionToArray.forEach(val => { val.style.color = styles?.color });
-              }
+              if(liHTMLElement) liHTMLElement.style.color = styles?.color;
             }
           }
 
@@ -699,7 +739,10 @@ export default function ToolbarPlugin() {
   }, [activeEditor]);
 
   const onFontColorSelect = useCallback(
-    (value: string) => { applyStyleText({ color: value }) },
+    (value: string) => { 
+      setLastSelectedFontColor(value);
+      applyStyleText({ color: value });
+    },
     [applyStyleText]
   );
 
@@ -776,7 +819,7 @@ export default function ToolbarPlugin() {
 
   return (
     <div  
-      className="toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 dark:!bg-[#0f1011] !text-gray-50 border border-transparent border-b-gray-600 dark:border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+      className="!z-50 toolbar !h-[2.50rem] mt-[0.02rem] !bg-gray-700 dark:!bg-[#0f1011] !text-gray-50 border border-transparent border-b-gray-600 dark:border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
       style={{ 
         width: !getNavbar?.checkVisibility() ? screenSize.width : screenSize.width - 442
       }}
@@ -852,7 +895,7 @@ export default function ToolbarPlugin() {
               isFontSizeModal={true}
               disabled={!isEditable} 
               style={"font-size"} 
-              value={fontSize} 
+              value={fontSize ? fontSize : '14px'} 
               editor={editor}
             />
             <button 

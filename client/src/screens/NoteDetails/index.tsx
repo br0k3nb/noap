@@ -373,11 +373,11 @@ export default function NoteDetails({
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-gray-800 border border-gray-500 overflow-y-scroll overflow-x-hidden"
+                className="dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-gray-800 dark:bg-[#1c1d1e] border border-gray-500 overflow-y-scroll overflow-x-hidden"
               >
                 <li>
                   <a
-                    className="active:!bg-gray-600 hover:!bg-gray-700"
+                    className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                     onClick={() => handlePinNote()}
                   >
                     <label
@@ -404,9 +404,9 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a
-                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => handleOpenLabelModal()}
                     >
                       <label
@@ -421,9 +421,9 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <button
-                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
                     >
                       <label
@@ -438,7 +438,7 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </button>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a className="cursor-not-allowed active:!bg-transparent">
                       <label htmlFor="my-modal-4" className="text-gray-600">
                         <div className="flex flex-row space-x-2 cursor-not-allowed">
@@ -449,9 +449,9 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <button
-                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => handleToggleBottomBar()}
                     >
                       <label
@@ -470,9 +470,9 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </button>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <button
-                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => setRenameNote(!renameNote)}
                     >
                       <label
@@ -487,9 +487,9 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </button>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a
-                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => setOpenChangeNoteBackgroundModal(true)}
                     >
                       <label
@@ -504,9 +504,9 @@ export default function NoteDetails({
                         </div>
                       </label>
                     </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a
-                      className="active:!bg-gray-600 hover:!bg-gray-700"
+                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => setOpen(true)}
                     >
                       <label

@@ -105,22 +105,22 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       </div>
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-gray-800 border border-gray-600 ml-2">
+                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-gray-800 dark:bg-[#1c1d1e] border border-gray-600 ml-2">
                     <li>
                       <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300"
+                        className="active:!bg-gray-600 rounded-xl text-gray-300 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenAccSettingsModal(true)}
                       >
                         <label htmlFor="my-modal-4">
-                          <div className="flex flex-row space-x-2">
+                          <div className="flex flex-row space-x-2"> 
                             <span>Change login information</span>  
                             <BiLock size={25} className="pt-1"/>
                           </div>
                         </label>
                       </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                       <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300"
+                        className="active:!bg-gray-600 rounded-xl text-gray-300 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => setOpen2FAModal(true)}
                       >
                         <label htmlFor="my-modal-4">
@@ -130,9 +130,9 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                           </div>
                         </label>
                       </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                       <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300"
+                        className="active:!bg-gray-600 rounded-xl text-gray-300 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => setOpenSignOutConfirmationModal(true)}
                       >
                         <label htmlFor="my-modal-4">

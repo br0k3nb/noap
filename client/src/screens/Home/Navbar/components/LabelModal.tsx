@@ -233,10 +233,10 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                 <motion.div
                                     animate={!showSearchBar ? hide : show}
                                     transition={{ duration: 0.4 }}
-                                    className={`bg-gray-800 hidden ${showSearchBar && "!grid"} px-6`}
+                                    className={`hidden ${showSearchBar && "!grid"} px-6`}
                                 >
                                     <input
-                                        className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
+                                        className="sign-text-inputs bg-stone-900 text-gray-300 border border-gray-600    h-10 mb-2"
                                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                                         placeholder="Search..."
                                         value={searchLabel}
@@ -268,16 +268,16 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                                     : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,17) + '...' : name}
                                                                 </div>
                                                             )}
-                                                            <div className="flex items-center justify-center">
-                                                                <div className='tooltip tooltip-left xxs:before:bg-transparent' data-tip={ innerWidth > 640 ? "Actions" : "" }>
+                                                            {/* <div className='tooltip tooltip-left xxs:before:bg-transparent' data-tip={ innerWidth > 640 ? "Actions" : "" }> */}
+                                                                <div className="flex items-center justify-center cursor-pointer">
                                                                     <div className="dropdown dropdown-left">
-                                                                        <label tabIndex={0}>
-                                                                            <BsThreeDotsVertical size={16} onClick={() => setShowDropDown(idx)}/> 
+                                                                        <label tabIndex={0} className='cursor-pointer'>
+                                                                            <BsThreeDotsVertical size={16} onClick={() => setShowDropDown(idx)} /> 
                                                                         </label>
                                                                         <ul 
                                                                             tabIndex={0} 
-                                                                            className="dropdown-content menu shadow rounded-box w-36 !bg-gray-900"
-                                                                            style={idx !== showDropDown ? {display: 'none'}: undefined}
+                                                                            className="dropdown-content menu shadow rounded-box w-36 !bg-gray-900 dark:!bg-[#17181b] border border-gray-600"
+                                                                            style={idx !== showDropDown ? { display: 'none' }: undefined}
                                                                         >
                                                                             <li className="text-xs uppercase tracking-widest">
                                                                                 <a className="active:!bg-gray-600" onClick={() => resetLabelInfoToEdit(chip)}>
@@ -291,7 +291,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                                             </li>
                                                                         </ul>
                                                                     </div>
-                                                                </div>
+                                                                {/* </div> */}
                                                             </div>
                                                         </div>
                                                     )
@@ -307,17 +307,17 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                 )}
                             </div>
                             <div className="text-gray-300 px-5 my-1">
-                                <div className=" !bg-gray-800 flex !justify-between">
+                                <div className=" !bg-gray-800 dark:!bg-[#0f1011] flex !justify-between">
                                     <button 
-                                        className="btn !bg-gray-800  hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
                                         disabled={pageLabel === 1 ? true : false}
                                         onClick={() => setPageLabel(pageLabel - 1)}
                                     > 
                                         <MdKeyboardDoubleArrowLeft size={18} />
                                     </button>
-                                    <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
+                                    <p className="!bg-gray-800 dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
                                     <button 
-                                        className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
                                         disabled={hasNextPageLabel ? false : true}
                                         onClick={() => setPageLabel(pageLabel + 1)}
                                     >

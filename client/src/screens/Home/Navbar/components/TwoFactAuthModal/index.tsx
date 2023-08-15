@@ -176,15 +176,15 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                                 draggable={false}
                             />
                             <button 
-                                className="mt-5 px-3 py-3 bg-gray-900 rounded-lg text-xs uppercase tracking-widest border border-gray-700 hover:bg-black transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
+                                className="mt-5 px-3 py-3 bg-gray-900 dark:!bg-[#404040] dark:hover:!bg-[#232323] dark:border-gray-500 rounded-lg text-xs uppercase tracking-widest border border-gray-700 hover:bg-black transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
                                 disabled={qrcodeImage ? true : false}
                                 onClick={() => handleGenerateQrcode()}
                             >
                                 {showSvgLoader ? (
                                     <SvgLoader options={{ 
                                         showLoadingText: true,
-                                        LoadingTextClassName: "!text-xs pt-[0.5px]",
-                                        LoaderClassName: "!h-3 !w-3"
+                                        LoadingTextClassName: "!text-xs pt-[1px]",
+                                        LoaderClassName: "!h-3 !w-3 !mt-[3.5px]"
                                     }}/>
                                 ) : ("Generate QR code")}  
                             </button>
@@ -202,11 +202,11 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                                 max={6}
                                 ref={numberRef}
                                 onKeyUp={onKeyUpNumber}
-                                className="sign-text-inputs w-60 placeholder:text-center text-center bg-stone-900 text-gray-300 h-10 border !border-gray-700 hover:!border-gray-600"
+                                className="sign-text-inputs w-60 placeholder:text-center text-center bg-stone-900 text-gray-300 h-10 border border-gray-700 dark:border-gray-500 hover:!border-gray-600"
                                 onChange={({currentTarget}) => handleInputChange(currentTarget.value)}
                             />
                             <button
-                                className={`mt-2 px-24 py-3 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-gray-900 rounded-full text-xs uppercase tracking-widest border border-gray-700 hover:bg-black transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60`}
+                                className={`mt-2 px-24 py-3 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-gray-900 rounded-full text-xs uppercase tracking-widest border border-gray-700 dark:border-gray-500 hover:!border-gray-600 hover:bg-black transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60`}
                                 disabled={TFACode.length === 6 ? false : true}
                                 onClick={() => handleVerifyButton()}
                             >
@@ -232,7 +232,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                                 max={6}
                                 ref={numberRef}
                                 onKeyUp={onKeyUpNumber}
-                                className="sign-text-inputs w-60 placeholder:text-center text-center bg-stone-900 text-gray-300 h-10 border !border-gray-700 hover:!border-gray-600"
+                                className="sign-text-inputs w-60 placeholder:text-center text-center bg-stone-900 text-gray-300 h-10 border !border-gray-700 hover:border-gray-600"
                                 onChange={({currentTarget}) => handleInputChange(currentTarget.value)}
                             />
                             <button
@@ -279,7 +279,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                 )}
                 <div className={`flex flex-row justify-between mt-3 ${((TFAEnabled && !isVerified) || (TFAEnabled && isVerified)) && "!hidden"}`}>
                     <button 
-                        className="text-xs uppercase bg-gray-900 hover:bg-black px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
+                        className="text-xs uppercase bg-gray-900 hover:bg-black dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
                         onClick={() => setPage(page - 1)}
                         disabled={!page ? true : false}
                     >
@@ -288,7 +288,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                         </div>
                     </button>
                     <button
-                        className="text-xs uppercase bg-gray-900 hover:bg-black px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
+                        className="text-xs uppercase bg-gray-900 hover:bg-black dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
                         disabled={page === 2 || (page === 1 && !qrcodeImage) ? true : false}
                         onClick={() => setPage(page + 1)}
                     >

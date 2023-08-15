@@ -96,11 +96,12 @@ import {
       setTimeout(() => {
         if(dom.firstElementChild?.firstElementChild?.tagName === "SPAN") {
           const htmlCollectionToArray = [...dom.children] as HTMLLIElement[];
-          const getColorFromElementInsideList = (dom.firstElementChild?.firstElementChild as HTMLSpanElement)?.style?.color;
 
-
-          if(getColorFromElementInsideList) {
-            htmlCollectionToArray.forEach((el) => { el.style.color = getColorFromElementInsideList });
+          if(htmlCollectionToArray.length) {
+            htmlCollectionToArray.forEach((el) => { 
+              const getSpanColor = (el.firstChild as HTMLSpanElement)?.style.color;
+              el.style.color = getSpanColor;
+            });
           }
         }
       });

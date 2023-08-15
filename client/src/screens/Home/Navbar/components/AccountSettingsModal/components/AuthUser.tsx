@@ -85,7 +85,7 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
                     </p>
                     <input
                       type="password"
-                      className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400`}
+                      className={`sign-text-inputs bg-stone-900 text-gray-300 border border-gray-600 active:border focus:border-gray-400`}
                       placeholder="Password"
                       required
                       {...register("password", {

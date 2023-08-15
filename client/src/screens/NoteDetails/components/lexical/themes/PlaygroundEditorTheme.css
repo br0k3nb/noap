@@ -308,6 +308,7 @@
   list-style-type: inherit;
 }
 .PlaygroundEditorTheme__listItem{
+  color: inherit;
   margin: 0 32px;
 }
 .PlaygroundEditorTheme__listItemChecked,
