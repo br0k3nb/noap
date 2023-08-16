@@ -10,11 +10,11 @@ type Props = Readonly<{
 
 export default function TextInput({ label, value, onChange, placeholder = '', 'data-test-id': dataTestId }: Props) {
   return (
-    <div className="Input__wrapper">
-      <label className="Input__label !text-gray-200 text-xs uppercase tracking-widest">{label}</label>
+    <div className="Input__wrapper dark:!text-gray-300 !text-gray-900">
+      <label className="Input__label dark:!text-gray-300 !text-gray-900 text-xs uppercase tracking-widest">{label}</label>
       <input
         type="text"
-        className="Input__input !bg-gray-700 dark:!bg-[#323232] placeholder:text-xs placeholder:uppercase placeholder:tracking-widest"
+        className="Input__input !bg-[#c1c1c1] dark:!bg-[#323232] placeholder:text-xs placeholder:uppercase placeholder:tracking-widest"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}

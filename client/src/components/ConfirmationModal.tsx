@@ -58,7 +58,7 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
 
     return (
         <Modal {...modalProps}>
-            <p className={`mt-5 px-6 text-sm uppercase tracking-widest text-gray-300 ${mainTextCustomClassName && mainTextCustomClassName}`}>
+            <p className={`mt-5 px-6 text-sm uppercase tracking-widest text-gray-900 dark:text-gray-300 ${mainTextCustomClassName && mainTextCustomClassName}`}>
                 {mainText} 
             </p>
             {options?.subText && (
@@ -86,7 +86,7 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                             />
                          )}
                         <span 
-                            className={`${alertComponentTextClassName && alertComponentTextClassName}`}
+                            className={`text-gray-300 ${alertComponentTextClassName && alertComponentTextClassName}`}
                         >
                             {alertComponentText}
                         </span>
@@ -96,7 +96,7 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
             <div className="mt-5 xxs:mt-5">
                 <div className="mt-3 flex flex-row justify-evenly">
                     <button
-                        className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-[14px] xxs:!py-[10px] xxs:px-6 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out"
+                        className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-[14px] xxs:!py-[10px] xxs:px-6 rounded-lg dark:shadow-none shadow-md shadow-gray-500 transition-all duration-500 ease-in-out"
                         onClick={() => customCloseButtonAction ? customCloseButtonAction() : setOpen(false)}
                     >
                         <p className='text-sm uppercase tracking-widest xxs:!text-xs'>
@@ -104,7 +104,7 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                         </p>
                     </button>
                     <button 
-                        className={`bg-red-700 hover:bg-red-800 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-lg shadow-md shadow-gray-900 transition-all duration-500 ease-in-out`}
+                        className={`bg-red-700 hover:bg-red-800 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-lg dark:shadow-none shadow-md shadow-gray-500 transition-all duration-500 ease-in-out`}
                         onClick={() => deleteButtonAction()}
                     >
                         {loader ? (

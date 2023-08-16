@@ -39,10 +39,10 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                 type="checkbox"
                 className="modal-toggle"
             />
-            <div className="modal">
+            <div className="modal !text-black dark:!text-gray-300">
                 <div 
                     className={`
-                        border border-gray-600 modal-box !bg-gray-800 dark:!bg-[#0f1011] relative transition-all duration-500 
+                        border border-gray-900 dark:border-gray-600 modal-box !bg-[#d9dbde] dark:!bg-[#0f1011] relative transition-all duration-500 
                         ${modalWrapperClassName && modalWrapperClassName}
                     `}
                 >
@@ -53,7 +53,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                         `}
                     >
                         {title && ( 
-                            <h3 className={`text-2xl tracking-tight font-light text-gray-200 ${titleCustomClassName && titleCustomClassName}`}>
+                            <h3 className={`text-2xl tracking-tight font-light text-black dark:text-gray-300 ${titleCustomClassName && titleCustomClassName}`}>
                                 {title}
                             </h3> 
                         )}
@@ -75,7 +75,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 <div className="tooltip tooltip-bottom uppercase tracking-wide before:!text-[11.5px]" data-tip="Close">
                                     <label 
                                         htmlFor="my-modal-3"
-                                        className={`btn btn-sm btn-circle bg-gray-700 dark:!bg-[#323232] dark:hover:!bg-[#484848] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                        className={`btn btn-sm btn-circle bg-[#d9dbde] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                         onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                     >
                                         ✕
@@ -84,7 +84,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                             ) : ( 
                                 <label 
                                     htmlFor="my-modal-3"
-                                    className={`btn btn-sm btn-circle bg-gray-700 dark:!bg-[#323232] dark:hover:!bg-[#484848] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                    className={`text-gray-900 dark:text-gray-300 btn btn-sm btn-circle bg-inherit hover:bg-[#bbbbbb] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                     onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                 >
                                     ✕

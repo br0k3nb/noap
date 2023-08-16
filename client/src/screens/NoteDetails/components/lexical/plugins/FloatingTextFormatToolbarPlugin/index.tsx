@@ -1,17 +1,7 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import './index.css';
-
-import {$isCodeHighlightNode} from '@lexical/code';
-import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {mergeRegister} from '@lexical/utils';
+import { $isCodeHighlightNode } from '@lexical/code';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { mergeRegister } from '@lexical/utils';
 import {
   $getSelection,
   $isRangeSelection,
@@ -21,14 +11,17 @@ import {
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from 'lexical';
-import {useCallback, useEffect, useRef, useState} from 'react';
-import * as React from 'react';
-import {createPortal} from 'react-dom';
+import { useCallback, useEffect, useRef, useState, useContext } from 'react';
+import { createPortal } from 'react-dom';
 
-import {getDOMRangeRect} from '../../utils/getDOMRangeRect';
-import {getSelectedNode} from '../../utils/getSelectedNode';
-import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
-import {INSERT_INLINE_COMMAND} from '../CommentPlugin';
+import { getDOMRangeRect } from '../../utils/getDOMRangeRect';
+import { getSelectedNode } from '../../utils/getSelectedNode';
+import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition';
+import { INSERT_INLINE_COMMAND } from '../CommentPlugin';
+
+import { UserDataCtx } from '../../../../../../context/UserDataContext';
+
+import './index.css';
 
 function TextFormatFloatingToolbar({
   editor,
@@ -125,15 +118,11 @@ function TextFormatFloatingToolbar({
     };
 
     window.addEventListener('resize', update);
-    if (scrollerElem) {
-      scrollerElem.addEventListener('scroll', update);
-    }
+    if (scrollerElem) scrollerElem.addEventListener('scroll', update);
 
     return () => {
       window.removeEventListener('resize', update);
-      if (scrollerElem) {
-        scrollerElem.removeEventListener('scroll', update);
-      }
+      if (scrollerElem) scrollerElem.removeEventListener('scroll', update);
     };
   }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
 
@@ -160,73 +149,75 @@ function TextFormatFloatingToolbar({
     );
   }, [editor, updateTextFormatFloatingToolbar]);
 
+  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+
   return (
-    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
+    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup dark:bg-[#1c1d1e]">
       {editor.isEditable() && (
         <>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
             }}
-            className={'popup-item spaced ' + (isBold ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isBold ? 'active' : '')}
             aria-label="Format text as bold">
-            <i className="format bold" />
+            <i className={`format bold ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
             }}
-            className={'popup-item spaced ' + (isItalic ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isItalic ? 'active' : '')}
             aria-label="Format text as italics">
-            <i className="format italic" />
+            <i className={` format italic ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
             }}
-            className={'popup-item spaced ' + (isUnderline ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isUnderline ? 'active' : '')}
             aria-label="Format text to underlined">
-            <i className="format underline" />
+            <i className={`format underline ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
             }}
-            className={'popup-item spaced ' + (isStrikethrough ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isStrikethrough ? 'active' : '')}
             aria-label="Format text with a strikethrough">
-            <i className="format strikethrough" />
+            <i className={`format strikethrough ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
             }}
-            className={'popup-item spaced ' + (isSubscript ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isSubscript ? 'active' : '')}
             title="Subscript"
             aria-label="Format Subscript">
-            <i className="format subscript" />
+            <i className={`format subscript ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
             }}
-            className={'popup-item spaced ' + (isSuperscript ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isSuperscript ? 'active' : '')}
             title="Superscript"
             aria-label="Format Superscript">
-            <i className="format superscript" />
+            <i className={`format superscript ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
             }}
-            className={'popup-item spaced ' + (isCode ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isCode ? 'active' : '')}
             aria-label="Insert code block">
-            <i className="format code" />
+            <i className={`format code ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={insertLink}
-            className={'popup-item spaced ' + (isLink ? 'active' : '')}
+            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isLink ? 'active' : '')}
             aria-label="Insert link">
-            <i className="format link" />
+            <i className={`format link ${theme === "dark" && "comp-picker"}`} />
           </button>
         </>
       )}
@@ -257,9 +248,8 @@ function useFloatingTextFormatToolbar(
   const updatePopup = useCallback(() => {
     editor.getEditorState().read(() => {
       // Should not to pop up the floating toolbar when using IME input
-      if (editor.isComposing()) {
-        return;
-      }
+      if (editor.isComposing()) return;
+
       const selection = $getSelection();
       const nativeSelection = window.getSelection();
       const rootElement = editor.getRootElement();
@@ -274,9 +264,7 @@ function useFloatingTextFormatToolbar(
         return;
       }
 
-      if (!$isRangeSelection(selection)) {
-        return;
-      }
+      if (!$isRangeSelection(selection)) return;
 
       const node = getSelectedNode(selection);
 
@@ -291,20 +279,13 @@ function useFloatingTextFormatToolbar(
 
       // Update links
       const parent = node.getParent();
-      if ($isLinkNode(parent) || $isLinkNode(node)) {
-        setIsLink(true);
-      } else {
-        setIsLink(false);
-      }
+      if ($isLinkNode(parent) || $isLinkNode(node)) setIsLink(true);
+      else setIsLink(false);
 
-      if (
-        !$isCodeHighlightNode(selection.anchor.getNode()) &&
-        selection.getTextContent() !== ''
-      ) {
+      if (!$isCodeHighlightNode(selection.anchor.getNode()) && selection.getTextContent() !== '') {
         setIsText($isTextNode(node));
-      } else {
-        setIsText(false);
-      }
+      } 
+      else setIsText(false);
 
       const rawTextContent = selection.getTextContent().replace(/\n/g, '');
       if (!selection.isCollapsed() && rawTextContent === '') {

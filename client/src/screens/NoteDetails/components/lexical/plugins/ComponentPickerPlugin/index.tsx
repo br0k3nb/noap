@@ -77,11 +77,11 @@ function ComponentPickerMenuItem({
   onMouseEnter: () => void;
   option: ComponentPickerOption;
 }) {
-  let className = "item !bg-gray-800 !text-gray-300 hover:!bg-gray-600 !py-3 !mx-[1.5px]";
+  let className = "item !bg-gray-800 !text-gray-300 hover:bg-gray-600 dark:!bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
   if (isSelected) className += " selected";
 
   return (
-    <div className="hover:!bg-gray-600 rounded">
+    <div className="hover:!bg-gray-600 dark:hover:!bg-[#323232] rounded">
       <li
         key={option.key}
         tabIndex={-1}
@@ -361,7 +361,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
             return anchorElementRef.current && options.length
             ? createPortal(
                 <div 
-                  className={`typeahead-popover component-picker-menu !bg-gray-800 !w-[13rem]
+                  className={`typeahead-popover component-picker-menu !bg-gray-800 dark:!bg-[#1c1d1e] dark:hover:!bg-[#222222] !w-[13rem]
                     ${overflowXAxis && !overflowYAxis ? "!absolute !-left-44"
                     : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5"
                     : overflowXAxis && overflowYAxis && "!absolute !-left-52 !-top-48"}
@@ -381,7 +381,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
                           option={option}
                         />
                         {i !== options.length - 1 && (
-                          <div className="border border-transparent border-t-gray-700 mx-2"/>
+                          <div className="border border-transparent border-t-gray-700 dark:border-t-[#404040] mx-2"/>
                         )}
                       </div>
                     ))}

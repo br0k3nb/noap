@@ -30,9 +30,9 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                     const { data } = await api.post("/verify-token", { token: token?.token });
                     
                     const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
-                    
-                    if(!data.theme || (data.theme && data.theme === 'dark')) document.documentElement.classList.add("dark");
-                    else if (htmlElementHasDarkClass && (data.theme && data.theme === 'light')) {
+
+                    if(!data.settings.theme || (data.settings.theme && data.settings.theme === 'dark')) document.documentElement.classList.add("dark");
+                    else if (htmlElementHasDarkClass && (data.settings.theme && data.settings.theme === 'light')) {
                         document.documentElement.classList.remove("dark");
                     }
 
@@ -64,7 +64,7 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                     setUserLoggedIn(true);
                 }
                 
-                if(!data.theme || (data.theme && data.theme === 'dark')) document.documentElement.classList.add("dark");
+                if(!data.settings.theme || (data.settings.theme && data.settings.theme === 'dark')) document.documentElement.classList.add("dark");
                 setUserData(data);
                 setLoading(false);
                 

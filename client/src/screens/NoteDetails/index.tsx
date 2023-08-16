@@ -295,7 +295,7 @@ export default function NoteDetails({
   return (
     <div
       className={`
-        flex flex-col overflow-hidden w-screen h-screen bg-gray-700 dark:bg-[#0f1011] text-gray-200 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
+        flex flex-col overflow-hidden w-screen h-screen bg-[#eeeff1] dark:bg-[#0f1011] text-black dark:text-gray-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
         ${!expanded && "hidden lg:flex"}
       `}
     >
@@ -303,11 +303,11 @@ export default function NoteDetails({
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
-              className="tooltip tooltip-right !text-gray-200"
+              className="tooltip tooltip-right"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
             >
               <button 
-                className="hover:bg-stone-600 px-1 py-1 rounded"
+                className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-1 py-1 rounded"
                 onClick={() => handleExpand()}
               >
                 {expanded ? (
@@ -321,11 +321,11 @@ export default function NoteDetails({
               <>
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
-                  className="tooltip tooltip-right !text-gray-200"
+                  className="tooltip tooltip-right"
                   data-tip={`${(note?.settings.pinned || pinNote?.settings.pinned) ? "Unpin note" : "Pin note"}`}
                 >
                   <button 
-                    className="hover:bg-stone-600 px-[5px] py-1 rounded" 
+                    className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handlePinNote()}
                   >
                     {note?.settings.pinned || pinNote?.settings.pinned ? (
@@ -337,11 +337,11 @@ export default function NoteDetails({
                 </div>
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
-                  className="tooltip tooltip-right !text-gray-200"
+                  className="tooltip tooltip-right"
                   data-tip={`Attach labels`}
                 >
                   <button 
-                    className="hover:bg-stone-600 px-[5px] py-1 rounded" 
+                    className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handleOpenLabelModal()}
                   >                    
                     <BsTagsFill size={22} />
@@ -349,11 +349,11 @@ export default function NoteDetails({
                 </div>
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
-                  className="tooltip tooltip-right !text-gray-200"
+                  className="tooltip tooltip-right"
                   data-tip={readMode ? "Edit mode" : "Read mode"}
                 >
                   <button 
-                    className="hover:bg-stone-600 px-[5px] py-1 rounded" 
+                    className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
                   >                    
                     {!readMode ? <AiFillRead size={22} /> : <AiFillEdit size={22} />}
@@ -362,10 +362,10 @@ export default function NoteDetails({
               </>
             )}
             <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-            <div className="dropdown hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px]">
+            <div className="dropdown hover:bg-[#c1c1c1] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px]">
               <label tabIndex={0}>
                 <div
-                  className="tooltip tooltip-right !text-gray-200"
+                  className="tooltip tooltip-right"
                   data-tip="Actions"
                 >
                   <AiOutlineEllipsis size={24} className="mt-[3px]" />
@@ -554,8 +554,7 @@ export default function NoteDetails({
             title="Rename note"
             options={{
               titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "px-0 w-[23rem] xxs:!w-[20rem]",
-              showCloseTooltip: true
+              modalWrapperClassName: "px-0 w-[23rem] xxs:!w-[20rem]"
             }}
           >
             <div className="px-6">
@@ -571,12 +570,12 @@ export default function NoteDetails({
                 </label>
                 <input 
                   id="notename"
-                  className="sign-text-inputs bg-stone-900 text-gray-300 placeholder:text-gray-300 mt-2 mb-3"
+                  className="sign-text-inputs bg-[#898b8f] border border-gray-600 dark:bg-stone-900 text-gray-300 placeholder:text-gray-300 mt-2 mb-3"
                   type="text"
                   {...registerNoteName("name")}
                 />
                 <button 
-                  className="my-3 text-gray-300 rounded-full bg-green-700 hover:bg-green-600 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+                  className="my-3 text-gray-300 rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
                 >
                   {showLoader ? (
                     <p className="animate-pulse text-gray-300">Loading...</p>
@@ -597,7 +596,7 @@ export default function NoteDetails({
           >
             <div className="px-6 mt-5">            
               <div className="flex flex-col space-y-2">
-                <p className="px-1 text-xs uppercase tracking-widest text-gray-300">
+                <p className="px-1 text-xs uppercase tracking-widest">
                   Choose a color
                 </p>
                 <ColorPicker
@@ -618,14 +617,13 @@ export default function NoteDetails({
             title="Note info"
             options={{
               titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "px-0 w-[27rem] xxs-w-[19rem]",
-              showCloseTooltip: true
+              modalWrapperClassName: "px-0 w-[27rem] xxs:!w-[19rem]"
             }}
           >
             <div className="px-8 mt-5">
                 <div className="flex flex-row justify-between">
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Note name: </p>
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">
+                  <p className="text-[13px] uppercase tracking-wider">Note name: </p>
+                  <p className="text-[13px] uppercase tracking-wider">
                     {
                       note ? 
                         innerWidth <= 640 ? note?.name?.slice(0, 16) : note?.name?.slice(0, 31) 
@@ -634,23 +632,23 @@ export default function NoteDetails({
                   </p>
                 </div>
                 <div className="flex flex-row justify-between mt-3">
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Mode: </p>
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">{readMode ? "Read mode" : "Edit mode"}</p>
+                  <p className=" text-[13px] uppercase tracking-wider">Mode: </p>
+                  <p className=" text-[13px] uppercase tracking-wider">{readMode ? "Read mode" : "Edit mode"}</p>
                 </div>
                 <div className="flex flex-row justify-between mt-3">
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Shared: </p>
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">false</p>
+                  <p className=" text-[13px] uppercase tracking-wider">Shared: </p>
+                  <p className=" text-[13px] uppercase tracking-wider">false</p>
                 </div>
                 <div className="flex flex-row justify-between mt-3">
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">Contributors: </p>
-                  <p className="text-gray-300 text-[13px] uppercase tracking-wider">You</p>
+                  <p className=" text-[13px] uppercase tracking-wider">Contributors: </p>
+                  <p className=" text-[13px] uppercase tracking-wider">You</p>
                 </div>
             </div>
           </Modal>
           {innerWidth > 1350 ? (
             <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
               <div className="flex flex-row">
-                <p className="px-2 text-sm xxs:text-[10px] xxs:px-0 text-gray-300">
+                <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
                   {!readMode ? "Editing" : "Reading"} - {note ? note?.name?.slice(0, 48) : pinNote?.name?.slice(0, 48)}
                 </p>
               </div>
@@ -683,7 +681,7 @@ export default function NoteDetails({
               className="w-screen max-w-xl opacity-90"
               draggable={false}
             />
-            <p className="text-xl font-light text-gray-300 text-center">
+            <p className="text-xl font-light text-center">
               The selected note will appear here...
             </p>
         </div>

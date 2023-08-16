@@ -129,7 +129,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
           <>
             <RichTextPlugin
               contentEditable={
-                <div className="editor dark:!bg-[#0f1011]" ref={ref}>
+                <div className="editor dark:!bg-[#0f1011] bg-[#eeeff1]" ref={ref}>
                   <div
                     className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden" 
                     id="editor-parent-container"                   

@@ -242,7 +242,7 @@ export default function Home(): JSX.Element {
           />
         </LabelsCtx>
         <div
-          id="dark"
+          // id="dark"
           className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
         >
           <div className="flex flex-row h-screen">

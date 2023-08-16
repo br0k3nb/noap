@@ -94,21 +94,26 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
           <div className={`fixed ${!navbar && "flex xxs:hidden"}`}>
             <div 
               id="pc-navbar" 
-              className="flex flex-col items-center w-[60px] h-screen overflow-hidden text-gray-400 bg-gray-900 dark:bg-[#1c1d1e] border border-transparent dark:border-r-[#404040] justify-end"
+              className="text-gray-900 dark:text-gray-300 flex flex-col items-center w-[60px] h-screen overflow-hidden bg-[#d9dbde] dark:!bg-[#1c1d1e] border border-transparent !border-r-[#000000] dark:!border-r-[#404040] justify-end"
             >
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
                 <div className="dropdown dropdown-right pt-[6.2px]">
                   <label tabIndex={0}>
                     <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
-                      <div className="rounded-full border border-gray-500 dark:!border-[#424242] bg-gray-800 dark:bg-[#242424] hover:bg-gray-900/60 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
-                        <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
+                      <div className="rounded-full border border-gray-600 dark:!border-[#424242] bg-[#e2e2e2] dark:!bg-[#242424] dark:hover:!bg-[#181818] hover:bg-[#bebebe] text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out cursor-pointer">
+                        <p className='mt-[7px] text-gray-900 dark:text-gray-300'> 
+                          {name && name[0].toUpperCase()} 
+                        </p>
                       </div>
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-64 rounded-xl bg-gray-800 dark:bg-[#1c1d1e] border border-gray-600 ml-2">
+                  <ul 
+                    tabIndex={0} 
+                    className="dropdown-content menu shadow w-64 rounded-xl bg-[#d9dbde] dark:bg-[#1c1d1e] border border-gray-600 ml-[9px]"
+                  >
                     <li>
                       <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                        className="active:!bg-[#bebebe] hover:bg-[#cccccc] text-gray-900 dark:!text-gray-300 rounded-xl dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenAccSettingsModal(true)}
                       >
                         <label htmlFor="my-modal-4">
@@ -120,7 +125,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       </a>
                       <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                       <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                        className="active:!bg-[#bebebe] hover:bg-[#cccccc] text-gray-900 dark:!text-gray-300  rounded-xl dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => setOpen2FAModal(true)}
                       >
                         <label htmlFor="my-modal-4">
@@ -132,7 +137,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                       </a>
                       <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                       <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                        className="active:!bg-[#bebebe] hover:bg-[#cccccc] text-gray-900 dark:!text-gray-300 rounded-xl dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => setOpenSignOutConfirmationModal(true)}
                       >
                         <label htmlFor="my-modal-4">
@@ -153,40 +158,43 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                   data-tip={`${showSvgLoader ? "Adding note..." : "Add new note"}`}
                 >
                   <a
-                    className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                    className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-gray-900 dark:border-r-[#404040]"
                     onClick={() => addNewNote()}
                   >
-                    {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: false, wrapperClassName: "pl-3" }} /> ) : 
-                      ( <BsJournalPlus className="text-gray-300" size={23}/> )
+                    {showSvgLoader ? ( 
+                        <SvgLoader options={{ showLoadingText: false, wrapperClassName: "pl-3" }} /> 
+                      ) : ( 
+                        <BsJournalPlus className="text-black dark:text-gray-300" size={23}/>
+                      )
                     }
                   </a>
                 </div>
                 <div className="tooltip tooltip-right text-gray-300" data-tip="Labels">
                   <a
-                    className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                    className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-gray-900 dark:border-r-[#404040]"
                     onClick={() => setOpenLabelModal(true)}
                   >
-                    <BsTagFill className="text-gray-300" size={23} />
+                    <BsTagFill className="text-black dark:text-gray-300" size={23} />
                   </a>
                 </div>
                 <button
-                  className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+                  className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
                   disabled={true}
                 >
-                  <BsFillCalendarEventFill className="text-gray-300/60" size={22} />
+                  <BsFillCalendarEventFill className="text-gray-900/80 dark:text-gray-300" size={22} />
                 </button>
                 <button
-                  className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
+                  className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
                   disabled={true}
                 >
-                  <BsFillTrashFill className="text-gray-300/60" size={22} />
+                  <BsFillTrashFill className="text-gray-900/80 dark:text-gray-300" size={22} />
                 </button>
                 <div className="tooltip tooltip-right text-gray-300" data-tip="Settings">
                   <button
-                    className="flex items-center justify-center w-16 h-12 mt-2 hover:bg-gray-700 hover:text-gray-300"
+                    className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-gray-900 dark:border-r-[#404040]"
                     onClick={() => setOpenSettingsModal(true)}
                   >
-                    <BsGearWide className="text-gray-300" size={22} />
+                    <BsGearWide className="text-black dark:text-gray-300" size={22} />
                   </button>
                 </div>
               </div>

@@ -63,7 +63,7 @@ export default function CardNotes({
 
     return (
         <div 
-            className="bg-gray-800 dark:bg-[#0f1011] text-gray-100 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 overflow-x-hidden"
+            className="bg-[#eeeff1] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 overflow-x-hidden"
         >
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">
@@ -79,7 +79,7 @@ export default function CardNotes({
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="!z-0 collapse border border-transparent bg-gray-900 dark:!bg-[#181818] rounded-lg lg:ml-0 hover:border-gray-700 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="!z-0 collapse border dark:border-transparent bg-[#d9dbde] dark:!bg-[#181818] rounded-lg lg:ml-0 border-gray-600 hover:!border-gray-900 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
@@ -92,7 +92,7 @@ export default function CardNotes({
                                                         onClick={() => setPinWasClicked(!pinWasClicked)}
                                                     />
                                                     <div className="collapse-title">
-                                                        <div className="!ml-6 mt-2 mb-2 flex flex-row space-x-2 justify-center items-center text-gray-300">
+                                                        <div className="!ml-6 mt-2 mb-2 flex flex-row space-x-2 justify-center items-center">
                                                             <p className="uppercase text-xs tracking-widest">Pinned notes</p>
                                                             <BsFillPinAngleFill />
                                                             <div className="absolute right-2">
@@ -128,15 +128,15 @@ export default function CardNotes({
                                                             })} 
                                                             <div className="flex flex-row items-center space-x-6 justify-center w-full mt-5">
                                                                 <button 
-                                                                    className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
+                                                                    className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesPage > 1 ? false : true}
                                                                     onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
                                                                 >
                                                                     prev page
                                                                 </button>
-                                                                <p className="text-[11px] uppercase text-gray-400">OR</p>
+                                                                <p className="text-[11px] uppercase">OR</p>
                                                                 <button 
-                                                                    className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
+                                                                    className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesHasNextPage ? false : true}
                                                                     onClick={() => setPinnedNotesPage(pinnedNotesPage + 1)}
                                                                 >
@@ -270,13 +270,13 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
         >
             <div 
                 className={`
-                    rounded-lg h-[18.4rem] border border-stone-900 dark:border-[#323232] bg-gray-700 dark:bg-[#181818] pt-3 shadow-lg shadow-gray-900 dark:shadow-transparent hover:border transition duration-300 hover:border-gray-500 dark:hover:border-gray-500
-                    ${noteContext?.selectedNote === _id && "!border-gray-400 dark:!border-[#626262]"}
+                    text-gray-900 dark:text-gray-300 rounded-lg h-[18.4rem] border border-stone-500 dark:border-[#323232] bg-[#e9eaec] dark:bg-[#181818] pt-3 shadow-lg shadow-gray-400 dark:shadow-transparent hover:border transition duration-300 hover:border-gray-900 dark:hover:border-gray-500
+                    ${noteContext?.selectedNote === _id && "!border-black dark:!border-[#626262]"}
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}
             >
                 <p className="text-lg px-3 mb-3 truncate">{noteName}</p>
-                <div className={`h-[196px] text-gray-300 flex flex-col px-2 ${image !== '' && "!h-[148px]"}`}>
+                <div className={`h-[196px] flex flex-col px-2 ${image !== '' && "!h-[148px]"}`}>
                     <div 
                         className={`
                             w-[143px] xxs:w-[135px] !mb-1 line-clamp-7 pl-1
@@ -299,7 +299,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                             {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
                                         </p>
                                         {labels.length > 1 && (
-                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 dark:!bg-[#343434] text-gray-300">
+                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
                                             <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
                                         </div>
                                         )}
@@ -313,7 +313,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                             {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
                                         </p>
                                         {labels.length > 1 && (
-                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-900 dark:!bg-[#343434] text-gray-300">
+                                        <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
                                             <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
                                         </div>
                                         )}

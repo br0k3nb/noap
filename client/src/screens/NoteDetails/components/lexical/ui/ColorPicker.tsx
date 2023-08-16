@@ -171,7 +171,7 @@ export default function ColorPicker({
               />
             </MoveWrapper>
             <div className="flex flex-col mt-4">
-              <p className="text-xs uppercase text-gray-300 tracking-widest">Color preview</p>
+              <p className="text-xs uppercase text-gray-900 dark:text-gray-300 tracking-widest">Color preview</p>
               <div
                 className="color-picker-color rounded-xl mt-2"
                 style={{ backgroundColor: selfColor.hex }}
@@ -180,7 +180,7 @@ export default function ColorPicker({
           </div>
           {children}
           <button
-            className="my-3 text-black rounded-full bg-green-600 hover:bg-green-500 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+            className="my-3 text-gray-200 rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
             onClick={() => customOnClickButtonFn && customOnClickButtonFn(selfColor.hex)}
           >
             Save color
@@ -193,7 +193,7 @@ export default function ColorPicker({
           stopCloseOnClickSelf={true}
         >
           <div 
-            className="color-picker-wrapper !text-gray-200" 
+            className="color-picker-wrapper" 
             style={{ width: WIDTH }} 
             ref={innerDivRef}
           >
