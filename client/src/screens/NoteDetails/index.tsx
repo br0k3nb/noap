@@ -295,7 +295,7 @@ export default function NoteDetails({
   return (
     <div
       className={`
-        flex flex-col overflow-hidden w-screen h-screen bg-[#eeeff1] dark:bg-[#0f1011] text-black dark:text-gray-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
+        !z-50 flex flex-col overflow-hidden w-screen h-screen bg-[#ffffff] dark:bg-[#0f1011] text-black dark:text-gray-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
         ${!expanded && "hidden lg:flex"}
       `}
     >
@@ -307,7 +307,7 @@ export default function NoteDetails({
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
             >
               <button 
-                className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-1 py-1 rounded"
+                className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-1 py-1 rounded"
                 onClick={() => handleExpand()}
               >
                 {expanded ? (
@@ -325,7 +325,7 @@ export default function NoteDetails({
                   data-tip={`${(note?.settings.pinned || pinNote?.settings.pinned) ? "Unpin note" : "Pin note"}`}
                 >
                   <button 
-                    className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
+                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handlePinNote()}
                   >
                     {note?.settings.pinned || pinNote?.settings.pinned ? (
@@ -341,7 +341,7 @@ export default function NoteDetails({
                   data-tip={`Attach labels`}
                 >
                   <button 
-                    className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
+                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handleOpenLabelModal()}
                   >                    
                     <BsTagsFill size={22} />
@@ -353,7 +353,7 @@ export default function NoteDetails({
                   data-tip={readMode ? "Edit mode" : "Read mode"}
                 >
                   <button 
-                    className="hover:bg-[#c1c1c1] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
+                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
                   >                    
                     {!readMode ? <AiFillRead size={22} /> : <AiFillEdit size={22} />}
@@ -362,7 +362,7 @@ export default function NoteDetails({
               </>
             )}
             <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-            <div className="dropdown hover:bg-[#c1c1c1] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px]">
+            <div className="dropdown hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px]">
               <label tabIndex={0}>
                 <div
                   className="tooltip tooltip-right"
@@ -373,16 +373,16 @@ export default function NoteDetails({
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-gray-800 dark:bg-[#1c1d1e] border border-gray-500 overflow-y-scroll overflow-x-hidden"
+                className="dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
               >
                 <li>
                   <a
-                    className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                    className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                     onClick={() => handlePinNote()}
                   >
                     <label
                       htmlFor="my-modal-4"
-                      className="text-gray-300 cursor-pointer"
+                      className="text-gray-900 dark:text-gray-300 cursor-pointer"
                     >
                         <div className="flex flex-row space-x-2">
                           {note?.settings.pinned || pinNote?.settings.pinned ? (
@@ -406,12 +406,12 @@ export default function NoteDetails({
                     </a>
                     <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a
-                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => handleOpenLabelModal()}
                     >
                       <label
                         htmlFor="my-modal-4"
-                        className="text-gray-300 cursor-pointer"
+                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
                       >
                         <div className="flex flex-row space-x-2">
                           <p className="py-1 text-xs uppercase tracking-widest">
@@ -423,12 +423,12 @@ export default function NoteDetails({
                     </a>
                     <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <button
-                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
                     >
                       <label
                         htmlFor="my-modal-4"
-                        className="text-gray-300 cursor-pointer"
+                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
                       >
                         <div className="flex flex-row space-x-2">
                           <p className="py-1 text-xs uppercase tracking-widest">
@@ -451,12 +451,12 @@ export default function NoteDetails({
                     </a>
                     <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <button
-                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => handleToggleBottomBar()}
                     >
                       <label
                         htmlFor="my-modal-4"
-                        className="text-gray-300 cursor-pointer"
+                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
                       >
                         <div className="flex flex-row space-x-2">
                           <p className="py-1 text-[11px] uppercase tracking-widest">
@@ -472,12 +472,12 @@ export default function NoteDetails({
                     </button>
                     <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <button
-                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => setRenameNote(!renameNote)}
                     >
                       <label
                         htmlFor="my-modal-4"
-                        className="text-gray-300 cursor-pointer"
+                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
                       >
                         <div className="flex flex-row space-x-2">
                           <p className="py-1 text-xs uppercase tracking-widest">
@@ -489,12 +489,12 @@ export default function NoteDetails({
                     </button>
                     <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a
-                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => setOpenChangeNoteBackgroundModal(true)}
                     >
                       <label
                         htmlFor="my-modal-4"
-                        className="text-gray-300 cursor-pointer"
+                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
                       >
                         <div className="flex flex-row space-x-2">
                           <p className="py-1 text-xs uppercase tracking-widest">
@@ -506,12 +506,12 @@ export default function NoteDetails({
                     </a>
                     <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
                     <a
-                      className="active:!bg-gray-600 hover:!bg-gray-700 dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                       onClick={() => setOpen(true)}
                     >
                       <label
                         htmlFor="my-modal-4"
-                        className="text-red-500/90 cursor-pointer"
+                        className="text-red-600 cursor-pointer"
                       >
                         <div className="flex flex-row space-x-2 ">
                           <p className="py-1 text-xs uppercase tracking-widest">

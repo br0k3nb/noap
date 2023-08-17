@@ -8,6 +8,7 @@ import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icon
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import ghost from '../../assets/ghost.png';
+import no_notes_found from '../../assets/no_notes_found.svg';
 import Loader from "../../components/Loader";
 
 import { NoteCtx } from "../../context/SelectedNoteCtx";
@@ -63,7 +64,7 @@ export default function CardNotes({
 
     return (
         <div 
-            className="bg-[#eeeff1] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 overflow-x-hidden"
+            className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-500 !scrollbar-rounded overflow-x-hidden"
         >
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">
@@ -79,7 +80,7 @@ export default function CardNotes({
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="!z-0 collapse border dark:border-transparent bg-[#d9dbde] dark:!bg-[#181818] rounded-lg lg:ml-0 border-gray-600 hover:!border-gray-900 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="!z-0 collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 hover:!border-gray-900 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
@@ -189,7 +190,7 @@ export default function CardNotes({
                                         </div>
                                         <div 
                                             className={`
-                                                border border-transparent border-t-gray-700 dark:!border-t-[#404040] mb-10 mx-auto
+                                                border border-transparent border-t-stone-300 dark:!border-t-[#404040] mb-10 mx-auto
                                                 ${showPinnedNotesInFolder && "mt-7 !mb-7"}
                                             `}
                                             style={{
@@ -218,20 +219,20 @@ export default function CardNotes({
                             </div>
                             ) : (
                                 <div className="flex flex-col space-y-3 justify-center items-center mt-6 mx-auto">
-                                    <img src={ghost} className="w-56 opacity-30 md:w-80 lg:w-56"/>
-                                    <p className="!text-gray-400 text-[13px] uppercase tracking-wide">
+                                    <img src={no_notes_found} className="mt-5 w-48 dark:opacity-75 md:w-60 lg:w-44"/>
+                                    <p className="dark:!text-gray-400 text-stone-600 text-[13px] uppercase tracking-wide">
                                         {search !== "" ? "No notes were found!" : "Ouhh, it's quite empty here..."}
                                     </p>  
                                     {page > 1 ? (
                                         <Link 
-                                            className="!pt-2 text-gray-200 text-sm font-light tracking-widest uppercase px-3 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out text-center w-[270px] mx-auto"
+                                            className="!pt-2 text-gray-900 dark:text-gray-200 text-sm font-light tracking-widest uppercase px-3 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out text-center w-[270px] mx-auto"
                                             to={baseURL + 1}
                                         > 
                                             Go back
                                         </Link>
                                     ) : (
                                         <button 
-                                            className="!mt-4 text-gray-200 text-xs font-light tracking-widest uppercase px-3 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out w-[270px] mx-auto"
+                                            className="!mt-4 text-gray-900 dark:text-gray-200 text-xs font-light tracking-widest uppercase px-3 h-10 rounded-full hover:bg-[#dddddd] dark:hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out w-[270px] mx-auto"
                                             onClick={() => addNewNote()}
                                         > 
                                             add a new note
@@ -270,7 +271,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
         >
             <div 
                 className={`
-                    text-gray-900 dark:text-gray-300 rounded-lg h-[18.4rem] border border-stone-500 dark:border-[#323232] bg-[#e9eaec] dark:bg-[#181818] pt-3 shadow-lg shadow-gray-400 dark:shadow-transparent hover:border transition duration-300 hover:border-gray-900 dark:hover:border-gray-500
+                    text-gray-900 dark:text-gray-300 rounded-lg h-[18.4rem] border border-stone-300 dark:border-[#323232] bg-[#ffffff] dark:bg-[#181818] pt-3 shadow-lg hover:shadow-gray-400 dark:shadow-transparent hover:border transition duration-300 dark:hover:border-gray-500
                     ${noteContext?.selectedNote === _id && "!border-black dark:!border-[#626262]"}
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}

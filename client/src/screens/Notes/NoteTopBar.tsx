@@ -63,7 +63,7 @@ export default function NoteTopBar({
 
     return (
         <>
-            <div className="overflow-hidden flex flex-col pt-2 bg-[#eeeff1] dark:bg-[#0f1011] h-[100px]">
+            <div className="overflow-hidden flex flex-col pt-2 bg-[#f8f8f8] dark:bg-[#0f1011] h-[100px]">
                 <div className="flex flex-col mb-[4px]">
                     <div className="flex flex-row justify-between px-3 py-2 text-gray-900 dark:text-gray-300">
                         <div className="text-center flex flex-row space-x-1 px-2">
@@ -84,7 +84,7 @@ export default function NoteTopBar({
                             <div className="tooltip tooltip-left" data-tip="Search">
                                 <button 
                                     type="button"
-                                    className="hover:bg-[#c1c1c1] dark:hover:!text-gray-900 px-1 py-1 rounded"
+                                    className="hover:bg-[#dadada] dark:hover:!text-gray-900 px-1 py-1 rounded"
                                     onClick={() => handleSearchClick()}
                                 >
                                     <BsSearch size={25} className="py-1" />
@@ -97,38 +97,38 @@ export default function NoteTopBar({
             <motion.div
                 animate={showSearch ? show : hide}
                 transition={{ duration: 0.4 }}
-                className={`bg-[#eeeff1] dark:bg-[#0f1011] px-6 pb-2 hidden ${showSearch && "!grid"}`}
+                className={`bg-[#f8f8f8] dark:bg-[#0f1011] px-6 pb-2 hidden ${showSearch && "!grid"}`}
             >
                 <input
-                    className="sign-text-inputs bg-stone-900 text-gray-300 h-10 border !border-gray-700 hover:!border-gray-600"
+                    className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 dark:text-gray-300 text-gray-900 h-10 border !border-stone-400 hover:!border-gray-600 shadow-none"
                     onChange={({currentTarget}) => onInputChange(currentTarget)}
                     placeholder="Search for note names..."
                     value={search}
                 />
             </motion.div>
-            <div className="bg-[#eaeaea] dark:!bg-[#0f1011] border border-transparent border-t-gray-700 border-b-gray-700 dark:border-t-[#404040] dark:border-b-[#404040] text-gray-300">
-                <div className="btn-group bg-[#eeeff1] dark:!bg-[#0f1011] flex !justify-between px-6">
+            <div className="bg-[#eaeaea] dark:!bg-[#0f1011] border border-transparent border-t-stone-300 border-b-stone-300 dark:border-t-[#404040] dark:border-b-[#404040] text-gray-300">
+                <div className="btn-group bg-[#f8f8f8] dark:!bg-[#0f1011] flex !justify-between px-6">
                     {page === 1 ? (
                         <button className="btn !border-transparent !bg-inherit text-gray-500 cursor-not-allowed"> 
                             <MdKeyboardDoubleArrowLeft size={18} className="cursor-not-allowed" />
                         </button>
                     ) : (
                         <Link 
-                            className="btn bg-[#eeeff1] dark:!bg-[#0f1011] hover:!bg-[#eeeff1] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
+                            className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handlePrevPageClick()}
                             to={baseURL + (page - 1)}
                         > 
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
                         </Link>
                     )}
-                    <p className="bg-[#eeeff1] text-gray-900 dark:text-gray-300 dark:!bg-[#0f1011] uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
+                    <p className="bg-[#f8f8f8] text-gray-900 dark:text-gray-300 dark:!bg-[#0f1011] uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
                     {!hasNextPage ? (
                         <button className="btn !border-transparent !bg-inherit text-gray-500 cursor-not-allowed">
                             <MdKeyboardDoubleArrowRight size={18} className="cursor-not-allowed" />
                         </button>
                     ) : (
                         <Link 
-                            className="btn bg-[#eeeff1] dark:!bg-[#0f1011] hover:!bg-[#eeeff1] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
+                            className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handleNextPageClick()}
                             to={baseURL + (page + 1)}
                         > 

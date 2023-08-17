@@ -152,7 +152,7 @@ function TextFormatFloatingToolbar({
   const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
 
   return (
-    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup dark:bg-[#1c1d1e]">
+    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup bg-[#f8f8f8] dark:bg-[#1c1d1e]">
       {editor.isEditable() && (
         <>
           <button

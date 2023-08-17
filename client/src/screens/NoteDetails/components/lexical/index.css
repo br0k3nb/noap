@@ -28,12 +28,7 @@ header h1 {
   margin: 20px 0 0 0;
 }
 
-.editor-shell {   
-  background-color: rgb(55 65 81) !important;
-}
-
 .editor-shell .editor-container {
-  background-color: rgb(55 65 81) !important;
   cursor: text;
   display: block;
 }
@@ -55,6 +50,10 @@ header h1 {
   outline: transparent;
   overflow: auto;
   resize: vertical;
+}
+
+#typeahead-menu {
+  z-index: 50;
 }
 
 .test-recorder-output {
@@ -210,7 +209,6 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .typeahead-popover {
-  background: #111827;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   margin-top: 25px;
@@ -257,7 +255,6 @@ pre::-webkit-scrollbar-thumb {
   align-content: center;
   flex-direction: row;
   flex-shrink: 0;
-  background-color: #1f2937;
   border-radius: 8px;
   border: 0;
 }
@@ -275,10 +272,6 @@ pre::-webkit-scrollbar-thumb {
 
 .typeahead-popover li:last-child {
   border-radius: 0px 0px 8px 8px;
-}
-
-.typeahead-popover li:hover {
-  background-color: #111827;
 }
 
 .typeahead-popover li .text {
@@ -653,11 +646,11 @@ i.prettier-error {
 }
 
 .dropdown-lexical {
-  z-index: 10;
+  z-index: 50;
   display: block;
   position: fixed;
   box-shadow: 0 12px 28px 0 rgba(49, 49, 49, 0.2), 0 2px 4px 0 rgba(90, 90, 90, 0.1),
-    inset 0 0 0 1px rgba(87, 87, 87, 0.5);
+  inset 0 0 0 1px rgba(87, 87, 87, 0.5);
   border-radius: 8px;
   min-height: 40px;
 }
@@ -695,10 +688,6 @@ i.prettier-error {
 .dropdown-lexical .item:last-child {
   margin-bottom: 8px;
 }
-
-/* .dropdown-lexical .item:hover {
-  background-color: rgb(75 85 99);
-} */
 
 .dropdown-lexical .item .text {
   display: flex;
@@ -739,7 +728,7 @@ i.prettier-error {
 }
 
 .comp-picker {
-  filter: invert(100%) sepia(36%) saturate(1130%) hue-rotate(177deg) brightness(88%) contrast(95%);
+  filter: invert(100%) sepia(36%) saturate(1130%) hue-rotate(177deg) brightness(88%) contrast(95%) !important;
 }
 
 .icon.paragraph {

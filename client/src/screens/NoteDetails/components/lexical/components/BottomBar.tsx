@@ -64,7 +64,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
     return (
       <div 
         className={`
-          h-12 bg-[#eeeff1] dark:!bg-[#0f1011] w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500 dark:border-t-[#404040]
+          h-12 bg-[#ffffff] dark:!bg-[#0f1011] w-full fixed bottom-0 !z-50 border border-transparent border-t-stone-300 dark:border-t-[#404040]
           ${!showBottomBar && "hidden"}
         `}
       >

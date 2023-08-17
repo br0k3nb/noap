@@ -50,17 +50,24 @@ function PortalImpl({
   }, [closeOnClickOutside, onClose]);
 
   return (
-    <div className="Modal__overlay" role="dialog">
-      <div className="Modal__modal !bg-gray-800 !text-gray-200 focus:border-transparent !shadow-none xxs:!max-w-xs px-0" tabIndex={-1} ref={modalRef}>
-        <div className="flex justify-between pb-4 border border-transparent border-b-gray-600">
-          <h2 className="!text-gray-200 text-[15px] uppercase tracking-widest py-1 px-6">{title}</h2>
+    <div 
+      className="Modal__overlay" 
+      role="dialog"
+    >
+      <div 
+        tabIndex={-1} 
+        ref={modalRef}
+        className="Modal__modal bg-[#f8f8f8] dark:bg-[#0f1011] border !border-gray-700 dark:!border-[#404040] !shadow-none xxs:!max-w-xs px-0" 
+      >
+        <div className="flex justify-between pb-4 border border-transparent border-b-gray-600 dark:border-b-[#404040]">
+          <h2 className="text-gray-900 dark:text-gray-300 text-[15px] uppercase tracking-widest py-1 px-6">{title}</h2>
           <button
-            className="Modal__closeButton hover:!bg-gray-700 transition-all duration-300 ease-in-out"
+            className="Modal__closeButton hover:bg-[#e1e1e1] dark:hover:bg-[#323232] transition-all duration-300 ease-in-out"
             aria-label="Close modal"
             type="button"
             onClick={onClose}
           >
-            <BsXLg size={18} />
+            <BsXLg size={18} className='text-gray-900 dark:text-gray-300' />
           </button>
         </div>
         <div className="Modal__content xxs:!max-w-xs px-6">{children}</div>
@@ -81,7 +88,11 @@ export default function Modal({
   title: string;
 }): JSX.Element {
   return createPortal(
-    <PortalImpl onClose={onClose} title={title} closeOnClickOutside={closeOnClickOutside}>
+    <PortalImpl 
+      onClose={onClose}
+      title={title} 
+      closeOnClickOutside={closeOnClickOutside}
+    >
       {children}
     </PortalImpl>,
     document.body

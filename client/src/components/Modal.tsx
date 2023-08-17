@@ -42,7 +42,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
             <div className="modal !text-black dark:!text-gray-300">
                 <div 
                     className={`
-                        border border-gray-900 dark:border-gray-600 modal-box !bg-[#d9dbde] dark:!bg-[#0f1011] relative transition-all duration-500 
+                        border border-stone-500 dark:border-gray-600 modal-box !bg-[#ffffff] dark:!bg-[#0f1011] relative transition-all duration-500 
                         ${modalWrapperClassName && modalWrapperClassName}
                     `}
                 >
@@ -75,7 +75,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 <div className="tooltip tooltip-bottom uppercase tracking-wide before:!text-[11.5px]" data-tip="Close">
                                     <label 
                                         htmlFor="my-modal-3"
-                                        className={`btn btn-sm btn-circle bg-[#d9dbde] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                        className={`btn btn-sm btn-circle bg-[#ffffff] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                         onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                     >
                                         ✕
@@ -84,7 +84,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                             ) : ( 
                                 <label 
                                     htmlFor="my-modal-3"
-                                    className={`text-gray-900 dark:text-gray-300 btn btn-sm btn-circle bg-inherit hover:bg-[#bbbbbb] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
+                                    className={`border-gray-600 text-gray-900 dark:text-gray-300 btn btn-sm btn-circle bg-inherit hover:bg-[#eeeff1] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                     onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                 >
                                     ✕

@@ -826,7 +826,7 @@ export default function ToolbarPlugin() {
 
   return (
     <div  
-      className="!z-50 toolbar !h-[2.50rem] mt-[0.01rem] dark:mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#eeeff1] dark:text-gray-50 border border-transparent dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+      className="!z-40 !relative toolbar !h-[2.50rem] mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#ffffff] dark:text-gray-50 border border-transparent !border-r-0 !border-b-stone-300 dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
       style={{ 
         width: !getNavbar?.checkVisibility() ? screenSize.width : screenSize.width - 442
       }}
@@ -893,7 +893,7 @@ export default function ToolbarPlugin() {
           <div className="mx-1 flex flex-row space-x-2">
             <button 
               onClick={() => handleIncrementFontSizeButton()}
-              className="w-8 h-8 my-auto hover:bg-[#dfe8fa4d] rounded-lg"
+              className="w-8 h-8 my-auto dark:hover:bg-[#404040] hover:bg-[#e1e1e1] rounded-lg"
             > 
               +
             </button>
@@ -907,7 +907,7 @@ export default function ToolbarPlugin() {
             />
             <button 
               onClick={() => handleDecrementFontSizeButton()}
-              className="w-8 h-8 my-auto hover:bg-[#dfe8fa4d] rounded-lg"
+              className="w-8 h-8 my-auto dark:hover:bg-[#404040] hover:bg-[#e1e1e1] rounded-lg"
             > 
               -
             </button>
@@ -916,7 +916,7 @@ export default function ToolbarPlugin() {
           <button
             disabled={!isEditable}
             onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
-            className={"toolbar-item spaced " + (isBold ? "active" : "")}
+            className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isBold ? "active" : "")}
             title={IS_APPLE ? "Bold (⌘B)" : "Bold (Ctrl+B)"}
             aria-label={`Format text as bold. Shortcut: ${IS_APPLE ? "⌘B" : "Ctrl+B"}`}
           >
@@ -925,7 +925,7 @@ export default function ToolbarPlugin() {
           <button
             disabled={!isEditable}
             onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
-            className={"toolbar-item spaced " + (isItalic ? "active" : "")}
+            className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isItalic ? "active" : "")}
             title={IS_APPLE ? "Italic (⌘I)" : "Italic (Ctrl+I)"}
             aria-label={`Format text as italics. Shortcut: ${IS_APPLE ? "⌘I" : "Ctrl+I"}`}
           >
@@ -934,7 +934,7 @@ export default function ToolbarPlugin() {
           <button
             disabled={!isEditable}
             onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}
-            className={"toolbar-item spaced " + (isUnderline ? "active" : "")}
+            className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isUnderline ? "active" : "")}
             title={IS_APPLE ? "Underline (⌘U)" : "Underline (Ctrl+U)"}
             aria-label={`Format text to underlined. Shortcut: ${IS_APPLE ? "⌘U" : "Ctrl+U"}`}
           >
@@ -943,7 +943,7 @@ export default function ToolbarPlugin() {
           <button
             disabled={!isEditable}
             onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")}
-            className={"toolbar-item spaced " + (isCode ? "active" : "")}
+            className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isCode ? "active" : "")}
             title="Insert code block"
             aria-label="Insert code block"
           >
@@ -952,7 +952,7 @@ export default function ToolbarPlugin() {
           <button
             disabled={!isEditable}
             onClick={insertLink}
-            className={"toolbar-item spaced " + (isLink ? "active" : "")}
+            className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isLink ? "active" : "")}
             aria-label="Insert link"
             title="Insert link"
           >

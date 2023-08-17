@@ -10,7 +10,11 @@ export default function Page404() {
       className="bg-gray-900 h-screen overflow py-20 xxs:py-0 items-center flex justify-center flex-col md:gap-28 gap-16"
     >
       <div className="max-w-xl px-6">
-        <img src={error404} className='w-full pt-10 xxs:pt-0 object-cover' />
+        <img 
+          src={error404} 
+          className='w-full pt-10 xxs:pt-0 object-cover' 
+          draggable={false}
+        />
         <div className="px-4 text-gray-100">
           <h1 className="text-2xl xxs:text-xl mt-10">
             Looks like you've found the

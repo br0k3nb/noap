@@ -120,7 +120,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
       <SharedHistoryContext>
         <TableContext>
           <SharedAutocompleteContext>
-            <div className="editor-shell h-screen w-fit overflow-hidden absolute dark:!bg-[#0f1011] !bg-[#eeeff1]">
+            <div className="editor-shell h-screen w-fit overflow-hidden absolute dark:!bg-[#0f1011] !bg-[#ffffff]">
               {/* @ts-ignore */}
               <UpdatePlugin />  
               <Editor 

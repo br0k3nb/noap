@@ -22,17 +22,27 @@ import {
   FORMAT_ELEMENT_COMMAND,
   TextNode,
 } from "lexical";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useContext } from "react";
 import { createPortal } from "react-dom";
 
 import useModal from "../../hooks/useModal";
 import { EmbedConfigs } from "../AutoEmbedPlugin";
-import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
+import { InsertImageDialog } from "../ImagesPlugin";
 import { InsertEquationDialog } from "../EquationsPlugin";
 import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
-import { InsertImageDialog } from "../ImagesPlugin";
+import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 // import { InsertPollDialog } from "../PollPlugin";
 // import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
+
+import twitterIcon from '../../images/icons/tweet.svg';
+import youtubeIcon from '../../images/icons/youtube.svg';
+import figmaIcon from '../../images/icons/figma.svg';
+
+import { INSERT_FIGMA_COMMAND } from "../FigmaPlugin";
+import { INSERT_TWEET_COMMAND } from "../TwitterPlugin";
+import { INSERT_YOUTUBE_COMMAND } from "../YouTubePlugin";
+
+import { UserDataCtx } from "../../../../../../context/UserDataContext";
 
 class ComponentPickerOption extends MenuOption {
   // What shows up in the editor
@@ -77,11 +87,11 @@ function ComponentPickerMenuItem({
   onMouseEnter: () => void;
   option: ComponentPickerOption;
 }) {
-  let className = "item !bg-gray-800 !text-gray-300 hover:bg-gray-600 dark:!bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
+  let className = "item !bg-[#f8f8f8] text-gray-900 dark:!text-gray-300 hover:!bg-[#e1e1e1] dark:!bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
   if (isSelected) className += " selected";
 
   return (
-    <div className="hover:!bg-gray-600 dark:hover:!bg-[#323232] rounded">
+    <div className="hover:bg-[#e1e1e1] dark:hover:!bg-[#323232] rounded">
       <li
         key={option.key}
         tabIndex={-1}
@@ -114,9 +124,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
   const [modal, showModal] = useModal();
   const [queryString, setQueryString] = useState<string | null>(null);
 
-  const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", {
-    minLength: 0,
-  });
+  const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", { minLength: 0 });
 
   const getDynamicOptions = useCallback(() => {
     const options: Array<ComponentPickerOption> = [];
@@ -163,10 +171,12 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
     return options;
   }, [editor, queryString]);
 
+  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+
   const options = useMemo(() => {
     const baseOptions = [
       new ComponentPickerOption("Paragraph", {
-        icon: <i className="icon paragraph comp-picker" />,
+        icon: <i className={`icon paragraph ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["normal", "paragraph", "p", "text"],
         onSelect: () =>
           editor.update(() => {
@@ -179,7 +189,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       ...Array.from({ length: 3 }, (_, i) => i + 1).map(
         (n) =>
           new ComponentPickerOption(`Heading ${n}`, {
-            icon: <i className={`icon h${n} comp-picker`} />,
+            icon: <i className={`icon h${n} ${theme === 'dark' && 'comp-picker'}`} />,
             keywords: ["heading", "header", `h${n}`],
             onSelect: () =>
               editor.update(() => {
@@ -194,25 +204,25 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
           })
       ),
       new ComponentPickerOption("Numbered List", {
-        icon: <i className="icon number comp-picker" />,
+        icon: <i className={`icon number ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["numbered list", "ordered list", "ol"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined),
       }),
       new ComponentPickerOption("Bulleted List", {
-        icon: <i className="icon bullet comp-picker" />,
+        icon: <i className={`icon bullet  ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["bulleted list", "unordered list", "ul"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),
       }),
       new ComponentPickerOption("Check List", {
-        icon: <i className="icon check comp-picker" />,
+        icon: <i className={`icon check  ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["check list", "todo list"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined),
       }),
       new ComponentPickerOption("Quote", {
-        icon: <i className="icon quote comp-picker" />,
+        icon: <i className={`icon quote ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["block quote"],
         onSelect: () =>
           editor.update(() => {
@@ -223,8 +233,8 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
           }),
       }),
       new ComponentPickerOption("Code", {
-        icon: <i className="icon code comp-picker" />,
-        keywords: ["javascript", "python", "js", "codeblock"],
+        icon: <i className={`icon code ${theme === 'dark' && 'comp-picker'}`} />,
+        keywords: ["javascript", "python", "js", "java", "codeblock"],
         onSelect: () =>
           editor.update(() => {
             const selection = $getSelection();
@@ -243,36 +253,37 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
           }),
       }),
       new ComponentPickerOption("Divider", {
-        icon: <i className="icon horizontal-rule comp-picker" />,
+        icon: <i className={`icon horizontal-rule ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["horizontal rule", "divider", "hr"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined),
       }),
       new ComponentPickerOption("Excalidraw", {
-        icon: <i className="icon diagram-2 comp-picker" />,
+        icon: <i className={`icon diagram-2 ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["excalidraw", "diagram", "drawing"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined),
       }),
-      // new ComponentPickerOption("Poll", {
-      //   icon: <i className="icon poll" />,
-      //   keywords: ["poll", "vote"],
-      //   onSelect: () =>
-      //     showModal("Insert Poll", (onClose) => (
-      //       <InsertPollDialog activeEditor={editor} onClose={onClose} />
-      //     )),
-      // }),
       ...EmbedConfigs.map(
-        (embedConfig) =>
-          new ComponentPickerOption(`Embed ${embedConfig.contentName}`, {
-            icon: embedConfig.icon,
+        (embedConfig) => {
+          const useCustomImage = 
+            embedConfig.type.startsWith('y') 
+            ? ( <img className={`w-[20px] h-5 mt-[1px] ${theme === 'dark' && 'comp-picker'}`} src={youtubeIcon} /> )
+            : embedConfig.type.startsWith('f') 
+            ? ( <img className={`w-[20px] h-5 mt-[1px] ${theme === 'dark' && 'comp-picker'}`} src={figmaIcon} /> )
+            : embedConfig.type.startsWith('t') 
+            && ( <img className={`w-[20px] h-5 mt-[1px] ${theme === 'dark' && 'comp-picker'}`} src={twitterIcon} /> );
+
+          return new ComponentPickerOption(`Embed ${embedConfig.contentName}`, {
+            icon: useCustomImage as JSX.Element,
             keywords: [...embedConfig.keywords, "embed"],
             onSelect: () =>
               editor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type),
           })
+        }
       ),
       new ComponentPickerOption("Equation", {
-        icon: <i className="icon equation  comp-picker" />,
+        icon: <i className={`icon equation ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["equation", "latex", "math"],
         onSelect: () =>
           showModal("Insert Equation", (onClose) => (
@@ -280,7 +291,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
           )),
       }),
       new ComponentPickerOption("Image", {
-        icon: <i className="icon image comp-picker" />,
+        icon: <i className={`icon image ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["image", "photo", "picture", "file"],
         onSelect: () =>
           showModal("Insert Image", (onClose) => (
@@ -288,7 +299,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
           )),
       }),
       new ComponentPickerOption("Collapsible", {
-        icon: <i className="icon caret-right  comp-picker" />,
+        icon: <i className={`icon caret-right ${theme === 'dark' && 'comp-picker'}`} />,
         keywords: ["collapse", "collapsible", "toggle"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined),
@@ -296,7 +307,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       ...["left", "center", "right", "justify"].map(
         (alignment) =>
           new ComponentPickerOption(`Align ${alignment}`, {
-            icon: <i className={`icon ${alignment}-align  comp-picker`} />,
+            icon: <i className={`icon ${alignment}-align ${theme === 'dark' && 'comp-picker'}`} />,
             keywords: ["align", "justify", alignment],
             onSelect: () =>
               // @ts-ignore Correct types, but since they're dynamic TS doesn't like it.
@@ -361,7 +372,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
             return anchorElementRef.current && options.length
             ? createPortal(
                 <div 
-                  className={`typeahead-popover component-picker-menu !bg-gray-800 dark:!bg-[#1c1d1e] dark:hover:!bg-[#222222] !w-[13rem]
+                  className={`typeahead-popover component-picker-menu bg-[#f8f8f8] dark:!bg-[#1c1d1e] dark:hover:!bg-[#222222] !w-[13rem]
                     ${overflowXAxis && !overflowYAxis ? "!absolute !-left-44"
                     : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5"
                     : overflowXAxis && overflowYAxis && "!absolute !-left-52 !-top-48"}
@@ -369,7 +380,10 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
                 >
                   <ul className="h-[200px] xxs:!h-[180px] border border-gray-600">
                     {options.map((option, i: number) => (
-                      <div key={option.key}>
+                      <div 
+                        key={option.key}
+                        style={{ zIndex: '50 !important' }}
+                      >
                         <ComponentPickerMenuItem
                           index={i}
                           isSelected={selectedIndex === i}

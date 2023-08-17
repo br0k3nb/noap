@@ -105,7 +105,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         </div>
                         <div className="tooltip tooltip-left text-gray-900 dark:text-gray-300 before:text-[15px]" data-tip="Search">
                             <div 
-                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#c1c1c1] dark:hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
@@ -119,7 +119,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                     className={`bg-inhreit dark:!bg-[#0f1011] hidden ${showSearchBar && "!grid"} px-6`}
                 >
                     <input
-                        className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
+                        className="text-gray-900 dark:text-gray-300 sign-text-inputs shadow-none border !border-stone-300 bg-[#eeeff1] dark:bg-stone-900 dark:border-transparent active:border focus:border-gray-400 h-10 mb-2"
                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                         placeholder="Search..."
                         value={searchLabel}
@@ -150,7 +150,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                             <label className="label cursor-pointer">
                                                 <input
                                                     type="checkbox" 
-                                                    className="checkbox !h-5 !w-5" 
+                                                    className="checkbox !h-5 !w-5 border-gray-600" 
                                                     {...register(_id)}
                                                 />
                                             </label>
@@ -159,24 +159,26 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                 )
                             })}
                         </div>
-                        <div className="text-gray-300 px-5 mt-2">
-                            <div className=" !bg-gray-800 dark:!bg-[#0f1011] flex !justify-between">
-                                <button 
-                                    className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                        <div className="px-5 mt-2">
+                            <div className=" !bg-[#ffffff] dark:!bg-[#0f1011] flex !justify-between">
+                                <button
+                                    type='button'
+                                    className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                     disabled={pageLabel === 1 ? true : false}
                                     onClick={() => setPageLabel(pageLabel - 1)}
                                 > 
-                                    <MdKeyboardDoubleArrowLeft size={18} />
+                                    <MdKeyboardDoubleArrowLeft />
                                 </button>
-                                <p className="!bg-gray-800 dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">
+                                <p className="text-gray-900 dark:text-gray-300 !bg-[#ffffff] dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">
                                     Page {pageLabel}
                                 </p>
                                 <button 
-                                    className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                    type='button'
+                                    className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                     disabled={hasNextPageLabel ? false : true}
                                     onClick={() => setPageLabel(pageLabel + 1)}
                                 >
-                                    <MdKeyboardDoubleArrowRight size={18} />
+                                    <MdKeyboardDoubleArrowRight />
                                 </button>
                             </div>
                         </div>

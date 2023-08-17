@@ -110,7 +110,7 @@ function DropDownItems({
   return (
     <DropDownContext.Provider value={contextValue}>
       <div 
-        className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500 bg-[#d9dbde] dark:bg-[#1c1d1e]`} 
+        className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500 bg-[#f8f8f8] dark:bg-[#1c1d1e]`} 
         ref={dropDownRef} 
         onKeyDown={handleKeyDown}
       >
@@ -194,7 +194,7 @@ export default function DropDown({
       {!useCustomButton ? (
         <button
           disabled={disabled}
-          className={buttonClassName}
+          className={buttonClassName + " hover:!bg-[#e1e1e1] dark:hover:!bg-[#484848]"}
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >
@@ -208,7 +208,7 @@ export default function DropDown({
         </button>
       ) : (
         <button 
-          className="border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#c1c1c1] dark:hover:bg-[#484848]"
+          className="border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#e1e1e1] dark:hover:bg-[#484848]"
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >
