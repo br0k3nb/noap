@@ -492,17 +492,17 @@ export default {
             req.status(400).json({ message: err });
         }
     },
-    async changeNoteBackgroundColor(res, req) {
+    async changeGlobalNoteBackgroundColor(res, req) {
         try {
             const { id } = res.params;
-            const { noteBackgroundColor } = res.body;
+            const { globalNoteBackgroundColor } = res.body;
 
             const getUserData = await User.findById(id);
 
             await User.findByIdAndUpdate({ _id: id }, {
                 settings: {
                     ...getUserData.settings,
-                    noteBackgroundColor
+                    globalNoteBackgroundColor: globalNoteBackgroundColor
                 }
             });
 

@@ -38,7 +38,7 @@ export default new mongoose.Schema({
             type: Boolean,
             required: true
         },
-        noteBackgroundColor: {
+        globalNoteBackgroundColor: {
             type: String,
             required: false,
         },
