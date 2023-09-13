@@ -115,15 +115,15 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                 onClose: () =>  customCloseFn ? customCloseFn() : setOpen(false)
             }}
         >
-            <div className="px-6 mt-5 text-gray-300">
+            <div className="px-6 mt-5 text-gray-900 dark:text-gray-300">
                 <ConfirmationModal
                     mainText=""
                     open={openConfirmationModal}
                     setOpen={setOpenConfirmationModal}
-                    deleteButtonAction={handleRemove2FA}
+                    actionButtonFn={handleRemove2FA}
                     options={{
-                        customDeleteButtonText: "Remove 2FA",
-                        mainTextCustomClassName: "text-gray-300/90 uppercase",
+                        actionButtonText: "Remove 2FA",
+                        mainTextClassName: "text-gray-300/90 uppercase",
                         alertComponentIcon: "warning",
                         alertComponentText: "Are you sure you want to remove the 2FA from your account ?",
                         alertComponentTextClassName: "!text-[11px]"
@@ -176,7 +176,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                                 draggable={false}
                             />
                             <button 
-                                className="mt-5 px-3 py-3 bg-gray-900 dark:!bg-[#404040] dark:hover:!bg-[#232323] dark:border-gray-500 rounded-lg text-xs uppercase tracking-widest border border-gray-700 hover:bg-black transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
+                                className="text-white mt-5 w-40 px-2 py-3 bg-green-600 hover:bg-green-700 tracking-wide rounded-lg text-[12px] uppercase hover:tracking-widest border border-gray-500 transition-all duration-300 disabled:cursor-not-allowed disabled:bg-green-600/70 disabled:opacity-50 disabled:hover:tracking-wide"
                                 disabled={qrcodeImage ? true : false}
                                 onClick={() => handleGenerateQrcode()}
                             >
@@ -202,11 +202,11 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                                 max={6}
                                 ref={numberRef}
                                 onKeyUp={onKeyUpNumber}
-                                className="sign-text-inputs w-60 placeholder:text-center text-center bg-stone-900 text-gray-300 h-10 border border-gray-700 dark:border-gray-500 hover:!border-gray-600"
+                                className="sign-text-inputs w-60 placeholder:text-center text-center dark:bg-stone-900 h-10 border border-gray-700 dark:border-gray-500 hover:!border-gray-600"
                                 onChange={({currentTarget}) => handleInputChange(currentTarget.value)}
                             />
                             <button
-                                className={`mt-2 px-24 py-3 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-gray-900 rounded-full text-xs uppercase tracking-widest border border-gray-700 dark:border-gray-500 hover:!border-gray-600 hover:bg-black transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60`}
+                                className={`mt-2 px-3 w-60 py-3 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} text-white bg-green-700 hover:bg-green-800 rounded-full text-xs uppercase tracking-wide hover:tracking-widest border border-gray-700 hover:!border-gray-600 transition-all duration-500 disabled:cursor-not-allowed disabled:!bg-green-700/60 disabled:hover:tracking-wide`}
                                 disabled={TFACode.length === 6 ? false : true}
                                 onClick={() => handleVerifyButton()}
                             >
@@ -279,16 +279,16 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                 )}
                 <div className={`flex flex-row justify-between mt-3 ${((TFAEnabled && !isVerified) || (TFAEnabled && isVerified)) && "!hidden"}`}>
                     <button 
-                        className="text-xs uppercase bg-gray-900 hover:bg-black dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
+                        className="text-xs uppercase bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-[#ebebeb] disabled:opacity-70"
                         onClick={() => setPage(page - 1)}
                         disabled={!page ? true : false}
                     >
                         <div className="tooltip tooltip-right before:!normal-case" data-tip="Previous page">
-                            <BsArrowLeft size={20} className="pt-1"/>
+                            <BsArrowLeft size={20} className="pt-1 text-gray-900 dark:text-gray-300"/>
                         </div>
                     </button>
                     <button
-                        className="text-xs uppercase bg-gray-900 hover:bg-black dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60"
+                        className="text-xs uppercase bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-[#ebebeb] disabled:opacity-70"
                         disabled={page === 2 || (page === 1 && !qrcodeImage) ? true : false}
                         onClick={() => setPage(page + 1)}
                     >
@@ -296,7 +296,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                             className="tooltip tooltip-left before:!normal-case" 
                             data-tip={`${(page == 1 && !qrcodeImage) ? "Generate a QR code to go to the next page" : "Next page"}`}
                         >
-                            <BsArrowRight size={20} className="pt-1"/>
+                            <BsArrowRight size={20} className="pt-1 text-gray-900 dark:text-gray-300"/>
                         </div>
                     </button>
                 </div>

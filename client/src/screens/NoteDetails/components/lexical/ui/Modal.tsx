@@ -1,5 +1,5 @@
-import {ReactNode, useEffect, useRef} from 'react';
-import {createPortal} from 'react-dom';
+import { ReactNode, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 import { BsXLg } from 'react-icons/bs';
 
@@ -18,9 +18,7 @@ function PortalImpl({
 }) {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (modalRef.current !== null) modalRef.current.focus();
-  }, []);
+  useEffect(() => { if (modalRef.current !== null) modalRef.current.focus() }, []);
 
   useEffect(() => {
     let modalOverlayElement: HTMLElement | null = null;

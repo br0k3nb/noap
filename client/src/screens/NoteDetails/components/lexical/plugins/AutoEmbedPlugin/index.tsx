@@ -205,7 +205,7 @@ export function AutoEmbedDialog({
       <DialogActions>
         <Button
           disabled={!embedResult}
-          className="!bg-[#dbdbdb] dark:!bg-[#181818] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out cursor-pointer text-[13.5px] uppercase tracking-widest"
+          className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out cursor-pointer text-[13.5px] uppercase tracking-widest"
           onClick={onClick}
           data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
         >

@@ -17,7 +17,7 @@ export default function LinkGoogleAccount({ _id } : { _id: string }) {
 
     const linkGAcc = useGoogleLogin({
         onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
-        onError: (error) => toastAlert({ icon: "error", title: `Login failed, ${error}}`, timer: 2500 })
+        onError: (error) => toastAlert({ icon: "error", title: `Login failed, ${error}`, timer: 2500 })
     });
 
     const fetchGoogleAccountData = async (codeResponse: any) => {
@@ -38,7 +38,7 @@ export default function LinkGoogleAccount({ _id } : { _id: string }) {
             const { email, name, id } = userData.data;
 
             const createUser = await api.patch(`/convert/account/google`, { email, name, id, _id });
-            toastAlert({ icon: 'success', title: `${createUser.data.message}`, timer: 3000 });
+            toastAlert({ icon: 'success', title: createUser.data.message, timer: 3000 });
             
             setshowSvgLoader(false);
             setRedirect(true);
@@ -56,12 +56,12 @@ export default function LinkGoogleAccount({ _id } : { _id: string }) {
 
     return (
         <div className="px-6">
-            <p className="text-xl tracking-tight mb-3"> Sign in with google </p>
-            <p className="text-base tracking-tight mb-6"> After siging in with google, you wont be able to use your email to login again! </p>
+            <p className="text-xl tracking-tight mb-3 text-gray-900 dark:text-gray-300"> Sign in with google </p>
+            <p className="text-base tracking-tight mb-6 text-gray-600"> After siging in with google, you wont be able to use your email to login again! </p>
             <button
                 type="button"
                 onClick={() => linkGAcc()}
-                className="text-gray-900 mb-5 bg-gray-200 trasition-all duration-200 ease-in-out uppercase rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full py-2 hover:bg-gray-300"
+                className="text-gray-900 mb-5 bg-[#dbdbdb] trasition-all duration-300 ease-in-out uppercase rounded-full text-sm w-full py-2 hover:bg-[#c0c0c0] hover:tracking-[0.05em] border border-gray-400"
             >
                 {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: true, LoaderClassName: "!text-black" }} /> ) : (
                     <div className="flex items-center justify-center">

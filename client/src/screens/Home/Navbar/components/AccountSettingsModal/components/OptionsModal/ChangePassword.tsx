@@ -46,31 +46,31 @@ export default function ChangePassword({ register, handleSubmit, errors, reset, 
                 className='mx-auto'
             >
                 <div className="flex flex-col space-y-2 px-6 ">
-                    <p className="text-red-500 ml-1 uppercase text-xs tracking-widest">
+                    <p className="text-red-600 ml-1 uppercase text-xs tracking-widest font-normal">
                         {errors.password?.message as string}
                     </p>
                     <input
                         type="password"
-                        className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400"
+                        className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 text-gray-900 dark:text-gray-300 border border-gray-500 dark:border-gray-600 active:border focus:border-gray-400"
                         placeholder="Password"
                         required
                         {...register("password", {
-                            required: "Password is required!",
+                            required: "A password is required!",
                             minLength: { value: 6, message: "Password is too short!" },
                             maxLength: { value: 12, message: "Too many characters!" }
                         })}
                     />
-                    <p className="text-red-500 ml-1 uppercase text-xs tracking-widest">
+                    <p className="text-red-600 ml-1 uppercase text-xs tracking-widest font-normal">
                         {errors.confirmPassword?.message as string}
                     </p>
                     <input
                         type="password"
                         autoComplete="off"
-                        className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400"
+                        className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 text-gray-900 dark:text-gray-300 border border-gray-500 dark:border-gray-600 active:border focus:border-gray-400"
                         placeholder="Confirm password"
                         required
                         {...register("confirmPassword", {
-                            required: "Password is required!",
+                            required: "A password is required!",
                             minLength: { value: 6, message: "Password is too short!" },
                             maxLength: { value: 12, message: "Too many characters!" }
                         })}
@@ -78,7 +78,7 @@ export default function ChangePassword({ register, handleSubmit, errors, reset, 
                 </div>
                 <div className="flex items-center justify-center">
                     <button 
-                        className="w-full mx-6 bg-red-800 hover:bg-red-900 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out xxs:!w-[17rem]"
+                        className="w-full mx-6 bg-green-700 hover:bg-green-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-wide hover:tracking-widest transition-all duration-500 ease-in-out xxs:!w-[17rem]"
                     >
                         {showSvgLoader ? (
                             <SvgLoader options={{ showLoadingText: true }} />

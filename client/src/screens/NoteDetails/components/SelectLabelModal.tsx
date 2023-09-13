@@ -56,7 +56,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
 
             const { data: { message } } = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
-            toastAlert({icon: "success", title: message, timer: 2000});
+            toastAlert({ icon: "success", title: message, timer: 2000 });
             await refetch?.fetchNotes();
             setShowLoader(false);
         } catch (err: any) {
@@ -188,7 +188,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                 className='text-sm uppercase  text-gray-900 dark:text-gray-300 rounded-full mt-5'
                             >
                             {!showLoader ? (
-                                <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
+                                <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px] hover:tracking-widest'>
                                     Attach labels
                                 </span>
                             ) : (

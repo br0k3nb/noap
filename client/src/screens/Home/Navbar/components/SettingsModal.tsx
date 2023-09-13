@@ -1,12 +1,11 @@
 import { SetStateAction, Dispatch, useState, useContext } from 'react';
-import { useNavigate } from "react-router-dom";
 
 import { BsDoorOpenFill, BsDoorClosedFill, BsShieldLockFill } from "react-icons/bs";
-import { AiFillFolderOpen } from 'react-icons/ai';
-import { FiAlignJustify } from 'react-icons/fi';
-import { RiTextSpacing } from 'react-icons/ri';
+import { MdAccountCircle, MdDarkMode } from 'react-icons/md';
+import { LuSettings2 } from 'react-icons/lu';
 import { BiLock } from "react-icons/bi";
 
+import useAuth from '../../../../hooks/useAuth';
 import Modal from '../../../../components/Modal';
 import TwoFactAuthModal from './TwoFactAuthModal';
 import { toastAlert } from '../../../../components/Alert/Alert';
@@ -35,7 +34,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
     const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
 
-    const navigate = useNavigate();
+    const auth = useAuth();
 
     const handleShowPinnedNotesInFolder = async (state: boolean) => {
         setShowSPNIFLoader(true);
@@ -147,11 +146,6 @@ export default function SettingsModal({ open, setOpen }: Props) {
         else setOpenAccSettingsModal(false);
     };
 
-    const signOutUser = () => {
-        localStorage.removeItem("@NOAP:SYSTEM");
-        navigate("/");
-    };
-
     const accSettingsModalProps = {
         setUserIsAuth,
         open: openAuthModal,
@@ -174,27 +168,34 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 title='Settings'
                 setOpen={setOpen}
                 options={{
-                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] !px-0 !max-h-[50rem]",
+                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] !px-0 overflow-y-hidden",
                     titleWrapperClassName: "!px-6"
                 }}
             >
                 <ConfirmationModal
                     open={openSignOutConfirmationModal}
                     setOpen={setOpenSignOutConfirmationModal}
-                    deleteButtonAction={signOutUser}
+                    actionButtonFn={() => auth.signOut()}
                     mainText='Are you sure you want to sign out ?'
                     options={{ 
-                        customDeleteButtonText: "Sign out",
+                        actionButtonText: "Sign out",
                         modalWrapperClassName: "!w-96",
-                        mainTextCustomClassName: "text-center text-[14px] xxs:text-[12px] font-light",
-                        customCancelButtonText: "Go back"
+                        mainTextClassName: "text-center text-[14px] xxs:text-[12px]",
+                        cancelButtonText: "Go back"
                     }}
                 />
-                <div className="px-6 mt-5 mb-2 h-[16.9rem] overflow-y-scroll">
+                <div 
+                    className="px-6 mt-5 mb-2 overflow-y-scroll"
+                    style={{ height: innerWidth <= 640 ? innerHeight - 200 : innerHeight - 300 }}
+                >
                     <div className="flex flex-col space-y-4">
-                        <div className="bg-gray-700/80 dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
+                        <div className="flex flex-row space-x-2">
+                            <MdAccountCircle size={21}/>
+                            <p className="uppercase tracking-widest text-[14px]">Account</p>
+                        </div>
+                        <div className="bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-[#cacaca] border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
                             <div
-                                className='text-center text-xs text-gray-300 uppercase tracking-wide py-[16.5px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
+                                className='text-center text-xs  text-gray-900 dark:text-gray-300 uppercase tracking-wide py-[14px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
                                 onClick={() => handleOpenAccountSettingsModal()}
                             >
                                 <div className="flex flex-row justify-center">
@@ -203,9 +204,9 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gray-700/80 dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
+                        <div className="bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-[#cacaca] border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
                             <div 
-                                className='text-xs text-gray-300 uppercase tracking-wide py-[16.5px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
+                                className='text-xs uppercase text-gray-900 dark:text-gray-300 tracking-wide py-[14px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
                                 onClick={() => handleTFAClick()}
                             >                                
                                 <div className="flex flex-row justify-center">
@@ -214,64 +215,19 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 </div>
                             </div>
                         </div>
-                        <div className="form-control bg-gray-700/80 dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-gray-700 border border-transparent transition-all duration-500 hover:border-gray-500 px-3 rounded-full">
-                            <label className="label cursor-pointer px-2 transition-all hover:!tracking-widest duration-300 ease-in-out tracking-wide">
-                                <div className="flex flex-row space-x-2">
-                                    <span className="label-text uppercase text-xs xxs:!text-[10px] text-gray-300 py-[10px]">
-                                        {showSPNIFLoader ? "Loading..." : "pinned notes in folder"}
-                                    </span> 
-                                    {!showSPNIFLoader && (<AiFillFolderOpen size={22} className='mt-[6px]'/>)}
-                                </div>
-                                <input 
-                                    type="checkbox" 
-                                    disabled={showSPNIFLoader ? true : false}
-                                    checked={showPinnedNotesInFolder ? showPinnedNotesInFolder : false}
-                                    className={`toggle ${showSPNIFLoader && "cursor-not-allowed"}`}
-                                    onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)}
-                                />
-                            </label>
-                        </div>   
-                        <div className="bg-gray-700/80 dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
-                            <label className="label cursor-pointer px-2 transition-all hover:!tracking-widest duration-300 ease-in-out tracking-wide">
-                                <div className="flex flex-row space-x-2">
-                                    <span className="label-text uppercase text-xs xxs:!text-[10px] text-gray-300 py-[10px]">
-                                        {showNTCLoader ? "Loading..." : "Note text centred"}
-                                    </span> 
-                                    {!showNTCLoader && ( <FiAlignJustify size={22} className='mt-[6px]'/> )}
-                                </div>
-                                <input 
-                                    type="checkbox" 
-                                    disabled={showNTCLoader ? true : false}
-                                    checked={noteTextExpanded ? noteTextExpanded : false}
-                                    className={`toggle ${showNTCLoader && "cursor-not-allowed"}`}
-                                    onChange={() => handleNoteTextCondition()}
-                                />
-                            </label>
-                        </div>     
-                        <div>
-                            <select 
-                                id='theme-selector'
-                                className="select select-ghost border border-transparent focus:outline-0 w-full transition-all duration-500 hover:!border-gray-500 px-5 !h-[52px] rounded-full text-gray-300 text-xs uppercase tracking-wide hover:tracking-widest bg-gray-700/80 hover:!bg-gray-700 dark:bg-[#32353b] dark:hover:!bg-[#222222]"
-                                onChange={(e) => handleChangeTheme(e.target.value)}
-                                value={theme}
-                            >
-                                <option disabled>Theme selector</option>
-                                <option value={'dark'}>Dark - (Default)</option>
-                                <option value={'light'}>Light</option>
-                            </select>
-                        </div>
                         <div 
-                            className="bg-gray-700/80 dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-gray-700 border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full"
+                            className="bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-[#cacaca] border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full"
                             onMouseEnter={() => setTimeout(() => setShowOpenDoorIcon(true), 200)}
                             onMouseLeave={() => setTimeout(() => setShowOpenDoorIcon(false), 200)}
                         >
                             <div 
-                                className='text-xs text-gray-300 uppercase tracking-wide py-[16.5px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
+                                className='text-xs  text-gray-900 dark:text-gray-300 uppercase tracking-wide py-[14px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
                                 onClick={() => setOpenSignOutConfirmationModal(true)}
                             >
                                 <div className="flex flex-row justify-center">
-                                    <p className=''>Log out</p>
-                                    {!showOpenDoorIcon ? ( 
+                                    <p>Log out</p>
+                                    {
+                                        !showOpenDoorIcon ? ( 
                                             <BsDoorClosedFill size={18} className='ml-2 '/> 
                                         ) : ( 
                                             <BsDoorOpenFill size={18} className='ml-2 ease-out transition-all duration-300'/>
@@ -280,6 +236,52 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 </div>
                             </div>
                         </div>
+                        <div className="flex flex-row space-x-2 !mt-8">
+                            <LuSettings2 size={21}/>
+                            <p className="uppercase tracking-widest text-[14px]">Preferences</p>
+                        </div>
+                        <label className="label tracking-widest !mb-0 !py-0">
+                            <div className="flex flex-row space-x-2">
+                                <span className="label-text uppercase text-xs xxs:!text-[11px] text-gray-900 dark:text-gray-300">
+                                    {showSPNIFLoader ? "Loading..." : "pinned notes in folder"}
+                                </span>
+                            </div>
+                            <input 
+                                type="checkbox" 
+                                disabled={showSPNIFLoader ? true : false}
+                                checked={showPinnedNotesInFolder ? showPinnedNotesInFolder : false}
+                                className={`toggle !bg-gray-300 ${showSPNIFLoader && "cursor-not-allowed"}`}
+                                onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)}
+                            />
+                        </label>
+                        <label className="label tracking-widest !py-0">
+                            <div className="flex flex-row space-x-2">
+                                <span className="label-text uppercase text-xs xxs:!text-[11px] text-gray-900 dark:text-gray-300">
+                                    {showNTCLoader ? "Loading..." : "Note text centred"}
+                                </span>
+                            </div>
+                            <input 
+                                type="checkbox" 
+                                disabled={showNTCLoader ? true : false}
+                                checked={noteTextExpanded ? noteTextExpanded : false}
+                                className={`toggle !bg-gray-300 ${showNTCLoader && "cursor-not-allowed"}`}
+                                onChange={() => handleNoteTextCondition()}
+                            />
+                        </label>
+                        <div className="flex flex-row space-x-2 !mt-8">
+                            <MdDarkMode size={21} />
+                            <p className="uppercase tracking-widest text-[14px]">Theme</p>
+                        </div>  
+                        <select
+                            id='theme-selector'
+                            className="select select-ghost border border-transparent focus:outline-0 w-full transition-all duration-500 hover:!border-gray-500 px-5 !h-[40px] rounded-full !text-gray-900 dark:!text-gray-300 text-xs uppercase tracking-widest bg-[#dbdbdb] hover:bg-[#cacaca] dark:bg-[#32353b] dark:hover:!bg-[#222222]"
+                            onChange={(e) => handleChangeTheme(e.target.value)}
+                            value={showThemeLoader ? 'loader' : theme}
+                        >
+                            <option value={'dark'}>Dark - (Default)</option>
+                            <option value={'light'}>Light</option>
+                            {showThemeLoader && ( <option value={'loader'}>Loading...</option> )}
+                        </select>
                     </div>
                     {/* <p className='text-gray-400 uppercase text-xs tracking-widest text-center mb-4 mt-5'>Coming soon</p>
                     <button

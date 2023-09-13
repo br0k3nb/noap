@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, ReactNode } from "react";
 
+import ConfirmationModal from "../../../../../components/ConfirmationModal";
+
 import DropDown from "./DropDown";
 import TextInput from "./TextInput";
 
@@ -17,7 +19,8 @@ interface ColorPickerProps {
   stopCloseOnClickSelf?: boolean;
   title?: string;
   alwaysOpened?: boolean;
-  customOnClickButtonFn?: (color: string) => any;
+  applyNoteBackgroundFn?: (color: string) => any;
+  applyGlobalNoteBackgroundFn?: (color: string) => any;
 }
 
 const basicColors = [
@@ -42,7 +45,6 @@ const basicColors = [
   "#ffffff",
 ];
 
-const customWidth = innerWidth <= 640 ? 270.4 : 318.4;
 const WIDTH = 214;
 const HEIGHT = 150;
 
@@ -53,12 +55,17 @@ export default function ColorPicker({
   disabled = false,
   stopCloseOnClickSelf = true,
   alwaysOpened,
-  customOnClickButtonFn,
+  applyNoteBackgroundFn,
+  applyGlobalNoteBackgroundFn,
   ...rest
 }: Readonly<ColorPickerProps>) {
+  const [showGlobalBackgroundModal, setShowGlobalBackgroundModal] = useState(false);
+  const [customWidth, setCustomWidth] = useState(innerWidth <= 640 ? 270.4 : 318.4);
   const [selfColor, setSelfColor] = useState(transformColor("hex", color));
   const [inputColor, setInputColor] = useState(color);
+
   const innerDivRef = useRef(null);
+  const controlFunctionExecution = useRef(false);
 
   const saturationPosition = useMemo(() => ({
       x: alwaysOpened ? (selfColor.hsv.s / 100) * customWidth : (selfColor.hsv.s / 100) * WIDTH,
@@ -120,12 +127,41 @@ export default function ColorPicker({
     setInputColor(newColor.hex);
   }, [color]);
 
+  addEventListener("resize", () => {
+    setTimeout(() => {
+      if(!controlFunctionExecution.current) {
+        setCustomWidth(innerWidth <= 640 ? 270.4 : 318.4);
+        controlFunctionExecution.current = true;
+      }
+    }, 500);
+
+    if((innerWidth <= 640 && customWidth === 318.4) || (innerWidth > 640 && customWidth === 270.4)) {
+      controlFunctionExecution.current = false;
+    }
+  });
+
   return (
     <>
+      <ConfirmationModal
+        open={showGlobalBackgroundModal}
+        setOpen={setShowGlobalBackgroundModal}
+        mainText=""
+        options={{
+          mainTextClassName: "!mt-2",
+          alertComponentText: "Are you sure that you apply this background color to all notes ?",
+          alertComponentWrapperClassName: "!w-[19rem] xxs:!w-[16rem]",
+          actionButtonText: "apply",
+          actionButtonClassName: "!bg-green-700 hover:!bg-green-800"
+        }}
+        actionButtonFn={() => {
+          setShowGlobalBackgroundModal(false);
+          if(applyGlobalNoteBackgroundFn) applyGlobalNoteBackgroundFn(selfColor.hex);
+        }}
+      />
       {alwaysOpened ? (
         <>
           <div 
-            className="color-picker-wrapper !text-gray-200" 
+            className="color-picker-wrapper !text-gray-200 mx-auto" 
             style={ alwaysOpened ? { width: customWidth } : { width: WIDTH } } 
             ref={innerDivRef}
           >
@@ -179,12 +215,20 @@ export default function ColorPicker({
             </div>
           </div>
           {children}
-          <button
-            className="my-3 text-gray-200 rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
-            onClick={() => customOnClickButtonFn && customOnClickButtonFn(selfColor.hex)}
-          >
-            Save color
-          </button>
+          <div className="text-center">
+            <button
+              className="my-3 border border-gray-700 text-white rounded-full bg-green-600 hover:bg-green-700 hover:tracking-widest transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+              onClick={() => applyNoteBackgroundFn && applyNoteBackgroundFn(selfColor.hex)}
+            >
+              Apply to this note
+            </button>
+            <button
+              className="border border-gray-700 text-black dark:text-gray-300 rounded-full hover:tracking-widest transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+              onClick={() => setShowGlobalBackgroundModal(true)}
+            >
+              Apply globally
+            </button>
+          </div>
         </>
       ) : (
         <DropDown 
@@ -428,4 +472,4 @@ function transformColor<M extends keyof Color, C extends Color[M]>(format: M, co
   }
 
   return { hex, hsv, rgb };
-}
+} 

@@ -20,6 +20,7 @@ declare type Notes = {
         shared: boolean;
         pinned: boolean;
         permissions?: string[];
+        noteBackgroundColor?: string;
       };
       updatedAt?: string;
       createdAt: string;

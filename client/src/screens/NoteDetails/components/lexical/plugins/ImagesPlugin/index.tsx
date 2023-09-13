@@ -59,7 +59,7 @@ export function InsertImageUriDialogBody({ onClick }: { onClick: (payload: Inser
       />
       <DialogActions>
         <Button
-          className="!bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
+          className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
           data-test-id="image-modal-file-upload-btn"
           disabled={isDisabled}
           onClick={() => onClick({ src, altText: '' })}
@@ -120,7 +120,7 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
       <DialogActions>
         {loader ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "bg-gray-700 py-3 px-3 rounded-lg" }}/>) : (
           <Button
-            className="!bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
+            className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
             data-test-id="image-modal-file-upload-btn"
             disabled={isDisabled}
             onClick={() => onClick({ src, altText: '' })}
@@ -158,7 +158,7 @@ export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: Lex
         >
           <Button
             data-test-id="image-modal-option-url"
-            className="bg-gray-700 hover:!bg-gray-600 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+            className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
             onClick={() => setMode("url")}
           >
             <div className="flex w-[54px] justify-between">
@@ -168,7 +168,7 @@ export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: Lex
           </Button>
           <Button
             data-test-id="image-modal-option-file"
-            className="!mb-2 bg-gray-700 hover:!bg-gray-600 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+            className="!mb-2 bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
             onClick={() => setMode("file")}
           >
             <div className="flex w-[55px] justify-between">

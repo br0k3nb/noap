@@ -24,7 +24,7 @@ export default function Placeholder({
 
   return (
     <div 
-      className={className ||  `Placeholder__root text-gray-400 `} 
+      className={className ||  `Placeholder__root text-white mix-blend-difference `} 
       style={(!expanded && verifyEditorDivRef) ? { 
           left: (verifyEditorDivRef && noteTextExpanded) && editorDiv?.x - 410
         } : { 

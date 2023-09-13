@@ -131,9 +131,9 @@ export default function DropDown({
   buttonIconClassName,
   children,
   stopCloseOnClickSelf,
+  customButtonLabelClassName
 }: {
   disabled?: boolean;
-  buttonAriaLabel?: string;
   buttonClassName: string;
   modalClassName?: string;
   useCustomButton?: any;
@@ -143,6 +143,7 @@ export default function DropDown({
   buttonLabel?: string;
   children: ReactNode;
   stopCloseOnClickSelf?: boolean;
+  customButtonLabelClassName?: string;
 }): JSX.Element {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -208,7 +209,7 @@ export default function DropDown({
         </button>
       ) : (
         <button 
-          className="border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#e1e1e1] dark:hover:bg-[#484848]"
+          className={`border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#e1e1e1] dark:hover:bg-[#484848] ${customButtonLabelClassName && customButtonLabelClassName}`}
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >

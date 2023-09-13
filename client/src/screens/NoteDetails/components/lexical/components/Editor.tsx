@@ -67,8 +67,17 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
-    const { noteSettings: { expanded, readMode } } = useContext(NoteSettingsCtx) as any;
-    const { userData: { settings: { noteTextExpanded, noteBackgroundColor } } } = useContext(UserDataCtx) as any;
+    const { noteSettings: { expanded, readMode, noteBackgroundColor } } = useContext(NoteSettingsCtx) as any;
+    const { 
+      userData: {
+        settings: {
+          noteTextExpanded,
+          globalNoteBackgroundColor
+        } 
+      }
+    } = useContext(UserDataCtx) as any;
+
+    console.log(noteBackgroundColor); 
 
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
@@ -107,11 +116,11 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const getNavbar = document.getElementById("pc-navbar") as any;  
     
     const baseStyle = {
-      marginTop: noteBackgroundColor && noteBackgroundColor !== "#0f1011" ? 50 : 0,
-      marginBottom: noteBackgroundColor ? 90 : 80,
-      paddingRight: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-      paddingLeft: (noteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-      backgroundColor: noteBackgroundColor ? noteBackgroundColor : 'none',
+      marginTop: 50,
+      marginBottom: globalNoteBackgroundColor ? 90 : 80,
+      paddingRight: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      paddingLeft: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      backgroundColor: noteBackgroundColor ? noteBackgroundColor : globalNoteBackgroundColor ? globalNoteBackgroundColor : 'none',
     };
 
     return (
@@ -148,12 +157,12 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                         !expanded && getNavbar?.checkVisibility() ? {
                           ...baseStyle,
                           width: noteTextExpanded && currentScreenSize.width > 1430 
-                            ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
+                            ? (globalNoteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
                             : currentScreenSize.width - 435
                         } : { 
                           ...baseStyle,
                           width: noteTextExpanded && currentScreenSize.width > 1000 
-                            ? (noteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
+                            ? (globalNoteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
                             : currentScreenSize.width
                         }
                       }
@@ -176,7 +185,9 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                   </div>
                 </div>
               }
-              placeholder={<Placeholder customRef={customRef}>Enter some text</Placeholder>}
+              placeholder={
+                <Placeholder customRef={customRef}>Enter some text</Placeholder>
+              }
               ErrorBoundary={LexicalErrorBoundary}
             />
             <FloatingTextFormatToolbarPlugin />

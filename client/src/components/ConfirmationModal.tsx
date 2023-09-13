@@ -13,37 +13,44 @@ type Props = {
         onClose?: () => void;
         alertComponentIcon?: string;
         alertComponentText?: string;
+        alertComponentTextClassName?: string;
         modalWrapperClassName?: string;
         titleWrapperClassName?: string;
-        subTextCustomClassName?: string;
-        alertComponentClassName?: string;
-        mainTextCustomClassName?: string;
-        alertComponentTextClassName?: string;
-        customCloseButtonAction?: () => void;
-        customDeleteButtonText?: string;
-        customCancelButtonText?: string;
+        mainTextClassName?: string;
+        subTextClassName?: string;
+        actionButtonText?: string;
+        actionButtonClassName?: string;
+        cancelButtonText?: string;
+        cancelButtonAction?: () => void;
+        cancelButtonClassName?: string;
+        alertComponentWrapperClassName?: string;
     };
-    deleteButtonAction: () => void;
+    actionButtonFn: () => void;
     setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function ConfirmationModal({ open, options, setOpen, deleteButtonAction, mainText }: Props) {
+export default function ConfirmationModal({ open, options, setOpen, actionButtonFn, mainText }: Props) {
     const {
-        subText, 
-        onClose, 
-        loader, 
-        alertComponentIcon, 
+        subText,
+        onClose,
+        loader,
+        alertComponentIcon,
         alertComponentText,
-        alertComponentClassName,
+        alertComponentWrapperClassName,
         alertComponentTextClassName,
-        customCancelButtonText,
-        customCloseButtonAction,
-        customDeleteButtonText,
-        mainTextCustomClassName,
+        cancelButtonText,
+        cancelButtonAction,
+        cancelButtonClassName,
+        actionButtonText,
+        actionButtonClassName,
+        mainTextClassName,
         modalWrapperClassName,
-        subTextCustomClassName,
+        subTextClassName,
         titleWrapperClassName
     } = options || {};
+
+    const default_action_button_class = "bg-red-700 hover:bg-red-800 border border-gray-900 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-full dark:shadow-none transition-all duration-500 ease-in-out";
+    const default_cancel_button_class = "bg-gray-600 hover:bg-gray-700 text-gray-100 border border-gray-900 px-7 mr-8 py-[10px] xxs:px-6 rounded-full dark:shadow-none transition-all duration-500 ease-in-out";
 
     const modalProps = {
         open,
@@ -58,17 +65,17 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
 
     return (
         <Modal {...modalProps}>
-            <p className={`mt-5 px-6 text-sm uppercase tracking-widest text-gray-900 dark:text-gray-300 ${mainTextCustomClassName && mainTextCustomClassName}`}>
+            <p className={`mt-5 px-6 text-sm uppercase tracking-widest text-gray-900 dark:text-gray-300 ${mainTextClassName && mainTextClassName}`}>
                 {mainText} 
             </p>
             {options?.subText && (
-                <p className={`text-xs uppercase tracking-widest text-gray-500 mt-4 mb-6 ${subTextCustomClassName && subTextCustomClassName}`}>
+                <p className={`text-xs uppercase tracking-widest text-gray-500 mt-4 mb-6 ${subTextClassName && subTextClassName}`}>
                     {subText}
                 </p>
             )}
             {alertComponentText && (
-                <div className="alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32">
-                    <div className={`text-[13.5px] uppercase tracking-wide ${alertComponentClassName && alertComponentClassName}`}>
+                <div className={`alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32 ${alertComponentWrapperClassName && alertComponentWrapperClassName}`}>
+                    <div className={`text-[13.5px] uppercase tracking-wide`}>
                         {alertComponentIcon  === "warning" ? ( 
                             <AiFillWarning 
                                 size={17}
@@ -93,36 +100,34 @@ export default function ConfirmationModal({ open, options, setOpen, deleteButton
                     </div>
                 </div>
             )}
-            <div className="mt-5 xxs:mt-5">
-                <div className="mt-3 flex flex-row justify-evenly">
-                    <button
-                        className="bg-gray-600 hover:bg-gray-700 text-gray-100 px-8 py-[14px] xxs:!py-[10px] xxs:px-6 rounded-lg dark:shadow-none transition-all duration-500 ease-in-out"
-                        onClick={() => customCloseButtonAction ? customCloseButtonAction() : setOpen(false)}
-                    >
+            <div className="mt-5 flex flex-row justify-evenly">
+                <button
+                    className={`${default_cancel_button_class} ${cancelButtonClassName && cancelButtonClassName}`}
+                    onClick={() => cancelButtonAction ? cancelButtonAction() : setOpen(false)}
+                >
+                    <p className='text-sm uppercase tracking-widest xxs:!text-xs'>
+                        {cancelButtonText ? cancelButtonText : "Cancel"}
+                    </p>
+                </button>
+                <button 
+                    className={`${default_action_button_class} ${actionButtonClassName && actionButtonClassName}`}
+                    onClick={() => actionButtonFn()}
+                >
+                    {loader ? (
+                        <SvgLoader 
+                            options={{ 
+                                showLoadingText: true, 
+                                wrapperClassName: "h-4",
+                                LoadingTextClassName: "xxs:text-xs xxs:!py-0",
+                                LoaderClassName: "xxs:h-3 xxs:!mt-[1.5px]"
+                            }} 
+                        /> 
+                    ) : (
                         <p className='text-sm uppercase tracking-widest xxs:!text-xs'>
-                            {customCancelButtonText ? customCancelButtonText : "Cancel"}
+                            {actionButtonText ? actionButtonText : "Delete"}
                         </p>
-                    </button>
-                    <button 
-                        className={`bg-red-700 hover:bg-red-800 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-lg dark:shadow-none transition-all duration-500 ease-in-out`}
-                        onClick={() => deleteButtonAction()}
-                    >
-                        {loader ? (
-                            <SvgLoader 
-                                options={{ 
-                                    showLoadingText: true, 
-                                    wrapperClassName: "h-4",
-                                    LoadingTextClassName: "xxs:text-xs xxs:!py-0",
-                                    LoaderClassName: "xxs:h-3 xxs:!mt-[1.5px]"
-                                }} 
-                            /> 
-                        ) : (
-                            <p className='text-sm uppercase tracking-widest xxs:!text-xs'>
-                                {customDeleteButtonText ?customDeleteButtonText : "Delete"}
-                            </p>
-                        )}
-                    </button>
-                </div>
+                    )}
+                </button>
             </div>
         </Modal>
     )

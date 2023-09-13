@@ -67,7 +67,7 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
           showGoBackButton: showGoBackButton,
           goBackButtonAction: goBackButtonAction.action,
           titleWrapperClassName: "px-6 mb-5",
-          modalWrapperClassName: `!px-0 text-gray-100 !w-[22rem] ${googleAccount && "!w-[24rem]"} font-light xxs:!w-[19.4rem]`,
+          modalWrapperClassName: `!px-0 text-gray-100 !w-[22rem] ${googleAccount && "!w-[24rem]"} font-light xxs:!w-[19.4rem] overflow-x-hidden`,
         }
     };
 
@@ -78,21 +78,21 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
       <Modal {...modalProps}>
         {changeAccountInfo === "" && !googleAccount ? (
           <div className="px-6 mt-1">
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 text-gray-900 dark:text-gray-300">
               <button
-                className="py-[13.5px] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest"
+                className="py-[13.5px] bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:bg-[#32353b] dark:hover:!bg-[#222222] transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-wide hover:tracking-widest"
                 onClick={() => handleClickPassword()}
               >
                 <span className="py-4"> Change password </span>
               </button>
               <button
-                className="py-[13.5px] hover:bg-gray-600 bg-gray-700 transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-widest"
+                className="py-[13.5px] bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:bg-[#32353b] dark:hover:!bg-[#222222] transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-wide hover:tracking-widest"
                 onClick={() => handleClickGoogleAccount()}
               >
                 <span className="py-4"> Link a Google account </span>
               </button>
               <button
-                className="py-[13.5px] cursor-not-allowed bg-gray-600 opacity-30 rounded-3xl text-sm uppercase tracking-widest"
+                className="py-[13.5px] cursor-not-allowed bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] opacity-30 rounded-3xl text-sm uppercase tracking-widest"
                 disabled={true}
               >
                 <span className="py-4"> Change email </span>

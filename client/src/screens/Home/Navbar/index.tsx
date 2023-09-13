@@ -1,15 +1,10 @@
 import { useState, useContext } from 'react';
 import { FieldArrayWithId } from 'react-hook-form';
 
-import { BiLock } from "react-icons/bi";
 import { 
   BsJournalPlus, 
-  BsTagFill, 
-  BsFillCalendarEventFill, 
-  BsDoorOpenFill, 
+  BsTagFill,
   BsGearWide, 
-  BsFillTrashFill,
-  BsShieldLockFill
 } from "react-icons/bs";
 
 import { motion } from 'framer-motion';
@@ -20,12 +15,12 @@ import useAuth from '../../../hooks/useAuth';
 import { UserDataCtx } from '../../../context/UserDataContext';
 
 import ConfirmationModal from '../../../components/ConfirmationModal';
-import AccountSettingsModal from './components/AccountSettingsModal';
-import logo from '../../../assets/logo/logo-white-no-bg.png';
-import TwoFactAuthModal from './components/TwoFactAuthModal';
 import SettingsModal from './components/SettingsModal';
 import SvgLoader from '../../../components/SvgLoader';
 import LabelModal from './components/LabelModal';
+
+import logo from '../../../assets/logo/logo-white-no-bg.png';
+import logoN from '../../../assets/logo/logo-white-no-bg-just-N.png';
 
 type NavProps = {
   labels: FieldArrayWithId<Labels, "labels", "id">[];
@@ -36,54 +31,37 @@ type NavProps = {
 };
 
 export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, labels }: NavProps) {
-  const [userIsAuth, setUserIsAuth] = useState(false);
-  const [open2FAModal, setOpen2FAModal] = useState(false);
-  const [openAuthModal, setOpenAuthModal] = useState(false);
   const [openLabelModal, setOpenLabelModal] = useState(false);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
-  const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
   const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
   const [deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const auth = useAuth();
   useUpdateViewport(setDeviceScreenSize, 500);
 
-  const { userData: { _id, googleAccount, name } } = useContext(UserDataCtx) as any;
-
-  const accSettingsModalProps = {
-    setUserIsAuth,
-    openAccSettingsModal,
-    open: openAuthModal,
-    setOpenAccSettingsModal,
-    setOpen: setOpenAuthModal
-  }
+  const { userData: { _id, settings: { theme }} } = useContext(UserDataCtx) as any;
 
   const hide = { x: -140, transitionEnd: { display: "none" }};
   const show = { display: "block", x: 0 };
 
   return (
     <div className={`${expanded && "hidden"}`}>
-      <AccountSettingsModal {...accSettingsModalProps} />
       <LabelModal 
         open={openLabelModal} 
         userId={ _id } 
         setOpen={setOpenLabelModal} 
         labels={labels}
       />
-      <TwoFactAuthModal
-        open={open2FAModal}
-        setOpen={setOpen2FAModal}
-      />
       <ConfirmationModal
         open={openSignOutConfirmationModal}
         setOpen={setOpenSignOutConfirmationModal}
-        deleteButtonAction={() => auth.signOut()}
+        actionButtonFn={() => auth.signOut()}
         mainText='Are you sure you want to sign out ?'
         options={{ 
-          customDeleteButtonText: "Sign out",
+          actionButtonText: "Sign out",
           modalWrapperClassName: "!w-96",
-          mainTextCustomClassName: "text-center text-[14px] font-light",
-          customCancelButtonText: "Go back"
+          mainTextClassName: "text-center text-[14px] font-light",
+          cancelButtonText: "Go back"
         }}
       />
       <SettingsModal
@@ -97,58 +75,8 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
               className="text-gray-900 dark:text-gray-300 flex flex-col items-center w-[60px] h-screen overflow-hidden bg-[#eeeff1] dark:!bg-[#1c1d1e] border border-transparent !border-r-stone-300 dark:!border-r-[#404040] justify-end"
             >
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
-                <div className="dropdown dropdown-right pt-[6.2px]">
-                  <label tabIndex={0}>
-                    <div className="tooltip tooltip-right text-gray-100 before:text-[15px]" data-tip="Account">
-                      <div className="rounded-full border border-stone-400 dark:!border-[#424242] bg-[#e2e2e2] dark:!bg-[#242424] dark:hover:!bg-[#181818] hover:bg-[#d1d1d1] text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out cursor-pointer">
-                        <p className='mt-[7px] text-gray-900 dark:text-gray-300'> 
-                          {name && name[0].toUpperCase()} 
-                        </p>
-                      </div>
-                    </div>
-                  </label>
-                  <ul 
-                    tabIndex={0} 
-                    className="dropdown-content menu shadow w-64 rounded-xl bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-600 ml-[9px]"
-                  >
-                    <li>
-                      <a
-                        className="active:!bg-[#bebebe] hover:bg-[#e2e2e2] text-gray-900 dark:!text-gray-300 rounded-xl dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                        onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenAccSettingsModal(true)}
-                      >
-                        <label htmlFor="my-modal-4">
-                          <div className="flex flex-row space-x-2"> 
-                            <span>Change login information</span>  
-                            <BiLock size={25} className="pt-1"/>
-                          </div>
-                        </label>
-                      </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                      <a
-                        className="active:!bg-[#bebebe] hover:bg-[#e2e2e2] text-gray-900 dark:!text-gray-300  rounded-xl dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                        onClick={() => setOpen2FAModal(true)}
-                      >
-                        <label htmlFor="my-modal-4">
-                          <div className="flex flex-row space-x-2">
-                            <span>Two-factor authentication</span>  
-                            <BsShieldLockFill size={22} className="pt-1"/>
-                          </div>
-                        </label>
-                      </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                      <a
-                        className="active:!bg-[#bebebe] hover:bg-[#e2e2e2] text-gray-900 dark:!text-gray-300 rounded-xl dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                        onClick={() => setOpenSignOutConfirmationModal(true)}
-                      >
-                        <label htmlFor="my-modal-4">
-                          <div className="flex flex-row space-x-2">
-                            <p>Log out</p>
-                            <BsDoorOpenFill size={22} className="pt-1"/>
-                          </div>
-                        </label>
-                      </a>
-                    </li>
-                  </ul>
+                <div className="rounded-full border border-stone-400 dark:!border-[#424242] bg-[#e2e2e2] dark:!bg-[#242424] dark:hover:!bg-[#181818] hover:bg-[#d1d1d1] text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
+                  <img src={logoN} className={`h-5 w-5 mx-auto mt-[10.5px] ${theme !== 'dark' && "comp-picker"}`}/>
                 </div>
               </div>
               <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[98px]"/>
@@ -177,7 +105,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                     <BsTagFill className="text-black dark:text-gray-300" size={23} />
                   </a>
                 </div>
-                <button
+                {/* <button
                   className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 disabled:!bg-transparent disabled:cursor-not-allowed"
                   disabled={true}
                 >
@@ -188,7 +116,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                   disabled={true}
                 >
                   <BsFillTrashFill className="text-gray-900/80 dark:text-gray-300" size={22} />
-                </button>
+                </button> */}
                 <div className="tooltip tooltip-right text-gray-300" data-tip="Settings">
                   <button
                     className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-stone-300 dark:border-r-[#404040]"
@@ -205,83 +133,55 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
             initial={{ x: -100 }}
             animate={!navbar ? hide : show}
             transition={{ duration: 0.3 }}
-            className={`fixed ${!navbar && "flex xxs:hidden"} bg-gray-900 z-50`}
-            style={{height: deviceScreenSize.height}}
+            className={`
+              fixed 
+              ${!navbar && "flex xxs:hidden"} 
+              bg-[#eeeff1] text-gray-900 dark:bg-[#1c1d1e] dark:!text-gray-300 border border-transparent border-t-gray-800 border-r-gray-800 dark:border-t-[#404040] dark:border-r-[#404040] z-50 rounded-tr-3xl
+            `}
+            style={{ height: deviceScreenSize.height }}
           >
-            <div className="flex flex-col items-center w-[150px] overflow-hidden text-gray-400">
-              <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
-                <div className="dropdown dropdown-right pt-[6.2px]">
-                  <label tabIndex={0}>
-                    <div className="flex flex-row text-center">
-                      <div className="rounded-full border !border-gray-500 bg-gray-800 hover:bg-gray-900/60 text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
-                        <p className='mt-[7px]'> {name && name[0].toUpperCase()} </p>
-                      </div>
-                      <p className='ml-2 my-auto uppercase text-xs tracking-widest'>{name && name}</p>
-                    </div>
-                  </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow w-44 overflow-hidden rounded-xl bg-gray-800 border border-gray-600">
-                    <li>
-                      <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300"
-                        onClick={() => !userIsAuth && !googleAccount ? setOpenAuthModal(true) : setOpenAccSettingsModal(true)}
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <span className='xxs:text-sm'>Change login information</span>  
-                          <BiLock size={37} className="my-auto"/>
-                        </div>
-                      </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                      <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300"
-                        onClick={() => setOpen2FAModal(true)}
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <span className='xxs:text-sm'>Two-factor authentication</span>  
-                          <BsShieldLockFill size={32} className="my-auto"/>
-                        </div>
-                      </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 !h-[1px] p-0 !rounded-none"/>
-                      <a
-                        className="active:!bg-gray-600 rounded-xl text-gray-300"
-                        onClick={() => setOpenSignOutConfirmationModal(true)}
-                      >
-                        <label htmlFor="my-modal-4">
-                          <div className="flex flex-row space-x-2">
-                            <p className='xxs:text-sm'>Log out</p>
-                            <BsDoorOpenFill size={21}/>
-                          </div>
-                        </label>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+            <div className="flex flex-col w-[150px] overflow-hidden">
+              <div className="mx-auto mt-6">
+                <img 
+                  src={logo} 
+                  className={`w-[105px] h-[39px] ${theme !== 'dark' && 'comp-picker'}`} 
+                /> 
               </div>
-              <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[92px]"/>
-              <div className="flex flex-col items-center absolute top-28">
+              <div className="!bg-gray-600 h-1 w-1 rounded-full mx-auto my-6" />
+              <div className="flex flex-col">
                 <a 
-                  className="flex items-center justify-center  hover:bg-gray-900 px-[1.29rem] py-3 rounded" 
+                  className="py-2 rounded px-6" 
                   onClick={() => addNewNote()}
                 >
-                  {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: true }} /> ) : ( 
-                    <div className="flex flex-row text-gray-300 cursor-pointer">
-                      <BsJournalPlus size={20} /> 
-                      <p className='ml-2 my-auto text-xs uppercase tracking-widest'>New note</p>
-                    </div>
-                  )}
+                  {
+                    showSvgLoader ? ( 
+                      <SvgLoader 
+                        options={{ 
+                          showLoadingText: true,
+                          LoadingTextClassName: '!text-[11px]'
+                        }} 
+                      /> 
+                    ) : ( 
+                      <div className="flex flex-row cursor-pointer">
+                        <BsJournalPlus size={20} /> 
+                        <p className='ml-2 text-xs uppercase tracking-widest mt-[2px]'>New note</p>
+                      </div>
+                    )
+                  }
                 </a>
-                <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/>
+                <div className="!bg-gray-600 h-[1px] w-[2.50rem] my-3 mx-auto" />
                 <a 
-                  className="flex items-center justify-center  hover:bg-gray-900 px-[1.9rem] py-3 rounded" 
+                  className="py-2 rounded px-6" 
                   onClick={() => setOpenLabelModal(true)}
                 >
-                  <div className="flex flex-row space-x-2 text-gray-300 cursor-pointer">
-                    <BsTagFill className="text-gray-300" size={20} />
-                    <p className='my-auto text-xs uppercase tracking-widest'>Labels</p>
+                  <div className="flex flex-row space-x-2 cursor-pointer">
+                    <BsTagFill size={20} />
+                    <p className='ml-2 text-[13px] uppercase tracking-widest'>Labels</p>
                   </div>
                 </a>
-                <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/>
-                <button
-                  className="flex items-center justify-center w-16 h-12 hover:bg-gray-700 disabled:!bg-transparent disabled:cursor-not-allowed"
+                <div className="!bg-gray-600 h-[1px] w-[2.50rem] my-3 mx-auto"/>
+                {/* <button
+                  className="w-16 h-12 hover:bg-gray-700 disabled:!bg-transparent disabled:cursor-not-allowed"
                   disabled={true}
                 >
                   <div className="flex flex-row text-gray-400">
@@ -291,7 +191,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 </button>
                 <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/>
                 <button
-                  className="flex items-center justify-center w-16 h-12 hover:bg-gray-700 disabled:!bg-transparent disabled:cursor-not-allowed"
+                  className="w-16 h-12 hover:bg-gray-700 disabled:!bg-transparent disabled:cursor-not-allowed"
                   disabled={true}
                 >
                   <div className="flex flex-row text-gray-400">
@@ -299,20 +199,17 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                     <p className='ml-2 my-auto text-xs uppercase tracking-widest'>Trash</p>
                   </div>
                 </button>
-                <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/>
+                <div className="!bg-gray-600 h-[1px] w-[20%] rounded-full my-2"/> */}
                 <button
-                  className="flex items-center justify-center hover:bg-gray-700 px-[1.79rem] py-3 rounded text-gray-300"
+                  className="py-2 rounded px-6"
                   onClick={() => setOpenSettingsModal(true)}
                 >
                   <div className="flex flex-row">
-                    <BsGearWide size={22} />
-                    <p className='ml-2 my-auto text-xs uppercase tracking-widest'>Settings</p>
+                    <BsGearWide size={20} />
+                    <p className='ml-2 text-[13px] uppercase tracking-widest'>Settings</p>
                   </div>
                 </button>
               </div>
-            </div>
-            <div className="absolute bottom-3 left-10">
-              <img src={logo} className='w-16 h-6' />
             </div>
           </motion.div>
         )

@@ -265,7 +265,7 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
 
     return (
         <a 
-            className={`flex flex-wrap ${idx === notes.length - 1 && "mb-48"}`} 
+            className={`flex flex-wrap cursor-pointer ${idx === notes.length - 1 && "mb-48"}`} 
             onClick={() => handleNoteClick(_id)} 
             key={_id}
         >

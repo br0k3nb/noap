@@ -1,7 +1,9 @@
 import type { LexicalEditor, NodeKey, TextNode, ElementNode } from "lexical";
+import type { LanguageNameWithIcon } from "../../../../../../datasets/code_language_maps";
+
 import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction, useContext } from "react";
 
-import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, CODE_LANGUAGE_MAP, getLanguageFriendlyName } from "@lexical/code";
+import { $createCodeNode, $isCodeNode, getLanguageFriendlyName } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { 
   $isListNode, 
@@ -18,8 +20,7 @@ import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode"
 import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import { $createHeadingNode, $createQuoteNode, $isHeadingNode, HeadingTagType } from "@lexical/rich-text";
 import { 
-  $getSelectionStyleValueForProperty, 
-  $isParentElementRTL, 
+  $getSelectionStyleValueForProperty,
   $patchStyleText,
   $selectAll, 
   $setBlocksType 
@@ -94,7 +95,11 @@ import rightAlignIcon from '../../images/icons/text-right.svg';
 import justifyAlignIcon from '../../images/icons/justify.svg';
 import outdentIcon from '../../images/icons/outdent.svg';
 import indentIcon from '../../images/icons/indent.svg';
+import twitterIcon from '../../images/icons/tweet.svg';
+import youtubeIcon from '../../images/icons/youtube.svg';
+import figmaIcon from '../../images/icons/figma.svg';
 
+import CODE_LANGUAGE_FRIENDLY_NAME_MAP, { CODE_LANGUAGE_MAP } from '../../../../../../datasets/code_language_maps';
 import useUpdateViewport from "../../../../../../hooks/useUpdateViewport";
 import { UserDataCtx } from "../../../../../../context/UserDataContext";
 
@@ -113,12 +118,10 @@ const blockTypeToBlockName = {
   quote: "Quote",
 };
 
-function getCodeLanguageOptions(): [string, string][] {
-  const options: [string, string][] = [];
+function getCodeLanguageOptions(): [string, LanguageNameWithIcon][] {
+  const options: [string, LanguageNameWithIcon][] = [];
 
-  for (const [lang, friendlyName] of Object.entries(
-    CODE_LANGUAGE_FRIENDLY_NAME_MAP
-  )) {
+  for (const [lang, friendlyName] of Object.entries(CODE_LANGUAGE_FRIENDLY_NAME_MAP)) {
     options.push([lang, friendlyName]);
   }
 
@@ -237,7 +240,7 @@ function BlockFormatDropDown({
     }
   };
 
-  const default_dropdown_item_classname = "rounded-lg !w-[9.90rem] hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]";
+  const default_dropdown_item_classname = "rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]";
 
   const userAgent = navigator.userAgent;
   let browserName;
@@ -257,7 +260,6 @@ function BlockFormatDropDown({
       buttonClassName="toolbar-item block-controls"
       buttonIconClassName={`icon ${theme === 'dark' && "comp-picker"} ${blockType}`}
       buttonLabel={blockTypeToBlockName[blockType]}
-      buttonAriaLabel="Formatting options for text style"
     >
       <div className="my-2">
         <DropDownItem 
@@ -497,52 +499,49 @@ export default function ToolbarPlugin() {
   const pervElKeyFontColor = useRef<null | string>(null);
 
   const handleUpdateFontFamily = (fontFamily: string) => {
-    // editor.update(() => {
-    //   const selection = $getSelection();
+    editor.update(() => {
+      const selection = $getSelection();
 
-    //   if ($isRangeSelection(selection)) {
-    //     const node = getSelectedNode(selection);
+      if ($isRangeSelection(selection)) {
+        const node = getSelectedNode(selection);
         
-    //     if(pervElKeyFontFamily.current !== node.__key) {
-    //       // setTimeout(() => {
-    //         // if(node.__text?.length === 1) selection.focus.offset = 0;
-            
-    //       // }, 300);
+        if(pervElKeyFontFamily.current !== node.__key) {
+          if(node.__text?.length === 1) selection.focus.offset = 0;
 
-    //       $patchStyleText(selection, { ["font-family"] : fontFamily });
+          $patchStyleText(selection, { ["font-family"] : fontFamily });
 
-    //       // if(selection.focus.offset !== selection.anchor.offset) {
-    //       //   selection.focus.offset = selection.focus.offset + 1;
-    //       //   selection.anchor.offset = selection.anchor.offset + 1;
-    //       // }
-    //     }
+          if(selection.focus.offset !== selection.anchor.offset) {
+            selection.focus.offset = selection.focus.offset + 1;
+            selection.anchor.offset = selection.anchor.offset + 1;
+          }
+        }
 
-    //     pervElKeyFontFamily.current = node.__key;
-    //   }
-    // });
+        pervElKeyFontFamily.current = node.__key;
+      }
+    });
   };
 
   const handleUpdateFontColor = (fontFamily: string) => {
-    // editor.update(() => {
-    //   const selection = $getSelection();
+    editor.update(() => {
+      const selection = $getSelection();
 
-    //   if ($isRangeSelection(selection)) {
-    //     const node = getSelectedNode(selection);
+      if ($isRangeSelection(selection)) {
+        const node = getSelectedNode(selection);
         
-    //     if(pervElKeyFontColor.current !== node.__key) {
-    //       // if(node.__text?.length === 1) selection.focus.offset = 0;
+        if(pervElKeyFontColor.current !== node.__key) {
+          if(node.__text?.length === 1) selection.focus.offset = 0;
 
-    //       $patchStyleText(selection, { color : fontFamily });
+          $patchStyleText(selection, { color : fontFamily });
 
-    //       // if(selection.focus.offset !== selection.anchor.offset) {
-    //       //   selection.focus.offset = selection.focus.offset + 1;
-    //       //   selection.anchor.offset = selection.anchor.offset + 1;
-    //       // }
-    //     }
+          if(selection.focus.offset !== selection.anchor.offset) {
+            selection.focus.offset = selection.focus.offset + 1;
+            selection.anchor.offset = selection.anchor.offset + 1;
+          }
+        }
 
-    //     pervElKeyFontColor.current = node.__key;
-    //   }
-    // });
+        pervElKeyFontColor.current = node.__key;
+      }
+    });
   };
 
   const updateToolbar = useCallback(() => {
@@ -824,6 +823,22 @@ export default function ToolbarPlugin() {
   if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
   else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
+  const customCodeButtonLabel = (
+    <div className="px-2 flex flex-row space-x-2 text-gray-900 dark:text-gray-300">
+      {CODE_LANGUAGE_FRIENDLY_NAME_MAP[codeLanguage] && (
+        <>
+          <img
+            src={CODE_LANGUAGE_FRIENDLY_NAME_MAP[codeLanguage].icon}
+            className={`
+              w-5 h-5 ${((codeLanguage === "plain" || codeLanguage === "markdown") && theme === "dark") && "comp-picker"}
+            `}
+          />
+          <span className="text text-[14px]">{CODE_LANGUAGE_FRIENDLY_NAME_MAP[codeLanguage].name}</span>
+        </>
+      )}
+    </div>
+  );
+
   return (
     <div  
       className="!z-40 !relative toolbar !h-[2.50rem] mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#ffffff] dark:text-gray-50 border border-transparent !border-r-0 !border-b-stone-300 dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
@@ -862,22 +877,40 @@ export default function ToolbarPlugin() {
       )}
       {blockType === "code" ? (
         <DropDown
+          useCustomButton={true}
           disabled={!isEditable}
+          customButtonLabel={customCodeButtonLabel}
           buttonClassName="toolbar-item code-language"
+          customButtonLabelClassName={"border-none !h-10"}
           buttonLabel={getLanguageFriendlyName(codeLanguage)}
-          buttonAriaLabel="Select language"
+          modalClassName={`
+            w-40 h-72 overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
+            ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
+          `}
         >
-          {CODE_LANGUAGE_OPTIONS.map(([value, name]) => {
-            return (
-              <DropDownItem
-                className={`item ${dropDownActiveClass(value === codeLanguage)}`}
-                onClick={() => onCodeLanguageSelect(value)}
-                key={value}
-              >
-                <span className="text">{name}</span>
-              </DropDownItem>
-            );
-          })}
+          <div className="my-2">
+            {CODE_LANGUAGE_OPTIONS.map(([value, langObj], index) => {
+              return (
+                <div key={value}>
+                  <DropDownItem
+                    className={`${dropDownActiveClass(value === codeLanguage)} rounded-lg !w-[8.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[8px]`}
+                    onClick={() => onCodeLanguageSelect(value)}
+                  >
+                    <div className="px-[9px] flex flex-row justify-start space-x-2 text-gray-900 dark:text-gray-300">
+                      <img 
+                        src={langObj.icon} 
+                        className={`w-6 h-6 ${((value === "plain" || value === "markdown") && theme === "dark") && "comp-picker"}`}
+                      />
+                      <span className=" mt-[2px]">{langObj.name}</span>
+                    </div>
+                  </DropDownItem>
+                  {index !== CODE_LANGUAGE_OPTIONS.length - 1 && (
+                    <div className="px-3 h-[1px] border border-transparent border-t-gray-600 !w-[8.50rem] mx-auto" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </DropDown>
       ) : (
         <>
@@ -977,57 +1010,64 @@ export default function ToolbarPlugin() {
             title="bg color"
           />
           <DropDown
-            modalClassName="!w-[200px]"     
+            modalClassName={`
+             w-[191px] overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
+             ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
+           `}     
             disabled={!isEditable}
             buttonClassName="toolbar-item spaced"
             buttonLabel=""
-            buttonAriaLabel="Formatting options for additional text styles"
             buttonIconClassName={`icon dropdown-more ${theme === 'dark' && 'comp-picker'}`}
           >
-            <DropDownItem
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")}
-              className={"rounded-lg !w-[12.36rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isStrikethrough)}
-              title="Strikethrough"
-              aria-label="Format text with a strikethrough"
-            >
-              <div className="flex flex-row space-x-2 ml-3">
-                <img className="comp-picker w-[20px] h-5 mt-[1px]" src={strikethroughIcon}/>
-                <span className="text-[15px] text-gray-900 dark:text-gray-300">Strikethrough</span>
-              </div>
-            </DropDownItem>
-            <DropDownItem
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript")}
-              className={"rounded-lg !w-[12.36rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isSubscript)}
-              title="Subscript"
-              aria-label="Format text with a subscript"
-            >
-              <div className="flex flex-row space-x-2 ml-3">
-                <img className="comp-picker w-[20px] h-5 mt-[1px]" src={subscriptIcon} />
-                <span className="text-[15px] text-gray-900 dark:text-gray-300">Subscript</span>
-              </div>
-            </DropDownItem>
-            <DropDownItem
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript")}
-              className={"rounded-lg !w-[12.36rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isSuperscript)}
-              title="Superscript"
-              aria-label="Format text with a superscript"
-            > 
-              <div className="flex flex-row space-x-2 ml-3">
-                <img className="comp-picker w-[20px] h-5 mt-[1px]" src={superscriptIcon} />
-                <span className="text-[15px] text-gray-900 dark:text-gray-300">Superscript</span>
-              </div>
-            </DropDownItem>
-            <DropDownItem 
-              onClick={clearFormatting} 
-              className="rounded-lg !w-[12.36rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]" 
-              title="Clear text formatting" 
-              aria-label="Clear all text formatting"
-            >
-              <div className="flex flex-row space-x-2 ml-3">
-                <img className="comp-picker w-[19px] h-[1.1rem] mt-[3px]" src={clearFormattingIcon} />
-                <span className="text-[15px] text-gray-900 dark:text-gray-300">Clear Formatting</span>
-              </div>
-            </DropDownItem>
+            <div className="my-2">
+              <DropDownItem
+                onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")}
+                className={"rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isStrikethrough)}
+                title="Strikethrough"
+                aria-label="Format text with a strikethrough"
+              >
+                <div className="flex flex-row space-x-2 ml-3">
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={strikethroughIcon}/>
+                  <span className="text-[15px] text-gray-900 dark:text-gray-300">Strikethrough</span>
+                </div>
+              </DropDownItem>
+              <DropDownItem
+                onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript")}
+                className={"rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isSubscript)}
+                title="Subscript"
+                aria-label="Format text with a subscript"
+              >
+                <div className="flex flex-row space-x-2 ml-3">
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={subscriptIcon} />
+                  <span className="text-[15px] text-gray-900 dark:text-gray-300">Subscript</span>
+                </div>
+              </DropDownItem>
+              <DropDownItem
+                onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript")}
+                className={"rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isSuperscript)}
+                title="Superscript"
+                aria-label="Format text with a superscript"
+              > 
+                <div className="flex flex-row space-x-2 ml-3">
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={superscriptIcon} />
+                  <span className="text-[15px] text-gray-900 dark:text-gray-300">Superscript</span>
+                </div>
+              </DropDownItem>
+              <DropDownItem 
+                onClick={clearFormatting} 
+                className="rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                title="Clear text formatting" 
+                aria-label="Clear all text formatting"
+              >
+                <div className="flex flex-row space-x-2 ml-3">                
+                  <img 
+                    className={`${theme === 'dark' && 'comp-picker'} w-[19px] h-[1.1rem] mt-[3px]`} 
+                    src={clearFormattingIcon} 
+                  />
+                  <span className="text-[15px] text-gray-900 dark:text-gray-300">Clear Formatting</span>
+                </div>
+              </DropDownItem>
+            </div>
           </DropDown>
           <Divider />
           <DropDown
@@ -1038,34 +1078,33 @@ export default function ToolbarPlugin() {
             `}
             buttonClassName="toolbar-item spaced"
             buttonLabel="Insert"
-            buttonAriaLabel="Insert specialized editor node"
             buttonIconClassName={`icon plus ${theme === 'dark' && 'comp-picker'}`}
           >
             <div className="my-2">
               <DropDownItem 
-                className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                 onClick={() => activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)} 
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className="comp-picker w-[20px] h-5 mt-[1px]" src={horizontalRuleIcon} />
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={horizontalRuleIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Horizontal Rule</span>
                 </div>
               </DropDownItem>
               <DropDownItem
-                className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                 onClick={() => activeEditor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined)}
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className="comp-picker w-[20px] h-5 mt-[1px]" src={excalidrawIcon} />
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={excalidrawIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Excalidraw</span>
                 </div>
               </DropDownItem>
               <DropDownItem
-                className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                 onClick={() => showModal('Insert Image', (onClose) => <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />)}
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className="comp-picker w-[20px] h-5 mt-[1px]" src={imageIcon} />
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={imageIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Image</span>
                 </div>
               </DropDownItem>
@@ -1074,16 +1113,21 @@ export default function ToolbarPlugin() {
                 onClick={() => showModal("Insert Poll", (onClose) => <InsertPollDialog activeEditor={activeEditor} onClose={onClose} />)}
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className="comp-picker w-[20px] h-5 mt-[1px]" src={poolIcon} />
+                  <img className={`${theme !== 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={poolIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Poll</span>
                 </div>
               </DropDownItem> */}
               <DropDownItem
-                className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                onClick={() => showModal("Insert Equation", (onClose) => <InsertEquationDialog activeEditor={activeEditor} onClose={onClose} />)}
+                className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                onClick={() => {
+                  showModal(
+                    "Insert Equation", 
+                    (onClose) => <InsertEquationDialog activeEditor={activeEditor} onClose={onClose} />
+                  )
+                }}
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                <img className="comp-picker w-[20px] h-5 mt-[1px]" src={equationIcon} />
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={equationIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Equation</span>
                 </div>
               </DropDownItem>
@@ -1098,27 +1142,30 @@ export default function ToolbarPlugin() {
                 }}
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className="comp-picker w-[20px] h-5 mt-[1px]" src={stickyIcon} />
+                  <img className={`${theme !== 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={stickyIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Sticky Note</span>
                 </div>
               </DropDownItem> */}
               <DropDownItem 
-                className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                 onClick={() => editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined)} 
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className="comp-picker w-[20px] h-5 mt-[1px]" src={collapsibleIcon} />
+                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={collapsibleIcon} />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Collapsible container</span>
                 </div>
               </DropDownItem>
-              {EmbedConfigs.map((embedConfig) => (
+              {EmbedConfigs.map((embedConfig, index: number) => (
                 <DropDownItem
                   key={embedConfig.type}
-                  className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                   onClick={() => activeEditor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type)}
                 >
                   <div className="flex flex-row space-x-2 ml-3">
-                    {embedConfig.icon}
+                    <img 
+                      className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} 
+                      src={!index ? twitterIcon : index === 1 ? youtubeIcon : figmaIcon} 
+                    />
                     <span className="text-[15px] text-gray-900 dark:text-gray-300">{embedConfig.contentName}</span>
                   </div>
                 </DropDownItem>
@@ -1136,43 +1183,42 @@ export default function ToolbarPlugin() {
         `}
         buttonLabel="Align"
         buttonIconClassName={`icon left-align ${theme === 'dark' && 'comp-picker'}`}
-        buttonClassName="toolbar-item spaced alignment"
-        buttonAriaLabel="Formatting options for text alignment"
+        buttonClassName="toolbar-item spaced alignment"        
       >
         <div className="my-2">
           <DropDownItem 
-            className="rounded-lg !w-[9.90rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+            className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
             onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")} 
           >
             <div className="flex flex-row space-x-2 ml-3">
-              <img className="comp-picker w-[20px] h-5 mt-[1px]" src={leftAlignIcon} />
+              <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={leftAlignIcon} />
               <span className="text-[15px] text-gray-900 dark:text-gray-300">Left Align</span>
             </div>
           </DropDownItem>
           <DropDownItem 
-            className="rounded-lg !w-[9.90rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+            className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
             onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")} 
           >
             <div className="flex flex-row space-x-2 ml-3">
-              <img className="comp-picker w-[20px] h-5 mt-[1px]" src={centerAlignIcon}/>
+              <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={centerAlignIcon}/>
               <span className="text-[15px] text-gray-900 dark:text-gray-300">Center Align</span>
             </div>
           </DropDownItem>
           <DropDownItem 
-            className="rounded-lg !w-[9.90rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+            className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
             onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")} 
           >
             <div className="flex flex-row space-x-2 ml-3">
-              <img className="comp-picker w-[20px] h-5 mt-[1px]" src={rightAlignIcon}/>
+              <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={rightAlignIcon}/>
               <span className="text-[15px] text-gray-900 dark:text-gray-300">Right Align</span>
             </div>
           </DropDownItem>
           <DropDownItem 
-            className="rounded-lg !w-[9.90rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+            className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
             onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")} 
           >
             <div className="flex flex-row space-x-2 ml-3">
-              <img className="comp-picker w-[20px] h-5 mt-[1.5px]" src={justifyAlignIcon}/>
+              <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1.5px]`} src={justifyAlignIcon}/>
               <span className="text-[15px] text-gray-900 dark:text-gray-300">Justify Align</span>
             </div>
           </DropDownItem>
@@ -1180,20 +1226,20 @@ export default function ToolbarPlugin() {
             <Divider />
           </div>
           <DropDownItem 
-            className="rounded-lg !w-[9.90rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+            className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
             onClick={() => activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)} 
           >
             <div className="flex flex-row space-x-2 ml-3">
-              <img className="comp-picker w-[20px] h-5 mt-[1px]" src={outdentIcon} />
+              <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={outdentIcon} />
               <span className="text-[15px] text-gray-900 dark:text-gray-300">Outdent</span>
             </div>
           </DropDownItem>
           <DropDownItem 
-            className="rounded-lg !w-[9.90rem] hover:!bg-gray-700 dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+            className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
             onClick={() => activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)} 
           >
             <div className="flex flex-row space-x-2 ml-3">
-              <img className="comp-picker w-[20px] h-5 mt-[2px]" src={indentIcon} />
+              <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[2px]`} src={indentIcon} />
               <span className="text-[15px] text-gray-900 dark:text-gray-300">Indent</span>
             </div>
           </DropDownItem>

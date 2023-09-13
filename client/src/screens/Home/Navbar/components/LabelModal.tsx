@@ -124,8 +124,8 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
         }
         
         try {
-            const deleteL = await api.delete(`/label/delete/${selectedLabel}`)
-            toastAlert({ icon: 'success', title: `${deleteL.data.message}`, timer: 3000 });
+            await api.delete(`/label/delete/${selectedLabel}`);
+            toastAlert({ icon: 'success', title: "Label deleted!", timer: 3000 });
             setLoader(false);
             closeDeleteModal();
             
@@ -165,7 +165,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
         }        
         
         try {
-            const editL = await api.patch(`/label/edit/${userId}`, {
+            await api.patch(`/label/edit/${userId}`, {
                 name: editName,
                 _id: editId,
                 color,
@@ -174,7 +174,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
 
             setLoader(false);
             fetchLabels();
-            toastAlert({ icon: 'success', title: `${editL.data.message}`, timer: 3000 });
+            toastAlert({ icon: 'success', title: "Label updated!", timer: 3000 });
         } catch (err: any) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
@@ -190,7 +190,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
             showGoBackButton: showGoBackButton,
             goBackButtonAction: goBackButtonAction.action,
             titleWrapperClassName: "px-6",
-            modalWrapperClassName: `xxs:!w-[18rem] !px-0 !w-[23rem] max-h-none overflow-hidden`
+            modalWrapperClassName: `xxs:!w-[18rem] !px-0 !w-[23rem] max-h-[33.2rem] overflow-hidden`
         }
     };
 
@@ -213,16 +213,16 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                 <>
                     {!createLabel ? (
                         <>
-                            <div className="text-gray-300">
+                            <div className="dark:text-gray-300 text-gray-900">
                                 <div className="flex flex-row justify-between mb-3 px-6 my-4">
                                     <p className='text-base uppercase tracking-widest my-auto'>Your labels</p>
                                     <div className="flex flex-row space-x-2">
                                         <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                                             <BsFilter size={25}/> 
                                         </div>
-                                        <div className="tooltip tooltip-left text-gray-100 before:text-[15px]" data-tip="Search">
+                                        <div className="tooltip tooltip-left before:text-[15px]" data-tip="Search">
                                             <div 
-                                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
                                                 onClick={() => handleShowSearchBar()}
                                             >
                                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
@@ -236,7 +236,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                     className={`hidden ${showSearchBar && "!grid"} px-6`}
                                 >
                                     <input
-                                        className="sign-text-inputs bg-stone-900 text-gray-300 border border-gray-600    h-10 mb-2"
+                                        className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 border border-gray-600 h-10 mb-2 shadow-none"
                                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                                         placeholder="Search..."
                                         value={searchLabel}
@@ -245,7 +245,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                 {labels && labels?.length > 0 ? (
                                     <>
                                         {isFetching ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} /> ) : 
-                                            (<div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] !min-h-[9rem] max-h-[14.9rem] xxs:!max-h-[10.5rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
+                                            (<div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                                                 {labels?.map((chip: any, idx: number) => {
                                                     const { color, fontColor, name, type } = chip;
 
@@ -276,7 +276,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                                         </label>
                                                                         <ul 
                                                                             tabIndex={0} 
-                                                                            className="dropdown-content menu shadow rounded-box w-36 !bg-gray-900 dark:!bg-[#17181b] border border-gray-600"
+                                                                            className="dropdown-content menu shadow rounded-box w-36 dark:!bg-[#17181b] border border-gray-600"
                                                                             style={idx !== showDropDown ? { display: 'none' }: undefined}
                                                                         >
                                                                             <li className="text-xs uppercase tracking-widest">
@@ -300,33 +300,35 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                         )}
                                     </>
                                 ) : (
-                                    <div className="flex flex-col space-y-4 items-center justify-center my-5 text-gray-500">
+                                    <div className="flex flex-col space-y-4 items-center justify-center h-[12.8rem] text-gray-500">
                                         <AiFillTags size={60} className='!mt-5'/>
                                         <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>No labels were found!</p>
                                     </div>
                                 )}
                             </div>
-                            <div className="text-gray-300 px-5 my-1">
-                                <div className=" !bg-gray-800 dark:!bg-[#0f1011] flex !justify-between">
+                            <div className="px-5 my-1">
+                                <div className="dark:!bg-[#0f1011] flex !justify-between">
                                     <button 
-                                        className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                         disabled={pageLabel === 1 ? true : false}
                                         onClick={() => setPageLabel(pageLabel - 1)}
                                     > 
-                                        <MdKeyboardDoubleArrowLeft size={18} />
+                                        <MdKeyboardDoubleArrowLeft />
                                     </button>
-                                    <p className="!bg-gray-800 dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
+                                    <p className="dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">
+                                        Page {pageLabel}
+                                    </p>
                                     <button 
-                                        className="btn !bg-gray-800 dark:!bg-[#0f1011] hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                        className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                         disabled={hasNextPageLabel ? false : true}
                                         onClick={() => setPageLabel(pageLabel + 1)}
                                     >
-                                        <MdKeyboardDoubleArrowRight size={18} />
+                                        <MdKeyboardDoubleArrowRight />
                                     </button>
                                 </div>
                             </div>
                             <div className="flex justify-center items-center border border-transparent border-t-gray-600">
-                                <button  className='text-sm uppercase text-gray-200 rounded-full mt-5' onClick={() => onAddNewLabelClick()}>
+                                <button  className='text-sm uppercase rounded-full mt-5' onClick={() => onAddNewLabelClick()}>
                                     <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
                                         Add a new label
                                     </span>
@@ -335,13 +337,13 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                         </>
                     ) : createLabel && createLabel !== 'edit' ? (
                         <div className="mt-5">
-                            <div className="text-gray-200 px-6 mb-3">
+                            <div className="px-6 mb-3">
                                 <p className='text-lg tracking-tight font-light'>
                                     Add a new label
                                 </p>
                             </div>
                             <div className="flex flex-col px-6 space-y-3">
-                                <p className='text-sm text-gray-400 !mb-4 uppercase tracking-widest'>
+                                <p className='text-sm text-gray-500 !mb-4 uppercase tracking-widest'>
                                     First, select the type of the label
                                 </p>
 
@@ -349,7 +351,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                     <input 
                                         type="radio" 
                                         name="radio-1" 
-                                        className="radio !bg-gray-600 !border-gray-400" 
+                                        className="radio bg-[#eeeff1] dark:bg-gray-600 border-gray-700 dark:border-gray-500" 
                                         onClick={() => setSelectedStyle('default')}
                                     />
                                     <div className="ml-6">
@@ -365,7 +367,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                     <input 
                                         type="radio" 
                                         name="radio-1" 
-                                        className="radio !bg-gray-600 !border-gray-400"
+                                        className="radio bg-[#eeeff1] dark:bg-gray-600 border-gray-700 dark:border-gray-500"
                                         onClick={() => setSelectedStyle('outlined')}
                                     />
                                     <div className="ml-6">
@@ -379,7 +381,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                 </div>
                             </div>
                             <div className={`mt-6 !mb-0 `}>
-                                <p className='text-sm text-gray-400 !mb-4 uppercase tracking-widest px-6'>
+                                <p className='text-sm text-gray-500 !mb-4 uppercase tracking-widest px-6'>
                                     Now, enter the label details
                                 </p>
                                 <div className="mt-2 flex flex-col space-y-4">
@@ -389,15 +391,15 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                 {errors.name?.message as string}
                                             </p>
                                             <input
-                                                className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
+                                                className={`sign-text-inputs dark:bg-stone-900 border border-gray-600 shadow-none active:border ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
                                                 placeholder="Name"
                                                 {...register("name", { required: "Name is required!" })}
                                             />   
                                     
-                                            <div className="flex flex-col space-y-3 mt-5 !text-gray-400">
+                                            <div className="flex flex-col space-y-3 mt-5">
                                                 <label className='text-xs uppercase tracking-widest'>
                                                     Pick a color: {""} 
-                                                    <button type='button' className='rounded-full ml-1 border border-gray-400 w-fit py-[1px]' style={{ backgroundColor: color }}>
+                                                    <button type='button' className='rounded-full ml-1 border dark:border-gray-400 border-gray-900 w-fit py-[1px]' style={{ backgroundColor: color }}>
                                                         <span className='text-gray-900 px-8' onClick={() => setShowColorPicker('color')} style={{ color }} />
                                                     </button>
                                                 </label>
@@ -408,8 +410,14 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                         : selectedStyle === 'default' && window.innerWidth > 639 ? { top: '16rem' } : undefined }
                                                     >
                                                         <HexColorPicker color={color} onChange={setColor} />
-                                                        <button type='button' className='text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4'>
-                                                            <span className='xxs:py-2 py-1 rounded-full px-10 bg-black text-gray-100' onClick={() => setShowColorPicker('')}>
+                                                        <button 
+                                                            type='button'
+                                                            className='text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4'
+                                                        >
+                                                            <span 
+                                                                className='xxs:py-2 py-1 rounded-full px-10 bg-black text-gray-100' 
+                                                                onClick={() => setShowColorPicker('')}
+                                                            >
                                                                 close
                                                             </span>
                                                         </button>
@@ -418,8 +426,16 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                 {selectedStyle === 'default' && (
                                                     <label className='text-xs uppercase tracking-widest'>
                                                         Pick a text color: {""} 
-                                                        <button type='button' className='rounded-full ml-1 border border-gray-400 w-fit py-[1px]' style={{ backgroundColor: fontColor }}>
-                                                            <span className='px-8' style={{ color: fontColor }} onClick={() => setShowColorPicker('fontColor')} />
+                                                        <button 
+                                                            type='button' 
+                                                            className='rounded-full ml-1 border dark:border-gray-400 border-gray-900 w-fit py-[1px]' 
+                                                            style={{ backgroundColor: fontColor }}
+                                                        >
+                                                            <span 
+                                                                className='px-8' 
+                                                                style={{ color: fontColor }} 
+                                                                onClick={() => setShowColorPicker('fontColor')} 
+                                                            />
                                                         </button>
                                                     </label>
                                                 )}
@@ -431,7 +447,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                     >
                                                         <HexColorPicker color={fontColor} onChange={setFontColor} />
                                                         <button type='button' className='text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4'>
-                                                            <span className='xxs:py-2 py-1 bg-black rounded-full px-10' onClick={() => setShowColorPicker('')}>
+                                                            <span className='xxs:py-2 py-1 bg-black rounded-full px-10 text-white' onClick={() => setShowColorPicker('')}>
                                                                 close
                                                             </span>
                                                         </button>
@@ -439,7 +455,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className='mt-5 text-gray-100 !px-0'>
+                                        <div className='mt-5 !px-0'>
                                             <div className='border border-transparent border-t-gray-600 w-full flex justify-center items-center pt-3'>
                                                 <button 
                                                     type={loader ? 'button' : 'submit'}
@@ -455,16 +471,16 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                         </div>
                     ) : (
                         <div className="mt-5">
-                            <div className="text-gray-200 px-6 mb-3">
+                            <div className="px-6 mb-3">
                                 <p className='text-lg tracking-tight font-light'>Edit label</p>
                             </div>
                             <div className="flex flex-col px-6 space-y-3">
-                                <p className='text-sm text-gray-400 !mb-4 uppercase tracking-widest'>First, select the type of the label</p>
+                                <p className='text-sm text-gray-500 !mb-4 uppercase tracking-widest'>First, select the type of the label</p>
                                 <div className="flex">
                                     <input 
                                         type="radio" 
                                         name="radio-1" 
-                                        className="radio !bg-gray-600 !border-gray-400" 
+                                        className="radio bg-[#eeeff1] dark:bg-gray-600 border-gray-700 dark:border-gray-500" 
                                         onClick={() => setSelectedStyle('default')}
                                     />
                                     <div className="ml-6">
@@ -477,7 +493,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                     <input 
                                         type="radio" 
                                         name="radio-1" 
-                                        className="radio !bg-gray-600 !border-gray-400" 
+                                        className="radio bg-[#eeeff1] dark:bg-gray-600 border-gray-700 dark:border-gray-500" 
                                         onClick={() => setSelectedStyle('outlined')}
                                     />
                                     <div className="ml-6">
@@ -488,7 +504,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                 </div>
                             </div>
                             <div className="mt-6 !mb-0">
-                                <p className='text-sm text-gray-400 !mb-4 uppercase tracking-widest px-6'>Now, enter the label details</p>
+                                <p className='text-sm text-gray-500 !mb-4 uppercase tracking-widest px-6'>Now, enter the label details</p>
                                 <div className="mt-2 flex flex-col space-y-4">
                                     <form noValidate onSubmit={handleSubmit(editLabel)}>
                                         <div className="px-6">
@@ -496,14 +512,18 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                 {errors.editName?.message as string}
                                             </p>
                                             <input
-                                                className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
+                                                className={`sign-text-inputs dark:bg-stone-900 shadow-none border border-gray-500 ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
                                                 placeholder="Name"
                                                 {...register("editName", { required: "Name is required!" })}
                                             />   
-                                            <div className="flex flex-col space-y-3 mt-5 !text-gray-400">
+                                            <div className="flex flex-col space-y-3 mt-5">
                                                 <label className='text-xs uppercase tracking-widest'>
                                                     Pick a color: {""} 
-                                                    <button type="button" className="rounded-full ml-1 border border-gray-400 w-fit py-[1px]" style={{ backgroundColor: color }}>
+                                                    <button 
+                                                        type="button" 
+                                                        className="rounded-full ml-1 border dark:border-gray-400 border-gray-900 w-fit py-[1px]"
+                                                        style={{ backgroundColor: color }}
+                                                    >
                                                         <span className='text-gray-900 px-8' onClick={() => setShowColorPicker('color')} style={{ color }} />
                                                     </button>
                                                 </label>
@@ -514,7 +534,10 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                         : selectedStyle === 'default' && window.innerWidth > 639 ? { top: '16rem' } : undefined }
                                                     >
                                                         <HexColorPicker color={color} onChange={setColor} />
-                                                        <button type="button" className="text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4">
+                                                        <button 
+                                                            type="button"
+                                                            className="text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4"
+                                                        >
                                                             <span className='xxs:py-2 py-1 rounded-full px-10 bg-black text-gray-100' onClick={() => setShowColorPicker('')}>
                                                                 close
                                                             </span>
@@ -524,20 +547,33 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                 {selectedStyle === 'default' && (
                                                     <label className='text-xs uppercase tracking-widest'>
                                                         Pick a text color: {""} 
-                                                        <button type="button" className='rounded-full ml-1 border border-gray-400 w-fit py-[1px]' style={{ backgroundColor: fontColor }}>
-                                                            <span className="px-8" onClick={() => setShowColorPicker('fontColor')} style={{ color: fontColor }} />
+                                                        <button 
+                                                            type="button" 
+                                                            className='rounded-full ml-1 border dark:border-gray-400 border-gray-900 w-fit py-[1px]' 
+                                                            style={{ backgroundColor: fontColor }}
+                                                        >
+                                                            <span 
+                                                                className="px-8" 
+                                                                onClick={() => setShowColorPicker('fontColor')} 
+                                                                style={{ color: fontColor }} 
+                                                            />
                                                         </button>
                                                     </label>
                                                 )}
                                                 {showColorPicker === 'fontColor' && (
                                                     <div 
                                                         className="absolute xxs:top-[18rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col"
-                                                        style={ selectedStyle !== 'default' && window.innerWidth <= 639 ? { top: '16rem'} 
-                                                        : selectedStyle !== 'default' && window.innerWidth > 639 ? { top: '14rem' } : undefined }
+                                                        style={ 
+                                                            selectedStyle !== 'default' && window.innerWidth <= 639 ? { top: '16rem'}
+                                                            : selectedStyle !== 'default' && window.innerWidth > 639 ? { top: '14rem' } : undefined
+                                                        }
                                                     >
                                                         <HexColorPicker color={fontColor} onChange={setFontColor} />
-                                                        <button className='text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4' type='button'>
-                                                            <span className='xxs:py-2 py-1 bg-black rounded-full px-10' onClick={() => setShowColorPicker('')}>
+                                                        <button 
+                                                            className='text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4' 
+                                                            type='button'
+                                                        >
+                                                            <span className='xxs:py-2 py-1 rounded-full px-10 bg-black text-gray-100' onClick={() => setShowColorPicker('')}>
                                                                 close
                                                             </span>
                                                         </button>
@@ -545,9 +581,12 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className='mt-5 text-gray-100 !px-0 border border-transparent border-t-gray-600 w-full flex justify-center items-center pt-3'>
-                                            <button  type={loader ? 'button' : 'submit'} className='text-sm uppercase tracking-widest rounded-full px-8 pt-2 transition-all hover:text-[15px] duration-500'>
-                                                {!loader ? ("Edit label"): (<SvgLoader options={{ showLoadingText: true }}/>)}
+                                        <div className='mt-5 !px-0 border border-transparent border-t-gray-600 w-full flex justify-center items-center pt-3'>
+                                            <button
+                                                type={loader ? 'button' : 'submit'} 
+                                                className='text-sm uppercase tracking-widest rounded-full px-8 pt-2 transition-all hover:text-[15px] duration-500'
+                                            >
+                                                {!loader ? "Edit label" : <SvgLoader options={{ showLoadingText: true }}/>}
                                             </button>
                                         </div>
                                     </form>
@@ -560,9 +599,14 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
             <ConfirmationModal
                 open={deleteModal}
                 setOpen={setDeleteModal}
-                deleteButtonAction={deleteLabel}
+                actionButtonFn={deleteLabel}
                 mainText='Are you sure you want to delete this label?'
-                options={{ loader, onClose: closeDeleteModal, modalWrapperClassName: "!w-96 xxs:!w-80", mainTextCustomClassName: "xxs:text-xs" }}
+                options={{ 
+                    loader,
+                    onClose: closeDeleteModal, 
+                    modalWrapperClassName: "!w-96 xxs:!w-80", 
+                    mainTextClassName: "xxs:text-xs" 
+                }}
             />
         </>
     )

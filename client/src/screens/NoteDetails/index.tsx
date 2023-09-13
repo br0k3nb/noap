@@ -99,7 +99,15 @@ export default function NoteDetails({
 
   const fullscreenChangeCallbackWasCalled = useRef(false);
 
-  useEffect(() => { resetNoteName({ name: note ? (note?.name) : (pinNote?.name) }) }, [note, pinNote]);
+  useEffect(() => { 
+    resetNoteName({ name: note ? (note?.name) : (pinNote?.name) });
+    setNoteSettings((prevNoteSettings) => {
+      return {
+        ...prevNoteSettings,
+        noteBackgroundColor: note ? note.settings?.noteBackgroundColor : pinNote ? pinNote?.settings.noteBackgroundColor : '',
+      }
+    });
+  }, [note, pinNote]);
 
   const controlRKeyPressListener = (e: KeyboardEvent) => {  
     if ((e.keyCode == 70 && e.ctrlKey) && selectedNote) {
@@ -270,9 +278,34 @@ export default function NoteDetails({
   };
   
   const handleChangeNoteBackground = async (bgNoteColor: string) => {
+    const noteId = note ? note._id : pinNote?._id;
+
     try {
-      await api.patch(`/settings/note-background-color/${userData._id}`, {
+      await api.patch(`/settings/note-background-color/${noteId}`, {
         noteBackgroundColor: bgNoteColor
+      });
+
+      if(note) note.settings.noteBackgroundColor = bgNoteColor;
+      else if (pinNote) pinNote.settings.noteBackgroundColor = bgNoteColor;
+
+      setNoteSettings((prevNoteSettings) => {
+        return {
+          ...prevNoteSettings,
+          noteBackgroundColor: bgNoteColor,
+        }
+      });
+
+      toastAlert({ icon: "success", title: "Updated!", timer: 2000 });
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    }
+  };
+
+  const handleApplyGlobalNoteBackground = async (bgNoteColor: string) => {
+    try {
+      await api.patch(`/settings/global-note-background-color/${userData._id}`, {
+        globalNoteBackgroundColor: bgNoteColor
       });
 
       setUserData((prevUserData: any) => {
@@ -280,7 +313,7 @@ export default function NoteDetails({
           ...prevUserData,
           settings: {
             ...prevUserData.settings,
-            noteBackgroundColor: bgNoteColor
+            globalNoteBackgroundColor: bgNoteColor
           }
         }
       });
@@ -362,8 +395,8 @@ export default function NoteDetails({
               </>
             )}
             <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-            <div className="dropdown hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px]">
-              <label tabIndex={0}>
+            <div className="dropdown hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px] cursor-pointer">
+              <label tabIndex={0} className="cursor-pointer">
                 <div
                   className="tooltip tooltip-right"
                   data-tip="Actions"
@@ -528,14 +561,14 @@ export default function NoteDetails({
           <ConfirmationModal
             open={open}
             setOpen={setOpen}
-            deleteButtonAction={removeNote}
+            actionButtonFn={removeNote}
             mainText="Are you sure you want to delete this note?"
             options={{
               alertComponentIcon: "warning",
               alertComponentText:
                 "Be aware that this action can not be undone!",
-              subTextCustomClassName: "px-6",
-              mainTextCustomClassName: "mb-5 text-xs",
+              subTextClassName: "px-6",
+              mainTextClassName: "mb-5 text-xs",
               modalWrapperClassName: "!w-96 xxs:!w-80 border border-gray-600",
             }}
           />
@@ -570,12 +603,12 @@ export default function NoteDetails({
                 </label>
                 <input 
                   id="notename"
-                  className="sign-text-inputs bg-[#898b8f] border border-gray-600 dark:bg-stone-900 text-gray-300 placeholder:text-gray-300 mt-2 mb-3"
+                  className="sign-text-inputs border border-gray-600 text-gray-900 dark:bg-stone-900 dark:text-gray-300 placeholder:text-gray-300 mt-2 mb-3 shadow-none"
                   type="text"
                   {...registerNoteName("name")}
                 />
                 <button 
-                  className="my-3 text-gray-300 rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+                  className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
                 >
                   {showLoader ? (
                     <p className="animate-pulse text-gray-300">Loading...</p>
@@ -595,10 +628,6 @@ export default function NoteDetails({
             }}
           >
             <div className="px-6 mt-5">            
-              <div className="flex flex-col space-y-2">
-                <p className="px-1 text-xs uppercase tracking-widest">
-                  Choose a color
-                </p>
                 <ColorPicker
                   disabled={false}
                   color={'#000000'}
@@ -606,9 +635,9 @@ export default function NoteDetails({
                   buttonIconClassName="icon font-color"
                   buttonAriaLabel="Formatting text color"
                   buttonClassName="toolbar-item color-picker"
-                  customOnClickButtonFn={handleChangeNoteBackground}
+                  applyNoteBackgroundFn={handleChangeNoteBackground}
+                  applyGlobalNoteBackgroundFn={handleApplyGlobalNoteBackground}
                 />
-              </div>
             </div>
           </Modal>
           <Modal

@@ -83,7 +83,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 >
                   <li>
                     <button
-                      className="hover:bg-transparent text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 transition-all duration-500 ease-in-out disabled:cursor-not-allowed dark:!bg-[#1c1d1e] disabled:dark:!bg-[#323232]"
+                      className="bg-[#ffffff] text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 disabled:dark:hover:text-gray-300 disabled:hover:text-gray-900 transition-all duration-500 ease-in-out disabled:cursor-not-allowed dark:!bg-[#1c1d1e] disabled:dark:!bg-[#323232]"
                       disabled={(!note?.labels || note?.labels.length === 0) && true}
                       onClick={() => setOpen(true)}
                     >
