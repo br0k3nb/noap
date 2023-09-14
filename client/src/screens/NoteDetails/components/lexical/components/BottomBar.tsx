@@ -62,20 +62,28 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
     const editorWidth = rootEditorDiv ? rootEditorDiv.clientWidth : 0;
 
     return (
-      <div className={`h-12 bg-gray-800 w-full fixed bottom-0 !z-50 border border-transparent border-t-gray-500 ${!showBottomBar && "hidden"}`}>
+      <div 
+        className={`
+          h-12 bg-[#ffffff] dark:!bg-[#0f1011] w-full fixed bottom-0 !z-50 border border-transparent border-t-stone-300 dark:border-t-[#404040]
+          ${!showBottomBar && "hidden"}
+        `}
+      >
         <div className="px-2 py-[0.50rem]">
           <div className="flex space-x-2">
             <div className="!mr-2">
               <div className="dropdown dropdown-top">
                 <label tabIndex={0}>
-                  <div className='tooltip tooltip-right' data-tip="Label actions">
-                    <MdOutlineSettings size={30} className="px-1 rotate-180 bg-gray-600 rounded-full mt-[1px] cursor-pointer hover:bg-gray-700 transition-all duration-300 ease-in-out"/>
+                  <div className='tooltip tooltip-right tooltip-right-color-controller' data-tip="Label actions">
+                    <MdOutlineSettings size={30} className="px-1 rotate-180 bg-[#d9dbde] hover:bg-[#c9c9c9] dark:!bg-[#202020] rounded-full mt-[1px] cursor-pointer transition-all duration-300 ease-in-out"/>
                   </div>
                 </label>
-                <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-60 !bg-gray-900 !z-50">
+                <ul 
+                  tabIndex={0} 
+                  className="dropdown-content menu shadow rounded-box w-60 bg-[#d9dbde] dark:!bg-[#1c1d1e] !z-50 border border-gray-600"
+                >
                   <li>
                     <button
-                      className="hover:bg-transparent text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 transition-all duration-500 ease-in-out disabled:cursor-not-allowed disabled:!bg-gray-900"
+                      className="bg-[#ffffff] text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 disabled:dark:hover:text-gray-300 disabled:hover:text-gray-900 transition-all duration-500 ease-in-out disabled:cursor-not-allowed dark:!bg-[#1c1d1e] disabled:dark:!bg-[#323232]"
                       disabled={(!note?.labels || note?.labels.length === 0) && true}
                       onClick={() => setOpen(true)}
                     >
@@ -103,14 +111,14 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 </ul>
               </div>
             </div>  
-            <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] !mr-2"/>
+            <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] !mr-2"/>
             <div 
               className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
               style={{
                 width: currentScreenSize < 1280 ? editorWidth - 150 : editorWidth - 270
               }}
             >
-              {note?.labels && note?.labels.length > 0 ? (
+              {note?.labels && note?.labels.length > 0 && (
                 <>
                   {note.labels.map((val: any, idx: number) => {
                     const { color, fontColor, name, _id, type } = val;
@@ -162,14 +170,12 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                       )
                   })}
                 </>
-              ) : ( 
-                <p className="text-xs uppercase tracking-widest mt-[2px] px-2 pt-1 h-[25px] bg-gray-900 rounded-full">No labels attached!</p> 
               )}
             </div>
-              <div className="h-5 w-[1px] border border-gray-600 mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
+              <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
               <button
                 onClick={() => save(editor.getEditorState())}
-                className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-gray-600 px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 transition-all ease-in-out duration-500"
+                className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-[#d9dbde] dark:!bg-[#202020] px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 hover:text-gray-200 transition-all ease-in-out duration-500"
               >
                 {saveSpinner ? ( 
                   <SvgLoader 
@@ -191,13 +197,12 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
         <ConfirmationModal
           open={open}
           setOpen={setOpen}
-          deleteButtonAction={deleteAllLabels}
+          actionButtonFn={deleteAllLabels}
           mainText="Are you sure you want to remove all labels attached to this note?"
-          options={{
-            subText: "This action will only detach labels from this note!",
-            mainTextCustomClassName: 'xxs:text-xs' ,
-            subTextCustomClassName: "xxs:mt-2 xxs:mb-7 mt-4 mb-6 px-6",
-            modalWrapperClassName: "!w-96 xxs:!w-[22rem]"
+          options={{  
+            mainTextClassName: 'xxs:text-xs dark:text-gray-300 text-gray-900',
+            modalWrapperClassName: "!w-96 xxs:!w-[22rem]",
+            actionButtonText: "detach"
           }}
         />
     </div> 

@@ -349,5 +349,34 @@ export default {
         } catch (err) {
             res.status(400).json({ message: 'Error, please try again later!' });
         }
-    }
+    },
+    async changeNoteBackgroundColor(res, req) {
+        try {
+            const { noteId } = res.params;
+            const { noteBackgroundColor } = res.body;
+
+            const getNoteData = await Note.findById(noteId);
+
+            await Note.findByIdAndUpdate({ _id: noteId }, {
+                settings: {
+                    ...getNoteData.settings,
+                    noteBackgroundColor
+                }
+            })
+
+            // const getUserData = await User.findById(id);
+
+            // await User.findByIdAndUpdate({ _id: id }, {
+            //     settings: {
+            //         ...getUserData.settings,
+            //         globalNoteBackgroundColor
+            //     }
+            // });
+
+            return req.status(200).json({ message: "Updated!" });
+        } catch (err) {
+            console.log(err);
+            req.status(400).json({ message: err });
+        }
+    },
 }

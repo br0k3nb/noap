@@ -1,5 +1,5 @@
-import type {Ref, RefObject} from 'react';
-import {ChangeEvent, forwardRef} from 'react';
+import type { Ref, RefObject } from 'react';
+import { ChangeEvent, forwardRef } from 'react';
 
 import "./EquationEditor.css";
 
@@ -10,7 +10,7 @@ type BaseEquationEditorProps = {
 };
 
 function EquationEditor(
-  {equation, setEquation, inline}: BaseEquationEditorProps,
+  { equation, setEquation, inline }: BaseEquationEditorProps,
   forwardedRef: Ref<HTMLInputElement | HTMLTextAreaElement>,
 ): JSX.Element {
   const onChange = (event: ChangeEvent) => setEquation((event.target as HTMLInputElement).value);

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, forwardRef, useContext } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { CheckListPlugin } from "../plugins/CustomCheckListPlugin";
+import { ListPlugin } from '../plugins/CustomListPlugin';
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -67,8 +67,15 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
-    const { noteSettings: { expanded, readMode } } = useContext(NoteSettingsCtx) as any;
-    const { userData: { settings: { noteTextExpanded } } } = useContext(UserDataCtx) as any;
+    const { noteSettings: { expanded, readMode, noteBackgroundColor } } = useContext(NoteSettingsCtx) as any;
+    const { 
+      userData: {
+        settings: {
+          noteTextExpanded,
+          globalNoteBackgroundColor
+        } 
+      }
+    } = useContext(UserDataCtx) as any;
 
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
@@ -104,102 +111,116 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
     //for some reason, typescript is throwing an error if this code is not set as any.
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
-    const getNavbar = document.getElementById("pc-navbar") as any;
+    const getNavbar = document.getElementById("pc-navbar") as any;  
+    
+    const baseStyle = {
+      marginTop: 50,
+      marginBottom: globalNoteBackgroundColor ? 90 : 80,
+      paddingRight: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      paddingLeft: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      backgroundColor: noteBackgroundColor ? noteBackgroundColor : globalNoteBackgroundColor ? globalNoteBackgroundColor : 'none',
+    };
 
     return (
-      <div className="!h-screen !w-screen">
+      <div className="editor-container plain-text dark:!bg-[#0f1011]">
         {!readMode && <ToolbarPlugin />}
-        <div className="editor-container plain-text">
-          <DragDropPaste />
-          <ComponentPickerPlugin />
-          <AutoEmbedPlugin />
-          <HashtagPlugin />
-          <EmojisPlugin />
-          <EmojiPickerPlugin />
-          <AutoLinkPlugin />
-          <AutoFocusPlugin />
-          {isRichText && (
-            <>
-              <RichTextPlugin
-                contentEditable={
-                  <div className="editor" ref={ref}>
-                    <div
-                      className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden" 
-                      id="editor-parent-container"                   
-                      style={!expanded && getNavbar?.checkVisibility() ? { 
-                          width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
-                          height: editorHeight
-                        } : {
-                          width: currentScreenSize.width,
-                          height: editorHeight
+        <DragDropPaste />
+        <ComponentPickerPlugin />
+        <AutoEmbedPlugin />
+        <HashtagPlugin />
+        <EmojisPlugin />
+        <EmojiPickerPlugin />
+        <AutoLinkPlugin />
+        <AutoFocusPlugin />
+        {isRichText && (
+          <>
+            <RichTextPlugin
+              contentEditable={
+                <div className="editor dark:!bg-[#0f1011] bg-[#ffffff]" ref={ref}>
+                  <div
+                    className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden" 
+                    id="editor-parent-container"                   
+                    style={!expanded && getNavbar?.checkVisibility() ? { 
+                        width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
+                        height: editorHeight
+                      } : {
+                        width: currentScreenSize.width,
+                        height: editorHeight
+                      }
+                    }  
+                  >
+                    <div                        
+                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10 rounded-xl"
+                      style={
+                        !expanded && getNavbar?.checkVisibility() ? {
+                          ...baseStyle,
+                          width: noteTextExpanded && currentScreenSize.width > 1430 
+                            ? (globalNoteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
+                            : currentScreenSize.width - 435
+                        } : { 
+                          ...baseStyle,
+                          width: noteTextExpanded && currentScreenSize.width > 1000 
+                            ? (globalNoteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
+                            : currentScreenSize.width
                         }
-                      }  
+                      }
                     >
-                      <div                        
-                        className="mb-0 xxl:!mb-5 3xl:!mb-32 flex flex-col mx-auto"
-                        style={
-                          !expanded && getNavbar?.checkVisibility() ? { 
-                            width: noteTextExpanded && currentScreenSize.width > 1430 ? noteTextCondition : currentScreenSize.width - 435
-                          } : { 
-                            width: noteTextExpanded && currentScreenSize.width > 1000 ? noteTextCondition : currentScreenSize.width
-                          }
-                        }
-                      >
-                        <div className="mb-20" ref={customRef}>
+                      <div ref={customRef}>
                           <ContentEditable />
-                        </div>
                       </div>
-                      {!readMode && (
-                        <div className="xxs:mt-20">
-                          <BottomBar 
-                            note={note}
-                            save={save}
-                            editor={editor}
-                            saveSpinner={saveSpinner}
-                            currentScreenSize={currentScreenSize.width}
-                          />
-                        </div>
-                      )}
                     </div>
+                    {!readMode && (
+                      <div className="xxs:mt-20">
+                        <BottomBar 
+                          note={note}
+                          save={save}
+                          editor={editor}
+                          saveSpinner={saveSpinner}
+                          currentScreenSize={currentScreenSize.width}
+                        />
+                      </div>
+                    )}
                   </div>
-                }
-                placeholder={<Placeholder customRef={customRef}>Enter some text</Placeholder>}
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <FloatingTextFormatToolbarPlugin />
-              <CodeActionMenuPlugin />
-              <ListPlugin />
-              <CheckListPlugin />
-              <ListMaxIndentLevelPlugin maxDepth={7} />
-              <ImagesPlugin captionsEnabled={true} />
-              <HistoryPlugin externalHistoryState={historyState} />
-              <LinkPlugin />
-              <ClickableLinkPlugin />
-              {/* <AutocompletePlugin /> */}
-              {/* <PollPlugin /> */}
-              {/* <MarkdownShortcutPlugin /> */}
-              {/* <LexicalClickableLinkPlugin />
-              <ClickableLinkPlugin /> */}
-              <CodeHighlightPlugin />
-              <TwitterPlugin />
-              <YouTubePlugin />
-              <FigmaPlugin />
-              <HorizontalRulePlugin />
-              <EquationsPlugin />
-              <ExcalidrawPlugin />
-              <TabFocusPlugin />
-              <TabIndentationPlugin />
-              <CollapsiblePlugin />
+                </div>
+              }
+              placeholder={
+                <Placeholder customRef={customRef}>Enter some text</Placeholder>
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <FloatingTextFormatToolbarPlugin />
+            <CodeActionMenuPlugin />
+            <ListPlugin />
+            <CheckListPlugin />
+            <ListMaxIndentLevelPlugin maxDepth={7} />
+            <ImagesPlugin captionsEnabled={true} />
+            <HistoryPlugin externalHistoryState={historyState} />
+            <LinkPlugin />
+            <ClickableLinkPlugin />
+            {/* <AutocompletePlugin /> */}
+            {/* <PollPlugin /> */}
+            {/* <MarkdownShortcutPlugin /> */}
+            {/* <LexicalClickableLinkPlugin />
+            <ClickableLinkPlugin /> */}
+            <CodeHighlightPlugin />
+            <TwitterPlugin />
+            <YouTubePlugin />
+            <FigmaPlugin />
+            <HorizontalRulePlugin />
+            <EquationsPlugin />
+            <ExcalidrawPlugin />
+            <TabFocusPlugin />
+            <TabIndentationPlugin />
+            <CollapsiblePlugin />
 
-              {floatingAnchorElem && (
-                <>
-                  {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
-                  <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
-                </>
-              )}
-            </>
-          )}
-        </div>
+            {floatingAnchorElem && (
+              <>
+                {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
+                <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+              </>
+            )}
+          </>
+        )}
       </div>
     );
   }

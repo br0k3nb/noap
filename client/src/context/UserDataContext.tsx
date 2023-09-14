@@ -9,7 +9,10 @@ type UserDataType = {
     googleAccount?: boolean;
     settings?: {
         showPinnedNotesInFolder?: boolean;
+        noteBackgroundColor?: string;
+        noteTextExpanded: boolean;
         language?: string;
+        theme?: string;
     }
 };
 

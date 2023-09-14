@@ -34,7 +34,11 @@ export default new mongoose.Schema({
         pinned: {
             type: Boolean,
             required: false
-        }
+        },
+        noteBackgroundColor: {
+            type: String,
+            required: false,
+        },
     },
     author: {
         type: String,

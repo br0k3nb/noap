@@ -312,7 +312,12 @@ export default function ImageComponent({
   const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
 
   const donwloadImage = (srcLink: string) => {
-    const a = Object.assign(document.createElement("a"), { href: srcLink, style:"display:none", download: "image" });
+    const a = Object.assign(document.createElement("a"), { 
+      href: srcLink, 
+      style:"display:none", 
+      download: "image" 
+    });
+    
     document.body.appendChild(a);
 
     a.click();
@@ -348,20 +353,23 @@ export default function ImageComponent({
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.3  }}
-              className={`!absolute -top-0 -right-0 !w-8 !bg-gray-900 rounded-bl-lg rounded-tr-lg h-8 hidden ${hover && '!inline'}`}
+              className={`cursor-pointer !absolute -top-0 -right-0 !w-8 bg-[#ffffff] dark:bg-[#181818] text-gray-900 dark:text-gray-300 rounded-bl-lg rounded-tr-lg h-8 hidden ${hover && '!inline'}`}
             >
               <div className="flex flex-row space-x-2 px-2 pt-1 justify-between">  
                 <div className="dropdown dropdown-left">
                   <label 
                     tabIndex={0}
-                    className={`text-[11px] uppercase tracking-widest text-gray-300`}
+                    className={`text-[11px] uppercase tracking-widest cursor-pointer`}
                     style={resizeBar ? { fontSize: 10, paddingTop: 1 }: undefined}
                   >
                     <div className="rounded-full py-1 pl-[1px]">
-                      <BsThreeDotsVertical size={resizeBar ? 13 : 15} style={resizeBar ? {paddingTop: 2} : undefined} / >
+                      <BsThreeDotsVertical 
+                        size={15}
+                        style={resizeBar ? { paddingTop: 2 } : undefined} 
+                      />
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-36 !bg-gray-800">
+                  <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-36 bg-[#ffffff] dark:bg-[#181818] text-gray-900 border border-gray-900 dark:text-gray-300">
                     {/* <li className="text-xs uppercase tracking-widest">
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move up</a>
                     </li>
@@ -369,16 +377,16 @@ export default function ImageComponent({
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move down</a>
                     </li> */}
                     <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-600" onClick={() => donwloadImage(src)}>
-                        <div className="flex flex-row space-x-2 text-gray-300">
+                      <a className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]" onClick={() => donwloadImage(src)}>
+                        <div className="flex flex-row space-x-2">
                           <span>Download</span>
                           <BsFillFileEarmarkArrowDownFill size={16}/>
                         </div>
                       </a>
                     </li>
                     <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-600" onClick={() => setOpenFullscreenModal(true)}>
-                        <div className="flex flex-row space-x-2 text-gray-300">
+                      <a className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]" onClick={() => setOpenFullscreenModal(true)}>
+                        <div className="flex flex-row space-x-2">
                           <span className="my-auto text-[11px]">Fullscreen</span>
                           <AiOutlineFullscreen size={20}/>
                         </div>
@@ -388,10 +396,10 @@ export default function ImageComponent({
                       <li className="text-xs uppercase tracking-widest">
                         <a
                           id="delete"
-                          className="active:!bg-gray-600"
+                          className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
                           onClick={() => setSelected(true)}
                         >
-                          <div className="flex flex-row space-x-2 text-gray-300">
+                          <div className="flex flex-row space-x-2">
                             <span>Delete</span>
                             <BsTrash size={16}/>
                           </div>

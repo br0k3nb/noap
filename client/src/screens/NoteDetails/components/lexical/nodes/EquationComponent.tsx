@@ -9,7 +9,7 @@ import {
   NodeKey,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import * as React from "react";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import EquationEditor from "../ui/EquationEditor";
@@ -22,11 +22,7 @@ type EquationComponentProps = {
   nodeKey: NodeKey;
 };
 
-export default function EquationComponent({
-  equation,
-  inline,
-  nodeKey,
-}: EquationComponentProps): JSX.Element {
+export default function EquationComponent({ equation, inline, nodeKey }: EquationComponentProps) {
   const [editor] = useLexicalComposerContext();
   const [equationValue, setEquationValue] = useState(equation);
   const [showEquationEditor, setShowEquationEditor] = useState<boolean>(false);
@@ -49,9 +45,7 @@ export default function EquationComponent({
   );
 
   useEffect(() => {
-    if (!showEquationEditor && equationValue !== equation) {
-      setEquationValue(equation);
-    }
+    if (!showEquationEditor && equationValue !== equation) setEquationValue(equation);
   }, [showEquationEditor, equation, equationValue]);
 
   useEffect(() => {
@@ -62,9 +56,8 @@ export default function EquationComponent({
           (payload) => {
             const activeElement = document.activeElement;
             const inputElem = inputRef.current;
-            if (inputElem !== activeElement) {
-              onHide();
-            }
+            if (inputElem !== activeElement) onHide();
+
             return false;
           },
           COMMAND_PRIORITY_HIGH
@@ -74,10 +67,12 @@ export default function EquationComponent({
           (payload) => {
             const activeElement = document.activeElement;
             const inputElem = inputRef.current;
+
             if (inputElem === activeElement) {
               onHide(true);
               return true;
             }
+
             return false;
           },
           COMMAND_PRIORITY_HIGH
@@ -93,9 +88,8 @@ export default function EquationComponent({
             selection.getNodes().length === 1
           );
         });
-        if (isSelected) {
-          setShowEquationEditor(true);
-        }
+
+        if (isSelected) setShowEquationEditor(true);
       });
     }
   }, [editor, nodeKey, onHide, showEquationEditor]);

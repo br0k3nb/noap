@@ -9,11 +9,7 @@ type ContextShape = {
 
 const Context: React.Context<ContextShape> = createContext({});
 
-export const SharedHistoryContext = ({
-  children,
-}: {
-  children: ReactNode;
-}): JSX.Element => {
+export const SharedHistoryContext = ({ children }: { children: ReactNode }) => {
   const historyContext = useMemo(
     () => ({ historyState: createEmptyHistoryState() }),
     []

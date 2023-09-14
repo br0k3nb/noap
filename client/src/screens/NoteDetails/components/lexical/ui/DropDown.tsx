@@ -13,6 +13,8 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { UserDataCtx } from "../../../../../context/UserDataContext";
+
 type DropDownContextType = {
   registerItem: (ref: RefObject<HTMLButtonElement>) => void;
 };
@@ -108,7 +110,7 @@ function DropDownItems({
   return (
     <DropDownContext.Provider value={contextValue}>
       <div 
-        className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500`} 
+        className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500 bg-[#f8f8f8] dark:bg-[#1c1d1e]`} 
         ref={dropDownRef} 
         onKeyDown={handleKeyDown}
       >
@@ -129,9 +131,9 @@ export default function DropDown({
   buttonIconClassName,
   children,
   stopCloseOnClickSelf,
+  customButtonLabelClassName
 }: {
   disabled?: boolean;
-  buttonAriaLabel?: string;
   buttonClassName: string;
   modalClassName?: string;
   useCustomButton?: any;
@@ -141,6 +143,7 @@ export default function DropDown({
   buttonLabel?: string;
   children: ReactNode;
   stopCloseOnClickSelf?: boolean;
+  customButtonLabelClassName?: string;
 }): JSX.Element {
   const dropDownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -185,32 +188,34 @@ export default function DropDown({
     }
   }, [dropDownRef, buttonRef, showDropDown, stopCloseOnClickSelf]);
 
+  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+
   return (
     <>
       {!useCustomButton ? (
         <button
           disabled={disabled}
-          className={buttonClassName}
+          className={buttonClassName + " hover:!bg-[#e1e1e1] dark:hover:!bg-[#484848]"}
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >
           {buttonIconClassName && <span className={buttonIconClassName} />}
           {buttonLabel && 
-            <span className={`text dropdown-button-text ${buttonLabelClassName && buttonLabelClassName}`}>
+            <span className={`text dropdown-button-text !text-gray-900 dark:!text-gray-300 ${buttonLabelClassName && buttonLabelClassName}`}>
               {buttonLabel}
             </span>
           }
-          <i className="chevron-down comp-picker" />
+          <i className={`chevron-down ${theme === 'dark' && 'comp-picker'}`} />
         </button>
       ) : (
         <button 
-          className="border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#dfe8fa4d]"
+          className={`border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#e1e1e1] dark:hover:bg-[#484848] ${customButtonLabelClassName && customButtonLabelClassName}`}
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >
-          <div className="my-1 mr-1 text-gray-200">
+          <div className="my-1 mr-1">
             {(buttonLabel && !customButtonLabel) ? (
-              <span className={`text !px-2  ${buttonLabelClassName && buttonLabelClassName}`}>
+              <span className={`text !px-2  ${buttonLabelClassName && buttonLabelClassName} `}>
                 {buttonLabel}
               </span>
             ) : customButtonLabel}

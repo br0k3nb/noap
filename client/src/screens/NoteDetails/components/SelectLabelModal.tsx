@@ -54,9 +54,9 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 return toastAlert({ icon: "error", title: `Please, select a label!`, timer: 2000 });
             };
 
-            const { data: { message }} = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
+            const { data: { message } } = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
-            toastAlert({icon: "success", title: message, timer: 2000});
+            toastAlert({ icon: "success", title: message, timer: 2000 });
             await refetch?.fetchNotes();
             setShowLoader(false);
         } catch (err: any) {
@@ -96,16 +96,16 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
 
     return (
         <Modal {...modalProps}>
-            <div className="mb-8 mt-5 text-gray-300">
+            <div className="mb-8 mt-5 text-gray-900 dark:text-gray-300">
                 <div className="flex flex-row justify-between mb-3 px-6 my-4">
                     <p className='text-base uppercase tracking-widest my-auto'>Your labels</p>
                     <div className="flex flex-row space-x-2">
                         <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                             <BsFilter size={25}/> 
                         </div>
-                        <div className="tooltip tooltip-left text-gray-100 before:text-[15px]" data-tip="Search">
+                        <div className="tooltip tooltip-left text-gray-900 dark:text-gray-300 before:text-[15px]" data-tip="Search">
                             <div 
-                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
@@ -116,10 +116,10 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 <motion.div
                     animate={!showSearchBar ? hide : show}
                     transition={{ duration: 0.4 }}
-                    className={`bg-gray-800 hidden ${showSearchBar && "!grid"} px-6`}
+                    className={`bg-inhreit dark:!bg-[#0f1011] hidden ${showSearchBar && "!grid"} px-6`}
                 >
                     <input
-                        className="sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400 h-10 mb-2"
+                        className="text-gray-900 dark:text-gray-300 sign-text-inputs shadow-none border !border-stone-300 bg-[#eeeff1] dark:bg-stone-900 dark:border-transparent active:border focus:border-gray-400 h-10 mb-2"
                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                         placeholder="Search..."
                         value={searchLabel}
@@ -130,6 +130,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         <div className="flex flex-col mt-4 text-sm px-1 h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
                             {labels.map((chip: any, idx: number) => {
                                 const { color, fontColor, name, _id, type } = chip;
+                                
                                 return (                                        
                                     <div className={`flex justify-between px-6 ${idx === labels.length - 1 && "mb-5"}`} key={idx}>
                                         <div className="my-auto">
@@ -149,7 +150,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                             <label className="label cursor-pointer">
                                                 <input
                                                     type="checkbox" 
-                                                    className="checkbox !h-5 !w-5" 
+                                                    className="checkbox !h-5 !w-5 border-gray-600" 
                                                     {...register(_id)}
                                                 />
                                             </label>
@@ -158,29 +159,36 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                 )
                             })}
                         </div>
-                        <div className="text-gray-300 px-5 mt-2">
-                            <div className=" !bg-gray-800 flex !justify-between">
-                                <button 
-                                    className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                        <div className="px-5 mt-2">
+                            <div className=" !bg-[#ffffff] dark:!bg-[#0f1011] flex !justify-between">
+                                <button
+                                    type='button'
+                                    className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                     disabled={pageLabel === 1 ? true : false}
                                     onClick={() => setPageLabel(pageLabel - 1)}
                                 > 
-                                    <MdKeyboardDoubleArrowLeft size={18} />
+                                    <MdKeyboardDoubleArrowLeft />
                                 </button>
-                                <p className="!bg-gray-800 uppercase tracking-widest text-xs cursor-default my-auto">Page {pageLabel}</p>
+                                <p className="text-gray-900 dark:text-gray-300 !bg-[#ffffff] dark:!bg-[#0f1011] uppercase tracking-widest text-xs cursor-default my-auto">
+                                    Page {pageLabel}
+                                </p>
                                 <button 
-                                    className="btn !bg-gray-800 hover:!bg-gray-700/70 !border-transparent disabled:text-gray-500 transition-all duration-300 ease-in-out"
+                                    type='button'
+                                    className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                     disabled={hasNextPageLabel ? false : true}
                                     onClick={() => setPageLabel(pageLabel + 1)}
                                 >
-                                    <MdKeyboardDoubleArrowRight size={18} />
+                                    <MdKeyboardDoubleArrowRight />
                                 </button>
                             </div>
                         </div>
                         <div className="flex justify-center items-center border border-transparent border-t-gray-600">
-                            <button type='submit' className='text-sm uppercase text-gray-200 rounded-full mt-5'>
+                            <button 
+                                type='submit' 
+                                className='text-sm uppercase  text-gray-900 dark:text-gray-300 rounded-full mt-5'
+                            >
                             {!showLoader ? (
-                                <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
+                                <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px] hover:tracking-widest'>
                                     Attach labels
                                 </span>
                             ) : (
@@ -194,7 +202,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 ) : (
                     <div className="flex flex-col space-y-4 items-center justify-center my-10 text-gray-500">
                         <AiFillTags size={60} className='!mt-5'/>
-                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>No labels were found!</p>
+                        <p className='text-gray-900 dark:text-gray-300 text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>No labels were found!</p>
                     </div>
                 )}
             </div>

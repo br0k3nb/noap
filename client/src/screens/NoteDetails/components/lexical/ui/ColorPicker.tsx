@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, ReactNode } from "react";
 
+import ConfirmationModal from "../../../../../components/ConfirmationModal";
+
 import DropDown from "./DropDown";
 import TextInput from "./TextInput";
 
@@ -16,6 +18,9 @@ interface ColorPickerProps {
   onChange?: (color: string) => void;
   stopCloseOnClickSelf?: boolean;
   title?: string;
+  alwaysOpened?: boolean;
+  applyNoteBackgroundFn?: (color: string) => any;
+  applyGlobalNoteBackgroundFn?: (color: string) => any;
 }
 
 const basicColors = [
@@ -31,8 +36,12 @@ const basicColors = [
   "#50e3c2",
   "#b8e986",
   "#000000",
+  "#0f1011",
   "#4a4a4a",
   "#9b9b9b",
+  "#fff1c8",
+  "#fff8e3",
+  "#fffdf5",
   "#ffffff",
 ];
 
@@ -45,23 +54,28 @@ export default function ColorPicker({
   onChange,
   disabled = false,
   stopCloseOnClickSelf = true,
+  alwaysOpened,
+  applyNoteBackgroundFn,
+  applyGlobalNoteBackgroundFn,
   ...rest
-}: Readonly<ColorPickerProps>): JSX.Element {
+}: Readonly<ColorPickerProps>) {
+  const [showGlobalBackgroundModal, setShowGlobalBackgroundModal] = useState(false);
+  const [customWidth, setCustomWidth] = useState(innerWidth <= 640 ? 270.4 : 318.4);
   const [selfColor, setSelfColor] = useState(transformColor("hex", color));
   const [inputColor, setInputColor] = useState(color);
-  const innerDivRef = useRef(null);
 
-  const saturationPosition = useMemo(
-    () => ({
-      x: (selfColor.hsv.s / 100) * WIDTH,
-      y: ((100 - selfColor.hsv.v) / 100) * HEIGHT,
+  const innerDivRef = useRef(null);
+  const controlFunctionExecution = useRef(false);
+
+  const saturationPosition = useMemo(() => ({
+      x: alwaysOpened ? (selfColor.hsv.s / 100) * customWidth : (selfColor.hsv.s / 100) * WIDTH,
+      y: ((100 - selfColor.hsv.v) / 100) * HEIGHT
     }),
     [selfColor.hsv.s, selfColor.hsv.v]
   );
 
-  const huePosition = useMemo(
-    () => ({
-      x: (selfColor.hsv.h / 360) * WIDTH,
+  const huePosition = useMemo(() => ({
+     x: alwaysOpened ? (selfColor.hsv.h / 360) * customWidth : (selfColor.hsv.h / 360) * WIDTH 
     }),
     [selfColor.hsv]
   );
@@ -77,7 +91,7 @@ export default function ColorPicker({
   const onMoveSaturation = ({ x, y }: Position) => {
     const newHsv = {
       ...selfColor.hsv,
-      s: (x / WIDTH) * 100,
+      s: alwaysOpened ? (x / customWidth) * 100 : (x / WIDTH) * 100,
       v: 100 - (y / HEIGHT) * 100,
     };
 
@@ -87,7 +101,10 @@ export default function ColorPicker({
   };
 
   const onMoveHue = ({ x }: Position) => {
-    const newHsv = { ...selfColor.hsv, h: (x / WIDTH) * 360 };
+    const newHsv = { 
+      ...selfColor.hsv, 
+      h: alwaysOpened ? (x / customWidth) * 360 : (x / WIDTH) * 360
+    };
     const newColor = transformColor("hsv", newHsv);
 
     setSelfColor(newColor);
@@ -110,46 +127,163 @@ export default function ColorPicker({
     setInputColor(newColor.hex);
   }, [color]);
 
+  addEventListener("resize", () => {
+    setTimeout(() => {
+      if(!controlFunctionExecution.current) {
+        setCustomWidth(innerWidth <= 640 ? 270.4 : 318.4);
+        controlFunctionExecution.current = true;
+      }
+    }, 500);
+
+    if((innerWidth <= 640 && customWidth === 318.4) || (innerWidth > 640 && customWidth === 270.4)) {
+      controlFunctionExecution.current = false;
+    }
+  });
+
   return (
-    <DropDown {...rest} disabled={disabled} stopCloseOnClickSelf={true}>
-      <div className="color-picker-wrapper !text-gray-200" style={{ width: WIDTH }} ref={innerDivRef}>
-        <TextInput label="Hex" onChange={onSetHex} value={inputColor} />
-        <div className="color-picker-basic-color">
-          {basicColors.map((basicColor) => (
-            <button
-              className={basicColor === selfColor.hex ? " active" : ""}
-              key={basicColor}
-              style={{ backgroundColor: basicColor }}
-              onClick={() => {
-                setInputColor(basicColor);
-                setSelfColor(transformColor("hex", basicColor));
-              }}
+    <>
+      <ConfirmationModal
+        open={showGlobalBackgroundModal}
+        setOpen={setShowGlobalBackgroundModal}
+        mainText=""
+        options={{
+          mainTextClassName: "!mt-2",
+          alertComponentText: "Are you sure that you apply this background color to all notes ?",
+          alertComponentWrapperClassName: "!w-[19rem] xxs:!w-[16rem]",
+          actionButtonText: "apply",
+          actionButtonClassName: "!bg-green-700 hover:!bg-green-800"
+        }}
+        actionButtonFn={() => {
+          setShowGlobalBackgroundModal(false);
+          if(applyGlobalNoteBackgroundFn) applyGlobalNoteBackgroundFn(selfColor.hex);
+        }}
+      />
+      {alwaysOpened ? (
+        <>
+          <div 
+            className="color-picker-wrapper !text-gray-200 mx-auto" 
+            style={ alwaysOpened ? { width: customWidth } : { width: WIDTH } } 
+            ref={innerDivRef}
+          >
+            <TextInput
+              label="Hex" 
+              onChange={onSetHex} 
+              value={inputColor} 
             />
-          ))}
-        </div>
-        <MoveWrapper
-          className="color-picker-saturation"
-          style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
-          onChange={onMoveSaturation}
+            <div className="color-picker-basic-color">
+              {basicColors.map((basicColor) => (
+                <button
+                  className={basicColor === selfColor.hex ? " active" : ""}
+                  key={basicColor}
+                  style={{ backgroundColor: basicColor }}
+                  onClick={() => {
+                    setInputColor(basicColor);
+                    setSelfColor(transformColor("hex", basicColor));
+                  }}
+                />
+              ))}
+            </div>
+            <MoveWrapper
+              className="color-picker-saturation"
+              style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
+              onChange={onMoveSaturation}
+            >
+              <div
+                className="color-picker-saturation_cursor"
+                style={{ 
+                  backgroundColor: selfColor.hex, 
+                  left: saturationPosition.x, 
+                  top: saturationPosition.y
+                }}
+              />
+            </MoveWrapper>
+            <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>              
+              <div
+                className="color-picker-hue_cursor"
+                style={{ 
+                  backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, 
+                  left: huePosition.x 
+              }}
+              />
+            </MoveWrapper>
+            <div className="flex flex-col mt-4">
+              <p className="text-xs uppercase text-gray-900 dark:text-gray-300 tracking-widest">Color preview</p>
+              <div
+                className="color-picker-color rounded-xl mt-2"
+                style={{ backgroundColor: selfColor.hex }}
+              />
+            </div>
+          </div>
+          {children}
+          <div className="text-center">
+            <button
+              className="my-3 border border-gray-700 text-white rounded-full bg-green-600 hover:bg-green-700 hover:tracking-widest transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+              onClick={() => applyNoteBackgroundFn && applyNoteBackgroundFn(selfColor.hex)}
+            >
+              Apply to this note
+            </button>
+            <button
+              className="border border-gray-700 text-black dark:text-gray-300 rounded-full hover:tracking-widest transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
+              onClick={() => setShowGlobalBackgroundModal(true)}
+            >
+              Apply globally
+            </button>
+          </div>
+        </>
+      ) : (
+        <DropDown 
+          {...rest} 
+          disabled={disabled} 
+          stopCloseOnClickSelf={true}
         >
-          <div
-            className="color-picker-saturation_cursor"
-            style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
-          />
-        </MoveWrapper>
-        <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
-          <div
-            className="color-picker-hue_cursor"
-            style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
-          />
-        </MoveWrapper>
-        <div
-          className="color-picker-color"
-          style={{ backgroundColor: selfColor.hex }}
-        />
-      </div>
-      {children}
-    </DropDown>
+          <div 
+            className="color-picker-wrapper" 
+            style={{ width: WIDTH }} 
+            ref={innerDivRef}
+          >
+            <TextInput
+              label="Hex" 
+              onChange={onSetHex} 
+              value={inputColor} 
+            />
+            <div className="color-picker-basic-color">
+              {basicColors.map((basicColor) => (
+                <button
+                  className={basicColor === selfColor.hex ? " active" : ""}
+                  key={basicColor}
+                  style={{ backgroundColor: basicColor }}
+                  onClick={() => {
+                    setInputColor(basicColor);
+                    setSelfColor(transformColor("hex", basicColor));
+                  }}
+                />
+              ))}
+            </div>
+            <MoveWrapper
+              className="color-picker-saturation"
+              style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)` }}
+              onChange={onMoveSaturation}
+            >
+              <div
+                className="color-picker-saturation_cursor"
+                style={{ backgroundColor: selfColor.hex, left: saturationPosition.x, top: saturationPosition.y }}
+              />
+            </MoveWrapper>
+            <MoveWrapper className="color-picker-hue" onChange={onMoveHue}>
+              <div
+                className="color-picker-hue_cursor"
+                style={{ backgroundColor: `hsl(${selfColor.hsv.h}, 100%, 50%)`, left: huePosition.x }}
+              />
+            </MoveWrapper>
+            <div
+              className="color-picker-color"
+              style={{ backgroundColor: selfColor.hex }}
+            />
+          </div>
+          {children}
+        </DropDown>
+      )} 
+    </>
   );
 }
 
@@ -165,12 +299,7 @@ interface MoveWrapperProps {
   children: JSX.Element;
 }
 
-function MoveWrapper({
-  className,
-  style,
-  onChange,
-  children,
-}: MoveWrapperProps) {
+function MoveWrapper({ className, style, onChange, children }: MoveWrapperProps) {
   const divRef = useRef<HTMLDivElement>(null);
 
   const move = (e: React.MouseEvent | MouseEvent): void => {
@@ -204,7 +333,12 @@ function MoveWrapper({
   };
 
   return (
-    <div ref={divRef} className={className} style={style} onMouseDown={onMouseDown}>
+    <div 
+      ref={divRef} 
+      className={className} 
+      style={style} 
+      onMouseDown={onMouseDown}
+    >
       {children}
     </div>
   );
@@ -312,10 +446,7 @@ function rgb2hex({ b, g, r }: RGB): string {
   return "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 }
 
-function transformColor<M extends keyof Color, C extends Color[M]>(
-  format: M,
-  color: C
-): Color {
+function transformColor<M extends keyof Color, C extends Color[M]>(format: M, color: C): Color {
   let hex: Color["hex"] = toHex("#121212");
   let rgb: Color["rgb"] = hex2rgb(hex);
   let hsv: Color["hsv"] = rgb2hsv(rgb);
@@ -341,4 +472,4 @@ function transformColor<M extends keyof Color, C extends Color[M]>(
   }
 
   return { hex, hsv, rgb };
-}
+} 

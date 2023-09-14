@@ -97,10 +97,9 @@ function AutoEmbedMenuItem({
   onMouseEnter: () => void;
   option: AutoEmbedOption;
 }) {
-  let className = "item";
-  if (isSelected) {
-    className += " selected";
-  }
+  let className = "bg-[#f8f8f8] text-gray-900 dark:text-gray-300 dark:bg-[#0f1011]";
+  if (isSelected) className += " !bg-[#e1e1e1] dark:!bg-[#404040]";  
+
   return (
     <li
       key={option.key}
@@ -130,7 +129,7 @@ function AutoEmbedMenu({
   options: Array<AutoEmbedOption>;
 }) {
   return (
-    <div className="typeahead-popover">
+    <div className="typeahead-popover bg-[#f8f8f8] dark:bg-gray-900 ">
       <ul>
         {options.map((option: AutoEmbedOption, i: number) => (
           <AutoEmbedMenuItem
@@ -186,10 +185,13 @@ export function AutoEmbedDialog({
   };
 
   return (
-    <div style={{ width: "600px" }} className="xxs:!max-w-[256px]">
+    <div 
+      style={{ width: "600px" }}
+      className="xxs:!max-w-[256px]"
+    >
       <div className="Input__wrapper">
         <input
-          className="Input__input"
+          className="Input__input focus:!outline-none bg-[#e1e1e1] border-stone-400 text-gray-900 dark:text-gray-300 dark:bg-[#181818] dark:border-[#404040]"
           placeholder={embedConfig.exampleUrl}
           value={text}
           data-test-id={`${embedConfig.type}-embed-modal-url`}
@@ -203,7 +205,7 @@ export function AutoEmbedDialog({
       <DialogActions>
         <Button
           disabled={!embedResult}
-          className="!bg-gray-700 hover:!bg-gray-900 transition-all duration-300 ease-in-out cursor-pointer text-[13.5px] uppercase tracking-widest"
+          className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out cursor-pointer text-[13.5px] uppercase tracking-widest"
           onClick={onClick}
           data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
         >
@@ -219,7 +221,10 @@ export default function AutoEmbedPlugin(): JSX.Element {
 
   const openEmbedModal = (embedConfig: PlaygroundEmbedConfig) => {
     showModal(`Embed ${embedConfig.contentName}`, (onClose) => (
-      <AutoEmbedDialog embedConfig={embedConfig} onClose={onClose} />
+      <AutoEmbedDialog 
+        embedConfig={embedConfig}
+        onClose={onClose} 
+      />
     ));
   };
 
@@ -247,7 +252,7 @@ export default function AutoEmbedPlugin(): JSX.Element {
           anchorElementRef.current
             ? createPortal(
                 <div
-                  className="typeahead-popover auto-embed-menu"
+                  className="typeahead-popover auto-embed-menu bg-[#f8f8f8] dark:bg-gray-900"
                   style={{ marginLeft: anchorElementRef.current.style.width, width: 200 }}
                 >
                   <AutoEmbedMenu

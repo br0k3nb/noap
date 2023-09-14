@@ -40,11 +40,11 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
             setOpen(false);
             setTimeout(() => setOpenSettings(true));
 
-            reset({password: ''});
-            toastAlert({icon: 'success', title: verify.data.message, timer: 2500});
+            reset({ password: '' });
+            toastAlert({ icon: 'success', title: verify.data.message, timer: 2500 });
         } catch (err: any) {
             setshowSvgLoader(false);
-            toastAlert({icon: 'error', title: err.message, timer: 2500});
+            toastAlert({ icon: 'error', title: err.message, timer: 2500 });
         }
     };
 
@@ -72,8 +72,8 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
             <Modal {...modalProps}>
               <div className="px-6">
                 <div className="flex flex-col space-y-2 ">
-                  <p className="text-xl">Confirm your identity</p>
-                  <p className="text-base text-gray-400">
+                  <p className="text-xl text-gray-900 dark:text-gray-300">Confirm your identity</p>
+                  <p className="text-base text-gray-600 dark:text-gray-400">
                     To change yout account information, you have to authenticate
                     first!
                   </p>
@@ -85,17 +85,17 @@ export default function AuthUser({ setAuth, register, reset, handleSubmit, error
                     </p>
                     <input
                       type="password"
-                      className={`sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400`}
+                      className={`sign-text-inputs !bg-[#eeeff1] dark:!bg-stone-900 text-gray-900 dark:text-gray-300 border border-gray-600 focus:border-gray-700`}
                       placeholder="Password"
                       required
                       {...register("password", {
-                        required: "Password is required!",
+                        required: "A password is required!",
                         minLength: { value: 6, message: "Password is too short!" },
                         maxLength: { value: 12, message: "Too many characters!" }
                       })}
                     />
-                    <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out w-full">
-                      {showSvgLoader ? ( <SvgLoader options={{showLoadingText: true}} /> ) : ("Confirm")}
+                    <button className="bg-green-700 hover:bg-green-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-wide hover:tracking-widest transition-all duration-500 ease-in-out w-full">
+                      {showSvgLoader ? ( <SvgLoader options={{ showLoadingText: true }} /> ) : ("Confirm")}
                     </button>
                   </form>
                 </div>

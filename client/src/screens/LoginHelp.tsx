@@ -99,7 +99,7 @@ export default function LoginHelp() {
 
       setWasChanged(true);
       setLoader(false);
-      setTimeout(() => navigate('/'), 2000);
+      // setTimeout(() => navigate('/'), 2000);
     } catch (err: any) {
       setLoader(false);
       toastAlert({icon: 'error', title: `${err.message}`, timer: 2000});
@@ -387,45 +387,71 @@ export default function LoginHelp() {
             </>
           ) : triggerCode === "verified" && needHelpWith === "pass" ? (
             <>
-              <p className='text-3xl xxs:text-2xl font-light tracking-tight'>Reset your password</p>
-                <form onSubmit={handleSubmit(changePasssword)} noValidate className='mt-2'>
-                  <div className="flex flex-col space-y-2 py-5 rounded-lg !max-w-3xl mx-auto">
-                    <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
-                      {errors.password?.message as string}
-                    </p>
-                    <input
-                      type="password"
-                      className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
-                      placeholder="Password"
-                      {...register("password", {
-                        required: "Password is required!",
-                        minLength: { value: 6, message: "Your password is too short!" },
-                        maxLength: { value: 16, message: "Too many characters!" },
-                      })}
+              {!wasChanged ? (
+                <>
+                    <p className='text-3xl xxs:text-2xl font-light tracking-tight'>Reset your password</p>
+                    <form 
+                      noValidate 
+                      className='mt-2'
+                      onSubmit={handleSubmit(changePasssword)} 
+                    >
+                      <div className="flex flex-col space-y-2 py-5 rounded-lg !max-w-3xl mx-auto">
+                        <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                          {errors.password?.message as string}
+                        </p>
+                        <input
+                          type="password"
+                          className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
+                          placeholder="Password"
+                          {...register("password", {
+                            required: "Password is required!",
+                            minLength: { value: 6, message: "Your password is too short!" },
+                            maxLength: { value: 16, message: "Too many characters!" },
+                          })}
+                        />
+                        <p className='text-red-500 ml-1 uppercase text-xs tracking-widest !mt-4'>
+                          {errors.confirmP?.message as string}
+                        </p>
+                        <input
+                          type="password"
+                          className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
+                          placeholder="Confirm password"
+                          {...register("confirmP", {
+                            required: "Password is required!",
+                            minLength: { value: 6, message: "Your password is too short!" },
+                            maxLength: { value: 12, message: "Too many characters!" },
+                          })}
+                        />
+                        <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
+                          {loader ? ( 
+                            <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> 
+                          ) : (
+                            "Change password"
+                          )}
+                        </button>
+                        {wasChanged && (
+                          <p className='!mt-7 mx-auto animate-pulse text-sm uppercase tracking-widest'>Redirecting to sign in page...</p>
+                        )}
+                    </div>
+                  </form>
+                </>
+              ) : (
+                <>  
+                  <p className='text-3xl xxs:text-2xl font-light tracking-tight'>Password changed sucessfuly!</p>
+                  <div className="w-80 mx-auto mt-8">
+                    <SuccessCheck 
+                      endDelay={500}
+                      loop={true}
                     />
-                    <p className='text-red-500 ml-1 uppercase text-xs tracking-widest !mt-4'>
-                      {errors.confirmP?.message as string}
-                    </p>
-                    <input
-                      type="password"
-                      className='sign-text-inputs bg-stone-900 text-gray-300 border-transparent active:border focus:border-gray-400'
-                      placeholder="Confirm password"
-                      {...register("confirmP", {
-                        required: "Password is required!",
-                        minLength: { value: 6, message: "Your password is too short!" },
-                        maxLength: { value: 12, message: "Too many characters!" },
-                      })}
-                    />
-                    <button className="bg-red-700 hover:bg-red-800 rounded-full !mt-5 py-2 text-sm uppercase tracking-widest transition-all duration-500 ease-in-out">
-                      {loader ? ( 
-                        <SvgLoader options={{showLoadingText: true, LoaderClassName: "mt-[3px]"}}/> 
-                      ) : (
-                        "Change password"
-                      )}
-                    </button>
-                    {wasChanged && (<p className='!mt-7 mx-auto animate-pulse text-sm uppercase tracking-widest'>Redirecting to sign in page...</p>)}
-                </div>
-              </form>
+                  </div>
+                  <button 
+                    className="sign-text-inputs bg-gray-900 hover:bg-black mt-5 mb-10 text-sm uppercase tracking-widest text-gray-200"
+                    onClick={() => navigate("/")}
+                  >
+                    Go to sign in page
+                  </button>
+                </>
+              )}
             </>
           ) : (
             <>

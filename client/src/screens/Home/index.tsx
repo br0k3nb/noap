@@ -26,7 +26,7 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
-  const { userData: { _id } } = useContext(UserDataCtx) as any;
+  const { userData: { _id, settings: { theme } } } = useContext(UserDataCtx) as any;
 
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);
@@ -167,10 +167,11 @@ export default function Home(): JSX.Element {
       );
 
       fetchNotes();
-      setShowLoaderOnNavbar(false);
     } catch (err: any) {
       console.log(err);
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    } finally {
+      setShowLoaderOnNavbar(false);
     }
   };
 
@@ -241,10 +242,7 @@ export default function Home(): JSX.Element {
             showSvgLoader={showLoaderOnNavbar}
           />
         </LabelsCtx>
-        <div
-          id="dark"
-          className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`}
-        >
+        <div className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`} >
           <div className="flex flex-row h-screen">
             <Notes {...notesProps}/>
             <NavbarContext navbar={navbar} setNavbar={setNavbar}>

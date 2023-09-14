@@ -21,8 +21,10 @@ router.post("/2fa/qrcode", verifyUser, UserController.generate2FAQrcode);
 router.post("/verify-token", verifyUser, UserController.verifyIfTokenIsValid);
 router.patch("/convert/account/email", UserController.convertIntoNormalAccount);
 router.patch("/convert/account/google", UserController.convertIntoGoogleAccount);
+router.patch("/settings/change-theme/:id", verifyUser, UserController.changeAppTheme);
 router.post("/settings/note-text/:id", verifyUser, UserController.noteTextExpandedOrCondensed);
 router.post("/settings/pin-notes-folder/:id", verifyUser, UserController.showPinnedNotesInFolder);
+router.patch("/settings/global-note-background-color/:id", verifyUser, UserController.changeGlobalNoteBackgroundColor);
 
 //Notes
 router.post("/add", verifyUser, NoteController.add);
@@ -35,6 +37,7 @@ router.post("/note/rename/:id", verifyUser, NoteController.renameNote);
 router.post("/note/pin-note/:noteId", verifyUser, NoteController.pinNote);
 router.delete("/note/delete/label/:id/:noteId", verifyUser, NoteController.deleteLabel);
 router.delete("/note/delete-all/label/:noteId", verifyUser, NoteController.deleteAllLabels);
+router.patch("/settings/note-background-color/:noteId", verifyUser, NoteController.changeNoteBackgroundColor);
 
 //Labels
 router.get("/labels/:userId", verifyUser, LabelController.view);

@@ -234,6 +234,9 @@
     opacity: 1;
   }
 }
+.PlaygroundEditorTheme__listItem::marker {
+  color: inherit;
+}
 .PlaygroundEditorTheme__tableCellResizeRuler {
   display: block;
   position: absolute;
@@ -305,6 +308,7 @@
   list-style-type: inherit;
 }
 .PlaygroundEditorTheme__listItem{
+  color: inherit;
   margin: 0 32px;
 }
 .PlaygroundEditorTheme__listItemChecked,

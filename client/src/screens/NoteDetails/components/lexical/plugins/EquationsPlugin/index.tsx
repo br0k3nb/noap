@@ -49,7 +49,6 @@ export default function EquationsPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    //@ts-ignore
     if (!editor.hasNodes([EquationNode])) {
       throw new Error(
         "EquationsPlugins: EquationsNode not registered on editor"

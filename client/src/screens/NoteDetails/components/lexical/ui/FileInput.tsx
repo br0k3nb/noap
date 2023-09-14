@@ -11,14 +11,14 @@ export default function FileInput({ accept, label, onChange, 'data-test-id': dat
   return (
     <div className="mt-1">
       <div className="flex flex-row justify-between">
-        <label className="!text-gray-200 text-xs uppercase tracking-widest">{label}</label>
+        <label className="text-gray-900 dark:!text-gray-200 text-xs uppercase tracking-widest">{label}</label>
         {accept === "image/*" && (
           <p className="text-red-500 uppercase text-xs tracking-widest mb-3">Maximum size of 5mb</p>
         )}
       </div>
-      <div className="Input__wrapper ">
+      <div className="Input__wrapper">
           <input  
-            className="w-full max-w-xs file-input file-input-md border border-gray-600 file:text-gray-200 file:bg-gray-900 file:font-normal file:text-xs bg-gray-800 uppercase tracking-widest text-xs rounded-lg pr-12"
+            className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 w-full max-w-xs file-input file-input-md file:text-gray-200 file:bg-gray-900 hover:file:bg-black file:font-normal file:text-xs uppercase tracking-widest text-xs rounded-lg pr-12"
             type="file"
             accept={accept}
             onChange={(e) => onChange(e.target.files)} 
