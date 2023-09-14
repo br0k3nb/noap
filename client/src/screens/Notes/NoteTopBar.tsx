@@ -81,10 +81,10 @@ export default function NoteTopBar({
                         <p className="pl-3 pt-1">{totalDocs} notes</p>
                         <div className="flex flex-row space-x-2">
                             <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> <BsFilter size={25}/> </div>
-                            <div className="tooltip tooltip-left" data-tip="Search">
+                            <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Search">
                                 <button 
                                     type="button"
-                                    className="hover:bg-[#dadada] dark:hover:!text-gray-900 px-1 py-1 rounded"
+                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-1 py-1 rounded"
                                     onClick={() => handleSearchClick()}
                                 >
                                     <BsSearch size={25} className="py-1" />

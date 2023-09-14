@@ -73,7 +73,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
             <div className="!mr-2">
               <div className="dropdown dropdown-top">
                 <label tabIndex={0}>
-                  <div className='tooltip tooltip-right' data-tip="Label actions">
+                  <div className='tooltip tooltip-right tooltip-right-color-controller' data-tip="Label actions">
                     <MdOutlineSettings size={30} className="px-1 rotate-180 bg-[#d9dbde] hover:bg-[#c9c9c9] dark:!bg-[#202020] rounded-full mt-[1px] cursor-pointer transition-all duration-300 ease-in-out"/>
                   </div>
                 </label>
@@ -197,12 +197,12 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
         <ConfirmationModal
           open={open}
           setOpen={setOpen}
-          deleteButtonAction={deleteAllLabels}
+          actionButtonFn={deleteAllLabels}
           mainText="Are you sure you want to remove all labels attached to this note?"
           options={{  
-            mainTextCustomClassName: 'xxs:text-xs dark:text-gray-300 text-gray-900',
+            mainTextClassName: 'xxs:text-xs dark:text-gray-300 text-gray-900',
             modalWrapperClassName: "!w-96 xxs:!w-[22rem]",
-            customDeleteButtonText: "detach"
+            actionButtonText: "detach"
           }}
         />
     </div> 

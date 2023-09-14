@@ -336,7 +336,7 @@ export default function NoteDetails({
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
-              className="tooltip tooltip-right"
+              className="tooltip tooltip-right tooltip-right-color-controller"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
             >
               <button 
@@ -354,7 +354,7 @@ export default function NoteDetails({
               <>
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
-                  className="tooltip tooltip-right"
+                  className="tooltip tooltip-right tooltip-right-color-controller"
                   data-tip={`${(note?.settings.pinned || pinNote?.settings.pinned) ? "Unpin note" : "Pin note"}`}
                 >
                   <button 
@@ -370,7 +370,7 @@ export default function NoteDetails({
                 </div>
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
-                  className="tooltip tooltip-right"
+                  className="tooltip tooltip-right tooltip-right-color-controller"
                   data-tip={`Attach labels`}
                 >
                   <button 
@@ -382,7 +382,7 @@ export default function NoteDetails({
                 </div>
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
-                  className="tooltip tooltip-right"
+                  className="tooltip tooltip-right tooltip-right-color-controller"
                   data-tip={readMode ? "Edit mode" : "Read mode"}
                 >
                   <button 
@@ -398,7 +398,7 @@ export default function NoteDetails({
             <div className="dropdown hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px] cursor-pointer">
               <label tabIndex={0} className="cursor-pointer">
                 <div
-                  className="tooltip tooltip-right"
+                  className="tooltip tooltip-right tooltip-right-color-controller"
                   data-tip="Actions"
                 >
                   <AiOutlineEllipsis size={24} className="mt-[3px]" />

@@ -64,7 +64,9 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                     setUserLoggedIn(true);
                 }
                 
-                if(!data.settings.theme || (data.settings.theme && data.settings.theme === 'dark')) document.documentElement.classList.add("dark");
+                if(!data.settings.theme || (data.settings.theme && data.settings.theme === 'dark')) {
+                    document.documentElement.classList.add("dark");
+                }
                 setUserData(data);
                 setLoading(false);
                 

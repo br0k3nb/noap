@@ -82,7 +82,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
               <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[98px]"/>
               <div className="flex flex-col items-center absolute top-28">
                 <div
-                  className={`tooltip tooltip-right text-gray-100 ${showSvgLoader && 'tooltip-open'}`}
+                  className={`tooltip tooltip-right tooltip-right-color-controller ${showSvgLoader && 'tooltip-open'}`}
                   data-tip={`${showSvgLoader ? "Adding note..." : "Add new note"}`}
                 >
                   <a
@@ -97,7 +97,10 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                     }
                   </a>
                 </div>
-                <div className="tooltip tooltip-right text-gray-300" data-tip="Labels">
+                <div 
+                  className="tooltip tooltip-right tooltip-right-color-controller"
+                  data-tip="Labels"
+                >
                   <a
                     className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-stone-300 dark:border-r-[#404040]"
                     onClick={() => setOpenLabelModal(true)}
@@ -117,7 +120,7 @@ export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, label
                 >
                   <BsFillTrashFill className="text-gray-900/80 dark:text-gray-300" size={22} />
                 </button> */}
-                <div className="tooltip tooltip-right text-gray-300" data-tip="Settings">
+                <div className="tooltip tooltip-right tooltip-right-color-controller" data-tip="Settings">
                   <button
                     className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-stone-300 dark:border-r-[#404040]"
                     onClick={() => setOpenSettingsModal(true)}

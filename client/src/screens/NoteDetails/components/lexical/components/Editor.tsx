@@ -77,8 +77,6 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       }
     } = useContext(UserDataCtx) as any;
 
-    console.log(noteBackgroundColor); 
-
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);

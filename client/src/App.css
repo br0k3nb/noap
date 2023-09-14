@@ -53,6 +53,34 @@
   .PlaygroundEditorTheme__indent {
     @apply xxs:!ps-0
   }
+  .tooltip-right-color-controller {
+    @apply
+    dark:before:text-gray-300 
+    before:text-gray-900 
+    before:bg-[#ffffff] 
+    dark:before:bg-[#0f1011] 
+      before:border
+    before:border-gray-900 
+    dark:before:border-gray-500 
+      after:!border-t-transparent 
+    dark:after:border-r-gray-500
+      after:border-b-transparent 
+      after:border-l-transparent
+  }
+  .tooltip-left-color-controller {
+    @apply
+    dark:before:text-gray-300 
+    before:text-gray-900 
+    before:bg-[#ffffff] 
+    dark:before:bg-[#0f1011] 
+      before:border
+    before:border-gray-900 
+    dark:before:border-gray-500 
+      after:!border-t-transparent
+    dark:after:!border-l-gray-400
+      after:border-b-transparent 
+      after:border-r-transparent
+  }
 }
 
 @font-face {

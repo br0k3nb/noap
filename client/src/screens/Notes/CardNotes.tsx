@@ -7,7 +7,6 @@ import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icon
 
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
-import ghost from '../../assets/ghost.png';
 import no_notes_found from '../../assets/no_notes_found.svg';
 import Loader from "../../components/Loader";
 
@@ -80,11 +79,13 @@ export default function CardNotes({
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="!z-0 collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 hover:!border-gray-900 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 hover:!border-gray-900 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
-                                                            : 344
+                                                            : 344,
+                                                        zIndex: 0,
+                                                        position: 'static'
                                                     }}
                                                 >
                                                     <input 
@@ -127,15 +128,14 @@ export default function CardNotes({
                                                                     />
                                                                 )
                                                             })} 
-                                                            <div className="flex flex-row items-center space-x-6 justify-center w-full mt-5">
+                                                            <div className="flex flex-row items-center space-x-10 justify-center w-full mt-5">
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesPage > 1 ? false : true}
                                                                     onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
                                                                 >
-                                                                    prev page
+                                                                    previous page
                                                                 </button>
-                                                                <p className="text-[11px] uppercase">OR</p>
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinnedNotesHasNextPage ? false : true}
@@ -149,7 +149,7 @@ export default function CardNotes({
                                                 </div>
                                             ) : (
                                                 <div className="xxs:px-2">
-                                                    <div className="mt-2 mb-10 flex flex-row space-x-2 justify-center items-center text-gray-300">
+                                                    <div className="mt-2 mb-10 flex flex-row space-x-2 justify-center items-center">
                                                         <p className="uppercase text-xs tracking-widest">Pinned notes</p>
                                                         <BsFillPinAngleFill />
                                                     </div> 
@@ -167,15 +167,14 @@ export default function CardNotes({
                                                                 />
                                                             )
                                                         })} 
-                                                        <div className="flex flex-row items-center space-x-6 justify-center w-full mt-5">
+                                                        <div className="flex flex-row items-center space-x-10 justify-center w-full mt-5">
                                                             <button 
                                                                 className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                 disabled={pinnedNotesPage > 1 ? false : true}
                                                                 onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
                                                             >
-                                                                prev page
+                                                                previous page
                                                             </button>
-                                                            <p className="text-[11px] uppercase text-gray-400">OR</p>
                                                             <button 
                                                                 className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                 disabled={pinnedNotesHasNextPage ? false : true}
@@ -295,7 +294,11 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                     <div className="flex space-x-1">
                                         <p 
                                             className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
-                                            style={{ backgroundColor: color, borderColor: color, color: fontColor }}
+                                            style={{ 
+                                                backgroundColor: color, 
+                                                borderColor: color, 
+                                                color: fontColor 
+                                            }}
                                         >
                                             {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
                                         </p>
