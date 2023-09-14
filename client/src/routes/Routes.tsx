@@ -16,10 +16,16 @@ import LoginRedirect from "./components/LoginRedirect";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UserDataContext from '../context/UserDataContext';
 
-const defaultValue = { _id: "", name: "", settings: { }, TFAEnabled: true };
+const default_user_data_value = { 
+  _id: "", 
+  name: "", 
+  settings: { noteTextExpanded: false }, 
+  TFAEnabled: true, 
+  theme: '' 
+};
 
 export default function RoutesApp() {
-  const [userData, setUserData] = useState(defaultValue);
+  const [userData, setUserData] = useState(default_user_data_value);
 
   return (
     <BrowserRouter>
