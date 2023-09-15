@@ -1,11 +1,31 @@
 import "./index.css";
 
-export default function Loader() {
+type Props = {
+  width?: string | number;
+  height?: string | number;
+};
+
+export default function Loader({ width, height }: Props) {
   return (
     <div className="bouncing-loader">
-        <div></div>
-        <div></div>
-        <div></div>
+        <div 
+          style={{ 
+            width: width ? width : 'inherit',
+            height: height ? height : 'inherit',
+          }}
+        />
+        <div
+          style={{ 
+            width: width ? width : 'inherit',
+            height: height ? height : 'inherit',
+          }}
+        />
+        <div
+          style={{ 
+            width: width ? width : 'inherit',
+            height: height ? height : 'inherit',
+          }}
+        />
     </div>
   );
 };

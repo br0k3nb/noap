@@ -43,12 +43,11 @@ export default function RoutesApp() {
               element={<ProtectedRoute />}
             >
               <Route index element={<Home />} />
+              <Route path='note/:noteId' element={<Home />} />
             </Route>
 
             <Route path="/help" element={<LoginHelp />} />
-
             <Route path="/sign-up" element={<SignUp />} />
-
             <Route path="/*" element={<Page404 />} />
           </Routes>
         </AuthProvider>

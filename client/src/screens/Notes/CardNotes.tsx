@@ -24,14 +24,14 @@ type Props = {
     pinnedNotesHasNextPage: boolean;
     addNewNote: () => Promise<void>;
     setExpanded: Dispatch<SetStateAction<boolean>>;
-    notes: FieldArrayWithId<Notes, "note", "id">[];
-    pinnedNotes: FieldArrayWithId<Notes, "note", "id">[];
+    notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
+    pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
     setPinnedNotesPage: Dispatch<SetStateAction<number>>; 
 };
 
 export default function CardNotes({ 
     page, 
-    notes,
+    notesMetadata,
     search,
     isFetching, 
     pinnedNotes,
@@ -72,7 +72,7 @@ export default function CardNotes({
                     </div>
                 ) : (
                     <>
-                        {notes.length > 0 ? (
+                        {notesMetadata.length > 0 ? (
                             <div className="w-fit xxs:!w-screen lg:!w-[360px] mx-auto">
                                 {(pinnedNotes.length > 0 && page === 1) && (
                                     <>
@@ -119,12 +119,13 @@ export default function CardNotes({
                                                                     <Cards  
                                                                         key={pinnedNotes._id}
                                                                         idx={idx}
-                                                                        notes={pinnedNotes}
+                                                                        note={pinnedNotes}
                                                                         noteContext={noteContext}
                                                                         customWidth={"!w-[145px] xxs:!w-[142.5px]"}
                                                                         handleNoteClick={handleNoteClick}
                                                                         days={days}
                                                                         hours={hours}
+                                                                        noteArraySize={(pinnedNotes as any).length}
                                                                     />
                                                                 )
                                                             })} 
@@ -161,9 +162,10 @@ export default function CardNotes({
                                                                     idx={idx}
                                                                     days={days}
                                                                     hours={hours}
-                                                                    notes={pinnedNotes}
+                                                                    note={pinnedNotes}
                                                                     noteContext={noteContext}
                                                                     handleNoteClick={handleNoteClick}
+                                                                    noteArraySize={(pinnedNotes as any).length}
                                                                 />
                                                             )
                                                         })} 
@@ -201,16 +203,17 @@ export default function CardNotes({
                                     </>
                                 )}
                                 <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-4 lg:gap-x-3 mb-48 xxs:mb-64 justify-center items-center">
-                                    {notes.map((unpinnedNotes, idx) => {
+                                    {notesMetadata.map((unpinnedNotes, idx) => {
                                         return (
                                             <Cards  
                                                 key={unpinnedNotes._id}
                                                 idx={idx}
                                                 days={days}
                                                 hours={hours}
-                                                notes={unpinnedNotes}
+                                                note={unpinnedNotes}
                                                 noteContext={noteContext}
                                                 handleNoteClick={handleNoteClick}
+                                                noteArraySize={notesMetadata.length}
                                             />
                                         )  
                                     })}
@@ -248,7 +251,8 @@ export default function CardNotes({
 }
 
 type CardsProps = {
-    notes: any;
+    note: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
+    noteArraySize: number;
     idx: number;
     noteContext: any;
     customWidth?: number | string;
@@ -258,15 +262,27 @@ type CardsProps = {
 
 };
 
-export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, customWidth}: CardsProps) {
-    const { image, labels, _id, body, createdAt, updatedAt, name: noteName } = notes;
-    const { color, type, fontColor, name } = labels[0] || {};
+export function Cards ({ note, idx, noteContext, handleNoteClick, days, hours, customWidth, noteArraySize }: CardsProps) {
+    const { image, label, _id, body, createdAt, updatedAt, name: noteName, labelArraySize } = note;
+    const { color, type, fontColor, name } = label || {};
+
+    const location = useLocation();
+
+    const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
+    const [currentUrl] = findPageInURL.exec(location.pathname) as Array<string>;
+
+    const formatCurrentURL = () => {
+        if(currentUrl[0] === '/') return currentUrl.slice(1, currentUrl.length);
+        else return currentUrl;
+    };
 
     return (
-        <a 
-            className={`flex flex-wrap cursor-pointer ${idx === notes.length - 1 && "mb-48"}`} 
-            onClick={() => handleNoteClick(_id)} 
+        <Link   
             key={_id}
+            relative="path"
+            to={`/${formatCurrentURL()}/note/${_id}`}
+            className={`flex flex-wrap cursor-pointer ${idx === noteArraySize && "mb-48"}`} 
+            onClick={() => handleNoteClick(_id)}
         >
             <div 
                 className={`
@@ -280,15 +296,15 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     <div 
                         className={`
                             w-[143px] xxs:w-[135px] !mb-1 line-clamp-7 pl-1
-                            ${!labels.length && image === '' && "!line-clamp-8"}
-                            ${labels.length && image !== '' && "!line-clamp-5"}
-                            ${!labels.length && image !== '' && "!line-clamp-6"}
+                            ${!labelArraySize && image === '' && "!line-clamp-8"}
+                            ${labelArraySize && image !== '' && "!line-clamp-5"}
+                            ${!labelArraySize && image !== '' && "!line-clamp-6"}
                             ${customWidth && "!w-[121px] xxs:!w-[122.5px] !pl-[5px]"}
                         `}
                     >
                         {body}
                     </div>
-                    {labels && labels.length > 0 && (
+                    {label && labelArraySize > 0 && (
                         <div className="mt-1">
                             {type === "default" ? (
                                     <div className="flex space-x-1">
@@ -302,9 +318,11 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                         >
                                             {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
                                         </p>
-                                        {labels.length > 1 && (
+                                        {labelArraySize > 1 && (
                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
-                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
+                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">
+                                                {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize)}
+                                            </p>
                                         </div>
                                         )}
                                     </div> 
@@ -316,9 +334,11 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                                         >
                                             {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
                                         </p>
-                                        {labels.length > 1 && (
+                                        {labelArraySize > 1 && (
                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
-                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">{'+ ' + (labels.length - 1)}</p>
+                                            <p className="text-[9px] ml-[4.5px] mt-[4px]">
+                                                {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize)}
+                                            </p>
                                         </div>
                                         )}
                                     </div>
@@ -337,6 +357,6 @@ export function Cards ({ notes, idx, noteContext, handleNoteClick, days, hours, 
                     />
                 )}
             </div>
-        </a>
+        </Link>
     );
 }

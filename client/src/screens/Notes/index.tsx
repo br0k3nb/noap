@@ -22,14 +22,14 @@ type Props = {
   setSearch: Dispatch<SetStateAction<string>>;
   setNavbar: Dispatch<SetStateAction<boolean>>;
   setExpanded: Dispatch<SetStateAction<boolean>>;
-  notes: FieldArrayWithId<Notes, "note", "id">[];
-  pinnedNotes: FieldArrayWithId<Notes, "note", "id">[];
+  notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
+  pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
   setPinnedNotesPage: Dispatch<SetStateAction<number>>;
 };
 
 export default function Notes({ 
     page, 
-    notes, 
+    notesMetadata, 
     navbar, 
     search, 
     setPage, 
@@ -68,7 +68,7 @@ export default function Notes({
 
     const cardNotesProps = { 
         page, 
-        notes, 
+        notesMetadata, 
         search, 
         isFetching, 
         pinnedNotes,

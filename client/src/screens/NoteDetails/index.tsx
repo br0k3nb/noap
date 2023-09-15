@@ -33,6 +33,7 @@ import { toastAlert } from "../../components/Alert/Alert";
 import { UserDataCtx } from "../../context/UserDataContext";
 import ColorPicker from "./components/lexical/ui/ColorPicker";
 import NoteSettingsContext from "../../context/NoteSettingsCtx";
+import Loader from "../../components/Loader";
 
 import Modal from "../../components/Modal";
 
@@ -44,16 +45,18 @@ import "moment/locale/pt-br";
 type Props = {
   setPinnedNotesPage: Dispatch<SetStateAction<number>>;
   labels: FieldArrayWithId<Labels, "labels", "id">[];
-  appendPinNotes: UseFieldArrayAppend<Notes, "note">;
-  pinNotes: FieldArrayWithId<Notes, "note", "id">[];
-  notes: FieldArrayWithId<Notes, "note", "id">[];
+  appendPinNotes: UseFieldArrayAppend<NoteMetadata, "noteMetadata">;
+  pinNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
+  notes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
   setExpanded: Dispatch<SetStateAction<boolean>>;
-  append: UseFieldArrayAppend<Notes, "note">;
+  append: UseFieldArrayAppend<NoteMetadata, "noteMetadata">;
   deleteNote: (_id: string) => Promise<void>;
   removePinNotes: UseFieldArrayRemove;
   remove: UseFieldArrayRemove;
+  selectedNoteData: NoteData | null;
   labelIsFetching: boolean;
   expanded: boolean;
+  noteDataIsFetching: boolean;
 };
 
 const default_note_settings = {
@@ -75,7 +78,9 @@ export default function NoteDetails({
   appendPinNotes,
   removePinNotes,
   labelIsFetching,
-  setPinnedNotesPage
+  selectedNoteData,
+  setPinnedNotesPage,
+  noteDataIsFetching
 }: Props) {
   const { selectedNote, setSelectedNote } = useContext(NoteCtx) || {};
   const { userData, setUserData } = useContext(UserDataCtx) as any;
@@ -141,7 +146,7 @@ export default function NoteDetails({
     setOpen(false);
 
     deleteNote(selectedNote as string);
-    remove(notes.indexOf(note as FieldArrayWithId<Notes, "note", "id">));
+    remove(notes.indexOf(note as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">));
     setTimeout(() => fetchNotes(), 500);
   };
 
@@ -206,8 +211,8 @@ export default function NoteDetails({
       }
     });
 
-    if(note?.labels && note.labels.length > 0) {
-      note.labels.forEach(label => {
+    if(selectedNoteData?.labels && selectedNoteData.labels.length > 0) {
+      selectedNoteData.labels.forEach(label => {
         fieldsToReset = {
           ...fieldsToReset,
           [label._id]: true
@@ -233,17 +238,17 @@ export default function NoteDetails({
       toastAlert({ icon: "success", title: message, timer: 2000 });
 
       if(pinNote?.settings.pinned) {
-        append(pinNote);
+        append(pinNote as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">);
 
         if(pinNotes.length === 1) {
           setPinnedNotesPage((prevPage) => prevPage - 1);
-          removePinNotes(pinNotes.indexOf(pinNote as FieldArrayWithId<Notes, "note", "id">));
+          removePinNotes(pinNotes.indexOf(pinNote));
         }
-        else removePinNotes(pinNotes.indexOf(pinNote as FieldArrayWithId<Notes, "note", "id">));
+        else removePinNotes(pinNotes.indexOf(pinNote));
       }
       else {
-        appendPinNotes(note as FieldArrayWithId<Notes, "note", "id">);
-        remove(notes.indexOf(note as FieldArrayWithId<Notes, "note", "id">));
+        appendPinNotes(note as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">);
+        remove(notes.indexOf(note as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">));
       }
 
       fetchNotes();
@@ -332,7 +337,7 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {selectedNote !== null && (
+      {(selectedNote && selectedNoteData) && (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
@@ -694,14 +699,24 @@ export default function NoteDetails({
         </div>
       )}
 
-      {selectedNote !== null ? (
+      {!noteDataIsFetching && (selectedNote !== null && selectedNoteData) ? (
         <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
             <NoteSettingsContext
               noteSettings={noteSettings}
               setNoteSettings={setNoteSettings}
             >
-              <TextEditor notes={notes} pinNotes={pinNotes} />
+              <TextEditor 
+                noteData={selectedNoteData}
+              />
             </NoteSettingsContext>
+        </div>
+      ) : noteDataIsFetching ? (
+        <div className="flex flex-col items-center absolute top-[24rem] left-[25rem] right-0">
+          <Loader 
+            width={25}
+            height={25}
+          />
+          <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center my-auto">

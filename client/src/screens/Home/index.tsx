@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -26,9 +26,10 @@ import "../../styles/themes/dark.css";
 import "../../styles/themes/light.css";
 
 export default function Home(): JSX.Element {
-  const { userData: { _id, settings: { theme } } } = useContext(UserDataCtx) as any;
+  const { userData: { _id } } = useContext(UserDataCtx) as any;
 
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
+  const [selectedNoteData, setSelectedNoteData] = useState<NoteData | null>(null);
   const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);
@@ -50,15 +51,15 @@ export default function Home(): JSX.Element {
 
   const location = useLocation();
 
-  const { control } = useForm<Notes>();
+  const { control } = useForm<NoteMetadata>();
   const { control: labelsControl } = useForm<Labels>();
-  const { control: pinnedNotesControl } = useForm<Notes>();
+  const { control: pinnedNotesControl } = useForm<NoteMetadata>();
 
-  const { fields, append, replace, remove } = useFieldArray({ control, name: "note" });
+  const { fields, append, replace, remove } = useFieldArray({ control, name: "noteMetadata" });
 
   const { fields: pinNotes, append: appendPinNotes, replace: replacePinNotes, remove: removePinNotes } = useFieldArray({ 
     control: pinnedNotesControl, 
-    name: "note"
+    name: "noteMetadata"
   });
 
   const { fields: labels, append: appendLabels, replace: replaceLabels, remove: removeLabels } = useFieldArray({
@@ -67,15 +68,25 @@ export default function Home(): JSX.Element {
   });
   
   const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
+  const findNoteIdInURL = new RegExp(`note\/(.*)`);
+
   const getPageInURL = findPageInURL.exec(location.pathname);
+  const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
   
+  useEffect(() => {
+    if(getNoteIdInURL) {
+      setSelectedNote(getNoteIdInURL[1]);
+      setNoteIsExpanded(window.outerWidth <= 1030 ? true : false);
+    }
+  }, [getNoteIdInURL]);
+
   const prevPinNotesPage = useRef(1);
 
   //using these refs to prevent appending the same array two times
   const fetchedNotes = useRef(false);
   const fetchedLabels = useRef(false);
 
-  const fetchNotes = async () => { 
+  const fetchNotesMetadata = async () => { 
     if(getPageInURL) setPage(Number(getPageInURL[1]));
 
     const pageUrl = getPageInURL ? getPageInURL[1] : 1;
@@ -124,6 +135,24 @@ export default function Home(): JSX.Element {
     }
   };
 
+  const fetchSelectedNoteData = async () => { 
+    if(selectedNote && _id) {
+      try {
+        const { data: { note } } = await api.get(`/note/${selectedNote}`, {
+          params: { 
+            author: _id
+          }
+        });
+
+        setSelectedNoteData(note);
+      } catch (err: any) {
+        console.log(err);
+        toastAlert({ icon: "error", title: err.message, timer: 3000 });
+        setSelectedNoteData(null);
+      } 
+    }
+  };
+
   const fetchLabels = async () => {
     if(_id) {
       try {
@@ -166,7 +195,7 @@ export default function Home(): JSX.Element {
         }
       );
 
-      fetchNotes();
+      fetchNotesMetadata();
     } catch (err: any) {
       console.log(err);
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
@@ -184,8 +213,12 @@ export default function Home(): JSX.Element {
     }
   };
 
-  const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL, pinnedNotesPage, _id], fetchNotes, {
+  const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL, pinnedNotesPage, _id], fetchNotesMetadata, {
     refetchInterval: 300000,
+    refetchOnWindowFocus: false
+  });
+
+  const { isFetching: noteDataIsFetching } = useQuery(["fetchNoteData", selectedNote, getNoteIdInURL, _id], fetchSelectedNoteData, {
     refetchOnWindowFocus: false
   });
 
@@ -204,7 +237,7 @@ export default function Home(): JSX.Element {
     isFetching,
     addNewNote,
     hasNextPage,
-    notes: fields,
+    notesMetadata: fields,
     totalPinnedDocs,
     pinnedNotes: pinNotes,
     expanded: noteIsExpanded,
@@ -246,7 +279,10 @@ export default function Home(): JSX.Element {
           <div className="flex flex-row h-screen">
             <Notes {...notesProps}/>
             <NavbarContext navbar={navbar} setNavbar={setNavbar}>
-              <RefetchContext fetchNotes={fetchNotes} isFetching={isFetching}>
+              <RefetchContext 
+                fetchNotes={fetchNotesMetadata} 
+                isFetching={isFetching}
+              >
                 <LabelsCtx  
                   pageLabel={pageLabel}
                   searchLabel={searchLabel}
@@ -266,7 +302,9 @@ export default function Home(): JSX.Element {
                     removePinNotes={removePinNotes}
                     setExpanded={setNoteIsExpanded}
                     labelIsFetching={labelIsFetching}
+                    selectedNoteData={selectedNoteData}
                     setPinnedNotesPage={setPinnedNotesPage}
+                    noteDataIsFetching={noteDataIsFetching}
                   />
                 </LabelsCtx>
               </RefetchContext>

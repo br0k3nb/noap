@@ -22,11 +22,10 @@ import api from "../../../../services/api";
 import Editor from "./components/Editor";
 
 type Props = { 
-  notes: FieldArrayWithId<Notes, "note", "id">[];
-  pinNotes: FieldArrayWithId<Notes, "note", "id">[];
+  noteData: NoteData;
 };
 
-export default function App({ notes, pinNotes }: Props): JSX.Element {
+export default function App({ noteData }: Props): JSX.Element {
   const editorRef = useRef<any>(null);
   const lastSelectedNotes = useRef<string | null | undefined>(null);
 
@@ -34,9 +33,6 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
   
   const { selectedNote } = useContext(NoteCtx) || {};
   const refetchNoteCtx = useContext(RefetchCtx);
-  
-  const note = notes.find(({_id}) => _id === selectedNote);
-  const pinNote = pinNotes.find(({_id}) => _id === selectedNote);
   
   useEffect(() => { lastSelectedNotes.current = selectedNote }, [selectedNote]);
     
@@ -75,7 +71,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
               image: imageSrc,
               state: resultState.state,
               _id: selectedNote,
-              stateId: note ?  note?.state._id : pinNote?.state._id
+              stateId: noteData.state._id
             }
           );
           
@@ -103,12 +99,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
 
     if(lastSelectedNotes.current !== selectedNote) {
       setTimeout(() => {
-        const getState = () => {
-          if(note) return note.state.state;
-          else return pinNote?.state.state;
-        };        
-
-        const editorState = editor.parseEditorState((getState() as string));
+        const editorState = editor.parseEditorState((noteData.state.state));
         editor.setEditorState(editorState);
         editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
       }); 
@@ -124,7 +115,7 @@ export default function App({ notes, pinNotes }: Props): JSX.Element {
               {/* @ts-ignore */}
               <UpdatePlugin />  
               <Editor 
-                note={note ? note : pinNote} 
+                note={noteData} 
                 ref={editorRef} 
                 save={saveNote}
                 saveSpinner={saveSpinner} 
