@@ -1,6 +1,7 @@
 import Note from '../models/Note.js';
 import NoteState from '../models/NoteState.js';
 import Label from '../models/Label.js';
+import { Types } from 'mongoose';
 
 export default {
     async view(req, res) {
@@ -20,19 +21,24 @@ export default {
                                 author,
                                 'settings.pinned': false
                             }
-                        }, 
+                        },
                         {
-                            $lookup: {
-                              from: 'noteStates', 
-                              localField: 'state', 
-                              foreignField: '_id', 
-                              as: 'state'
-                            }
-                        }, 
-                        {
-                            $unwind: {
-                                path: '$state', 
-                                preserveNullAndEmptyArrays: false
+                            $project: {
+                                author:1, 
+                                name: 1,
+                                body: 1,
+                                image: 1,
+                                settings: 1,
+                                labels: 1,
+                                labelArraySize: { 
+                                    $cond: {
+                                        if: { $isArray: "$labels" },
+                                        then: { $size: "$labels" },
+                                        else: 0
+                                    }
+                                },
+                                createdAt: 1,
+                                updatedAt: 1,
                             }
                         },
                         {
@@ -55,9 +61,9 @@ export default {
                                 name: { $first: "$name"},
                                 body: { $first: "$body"},
                                 image: { $first: "$image" },
-                                state: { $first: "$state" },
                                 settings: { $first: "$settings" },
-                                labels: { $push: "$labels" },
+                                label: { $first: "$labels" },
+                                labelArraySize: {$first: "$labelArraySize"},
                                 createdAt: { $first: "$createdAt" },
                                 updatedAt: { $first: "$updatedAt" }
                             }
@@ -77,17 +83,22 @@ export default {
                             }
                         },
                         {
-                            $lookup: {
-                              from: 'noteStates', 
-                              localField: 'state', 
-                              foreignField: '_id', 
-                              as: 'state'
-                            }
-                        }, 
-                        {
-                            $unwind: {
-                                path: '$state', 
-                                preserveNullAndEmptyArrays: false
+                            $project: {
+                                author:1, 
+                                name: 1,
+                                body: 1,
+                                image: 1,
+                                settings: 1,
+                                labels: 1,
+                                labelArraySize: { 
+                                    $cond: { 
+                                        if: { $isArray: "$labels" }, 
+                                        then: { $size: "$labels" }, 
+                                        else: 0
+                                    } 
+                                },
+                                createdAt: 1,
+                                updatedAt: 1,
                             }
                         },
                         {
@@ -110,9 +121,9 @@ export default {
                                 name: { $first: "$name"},
                                 body: { $first: "$body"},
                                 image: { $first: "$image" },
-                                state: { $first: "$state" },
                                 settings: { $first: "$settings" },
-                                labels: { $push: "$labels" },
+                                label: { $first: "$labels" },
+                                labelArraySize: {$first: "$labelArraySize"},
                                 createdAt: { $first: "$createdAt" },
                                 updatedAt: { $first: "$updatedAt" }
                             }
@@ -145,6 +156,25 @@ export default {
                             }
                         }, 
                         {
+                            $project: {
+                                author:1, 
+                                name: 1,
+                                body: 1,
+                                image: 1,
+                                settings: 1,
+                                labels: 1,
+                                labelArraySize: { 
+                                    $cond: { 
+                                        if: { $isArray: "$labels" }, 
+                                        then: { $size: "$labels" }, 
+                                        else: 0
+                                    } 
+                                },
+                                createdAt: 1,
+                                updatedAt: 1,
+                            }
+                        },
+                        {
                             $lookup: {
                               from: 'noteStates', 
                               localField: 'state', 
@@ -180,7 +210,8 @@ export default {
                                 image: { $first: "$image" },
                                 state: { $first: "$state" },
                                 settings: { $first: "$settings" },
-                                labels: { $push: "$labels" },
+                                label: { $first: "$labels" },
+                                labelArraySize: {$first: "$labelArraySize"},
                                 createdAt: { $first: "$createdAt" },
                                 updatedAt: { $first: "$updatedAt" }
                             }
@@ -196,16 +227,74 @@ export default {
             }
 
         } catch (err) {
+            console.log(err);
             res.status(400).json({ message: err });
         }
     },
     async getNote(req, res) {
         try {
             const { id } = req.params;
-            const note = await Note.findById(id);
-            res.status(200).json(note);
+            const { author } = req.query;
+
+            const aggregate = Note.aggregate(
+                [
+                    {
+                        $match: { _id: Types.ObjectId(id) }
+                    }, 
+                    {
+                        $lookup: {
+                          from: 'noteStates', 
+                          localField: 'state', 
+                          foreignField: '_id', 
+                          as: 'state'
+                        }
+                    }, 
+                    {
+                        $unwind: {
+                            path: '$state', 
+                            preserveNullAndEmptyArrays: false
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "labels",
+                            localField: "labels",
+                            foreignField: "_id",
+                            as: "labels"
+                        }
+                    },
+                    {   $unwind: {
+                            path: '$labels',
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$_id",
+                            author: { $first: "$author" },
+                            name: { $first: "$name"},
+                            body: { $first: "$body"},
+                            image: { $first: "$image" },
+                            state: { $first: "$state" },
+                            settings: { $first: "$settings" },
+                            labels: { $push: "$labels" },
+                            createdAt: { $first: "$createdAt" },
+                            updatedAt: { $first: "$updatedAt" }
+                        }
+                    }
+                ]
+            );
+
+            const noteData = await Note.aggregatePaginate(aggregate);
+
+            if(noteData.docs && noteData.docs[0].author !== author) {
+                return res.status(401).json({ message: "You don't have permission to access this note!", code: 1 });
+            }
+
+            res.status(200).json({ note: noteData.docs[0] });
         } catch (err) {
-            res.status(400).json({ message: err });
+            console.log(err);
+            res.status(400).json({ message: "Error fetching note contents" });
         }
     },
     async add(req , res) {
@@ -362,16 +451,7 @@ export default {
                     ...getNoteData.settings,
                     noteBackgroundColor
                 }
-            })
-
-            // const getUserData = await User.findById(id);
-
-            // await User.findByIdAndUpdate({ _id: id }, {
-            //     settings: {
-            //         ...getUserData.settings,
-            //         globalNoteBackgroundColor
-            //     }
-            // });
+            });
 
             return req.status(200).json({ message: "Updated!" });
         } catch (err) {
