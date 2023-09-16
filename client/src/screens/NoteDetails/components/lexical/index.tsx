@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState, useContext } from "react";
-import { FieldArrayWithId } from "react-hook-form";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";

@@ -1,5 +1,20 @@
-import { useState, useEffect, useContext, useRef, Dispatch, SetStateAction } from "react";
-import { useForm, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend, FieldValues } from "react-hook-form";
+import { 
+  useState, 
+  useEffect, 
+  useContext, 
+  useRef, 
+  Dispatch, 
+  SetStateAction
+} from "react";
+import { 
+  useForm, 
+  FieldArrayWithId, 
+  UseFieldArrayRemove, 
+  UseFieldArrayAppend, 
+  FieldValues
+} from "react-hook-form";
+
+import { useLocation, Link, useLoaderData } from 'react-router-dom';
 
 import {
   AiOutlineFullscreen,
@@ -99,6 +114,8 @@ export default function NoteDetails({
   const { register, reset, handleSubmit } = useForm();
   const { register: registerNoteName, reset: resetNoteName, handleSubmit: handleSubmitNoteName } = useForm();
 
+  const location = useLocation();
+
   const note = notes.find(({ _id }) => _id === selectedNote);
   const pinNote = pinNotes.find(({ _id }) => _id === selectedNote);
 
@@ -151,7 +168,7 @@ export default function NoteDetails({
   };
 
   const handleExpand = () => {
-    if (window.outerWidth <= 1030 && selectedNote !== null) {
+    if (window.outerWidth <= 1030 && selectedNote) {
       if(setSelectedNote) setSelectedNote(null);
       if(readMode) document.exitFullscreen();
 
@@ -258,7 +275,6 @@ export default function NoteDetails({
     }
   };
 
-  // const hours = (date: string) => moment(date).format("LT");
   const days = (date: string) => moment(date).format("ll");
 
   const lastUpdated = () => {
@@ -337,23 +353,28 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {(selectedNote && selectedNoteData) && (
+      {!noteDataIsFetching && (selectedNote && selectedNoteData)  ? (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
               className="tooltip tooltip-right tooltip-right-color-controller"
               data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
             >
-              <button 
-                className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-1 py-1 rounded"
+              <Link
                 onClick={() => handleExpand()}
+                to={`${innerWidth < 1030 ? location.pathname.slice(0,13) : location.pathname}`}
               >
                 {expanded ? (
-                  <AiOutlineFullscreenExit size={22} />
+                  <div className="hover:!bg-[#dadada] dark:hover:!bg-stone-600 px-1 py-1 rounded">
+                    <AiOutlineFullscreenExit size={22} />
+                  </div>
+                  
                 ) : (
-                  <AiOutlineFullscreen size={22} />
+                  <div className="hover:!bg-[#dadada] dark:hover:!bg-stone-600 px-1 py-1 rounded">
+                    <AiOutlineFullscreen size={22} />
+                  </div>
                 )}
-              </button>
+              </Link>
             </div>
             {innerWidth > 1030 && (
               <>
@@ -697,27 +718,14 @@ export default function NoteDetails({
             </div>
           )}
         </div>
-      )}
-
-      {!noteDataIsFetching && (selectedNote !== null && selectedNoteData) ? (
-        <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
-            <NoteSettingsContext
-              noteSettings={noteSettings}
-              setNoteSettings={setNoteSettings}
-            >
-              <TextEditor 
-                noteData={selectedNoteData}
-              />
-            </NoteSettingsContext>
-        </div>
       ) : noteDataIsFetching ? (
-        <div className="flex flex-col items-center absolute top-[24rem] left-[25rem] right-0">
-          <Loader 
-            width={25}
-            height={25}
-          />
-          <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
-        </div>
+          <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[19.5rem] left-[14rem] xxs:!left-0">
+            <Loader 
+              width={25}
+              height={25}
+            />
+            <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
+          </div>
       ) : (
         <div className="flex flex-col justify-center items-center my-auto">
             <img
@@ -728,6 +736,19 @@ export default function NoteDetails({
             <p className="text-xl font-light text-center">
               The selected note will appear here...
             </p>
+        </div>
+      )}
+
+      {!noteDataIsFetching && (selectedNote !== null && selectedNoteData) && (
+        <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
+            <NoteSettingsContext
+              noteSettings={noteSettings}
+              setNoteSettings={setNoteSettings}
+            >
+              <TextEditor 
+                noteData={selectedNoteData}
+              />
+            </NoteSettingsContext>
         </div>
       )}
     </div>

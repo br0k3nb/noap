@@ -96,6 +96,10 @@ html {
   overflow: hidden !important;
 }
 
+html.dark {
+  background-color: #0f1011;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */

@@ -61,7 +61,7 @@ type Props = {
   save: (currentState: EditorState) => Promise<void>;
 };
 
-const defaultScreenSize = { width: window.innerWidth, height: window.innerHeight };
+const defaultScreenSize = { width: innerWidth, height: innerHeight };
 
 const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
@@ -114,8 +114,8 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const getNavbar = document.getElementById("pc-navbar") as any;  
     
     const baseStyle = {
-      marginTop: 50,
-      marginBottom: globalNoteBackgroundColor ? 90 : 80,
+      marginTop: currentScreenSize.width < 1030 ? 0 : 50,
+      marginBottom: currentScreenSize.width < 1030 ? 86 : 80,
       paddingRight: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
       paddingLeft: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
       backgroundColor: noteBackgroundColor ? noteBackgroundColor : globalNoteBackgroundColor ? globalNoteBackgroundColor : 'none',
@@ -138,7 +138,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
               contentEditable={
                 <div className="editor dark:!bg-[#0f1011] bg-[#ffffff]" ref={ref}>
                   <div
-                    className="!overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-800 overflow-x-hidden" 
+                    className={`!overflow-y-scroll overflow-x-hidden`}
                     id="editor-parent-container"                   
                     style={!expanded && getNavbar?.checkVisibility() ? { 
                         width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
@@ -150,7 +150,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                     }  
                   >
                     <div                        
-                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10 rounded-xl"
+                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10"
                       style={
                         !expanded && getNavbar?.checkVisibility() ? {
                           ...baseStyle,

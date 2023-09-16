@@ -74,9 +74,9 @@ export default function Home(): JSX.Element {
   const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
   
   useEffect(() => {
-    if(getNoteIdInURL) {
+    if(getNoteIdInURL && !selectedNote) {
       setSelectedNote(getNoteIdInURL[1]);
-      setNoteIsExpanded(window.outerWidth <= 1030 ? true : false);
+      setNoteIsExpanded(innerWidth < 1030 ? true : false);
     }
   }, [getNoteIdInURL]);
 
