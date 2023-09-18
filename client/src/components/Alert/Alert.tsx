@@ -40,13 +40,14 @@ export function toastAlert ({ icon, title, text, timer, confirmButton, position 
     return (
         MySwal.fire({
             icon: icon,
-            iconColor: 'white',
             title: title,
             text: text,
             toast: true,
             showConfirmButton: confirmButton === undefined ? (false) : confirmButton,
             position: position !== undefined ? (position): 'bottom-right',
-            customClass: { popup: 'colored-toast' },
+            customClass: { 
+                popup: 'colored-toast dark:!bg-[#181818] !bg-[#eaeaea] dark:!text-white !text-gray-900',
+            },
             timer: timer,
             timerProgressBar: true
         })

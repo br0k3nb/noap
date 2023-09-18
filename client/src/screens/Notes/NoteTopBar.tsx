@@ -36,8 +36,6 @@ export default function NoteTopBar({
     const { selectedNote, setSelectedNote } = useContext(NoteCtx) as any;
     const location = useLocation();
 
-    const baseURL = location.pathname.slice(0, (location.pathname.length - String(page).length));
-
     const handleSearchClick = () => {
         setShowSearch(showSearch ? false : true);
         setSearch('');
@@ -58,6 +56,31 @@ export default function NoteTopBar({
         selectedNote && setSelectedNote(null);
     }
 
+    const handleLinkClick = (direction: string) => {
+        const findNoteIdInURL = new RegExp(`note\/(.*)`);
+        const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
+    
+        const getPageInURL = findPageInURL.exec(location.pathname) as Array<string>;
+        const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+
+        const baseUrlWithoutPageNumber = getPageInURL[0].slice(0, getPageInURL[0].length - 1);
+        let pageNumber = parseInt(getPageInURL[1]);
+
+        if(direction === 'forward') {
+            if(getNoteIdInURL) {
+                const noteId = getNoteIdInURL[0];
+                return `/${baseUrlWithoutPageNumber + (pageNumber + 1) + "/" + noteId}`;
+            }
+            else return `/${baseUrlWithoutPageNumber + (pageNumber + 1)}`;
+        } else {
+            if(getNoteIdInURL) {
+                const noteId = getNoteIdInURL[0];
+                return `/${baseUrlWithoutPageNumber + (pageNumber - 1) + "/" + noteId}`;
+            }
+            else return `/${baseUrlWithoutPageNumber + (pageNumber -1)}`;
+        }
+    }
+
     const hide = { opacity: 0, transitionEnd: { display: "none" }};
     const show = { display: "block", opacity: 1 };
 
@@ -67,10 +90,10 @@ export default function NoteTopBar({
                 <div className="flex flex-col mb-[4px]">
                     <div className="flex flex-row justify-between px-3 py-2 text-gray-900 dark:text-gray-300">
                         <div className="text-center flex flex-row space-x-1 px-2">
-                        <span> <BsJournalText size={23} className="pt-1" /> </span>
+                            <BsJournalText size={23} className="pt-1" />
                             <p className="text-xl">Notes</p>
                         </div>
-                        <button 
+                        <button
                             className="sm:hidden"
                             onClick={() => setNavbar(!navbar)}
                         >
@@ -80,7 +103,9 @@ export default function NoteTopBar({
                     <div className="flex flex-row flex-wrap gap-x-1 justify-between px-3 py-2 max-w-screen text-gray-900 dark:text-gray-300">
                         <p className="pl-3 pt-1">{totalDocs} notes</p>
                         <div className="flex flex-row space-x-2">
-                            <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> <BsFilter size={25}/> </div>
+                            <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
+                                <BsFilter size={25}/> 
+                            </div>
                             <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Search">
                                 <button 
                                     type="button"
@@ -116,23 +141,28 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handlePrevPageClick()}
-                            to={baseURL + (page - 1)}
+                            to={handleLinkClick("backward") as string}
                         > 
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
                         </Link>
                     )}
-                    <p className="bg-[#f8f8f8] text-gray-900 dark:text-gray-300 dark:!bg-[#0f1011] uppercase tracking-widest text-sm cursor-default my-auto">Page {page}</p>
+                    <p className="bg-[#f8f8f8] text-gray-900 dark:text-gray-300 dark:!bg-[#0f1011] uppercase tracking-widest text-sm cursor-default my-auto">
+                        Page {page}
+                    </p>
                     {!hasNextPage ? (
                         <button className="btn !border-transparent !bg-inherit text-gray-500 cursor-not-allowed">
-                            <MdKeyboardDoubleArrowRight size={18} className="cursor-not-allowed" />
+                            <MdKeyboardDoubleArrowRight 
+                                className="cursor-not-allowed" 
+                                size={18} 
+                            />
                         </button>
                     ) : (
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handleNextPageClick()}
-                            to={baseURL + (page + 1)}
+                            to={handleLinkClick("forward") as string}
                         > 
-                            <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300"  />
+                            <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />
                         </Link>
                     )}
                 </div>

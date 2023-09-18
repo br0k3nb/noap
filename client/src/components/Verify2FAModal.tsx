@@ -74,14 +74,14 @@ export default function Verify2FAModal({
             setOpen={setOpen}
             title="Two-factor authentication"
             options={{
-                closeButtonClassName: "!text-gray-300 !bg-[#404040] !bg-[#323232] border-gray-500",
+                closeButtonClassName: "border-gray-500",
                 titleWrapperClassName: "px-6",
-                titleCustomClassName: "xxs:text-[19.5px] !text-gray-300",
-                modalWrapperClassName: "!px-0 xxs:w-[19rem] w-[22.5rem] !bg-[#0f1011]",
+                titleCustomClassName: "xxs:text-[19.5px]",
+                modalWrapperClassName: "!px-0 xxs:w-[19rem] w-[22.5rem]",
                 onClose: () => customOnCloseFn ? customOnCloseFn() : setOpen && setOpen(false)
             }}
         >
-            <div className="px-6 mt-5 text-gray-300">
+            <div className="px-6 mt-5">
                 <div className="mb-5">
                     <p className="text-sm uppercase tracking-widest mb-3">Authenticate</p>
                     <p className="text-gray-500 text-sm xxs:text-xs mb-3">
@@ -103,7 +103,7 @@ export default function Verify2FAModal({
                             onChange={({currentTarget}) => handleInputChange(currentTarget.value)}
                         />
                         <button
-                            className={`mt-2 px-3 w-60 py-3 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-green-700 hover:bg-green-800 font-normal rounded-full text-[12px] uppercase tracking-wide hover:tracking-widest border border-gray-700 transition-all duration-500 disabled:cursor-not-allowed disabled:!bg-green-700/60 disabled:hover:tracking-wide`}
+                            className={`text-white mt-2 px-3 w-60 py-2 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-green-600 hover:bg-green-700 font-normal rounded-full text-[15px] uppercase tracking-wide hover:tracking-widest border border-gray-700 transition-all duration-500 disabled:cursor-not-allowed disabled:!bg-green-700/60 disabled:hover:tracking-wide`}
                             disabled={TFACode?.length === 6 ? false : true}
                             onClick={() => handleVerifyButton()}
                         >

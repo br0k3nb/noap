@@ -236,8 +236,8 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                                 onChange={({currentTarget}) => handleInputChange(currentTarget.value)}
                             />
                             <button
-                                className={`mt-2 px-24 py-3 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-gray-900 rounded-full text-xs uppercase tracking-widest border border-gray-700 hover:bg-black transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-gray-700/60`}
-                                disabled={TFACode.length === 6 ? false : true}
+                                className={`text-white mt-2 px-3 w-60 py-2 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-green-600 hover:bg-green-700 font-normal rounded-full text-[15px] uppercase tracking-wide hover:tracking-widest border border-gray-700 transition-all duration-500 disabled:cursor-not-allowed disabled:!bg-green-700/60 disabled:hover:tracking-wide`}
+                                disabled={TFACode?.length === 6 ? false : true}
                                 onClick={() => handleVerifyButton()}
                             >
                                 {showSvgLoader ? (

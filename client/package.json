@@ -15,7 +15,6 @@
     "@lexical/file": "^0.12.2",
     "@lexical/hashtag": "^0.12.2",
     "@lexical/link": "^0.12.2",
-    "@lexical/list": "^0.12.2",
     "@lexical/mark": "^0.12.2",
     "@lexical/overflow": "^0.12.2",
     "@lexical/plain-text": "^0.12.2",

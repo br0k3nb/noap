@@ -111,13 +111,14 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
     //for some reason, typescript is throwing an error if this code is not set as any.
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
-    const getNavbar = document.getElementById("pc-navbar") as any;  
+    const getNavbar = document.getElementById("pc-navbar") as any;
     
     const baseStyle = {
-      marginTop: currentScreenSize.width < 1030 ? 0 : 50,
-      marginBottom: currentScreenSize.width < 1030 ? 86 : 80,
+      marginTop: (currentScreenSize.width < 1030 && !readMode) ? 0 : !readMode ? 50 : 0,
+      marginBottom: (currentScreenSize.width < 1030 && !readMode) ? 86 : !readMode ? 80 : 0,
       paddingRight: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
       paddingLeft: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
+      minHeight: '1500px',
       backgroundColor: noteBackgroundColor ? noteBackgroundColor : globalNoteBackgroundColor ? globalNoteBackgroundColor : 'none',
     };
 
@@ -139,8 +140,8 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                 <div className="editor dark:!bg-[#0f1011] bg-[#ffffff]" ref={ref}>
                   <div
                     className={`!overflow-y-scroll overflow-x-hidden`}
-                    id="editor-parent-container"                   
-                    style={!expanded && getNavbar?.checkVisibility() ? { 
+                    id="editor-parent-container"
+                    style={!expanded && getNavbar?.checkVisibility() ? {
                         width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
                         height: editorHeight
                       } : {
@@ -150,7 +151,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                     }  
                   >
                     <div                        
-                      className="mb-20 xxs:mb-0 3xl:!mb-32 flex flex-col mx-auto py-10"
+                      className="flex flex-col mx-auto py-10"
                       style={
                         !expanded && getNavbar?.checkVisibility() ? {
                           ...baseStyle,
@@ -212,7 +213,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
             <TabFocusPlugin />
             <TabIndentationPlugin />
             <CollapsiblePlugin />
-
+            
             {floatingAnchorElem && (
               <>
                 {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}

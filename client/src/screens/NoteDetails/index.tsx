@@ -14,7 +14,7 @@ import {
   FieldValues
 } from "react-hook-form";
 
-import { useLocation, Link, useLoaderData } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 import {
   AiOutlineFullscreen,
@@ -346,6 +346,9 @@ export default function NoteDetails({
     }
   };
 
+  const findNoteIdInURL = new RegExp(`note\/(.*)`);
+  const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+
   return (
     <div
       className={`
@@ -353,7 +356,7 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {!noteDataIsFetching && (selectedNote && selectedNoteData)  ? (
+      {(!noteDataIsFetching && getNoteIdInURL) && (selectedNote && selectedNoteData)  ? (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
@@ -719,7 +722,7 @@ export default function NoteDetails({
           )}
         </div>
       ) : noteDataIsFetching ? (
-          <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[19.5rem] left-[14rem] xxs:!left-0">
+          <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[40%] left-[14rem] xxs:!left-0">
             <Loader 
               width={25}
               height={25}
@@ -739,15 +742,13 @@ export default function NoteDetails({
         </div>
       )}
 
-      {!noteDataIsFetching && (selectedNote !== null && selectedNoteData) && (
+      {(!noteDataIsFetching && getNoteIdInURL) && (selectedNote && selectedNoteData) && (
         <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
             <NoteSettingsContext
               noteSettings={noteSettings}
               setNoteSettings={setNoteSettings}
             >
-              <TextEditor 
-                noteData={selectedNoteData}
-              />
+              <TextEditor noteData={selectedNoteData} />
             </NoteSettingsContext>
         </div>
       )}

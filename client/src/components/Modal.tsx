@@ -41,7 +41,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                 type="checkbox"
                 className="modal-toggle"
             />
-            <div className="modal !text-black dark:!text-gray-300">
+            <div className="modal text-gray-900 dark:text-gray-300">
                 <div 
                     className={`
                         border border-stone-500 dark:border-gray-600 modal-box !bg-[#ffffff] dark:!bg-[#0f1011] relative transition-all duration-500 

@@ -15,11 +15,11 @@ import SvgLoader from "../../../../../components/SvgLoader";
 import api from "../../../../../services/api";
 
 type BottomBarProps = {
-    save: (currentState: EditorState) => Promise<void>;
-    currentScreenSize: number;
-    editor: LexicalEditor;
-    saveSpinner: boolean;
-    note: any;
+  save: (currentState: EditorState) => Promise<void>;
+  currentScreenSize: number;
+  editor: LexicalEditor;
+  saveSpinner: boolean;
+  note: any;
 };
 
 export default function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {

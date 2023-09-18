@@ -22,9 +22,6 @@ import LabelsCtx from "../../context/LabelCtx";
 
 import default_editor_state from "../../datasets/default_editor_state.json";
 
-import "../../styles/themes/dark.css";
-import "../../styles/themes/light.css";
-
 export default function Home(): JSX.Element {
   const { userData: { _id } } = useContext(UserDataCtx) as any;
 
