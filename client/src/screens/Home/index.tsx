@@ -75,6 +75,10 @@ export default function Home(): JSX.Element {
       setSelectedNote(getNoteIdInURL[1]);
       setNoteIsExpanded(innerWidth < 1030 ? true : false);
     }
+    else if(!getNoteIdInURL && selectedNote) {
+      setNoteIsExpanded(false);
+      setSelectedNote(null);
+    }
   }, [getNoteIdInURL]);
 
   const prevPinNotesPage = useRef(1);

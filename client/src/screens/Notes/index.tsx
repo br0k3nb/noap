@@ -77,7 +77,7 @@ export default function Notes({
         pinnedNotesPage, 
         setPinnedNotesPage,
         pinnedNotesHasNextPage
-    };  
+    };
 
     return (
         <div 

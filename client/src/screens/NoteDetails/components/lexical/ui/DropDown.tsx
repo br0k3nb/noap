@@ -190,6 +190,12 @@ export default function DropDown({
 
   const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
 
+  const userAgent = navigator.userAgent;
+  let browserName;
+  
+  if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
+  else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
+
   return (
     <>
       {!useCustomButton ? (
@@ -209,13 +215,13 @@ export default function DropDown({
         </button>
       ) : (
         <button 
-          className={`border border-gray-600 hover:!border-gray-400 rounded-lg h-8 my-auto hover:bg-[#e1e1e1] dark:hover:bg-[#484848] ${customButtonLabelClassName && customButtonLabelClassName}`}
+          className={`border border-gray-600 hover:!border-gray-400 rounded-lg hover:bg-[#e1e1e1] dark:hover:bg-[#484848] ${customButtonLabelClassName && customButtonLabelClassName}`}
           onClick={() => setShowDropDown(!showDropDown)}
           ref={buttonRef}
         >
-          <div className="my-1 mr-1">
+          <div className={`ml-[0.08rem] mr-[0.150rem] ${browserName === "firefox" && "mt-[0.150rem]"}`}>
             {(buttonLabel && !customButtonLabel) ? (
-              <span className={`text !px-2  ${buttonLabelClassName && buttonLabelClassName} `}>
+              <span className={`text xxs:text-[17px] !px-2 ${buttonLabelClassName && buttonLabelClassName} `}>
                 {buttonLabel}
               </span>
             ) : customButtonLabel}

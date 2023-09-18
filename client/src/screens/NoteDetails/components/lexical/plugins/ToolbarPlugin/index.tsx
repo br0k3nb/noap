@@ -412,11 +412,10 @@ function FontDropDown({
       modalClassName={`
         !max-h-[290px] overflow-scroll scrollbar-track-transparent  dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 px-2
         ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-        ${isFontSizeModal && "!w-[4.5rem] xxs:!w-[58px] overflow-x-hidden"}
+        ${isFontSizeModal && "!w-[4.5rem] overflow-x-hidden"}
       `}
       disabled={disabled}
       buttonClassName={`toolbar-item  ` + style}
-      buttonLabelClassName={`${isFontSizeModal && "!pl-[10px] pr-1"}`}
       buttonLabel={isFontSizeModal ? parseFontSizeToNumber(value) as string : value}
       buttonIconClassName={!isFontSizeModal ? `icon block-type font-family ${theme === 'dark' && "comp-picker"}` : ""}
       useCustomButton={isFontSizeModal ? true : false}
@@ -841,7 +840,7 @@ export default function ToolbarPlugin() {
 
   return (
     <div  
-      className="!z-40 !relative toolbar !h-[2.50rem] mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#ffffff] dark:text-gray-50 border border-transparent !border-r-0 !border-b-stone-300 dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+      className="!z-40 !relative toolbar !h-[2.50rem] mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#ffffff] dark:text-gray-50 border border-transparent !border-r-0 !border-b-stone-300 dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500"
       style={{ 
         width: !getNavbar?.checkVisibility() ? screenSize.width : screenSize.width - 442
       }}
@@ -853,7 +852,7 @@ export default function ToolbarPlugin() {
         className="toolbar-item spaced"
         aria-label="Undo"
       >
-        <i className={`format undo ${theme === "dark" ? "dark" : "light"}`}/>
+        <i className={`format undo ${theme === "dark" && "comp-picker"}`}/>
       </button>
       <button
         disabled={!canRedo || !isEditable}
@@ -862,7 +861,7 @@ export default function ToolbarPlugin() {
         className="toolbar-item"
         aria-label="Redo"
       >
-        <i className={`format undo ${theme === "dark" ? "dark" : "light"}`} />
+        <i className={`format undo ${theme === "dark" && "comp-picker"}`} />
       </button>
       <Divider />
       {blockType in blockTypeToBlockName && activeEditor === editor && (
@@ -923,10 +922,10 @@ export default function ToolbarPlugin() {
             setLastSelectedFontFamily={setLastSelectedFontFamily}
           />
           <Divider />
-          <div className="mx-1 flex flex-row space-x-2">
+          <div className="mx-1 flex flex-row space-x-2 my-auto">
             <button 
               onClick={() => handleIncrementFontSizeButton()}
-              className="w-8 h-8 my-auto dark:hover:bg-[#404040] hover:bg-[#e1e1e1] rounded-lg"
+              className="w-8 h-7 dark:hover:bg-[#404040] hover:bg-[#e1e1e1] rounded-lg"
             > 
               +
             </button>
@@ -940,7 +939,7 @@ export default function ToolbarPlugin() {
             />
             <button 
               onClick={() => handleDecrementFontSizeButton()}
-              className="w-8 h-8 my-auto dark:hover:bg-[#404040] hover:bg-[#e1e1e1] rounded-lg"
+              className="w-8 h-7 dark:hover:bg-[#404040] hover:bg-[#e1e1e1] rounded-lg"
             > 
               -
             </button>

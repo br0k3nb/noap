@@ -721,7 +721,7 @@ export default function NoteDetails({
             </div>
           )}
         </div>
-      ) : noteDataIsFetching ? (
+      ) : (noteDataIsFetching && getNoteIdInURL) ? (
           <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[40%] left-[14rem] xxs:!left-0">
             <Loader 
               width={25}
@@ -729,7 +729,7 @@ export default function NoteDetails({
             />
             <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
           </div>
-      ) : (
+      ) : getNoteIdInURL && (
         <div className="flex flex-col justify-center items-center my-auto">
             <img
               src={noNoteSelected}
