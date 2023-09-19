@@ -14,7 +14,7 @@ import {
   FieldValues
 } from "react-hook-form";
 
-import { useLocation, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import {
   AiOutlineFullscreen,
@@ -41,15 +41,17 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical";
 
+import useNoteSettings from "../../hooks/useNoteSettings";
+import useSelectedNote from "../../hooks/useSelectedNote";
+import useUserData from "../../hooks/useUserData";
+import useGetUrl from "../../hooks/useGetUrl";
+
 import api from "../../services/api";
 import { RefetchCtx } from "../../context/RefetchCtx";
-import { NoteCtx } from "../../context/SelectedNoteCtx";
 import { toastAlert } from "../../components/Alert/Alert";
-import { UserDataCtx } from "../../context/UserDataContext";
-import ColorPicker from "./components/lexical/ui/ColorPicker";
-import NoteSettingsContext from "../../context/NoteSettingsCtx";
-import Loader from "../../components/Loader";
 
+import ColorPicker from "./components/lexical/ui/ColorPicker";
+import Loader from "../../components/Loader";
 import Modal from "../../components/Modal";
 
 import noNoteSelected from "../../assets/select-note.svg";
@@ -63,22 +65,14 @@ type Props = {
   appendPinNotes: UseFieldArrayAppend<NoteMetadata, "noteMetadata">;
   pinNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
   notes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
-  setExpanded: Dispatch<SetStateAction<boolean>>;
   append: UseFieldArrayAppend<NoteMetadata, "noteMetadata">;
   deleteNote: (_id: string) => Promise<void>;
+  setSelectedNoteData: Dispatch<SetStateAction<NoteData | null>>,
   removePinNotes: UseFieldArrayRemove;
   remove: UseFieldArrayRemove;
   selectedNoteData: NoteData | null;
   labelIsFetching: boolean;
-  expanded: boolean;
   noteDataIsFetching: boolean;
-};
-
-const default_note_settings = {
-  showBottomBar: true,
-  expanded: false,
-  readMode: false,
-  shared: false
 };
 
 export default function NoteDetails({
@@ -87,20 +81,17 @@ export default function NoteDetails({
   append,
   remove,
   pinNotes,
-  expanded,
-  setExpanded,
   labels,
   appendPinNotes,
   removePinNotes,
   labelIsFetching,
   selectedNoteData,
+  setSelectedNoteData,
   setPinnedNotesPage,
   noteDataIsFetching
 }: Props) {
-  const { selectedNote, setSelectedNote } = useContext(NoteCtx) || {};
-  const { userData, setUserData } = useContext(UserDataCtx) as any;
   const { fetchNotes } = useContext(RefetchCtx) as any;
-
+  
   const [open, setOpen] = useState(false);
   const [readMode, setReadMode] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
@@ -108,28 +99,34 @@ export default function NoteDetails({
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [openLabelModal, setOpenlabelModal] = useState(false);
   const [openNoteInfoModal, setOpenNoteInfoModal] = useState(false);
-  const [noteSettings, setNoteSettings] = useState(default_note_settings);
   const [openChangeNoteBackgroundModal, setOpenChangeNoteBackgroundModal] = useState(false);
-
+  
   const { register, reset, handleSubmit } = useForm();
-  const { register: registerNoteName, reset: resetNoteName, handleSubmit: handleSubmitNoteName } = useForm();
+  const { 
+    register: registerNoteName, 
+    reset: resetNoteName, 
+    handleSubmit: handleSubmitNoteName 
+  } = useForm();
+  
+  const navigate = useNavigate();
+  const { noteSettings: { expanded }, setNoteSettings } = useNoteSettings();
+  const { userData, setUserData } = useUserData();
+  const { selectedNote, setSelectedNote } = useSelectedNote();
 
-  const location = useLocation();
-
-  const note = notes.find(({ _id }) => _id === selectedNote);
-  const pinNote = pinNotes.find(({ _id }) => _id === selectedNote);
+  const note = notes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
+  const pinNote = pinNotes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
 
   const fullscreenChangeCallbackWasCalled = useRef(false);
 
   useEffect(() => { 
-    resetNoteName({ name: note ? (note?.name) : (pinNote?.name) });
+    resetNoteName({ name: selectedNoteData?.name });
     setNoteSettings((prevNoteSettings) => {
       return {
         ...prevNoteSettings,
-        noteBackgroundColor: note ? note.settings?.noteBackgroundColor : pinNote ? pinNote?.settings.noteBackgroundColor : '',
+        noteBackgroundColor: selectedNoteData?.settings.noteBackgroundColor,
       }
     });
-  }, [note, pinNote]);
+  }, [selectedNoteData]);
 
   const controlRKeyPressListener = (e: KeyboardEvent) => {  
     if ((e.keyCode == 70 && e.ctrlKey) && selectedNote) {
@@ -158,36 +155,33 @@ export default function NoteDetails({
   };
 
   const removeNote = () => {
-    if(setSelectedNote) setSelectedNote(null);
-    setExpanded(false);
-    setOpen(false);
+    if(setSelectedNote) setSelectedNote("");
 
+    setOpen(false);
+    setNoteSettings((prevNoteSettings) => {
+      return {
+        ...prevNoteSettings,
+        expanded: false,
+      }
+    });
+    
     deleteNote(selectedNote as string);
-    remove(notes.indexOf(note as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">));
-    setTimeout(() => fetchNotes(), 500);
+    remove(notes.indexOf(note));
+    navigate('/');
   };
 
   const handleExpand = () => {
     if (window.outerWidth <= 1030 && selectedNote) {
-      if(setSelectedNote) setSelectedNote(null);
+      if(setSelectedNote) setSelectedNote("");
       if(readMode) document.exitFullscreen();
+    }
 
-      setExpanded(false);
-      setNoteSettings((prevNoteSettings) => {
-        return {
-          ...prevNoteSettings,
-          expanded: false
-        }
-      });
-    } else { 
-      setExpanded(!expanded);
-      setNoteSettings((prevNoteSettings) => {
-        return {
-          ...prevNoteSettings,
-          expanded: !expanded
-        }
-      });
-    };
+    setNoteSettings((prevNoteSettings) => {
+      return {
+        ...prevNoteSettings,
+        expanded: !expanded
+      }
+    });
   };
 
   const handleToggleBottomBar = () => {
@@ -202,8 +196,9 @@ export default function NoteDetails({
 
   const handleToggleReadMode = (state?: string) => {
     if(state && state === "edit") {
-      if(fullscreenChangeCallbackWasCalled.current) fullscreenChangeCallbackWasCalled.current = false;
-      else document.exitFullscreen();
+      if(fullscreenChangeCallbackWasCalled.current) {
+        fullscreenChangeCallbackWasCalled.current = false;
+      } else document.exitFullscreen();
 
       if(outerWidth > 1030) handleExpand();
       if(!showBottomBar) handleToggleBottomBar();
@@ -221,12 +216,12 @@ export default function NoteDetails({
   const handleOpenLabelModal = () => {
     let fieldsToReset = {};
 
-    labels.forEach(label => {
-      fieldsToReset = {
-        ...fieldsToReset,
-        [label._id]: false
-      }
-    });
+    // labels.forEach(label => {
+    //   fieldsToReset = {
+    //     ...fieldsToReset,
+    //     [label._id]: false
+    //   }
+    // });
 
     if(selectedNoteData?.labels && selectedNoteData.labels.length > 0) {
       selectedNoteData.labels.forEach(label => {
@@ -243,20 +238,30 @@ export default function NoteDetails({
 
   const handlePinNote = async () => {
     try {
-      const getNoteId = () => {
-        if(note) return note?._id;
-        return pinNote?._id;
-      };
-
-      const { data: { message } } = await api.post(`/note/pin-note/${getNoteId()}`, {
-        condition: note ? !note?.settings.pinned : !pinNote?.settings.pinned
+      const { data: { message } } = await api.post(`/note/pin-note/${selectedNoteData?._id}`, {
+        condition: !selectedNoteData?.settings.pinned
       });
 
-      toastAlert({ icon: "success", title: message, timer: 2000 });
+      setNoteSettings((prevNoteSettings) => {
+        return {
+        ...prevNoteSettings,
+          pinned: !selectedNoteData?.settings.pinned
+        }
+      });
+
+      setSelectedNoteData((prevData: any) => {
+        return {
+          ...prevData,
+          settings: {
+            ...prevData?.settings,
+            pinned: !selectedNoteData?.settings.pinned
+          }
+        }
+      });
 
       if(pinNote?.settings.pinned) {
-        append(pinNote as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">);
-
+        append(pinNote);
+        
         if(pinNotes.length === 1) {
           setPinnedNotesPage((prevPage) => prevPage - 1);
           removePinNotes(pinNotes.indexOf(pinNote));
@@ -264,11 +269,12 @@ export default function NoteDetails({
         else removePinNotes(pinNotes.indexOf(pinNote));
       }
       else {
-        appendPinNotes(note as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">);
-        remove(notes.indexOf(note as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">));
+        appendPinNotes(note);
+        remove(notes.indexOf(note));
       }
-
+      
       fetchNotes();
+      toastAlert({ icon: "success", title: message, timer: 2000 });
     } catch (err: any) {
       console.log(err);
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
@@ -278,12 +284,12 @@ export default function NoteDetails({
   const days = (date: string) => moment(date).format("ll");
 
   const lastUpdated = () => {
-    if (!note?.updatedAt) return note?.createdAt;
-    return note?.updatedAt;
+    if (selectedNoteData?.createdAt) return selectedNoteData?.createdAt;
+    return selectedNoteData?.updatedAt;
   };
 
   const handleRenameNote = async (data: FieldValues) => {
-    const noteId = note ? note._id : pinNote?._id;
+    const noteId = selectedNoteData?._id;
     setShowLoader(true);
 
     try {
@@ -299,15 +305,12 @@ export default function NoteDetails({
   };
   
   const handleChangeNoteBackground = async (bgNoteColor: string) => {
-    const noteId = note ? note._id : pinNote?._id;
-
+    const noteId = selectedNoteData?._id;
+  
     try {
       await api.patch(`/settings/note-background-color/${noteId}`, {
         noteBackgroundColor: bgNoteColor
       });
-
-      if(note) note.settings.noteBackgroundColor = bgNoteColor;
-      else if (pinNote) pinNote.settings.noteBackgroundColor = bgNoteColor;
 
       setNoteSettings((prevNoteSettings) => {
         return {
@@ -329,7 +332,7 @@ export default function NoteDetails({
         globalNoteBackgroundColor: bgNoteColor
       });
 
-      setUserData((prevUserData: any) => {
+      setUserData((prevUserData) => {
         return {
           ...prevUserData,
           settings: {
@@ -346,9 +349,21 @@ export default function NoteDetails({
     }
   };
 
-  const findNoteIdInURL = new RegExp(`note\/(.*)`);
-  const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+  const getNoteIdInUrl = useGetUrl({
+    options: { 
+      usePage: false, 
+      getNoteIdInUrl: true 
+    }
+  });
 
+  const getUrlWithoutNoteId = useGetUrl({
+    options: { 
+      usePage: false, 
+      removeNoteId: true, 
+      absolutePath: true
+    }
+  });
+  
   return (
     <div
       className={`
@@ -356,7 +371,7 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {(!noteDataIsFetching && getNoteIdInURL) && (selectedNote && selectedNoteData)  ? (
+      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData)  ? (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
@@ -365,7 +380,7 @@ export default function NoteDetails({
             >
               <Link
                 onClick={() => handleExpand()}
-                to={`${innerWidth < 1030 ? location.pathname.slice(0,13) : location.pathname}`}
+                to={`${innerWidth < 1030 ? getUrlWithoutNoteId : ''}`}
               >
                 {expanded ? (
                   <div className="hover:!bg-[#dadada] dark:hover:!bg-stone-600 px-1 py-1 rounded">
@@ -384,13 +399,13 @@ export default function NoteDetails({
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
                 <div
                   className="tooltip tooltip-right tooltip-right-color-controller"
-                  data-tip={`${(note?.settings.pinned || pinNote?.settings.pinned) ? "Unpin note" : "Pin note"}`}
+                  data-tip={`${selectedNoteData?.settings.pinned ? "Unpin note" : "Pin note"}`}
                 >
                   <button 
                     className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
                     onClick={() => handlePinNote()}
                   >
-                    {note?.settings.pinned || pinNote?.settings.pinned ? (
+                    {selectedNoteData?.settings.pinned ? (
                       <BsFillPinAngleFill size={22} />
                     ) : ( 
                       <BsFillPinAngleFill size={22} /> 
@@ -447,7 +462,7 @@ export default function NoteDetails({
                       className="text-gray-900 dark:text-gray-300 cursor-pointer"
                     >
                         <div className="flex flex-row space-x-2">
-                          {note?.settings.pinned || pinNote?.settings.pinned ? (
+                          {selectedNoteData?.settings.pinned ? (
                             <>
                               <p className="py-1 text-xs uppercase tracking-widest">
                                 Unpin note
@@ -721,7 +736,7 @@ export default function NoteDetails({
             </div>
           )}
         </div>
-      ) : (noteDataIsFetching && getNoteIdInURL) ? (
+      ) : (noteDataIsFetching && getNoteIdInUrl) ? (
           <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[40%] left-[14rem] xxs:!left-0">
             <Loader 
               width={25}
@@ -729,7 +744,7 @@ export default function NoteDetails({
             />
             <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
           </div>
-      ) : getNoteIdInURL && (
+      ) : (
         <div className="flex flex-col justify-center items-center my-auto">
             <img
               src={noNoteSelected}
@@ -742,14 +757,9 @@ export default function NoteDetails({
         </div>
       )}
 
-      {(!noteDataIsFetching && getNoteIdInURL) && (selectedNote && selectedNoteData) && (
+      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData) && (
         <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
-            <NoteSettingsContext
-              noteSettings={noteSettings}
-              setNoteSettings={setNoteSettings}
-            >
-              <TextEditor noteData={selectedNoteData} />
-            </NoteSettingsContext>
+            <TextEditor noteData={selectedNoteData} />
         </div>
       )}
     </div>

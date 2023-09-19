@@ -1,4 +1,4 @@
-import { useState, useRef, useContext, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -11,11 +11,13 @@ import NoteDetails from "../NoteDetails";
 
 import api from "../../services/api";
 
+import useNavbar from "../../hooks/useNavbar";
+import useUserData from "../../hooks/useUserData";
 import { useDebounce } from "../../hooks/useDebounce";
+import useNoteSettings from "../../hooks/useNoteSettings";
+import useSelectedNote from "../../hooks/useSelectedNote";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
-import SelectedNoteContext from "../../context/SelectedNoteCtx";
-import { UserDataCtx } from "../../context/UserDataContext";
 import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
 import LabelsCtx from "../../context/LabelCtx";
@@ -23,39 +25,41 @@ import LabelsCtx from "../../context/LabelCtx";
 import default_editor_state from "../../datasets/default_editor_state.json";
 
 export default function Home(): JSX.Element {
-  const { userData: { _id } } = useContext(UserDataCtx) as any;
-
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [selectedNoteData, setSelectedNoteData] = useState<NoteData | null>(null);
   const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);
-  const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);
   const [hasNextPageLabel, setHasNextPageLabel] = useState(false);
-  const [noteIsExpanded, setNoteIsExpanded] = useState(false);    
   const [pinnedNotesPage, setPinnedNotesPage] = useState(1);
   const [totalPinnedDocs, setTotalPinnedDocs] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [searchLabel, setSearchLabel] = useState('');
   const [pageLabel, setPageLabel] = useState(1);
   const [totalDocs, setTotalDocs] = useState(0);
-  const [navbar, setNavbar] = useState(false);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
   const delayedSearchLabel = useDebounce(searchLabel, 500);
   const delayedSearch = useDebounce(search, 500);
   useUpdateViewport(setScreenSize, 500);
-
+  
   const location = useLocation();
+  const { navbar } = useNavbar();
+  const { userData: { _id } } = useUserData();
+  const { selectedNote } = useSelectedNote();
+  const { noteSettings: { expanded: noteIsExpanded } } = useNoteSettings();
 
   const { control } = useForm<NoteMetadata>();
   const { control: labelsControl } = useForm<Labels>();
   const { control: pinnedNotesControl } = useForm<NoteMetadata>();
 
-  const { fields, append, replace, remove } = useFieldArray({ control, name: "noteMetadata" });
+  const { fields, append, replace, remove } = useFieldArray({
+    control,
+    name: "noteMetadata"
+  });
 
-  const { fields: pinNotes, append: appendPinNotes, replace: replacePinNotes, remove: removePinNotes } = useFieldArray({ 
-    control: pinnedNotesControl, 
+  const { fields: pinNotes, append: appendPinNotes, replace: replacePinNotes, remove: removePinNotes } = useFieldArray({
+    control: pinnedNotesControl,
     name: "noteMetadata"
   });
 
@@ -65,26 +69,9 @@ export default function Home(): JSX.Element {
   });
   
   const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
-  const findNoteIdInURL = new RegExp(`note\/(.*)`);
-
   const getPageInURL = findPageInURL.exec(location.pathname);
-  const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
-  
-  useEffect(() => {
-    if(getNoteIdInURL && !selectedNote) {
-      setSelectedNote(getNoteIdInURL[1]);
-      setNoteIsExpanded(innerWidth < 1030 ? true : false);
-    }
-    else if(!getNoteIdInURL && selectedNote) {
-      setNoteIsExpanded(false);
-      setSelectedNote(null);
-    }
-  }, [getNoteIdInURL]);
-
-  const prevPinNotesPage = useRef(1);
 
   //using these refs to prevent appending the same array two times
-  const fetchedNotes = useRef(false);
   const fetchedLabels = useRef(false);
 
   const fetchNotesMetadata = async () => { 
@@ -115,23 +102,12 @@ export default function Home(): JSX.Element {
         setHasNextPage(hasNextPage);
         setTotalPinnedDocs(totalPinnedDocs);
         setPinnedNotesHasNextPage(pinHasNextPage);
-        
-        if(!pinDocs) replacePinNotes([]);
-        else if (!pinNotes.length && pinDocs.length > 0) appendPinNotes(pinDocs);
-        else replacePinNotes(pinDocs);
-  
-        if ((!fields.length && !fetchedNotes.current) || (docs.length > 0 && !fields.length)) {
-          fetchedNotes.current = true;
-          return append(docs);
-        }
-  
-        //only replace the array if the pinnedNotesPage doesn't change
-        if (fields.length > 0 && prevPinNotesPage.current === pinnedNotesPage) {
-          return replace(docs);
-        }
+
+        replacePinNotes(pinDocs);
+        return replace(docs);
       } catch (err: any) {       
-          console.log(err);
-          toastAlert({ icon: "error", title: err.message, timer: 3000 });
+        toastAlert({ icon: "error", title: err.message, timer: 3000 });
+        console.log(err);
       } 
     }
   };
@@ -140,9 +116,7 @@ export default function Home(): JSX.Element {
     if(selectedNote && _id) {
       try {
         const { data: { note } } = await api.get(`/note/${selectedNote}`, {
-          params: { 
-            author: _id
-          }
+          params: { author: _id }
         });
 
         setSelectedNoteData(note);
@@ -219,7 +193,7 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: false
   });
 
-  const { isFetching: noteDataIsFetching } = useQuery(["fetchNoteData", selectedNote, getNoteIdInURL, _id], fetchSelectedNoteData, {
+  const { isFetching: noteDataIsFetching } = useQuery(["fetchNoteData", selectedNote, _id], fetchSelectedNoteData, {
     refetchOnWindowFocus: false
   });
 
@@ -230,19 +204,15 @@ export default function Home(): JSX.Element {
   const notesProps = {
     page,
     search,
-    navbar,
     setPage,
     setSearch,
     totalDocs,
-    setNavbar,
     isFetching,
     addNewNote,
     hasNextPage,
     notesMetadata: fields,
     totalPinnedDocs,
     pinnedNotes: pinNotes,
-    expanded: noteIsExpanded,
-    setExpanded: setNoteIsExpanded,
     pinnedNotesPage: pinnedNotesPage,
     setPinnedNotesPage: setPinnedNotesPage,
     pinnedNotesHasNextPage: pinnedNotesHasNextPage
@@ -263,23 +233,21 @@ export default function Home(): JSX.Element {
 
   return (
     <div className="!h-screen">
-      <SelectedNoteContext 
-        selectedNote={selectedNote} 
-        setSelectedNote={setSelectedNote}
-      >
+      <NavbarContext>
         <LabelsCtx {...navLabelCtxProps}>
           <Nav
             labels={labels}
-            navbar={navbar}
             addNewNote={addNewNote} 
-            expanded={noteIsExpanded} 
             showSvgLoader={showLoaderOnNavbar}
           />
         </LabelsCtx>
-        <div className={`!overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}`} >
+        <div 
+          className={`
+            !overflow-hidden ${(!isMobileDevice && !noteIsExpanded) && (!navbar || navbar) ? 'ml-[60px]' : "ml-0"}
+          `} 
+        >
           <div className="flex flex-row h-screen">
             <Notes {...notesProps}/>
-            <NavbarContext navbar={navbar} setNavbar={setNavbar}>
               <RefetchContext 
                 fetchNotes={fetchNotesMetadata} 
                 isFetching={isFetching}
@@ -297,22 +265,20 @@ export default function Home(): JSX.Element {
                     append={append}
                     labels={labels}
                     pinNotes={pinNotes}
-                    expanded={noteIsExpanded}
                     deleteNote={deleteNote} 
                     appendPinNotes={appendPinNotes}
                     removePinNotes={removePinNotes}
-                    setExpanded={setNoteIsExpanded}
                     labelIsFetching={labelIsFetching}
                     selectedNoteData={selectedNoteData}
+                    setSelectedNoteData={setSelectedNoteData}
                     setPinnedNotesPage={setPinnedNotesPage}
                     noteDataIsFetching={noteDataIsFetching}
                   />
                 </LabelsCtx>
               </RefetchContext>
-            </NavbarContext>
           </div>
         </div>
-      </SelectedNoteContext>
+      </NavbarContext>
     </div>
   );
 }

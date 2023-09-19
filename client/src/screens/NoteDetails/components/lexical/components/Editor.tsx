@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, forwardRef, useContext } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CheckListPlugin } from "../plugins/CustomCheckListPlugin";
@@ -13,10 +13,8 @@ import { EditorState } from "lexical";
 
 import { useSettings } from "../context/SettingsContext";
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
-// import AutocompletePlugin from "./plugins/AutocompletePlugin";
 import AutoEmbedPlugin from "../plugins/AutoEmbedPlugin";
 import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
-// import LexicalClickableLinkPlugin from '@lexical/react/LexicalClickableLinkPlugin';
 import ClickableLinkPlugin from "../plugins/ClickableLinkPlugin";
 import CodeHighlightPlugin from "../plugins/CodeHighlightPlugin";
 import CodeActionMenuPlugin from "../plugins/CodeActionMenuPlugin";
@@ -29,15 +27,10 @@ import EquationsPlugin from "../plugins/EquationsPlugin";
 import FloatingTextFormatToolbarPlugin from "../plugins/FloatingTextFormatToolbarPlugin";
 import HorizontalRulePlugin from "../plugins/HorizontalRulePlugin";
 import ImagesPlugin from "../plugins/ImagesPlugin";
-// import KeywordsPlugin from "./plugins/KeywordsPlugin";
 import LinkPlugin from "../plugins/LinkPlugin";
 import ListMaxIndentLevelPlugin from "../plugins/ListMaxIndentLevelPlugin";
-// import MarkdownShortcutPlugin from "./plugins/MarkdownShortcutPlugin";
-// import { MaxLengthPlugin } from "./plugins/MaxLengthPlugin";
-// import MentionsPlugin from "./plugins/MentionsPlugin";
 import DraggableBlockPlugin from "../plugins/DraggableBlockPlugin";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
-// import PollPlugin from "./plugins/PollPlugin";
 import TabFocusPlugin from "../plugins/TabFocusPlugin";
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import FigmaPlugin from "../plugins/FigmaPlugin";
@@ -48,15 +41,15 @@ import { CAN_USE_DOM } from "../shared/canUseDOM";
 import TwitterPlugin from "../plugins/TwitterPlugin";
 import YouTubePlugin from "../plugins/YouTubePlugin";
 
-import { NoteSettingsCtx } from "../../../../../context/NoteSettingsCtx";
-import { UserDataCtx } from "../../../../../context/UserDataContext";
+import useUserData from "../../../../../hooks/useUserData";
+import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
 import BottomBar from "./BottomBar";
 
 import "../index.css";
 
 type Props = {
-  note: any;
+  note: NoteData;
   saveSpinner: boolean;  
   save: (currentState: EditorState) => Promise<void>;
 };
@@ -67,7 +60,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
-    const { noteSettings: { expanded, readMode, noteBackgroundColor } } = useContext(NoteSettingsCtx) as any;
+    const { noteSettings: { expanded, readMode, noteBackgroundColor } } = useNoteSettings();
     const { 
       userData: {
         settings: {
@@ -75,7 +68,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
           globalNoteBackgroundColor
         } 
       }
-    } = useContext(UserDataCtx) as any;
+    } = useUserData();
 
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
@@ -106,8 +99,8 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
     const editorHeight = currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65;
 
-    const TweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
-    const noteTextCondition = TweentyPercentMarginOfScreen < 1001 ? TweentyPercentMarginOfScreen : 1000;
+    const tweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
+    const noteTextCondition = tweentyPercentMarginOfScreen < 1001 ? tweentyPercentMarginOfScreen : 1000;
 
     //for some reason, typescript is throwing an error if this code is not set as any.
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
@@ -184,8 +177,9 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                   </div>
                 </div>
               }
+              
               placeholder={
-                <Placeholder customRef={customRef}>Enter some text</Placeholder>
+                !note.body.length ? <Placeholder customRef={customRef}>Enter some text</Placeholder> : null
               }
               ErrorBoundary={LexicalErrorBoundary}
             />

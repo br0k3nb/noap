@@ -1,23 +1,56 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, SetStateAction, ReactNode, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import useNoteSettings from '../hooks/useNoteSettings';
 
 type SelectedNoteContext = {
-    selectedNote: string | null;
-    setSelectedNote: Dispatch<SetStateAction<string | null>>;
+    selectedNote: string;
+    setSelectedNote: Dispatch<SetStateAction<string>>;
 };
 
-type Props = {
-    children: any,
-    selectedNote: string | null,
-    setSelectedNote: Dispatch<SetStateAction<string | null>>;
+type SelectedNoteContextProps = {
+    children: ReactNode;
 }
 
-export const NoteCtx = createContext<SelectedNoteContext | null>(null);
+const defaultValue = {
+    selectedNote: '',
+    setSelectedNote: () => {}
+};
 
-export default function SelectedNoteContext({ children, selectedNote, setSelectedNote }: Props) {
+export const SelectedNoteCtx = createContext<SelectedNoteContext>(defaultValue);
+
+export default function SelectedNoteContext({ children }: SelectedNoteContextProps) {
+    const [selectedNote, setSelectedNote] = useState('');
+    
+    const location = useLocation();
+    const { setNoteSettings } = useNoteSettings();
+
+    const findNoteIdInURL = new RegExp(`note\/(.*)`);
+    const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+    
+    useEffect(() => {
+      if(getNoteIdInURL && !selectedNote) {
+        setSelectedNote(getNoteIdInURL[1]);
+        setNoteSettings((prevNoteSettings) => {
+            return {
+                ...prevNoteSettings,
+                expanded: innerWidth < 1030 ? true : false
+            }
+        });
+      }
+      else if(!getNoteIdInURL && selectedNote) {
+        setNoteSettings((prevNoteSettings) => {
+            return {
+                ...prevNoteSettings,
+                expanded: false
+            }
+        });
+        setSelectedNote("");
+      }
+    }, [getNoteIdInURL]);
 
     return (
-        <NoteCtx.Provider value={{ selectedNote, setSelectedNote }}>
+        <SelectedNoteCtx.Provider value={{ selectedNote, setSelectedNote }}>
             {children}
-        </NoteCtx.Provider>
+        </SelectedNoteCtx.Provider>
     )
 }

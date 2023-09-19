@@ -1,19 +1,23 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, SetStateAction, ReactNode, useState } from 'react';
 
-type NavContext = {
+type NavContextType = {
     navbar: boolean;
     setNavbar: Dispatch<SetStateAction<boolean>>;
 };
 
-type Props = {
-    children: any,
-    navbar: boolean;
-    setNavbar: Dispatch<SetStateAction<boolean>>;
+type NavContextProps = {
+    children: ReactNode;
 }
 
-export const NavbarCtx = createContext<NavContext | null>(null);
+const defaultValue = {
+    navbar: true,
+    setNavbar: () => {}
+};
 
-export default function NavbarContext({ children, navbar, setNavbar }: Props) {
+export const NavbarCtx = createContext<NavContextType>(defaultValue);
+
+export default function NavbarContext({ children }: NavContextProps) {
+    const [navbar, setNavbar] = useState(false);
 
     return (
         <NavbarCtx.Provider value={{ navbar, setNavbar }}>
@@ -21,5 +25,3 @@ export default function NavbarContext({ children, navbar, setNavbar }: Props) {
         </NavbarCtx.Provider>
     )
 }
-
-

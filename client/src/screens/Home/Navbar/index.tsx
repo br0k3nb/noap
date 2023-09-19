@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { FieldArrayWithId } from 'react-hook-form';
 
 import { 
@@ -9,10 +9,11 @@ import {
 
 import { motion } from 'framer-motion';
 
-import useUpdateViewport from '../../../hooks/useUpdateViewport';
 import useAuth from '../../../hooks/useAuth';
-
-import { UserDataCtx } from '../../../context/UserDataContext';
+import useNavbar from '../../../hooks/useNavbar';
+import useUserData from '../../../hooks/useUserData';
+import useNoteSettings from '../../../hooks/useNoteSettings';
+import useUpdateViewport from '../../../hooks/useUpdateViewport';
 
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import SettingsModal from './components/SettingsModal';
@@ -26,20 +27,20 @@ type NavProps = {
   labels: FieldArrayWithId<Labels, "labels", "id">[];
   addNewNote: () => Promise<void>;
   showSvgLoader: boolean;
-  expanded: boolean;
-  navbar: boolean;
 };
 
-export default function Nav({ navbar, showSvgLoader, addNewNote, expanded, labels }: NavProps) {
+export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
   const [openLabelModal, setOpenLabelModal] = useState(false);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
   const [deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const auth = useAuth();
-  useUpdateViewport(setDeviceScreenSize, 500);
+  const { navbar } = useNavbar();
+  const { noteSettings: { expanded } } = useNoteSettings();
+  const { userData: { _id, settings: { theme }} } = useUserData();
 
-  const { userData: { _id, settings: { theme }} } = useContext(UserDataCtx) as any;
+  useUpdateViewport(setDeviceScreenSize, 500);
 
   const hide = { x: -140, transitionEnd: { display: "none" }};
   const show = { display: "block", x: 0 };

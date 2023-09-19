@@ -1,40 +1,37 @@
-import { useContext, SetStateAction, Dispatch } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { SetStateAction, Dispatch } from "react";
+import { Link } from "react-router-dom";
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 
-import { NoteCtx } from "../../context/SelectedNoteCtx";
+import useGetUrl from "../../hooks/useGetUrl";
+import useNavbar from "../../hooks/useNavbar";
+import useSelectedNote from "../../hooks/useSelectedNote";
 
 import { motion } from "framer-motion";
 
 type Props = {
     page: number;
     search: string;
-    navbar: boolean;
     totalDocs: number;
     showSearch: boolean;
     hasNextPage: boolean;
     setPage: Dispatch<SetStateAction<number>>;
     setSearch: Dispatch<SetStateAction<string>>;
-    setNavbar: Dispatch<SetStateAction<boolean>>;
     setShowSearch: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function NoteTopBar({ 
     page, 
     search, 
-    navbar, 
     totalDocs, 
     showSearch, 
-    hasNextPage, 
-    setNavbar, 
+    hasNextPage,
     setPage, 
     setSearch, 
     setShowSearch 
 }: Props) {
-        
-    const { selectedNote, setSelectedNote } = useContext(NoteCtx) as any;
-    const location = useLocation();
+    const { navbar, setNavbar } = useNavbar();
+    const { setSelectedNote } = useSelectedNote();
 
     const handleSearchClick = () => {
         setShowSearch(showSearch ? false : true);
@@ -42,44 +39,31 @@ export default function NoteTopBar({
     };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        selectedNote && setSelectedNote(null);
+        setSelectedNote('');
         setSearch(currentTarget.value);
     };
 
     const handleNextPageClick = () => {
         setPage(page + 1);
-        selectedNote && setSelectedNote(null);
+        setSelectedNote('');
     };
 
     const handlePrevPageClick = () => {
         setPage(page - 1);
-        selectedNote && setSelectedNote(null);
+        setSelectedNote('');
     }
 
-    const handleLinkClick = (direction: string) => {
-        const findNoteIdInURL = new RegExp(`note\/(.*)`);
-        const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
-    
-        const getPageInURL = findPageInURL.exec(location.pathname) as Array<string>;
-        const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+    const forwardPage = useGetUrl({ options:{
+        usePage: true,
+        incrementPage: true,
+        absolutePath: true
+    }});
 
-        const baseUrlWithoutPageNumber = getPageInURL[0].slice(0, getPageInURL[0].length - 1);
-        let pageNumber = parseInt(getPageInURL[1]);
-
-        if(direction === 'forward') {
-            if(getNoteIdInURL) {
-                const noteId = getNoteIdInURL[0];
-                return `/${baseUrlWithoutPageNumber + (pageNumber + 1) + "/" + noteId}`;
-            }
-            else return `/${baseUrlWithoutPageNumber + (pageNumber + 1)}`;
-        } else {
-            if(getNoteIdInURL) {
-                const noteId = getNoteIdInURL[0];
-                return `/${baseUrlWithoutPageNumber + (pageNumber - 1) + "/" + noteId}`;
-            }
-            else return `/${baseUrlWithoutPageNumber + (pageNumber -1)}`;
-        }
-    }
+    const backwardPage = useGetUrl({ options:{
+        usePage: true,
+        decrementPage: true,
+        absolutePath: true
+    }});
 
     const hide = { opacity: 0, transitionEnd: { display: "none" }};
     const show = { display: "block", opacity: 1 };
@@ -141,7 +125,7 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handlePrevPageClick()}
-                            to={handleLinkClick("backward") as string}
+                            to={ backwardPage }
                         > 
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
                         </Link>
@@ -160,7 +144,7 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handleNextPageClick()}
-                            to={handleLinkClick("forward") as string}
+                            to={ forwardPage }
                         > 
                             <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />
                         </Link>

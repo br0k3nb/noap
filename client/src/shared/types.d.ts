@@ -16,6 +16,10 @@ declare type NoteData = {
     fontColor: string;
   }] | [];
   settings: {
+    contributors?: string[];
+    showBottomBar: boolean;
+    readMode: boolean;
+    expanded: boolean;
     shared: boolean;
     pinned: boolean;
     permissions?: string[];

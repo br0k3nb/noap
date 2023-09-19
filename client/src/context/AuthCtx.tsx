@@ -1,6 +1,5 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-
-import { UserDataCtx } from './UserDataContext';
+import { createContext, useState, useEffect } from 'react';
+import useUserData from '../hooks/useUserData';
 
 import api from '../services/api';
 
@@ -14,12 +13,11 @@ type SignInType = {
 
 export default function AuthContext({ children }: { children: JSX.Element }) {
     const token = JSON.parse(localStorage.getItem("@NOAP:SYSTEM") || "{}");
-
-    const { setUserData } = useContext(UserDataCtx) as any;
-
+    
     const [loading, setLoading] = useState(false);
     const [userLoggedIn, setUserLoggedIn] = useState(token?.token ? true : false);
-
+    
+    const { setUserData } = useUserData();
     
     useEffect(() => {
         const isLoggedIn = async () => {

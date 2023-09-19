@@ -1,17 +1,18 @@
-import { useState, useContext, SetStateAction, Dispatch } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, SetStateAction, Dispatch } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
 import { BsFillPinAngleFill } from "react-icons/bs";
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md';
 
+import useGetUrl from "../../hooks/useGetUrl";
+import useUserData from "../../hooks/useUserData";
+import useSelectedNote from "../../hooks/useSelectedNote";
+import useNoteSettings from "../../hooks/useNoteSettings";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import no_notes_found from '../../assets/no_notes_found.svg';
 import Loader from "../../components/Loader";
-
-import { NoteCtx } from "../../context/SelectedNoteCtx";
-import { UserDataCtx } from "../../context/UserDataContext";
 
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -22,8 +23,7 @@ type Props = {
     isFetching: boolean;
     pinnedNotesPage: number;
     pinnedNotesHasNextPage: boolean;
-    addNewNote: () => Promise<void>;
-    setExpanded: Dispatch<SetStateAction<boolean>>;
+    addNewNote: () => Promise<void>;   
     notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
     pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
     setPinnedNotesPage: Dispatch<SetStateAction<number>>; 
@@ -35,30 +35,39 @@ export default function CardNotes({
     search,
     isFetching, 
     pinnedNotes,
-    addNewNote, 
-    setExpanded, 
+    addNewNote,
     pinnedNotesPage,
     setPinnedNotesPage,
     pinnedNotesHasNextPage
- }: Props) {
-    const { userData: { settings: { showPinnedNotesInFolder }} } = useContext(UserDataCtx) as any;
-
-    const noteContext = useContext(NoteCtx);
-    const location = useLocation();
-
+ }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
     const [viewPort, setViewPort] = useState({ width: window.innerWidth });
 
-    const baseURL = location.pathname.slice(0, (location.pathname.length - String(page).length));
+    const goBackUrl = useGetUrl({
+        options: {
+            usePage: false,
+            absolutePath: true,
+            goToPageNumber: 1,
+        }
+    });
 
+    const navigate = useNavigate();
+    const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
+    const { setSelectedNote } = useSelectedNote();
+    const { setNoteSettings } = useNoteSettings();
     useUpdateViewport(setViewPort, 500);
 
     const hours = (date: string) => moment(date).format("LT");
     const days = (date: string) => moment(date).format("ll");
 
     const handleNoteClick = (_id: string) => {
-        noteContext?.setSelectedNote(_id);
-        setExpanded(window.outerWidth <= 1030 ? true : false);
+        setSelectedNote(_id);
+        setNoteSettings((prevSettings) => {
+            return {
+                ...prevSettings,
+                expanded: window.outerWidth <= 1030 ? true : false
+            }
+        });
     };
 
     return (
@@ -120,7 +129,6 @@ export default function CardNotes({
                                                                         key={pinnedNotes._id}
                                                                         idx={idx}
                                                                         note={pinnedNotes}
-                                                                        noteContext={noteContext}
                                                                         customWidth={"!w-[145px] xxs:!w-[142.5px]"}
                                                                         handleNoteClick={handleNoteClick}
                                                                         days={days}
@@ -163,7 +171,6 @@ export default function CardNotes({
                                                                     days={days}
                                                                     hours={hours}
                                                                     note={pinnedNotes}
-                                                                    noteContext={noteContext}
                                                                     handleNoteClick={handleNoteClick}
                                                                     noteArraySize={(pinnedNotes as any).length}
                                                                 />
@@ -211,7 +218,6 @@ export default function CardNotes({
                                                 days={days}
                                                 hours={hours}
                                                 note={unpinnedNotes}
-                                                noteContext={noteContext}
                                                 handleNoteClick={handleNoteClick}
                                                 noteArraySize={notesMetadata.length}
                                             />
@@ -226,12 +232,12 @@ export default function CardNotes({
                                         {search !== "" ? "No notes were found!" : "Ouhh, it's quite empty here..."}
                                     </p>  
                                     {page > 1 ? (
-                                        <Link 
-                                            className="!pt-2 text-gray-900 dark:text-gray-200 text-sm font-light tracking-widest uppercase px-3 h-10 rounded-full hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out text-center w-[270px] mx-auto"
-                                            to={baseURL + 1}
+                                        <button
+                                            className="text-gray-900 dark:text-gray-200 text-sm font-light tracking-widest uppercase px-3 h-10 rounded-full dark:hover:!bg-stone-900 hover:bg-[#dadada] border border-gray-500 transition-all duration-500 ease-in-out text-center w-[270px] mx-auto"
+                                            onClick={() => navigate(goBackUrl)}
                                         > 
                                             Go back
-                                        </Link>
+                                        </button>
                                     ) : (
                                         <button 
                                             className="!mt-4 text-gray-900 dark:text-gray-200 text-xs font-light tracking-widest uppercase px-3 h-10 rounded-full hover:bg-[#dddddd] dark:hover:!bg-stone-900 border border-gray-500 transition-all duration-500 ease-in-out w-[270px] mx-auto"
@@ -254,7 +260,6 @@ type CardsProps = {
     note: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
     noteArraySize: number;
     idx: number;
-    noteContext: any;
     customWidth?: number | string;
     days: (date: string) => string;
     hours: (date: string) => string;
@@ -262,32 +267,32 @@ type CardsProps = {
 
 };
 
-export function Cards ({ note, idx, noteContext, handleNoteClick, days, hours, customWidth, noteArraySize }: CardsProps) {
+export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, noteArraySize }: CardsProps) {
     const { image, label, _id, body, createdAt, updatedAt, name: noteName, labelArraySize } = note;
     const { color, type, fontColor, name } = label || {};
 
-    const location = useLocation();
+    const baseUrl = useGetUrl({
+        options: {
+            usePage: false,
+            absolutePath: true,
+            removeNoteId: true
+        }
+    });
 
-    const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
-    const [currentUrl] = findPageInURL.exec(location.pathname) as Array<string>;
-
-    const formatCurrentURL = () => {
-        if(currentUrl[0] === '/') return currentUrl.slice(1, currentUrl.length);
-        else return currentUrl;
-    };
+    const { selectedNote } = useSelectedNote();
 
     return (
         <Link   
             key={_id}
             relative="path"
-            to={`/${formatCurrentURL()}/note/${_id}`}
+            to={`${baseUrl}/note/${_id}`}
             className={`flex flex-wrap cursor-pointer ${idx === noteArraySize && "mb-48"}`} 
             onClick={() => handleNoteClick(_id)}
         >
             <div 
                 className={`
                     text-gray-900 dark:text-gray-300 rounded-lg h-[18.4rem] border border-stone-300 dark:border-[#323232] bg-[#ffffff] dark:bg-[#181818] pt-3 shadow-lg hover:shadow-gray-400 dark:shadow-transparent hover:border transition duration-300 dark:hover:border-gray-500
-                    ${noteContext?.selectedNote === _id && "!border-black dark:!border-[#626262]"}
+                    ${selectedNote === _id && "!border-black dark:!border-[#626262]"}
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}
             >

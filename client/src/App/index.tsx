@@ -1,7 +1,5 @@
 import RoutesApp from "../routes/Routes";
-import { createContext, useState, Dispatch, SetStateAction } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import "./index.css";

@@ -1,4 +1,4 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, ReactNode, useState, Dispatch, SetStateAction } from 'react';
 
 type UserDataType = {
     _id: string;
@@ -7,12 +7,13 @@ type UserDataType = {
     googleId?: string;
     TFAStatus?: string;
     googleAccount?: boolean;
-    settings?: {
-        showPinnedNotesInFolder?: boolean;
-        noteBackgroundColor?: string;
-        noteTextExpanded: boolean;
-        language?: string;
-        theme?: string;
+    settings: {
+      globalNoteBackgroundColor?: string;
+      showPinnedNotesInFolder?: boolean;
+      noteBackgroundColor?: string;
+      noteTextExpanded?: boolean;
+      language?: string;
+      theme: string;
     }
 };
 
@@ -21,15 +22,27 @@ type UserDataContextType = {
     setUserData: Dispatch<SetStateAction<UserDataType>>;
 };
 
-type Props = {
-    children: any,
-    userData: UserDataType;
-    setUserData: Dispatch<SetStateAction<UserDataType>>;
+type UserDataContextProps = {
+    children: ReactNode;
 }
 
-export const UserDataCtx = createContext<UserDataContextType | null>(null);
+const defaultValue = {
+    userData: {
+        _id: '',
+        name: '',
+        settings: {
+            showPinnedNotesInFolder: false,
+            noteTextExpanded: true,
+        }
+    } as UserDataType,
+    setUserData: () => {}
+};
 
-export default function UserDataContext({ children, userData, setUserData }: Props) {
+export const UserDataCtx = createContext<UserDataContextType>(defaultValue);
+
+export default function UserDataContext({ children }: UserDataContextProps) {
+    const [userData, setUserData] = useState(defaultValue.userData);
+    
     return (
         <UserDataCtx.Provider value={{ userData, setUserData }}>
             {children}

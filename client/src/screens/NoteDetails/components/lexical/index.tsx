@@ -12,9 +12,10 @@ import PlaygroundNodes from "./nodes/PlaygroundNodes";
 import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 
+import useSelectedNote from "../../../../hooks/useSelectedNote";
+
 import { toastAlert } from "../../../../components/Alert/Alert";
 import { RefetchCtx } from "../../../../context/RefetchCtx";
-import { NoteCtx } from "../../../../context/SelectedNoteCtx";
 
 import api from "../../../../services/api";
 
@@ -30,7 +31,7 @@ export default function App({ noteData }: Props): JSX.Element {
 
   const [saveSpinner, setSaveSpinner] = useState(false);
   
-  const { selectedNote } = useContext(NoteCtx) || {};
+  const { selectedNote } = useSelectedNote();
   const refetchNoteCtx = useContext(RefetchCtx);
   
   useEffect(() => { lastSelectedNotes.current = selectedNote }, [selectedNote]);

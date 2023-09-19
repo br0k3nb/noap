@@ -4,13 +4,13 @@ import { FieldArrayWithId } from "react-hook-form";
 import NoteTopBar from "./NoteTopBar";
 import CardNotes from "./CardNotes";
 
+import useNoteSettings from "../../hooks/useNoteSettings";
+
 import "moment/locale/pt-br";
 
 type Props = {
   page: number;
   search: string;
-  navbar: boolean;
-  expanded: boolean;
   totalDocs: number;
   isFetching: boolean;
   hasNextPage: boolean;
@@ -20,8 +20,6 @@ type Props = {
   addNewNote: () => Promise<void>;
   setPage: Dispatch<SetStateAction<number>>;
   setSearch: Dispatch<SetStateAction<string>>;
-  setNavbar: Dispatch<SetStateAction<boolean>>;
-  setExpanded: Dispatch<SetStateAction<boolean>>;
   notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
   pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
   setPinnedNotesPage: Dispatch<SetStateAction<number>>;
@@ -29,18 +27,14 @@ type Props = {
 
 export default function Notes({ 
     page, 
-    notesMetadata, 
-    navbar, 
+    notesMetadata,
     search, 
     setPage, 
-    expanded, 
-    setNavbar,
     setSearch, 
     totalDocs,
     addNewNote, 
     isFetching, 
-    pinnedNotes,
-    setExpanded, 
+    pinnedNotes,    
     hasNextPage, 
     totalPinnedDocs,
     pinnedNotesPage,
@@ -49,12 +43,12 @@ export default function Notes({
 }: Props) {
     const [showSearch, setShowSearch] = useState(false);    
 
+    const { noteSettings: { expanded } } = useNoteSettings();
+
     const navTopBarProps = { 
-        hasNextPage, 
-        navbar, 
-        page, 
-        search, 
-        setNavbar, 
+        hasNextPage,
+        page,
+        search,
         setPage, 
         setSearch, 
         setShowSearch, 
@@ -72,7 +66,6 @@ export default function Notes({
         search, 
         isFetching, 
         pinnedNotes,
-        setExpanded, 
         addNewNote, 
         pinnedNotesPage, 
         setPinnedNotesPage,
