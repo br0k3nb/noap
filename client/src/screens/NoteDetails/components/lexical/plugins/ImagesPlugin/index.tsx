@@ -32,7 +32,7 @@ import { DialogActions, DialogButtonsList } from "../../ui/Dialog";
 import FileInput from "../../ui/FileInput";
 import TextInput from "../../ui/TextInput";
 
-import { toastAlert } from "../../../../../../components/Alert/Alert";
+import { toastAlert } from "../../../../../../components/Alert";
 import SvgLoader from "../../../../../../components/SvgLoader";
 
 export type InsertImagePayload = Readonly<ImagePayload>;

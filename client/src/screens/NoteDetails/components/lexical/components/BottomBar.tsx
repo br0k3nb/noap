@@ -8,7 +8,7 @@ import { LexicalEditor, EditorState } from "lexical";
 import useRefetch from "../../../../../hooks/useRefetch";
 import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
-import { toastAlert } from "../../../../../components/Alert/Alert";
+import { toastAlert } from "../../../../../components/Alert";
 import ConfirmationModal from "../../../../../components/ConfirmationModal";
 import SvgLoader from "../../../../../components/SvgLoader";
 

@@ -9,7 +9,7 @@ import noapLogo from '../assets/logo/logo-white-no-bg.png';
 import forgotPassword from '../assets/forgot-password.svg';
 
 import Verify2FAModal from '../components/Verify2FAModal';
-import { toastAlert } from '../components/Alert/Alert';
+import { toastAlert } from '../components/Alert';
 import SuccessCheck from '../components/SuccessCheck';
 import SvgLoader from '../components/SvgLoader';
 

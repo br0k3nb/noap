@@ -9,7 +9,8 @@ import useSelectedNote from "../../hooks/useSelectedNote";
 
 import { motion } from "framer-motion";
 
-import type { pinnedNotesState, notesState, notesActions } from "../Home/reducers";
+import type { notesState, notesActions } from "../../reducers/noteReducer";
+import type { pinnedNotesState } from "../../reducers/pinNoteReducer";
 
 type Props = {
     pinNotesState: pinnedNotesState;

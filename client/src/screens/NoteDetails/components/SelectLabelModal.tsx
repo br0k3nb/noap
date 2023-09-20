@@ -10,7 +10,7 @@ import api from '../../../services/api';
 
 import useLabel from '../../../hooks/useLabel';
 
-import { toastAlert } from '../../../components/Alert/Alert';
+import { toastAlert } from '../../../components/Alert';
 import { RefetchCtx } from '../../../context/RefetchCtx';
 import SvgLoader from '../../../components/SvgLoader';
 import Modal from '../../../components/Modal';

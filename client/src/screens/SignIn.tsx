@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from "react-hook-form";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -7,7 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 
 import Verify2FAModal from "../components/Verify2FAModal";
-import { toastAlert } from "../components/Alert/Alert";
+import { toastAlert } from "../components/Alert";
 import SvgLoader from "../components/SvgLoader";
 
 import api from "../services/api";
@@ -15,13 +15,12 @@ import useAuth from "../hooks/useAuth";
 
 import note from "../assets/main.svg";
 import noapLogo from "../assets/logo/logo-white-no-bg.png";
-
-import { UserDataCtx } from "../context/UserDataContext";
+import useUserData from "../hooks/useUserData";
 
 export default function SignIn() {
   const navigate = useNavigate();
   const auth = useAuth();
-  const { setUserData: setUserDataContext } = useContext(UserDataCtx) as any;
+  const { setUserData: setUserDataContext } = useUserData();
 
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
@@ -38,7 +37,7 @@ export default function SignIn() {
   const fetchGoogleAccountData = async ({ access_token }: { access_token: string }) => {
     setSvgLoader("google");
     try {
-      const {data: { email, id, name }} = await api.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
+      const { data: { email, id, name } } = await api.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -65,7 +64,6 @@ export default function SignIn() {
       localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({ token }));
       setUserDataContext({
         _id,
-        message, 
         settings,
         TFAEnabled,
         googleAccount,

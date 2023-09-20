@@ -4,7 +4,7 @@ import { useForm, FieldValues} from 'react-hook-form';
 
 import { motion } from 'framer-motion';
 
-import { toastAlert } from '../components/Alert/Alert';
+import { toastAlert } from '../components/Alert';
 import SvgLoader from '../components/SvgLoader';
 
 import api from '../services/api';

@@ -17,7 +17,8 @@ import Loader from "../../components/Loader";
 import moment from "moment";
 import "moment/locale/pt-br";
 
-import type { pinnedNotesState, notesState, notesActions, pinnedNotesActions } from '../Home/reducers';
+import type { notesState, notesActions } from '../../reducers/noteReducer';
+import type { pinnedNotesState, pinnedNotesActions } from "../../reducers/pinNoteReducer";
 
 type Props = {
     isFetching: boolean;
@@ -36,15 +37,14 @@ export default function CardNotes({
     pinnedNotes,
     addNewNote,
     pinNotesState,
-    dispatchNotes,
     dispatchPinNotes,
     notesState
  }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
     const [viewPort, setViewPort] = useState({ width: window.innerWidth });
 
-    const { hasNextPage, page, search, totalDocs } = notesState;
-    const { hasNextPage: pinHasNextPage, page: pinPage, totalDocs: pinTotalDocs } = pinNotesState;
+    const { page, search} = notesState;
+    const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
 
     const goBackUrl = useGetUrl({
         options: {
@@ -53,8 +53,6 @@ export default function CardNotes({
             goToPageNumber: 1,
         }
     });
-
-    console.log(goBackUrl);
 
     const navigate = useNavigate();
     const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();

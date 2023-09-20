@@ -1,16 +1,17 @@
-import { SetStateAction, Dispatch, useState, useContext } from 'react';
+import { SetStateAction, Dispatch, useState } from 'react';
 
 import { BsDoorOpenFill, BsDoorClosedFill, BsShieldLockFill } from "react-icons/bs";
 import { MdAccountCircle, MdDarkMode } from 'react-icons/md';
 import { LuSettings2 } from 'react-icons/lu';
 import { BiLock } from "react-icons/bi";
 
+import useUserData from '../../../../hooks/useUserData';
 import useAuth from '../../../../hooks/useAuth';
+
 import Modal from '../../../../components/Modal';
-import TwoFactAuthModal from './TwoFactAuthModal';
-import { toastAlert } from '../../../../components/Alert/Alert';
-import { UserDataCtx } from '../../../../context/UserDataContext';
-import AccountSettingsModal from "../components/AccountSettingsModal";
+import TwoFactAuthModal from '../../../../components/TwoFactAuthModal';
+import { toastAlert } from '../../../../components/Alert';
+import AccountSettingsModal from "../../../../components/AccountSettingsModal";
 import ConfirmationModal from '../../../../components/ConfirmationModal';
 
 import api from '../../../../services/api';
@@ -21,8 +22,18 @@ type Props = {
 }
 
 export default function SettingsModal({ open, setOpen }: Props) {
-    const { userData, setUserData } = useContext(UserDataCtx) as any;
-    const { _id, googleAccount, settings: { showPinnedNotesInFolder, noteTextExpanded, theme } } = userData;
+    const { 
+        userData: {
+            _id,
+            googleAccount,
+            settings: {
+                showPinnedNotesInFolder,
+                noteTextExpanded,
+                theme
+            }
+        }, 
+        setUserData 
+    } = useUserData();
 
     const [userIsAuth, setUserIsAuth] = useState(false);
     const [openTFAModal, setOpenTFAModal] = useState(false);

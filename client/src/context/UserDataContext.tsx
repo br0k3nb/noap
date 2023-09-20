@@ -5,7 +5,7 @@ type UserDataType = {
     name: string;
     verified?: boolean;
     googleId?: string;
-    TFAStatus?: string;
+    TFAEnabled?: boolean;
     googleAccount?: boolean;
     settings: {
       globalNoteBackgroundColor?: string;

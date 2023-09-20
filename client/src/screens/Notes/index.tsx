@@ -8,7 +8,8 @@ import useNoteSettings from "../../hooks/useNoteSettings";
 
 import "moment/locale/pt-br";
 
-import type { pinnedNotesState, notesState, notesActions, pinnedNotesActions } from '../Home/reducers';
+import type { notesState, notesActions } from '../../reducers/noteReducer';
+import type { pinnedNotesActions,  pinnedNotesState } from "../../reducers/pinNoteReducer";
 
 type Props = {
     pinNotesState: pinnedNotesState;

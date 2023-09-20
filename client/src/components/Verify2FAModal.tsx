@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UserDataCtx } from '../context/UserDataContext';
 
 import { useInputMask } from "../hooks/useInputMask";
-import { toastAlert } from './Alert/Alert';
+import { toastAlert } from './Alert';
 import SvgLoader from './SvgLoader';
 import api from '../services/api';
 import Modal from "./Modal";

@@ -14,7 +14,7 @@ import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 
 import useSelectedNote from "../../../../hooks/useSelectedNote";
 
-import { toastAlert } from "../../../../components/Alert/Alert";
+import { toastAlert } from "../../../../components/Alert";
 import { RefetchCtx } from "../../../../context/RefetchCtx";
 
 import api from "../../../../services/api";

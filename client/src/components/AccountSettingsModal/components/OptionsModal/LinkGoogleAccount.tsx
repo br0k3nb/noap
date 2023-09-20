@@ -4,10 +4,10 @@ import { FcGoogle } from "react-icons/fc";
 
 import { useGoogleLogin } from "@react-oauth/google";
 
-import { toastAlert } from '../../../../../../../components/Alert/Alert';
-import SvgLoader from '../../../../../../../components/SvgLoader';
+import { toastAlert } from '../../../Alert';
+import SvgLoader from '../../../SvgLoader';
 
-import api from '../../../../../../../services/api';
+import api from '../../../../services/api';
 
 export default function LinkGoogleAccount({ _id } : { _id: string }) {
     const [showSvgLoader, setshowSvgLoader] = useState(false);

@@ -2,7 +2,7 @@ import { useState, useRef, useReducer } from "react";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 
-import { toastAlert } from "../../components/Alert/Alert";
+import { toastAlert } from "../../components/Alert";
 
 import Notes from "../Notes";
 import Nav from "./Navbar";
@@ -24,14 +24,9 @@ import LabelsCtx from "../../context/LabelCtx";
 
 import default_editor_state from "../../datasets/default_editor_state.json";
 
-import { 
-  pinnedNotesReducer,
-  notesReducer,
-  labelsReducer,
-  label_default_value,
-  note_default_value,
-  pin_notes_default_value
-} from "./reducers";
+import { pinnedNotesReducer, pin_notes_default_value  } from "../../reducers/pinNoteReducer";
+import { notesReducer, note_default_value} from "../../reducers/noteReducer";
+import { labelsReducer, label_default_value } from "../../reducers/labelReducer";
 
 export default function Home(): JSX.Element {
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });

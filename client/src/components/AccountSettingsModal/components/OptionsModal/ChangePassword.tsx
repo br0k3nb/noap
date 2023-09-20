@@ -1,10 +1,10 @@
 import { useState, Dispatch, SetStateAction } from 'react'
 import { UseFormRegister, UseFormHandleSubmit, FieldValues, FieldErrors, UseFormReset } from "react-hook-form";
 
-import { toastAlert } from '../../../../../../../components/Alert/Alert';
-import SvgLoader from '../../../../../../../components/SvgLoader';
+import { toastAlert } from '../../../Alert';
+import SvgLoader from '../../../SvgLoader';
 
-import api from '../../../../../../../services/api';
+import api from '../../../../services/api';
 
 type Props = {
     _id: string;

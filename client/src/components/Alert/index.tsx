@@ -1,6 +1,6 @@
 import Swal, { SweetAlertIcon, SweetAlertPosition } from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import './alert.css';
+import './index.css';
 
 const MySwal = withReactContent(Swal);
 

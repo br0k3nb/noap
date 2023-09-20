@@ -1,9 +1,9 @@
-import { useState, Dispatch, SetStateAction, useContext } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { UseFormRegister, UseFormHandleSubmit, FieldValues, FieldErrors, UseFormReset } from "react-hook-form";
 
-import Modal from '../../../../../../../components/Modal'
+import Modal from '../../../Modal';
 
-import { UserDataCtx } from '../../../../../../../context/UserDataContext';
+import useUserData from '../../../../hooks/useUserData';
 
 import ChangePassword from './ChangePassword';
 import LinkGoogleAccount from './LinkGoogleAccount';
@@ -25,7 +25,7 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
     const [showGoBackButton, setShowGoBackButton] = useState(false);
     const [goBackButtonAction, setGoBackButtonAction] = useState<any>({ action: null });
 
-    const { userData: { googleAccount, _id } } = useContext(UserDataCtx) as any;
+    const { userData: { googleAccount, _id } } = useUserData();
 
     const handleModalClose = () => {
       if(customOnCloseFunction) customOnCloseFunction();

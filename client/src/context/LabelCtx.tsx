@@ -1,6 +1,6 @@
 import { createContext, Dispatch, ReactNode } from 'react';
 import { UseFieldArrayRemove } from "react-hook-form";
-import type { labelsActions } from '../screens/Home/reducers';
+import type { labelsActions } from '../reducers/labelReducer';
 
 interface LabelContext {
     pageLabel: number;

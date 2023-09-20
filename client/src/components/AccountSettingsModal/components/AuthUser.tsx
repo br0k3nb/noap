@@ -1,14 +1,14 @@
-import { useState, Dispatch, SetStateAction, useContext, useEffect } from 'react'
+import { useState, Dispatch, SetStateAction } from 'react'
 import { UseFormRegister, UseFormHandleSubmit, FieldValues, FieldErrors, UseFormReset } from "react-hook-form";
 
-import { UserDataCtx } from '../../../../../../context/UserDataContext';
+import Modal from '../../Modal'
+import SvgLoader from '../../SvgLoader';
+import { toastAlert } from '../../Alert';
+import Verify2FAModal from '../../Verify2FAModal';
 
-import Modal from '../../../../../../components/Modal'
-import SvgLoader from '../../../../../../components/SvgLoader';
-import { toastAlert } from '../../../../../../components/Alert/Alert';
-import Verify2FAModal from '../../../../../../components/Verify2FAModal';
+import useUserData from '../../../hooks/useUserData';
 
-import api from '../../../../../../services/api';
+import api from '../../../services/api';
 
 type Props = {
     open: boolean;
@@ -23,7 +23,7 @@ type Props = {
 }
 
 export default function AuthUser({ setAuth, register, reset, handleSubmit, errors, open, setOpen, setOpenSettings, customOnCloseFunction }: Props) {
-    const { userData } = useContext(UserDataCtx) as any;
+    const { userData } = useUserData();
     const { _id, TFAEnabled } = userData;
 
     const [showSvgLoader, setshowSvgLoader] = useState(false);

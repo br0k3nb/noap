@@ -48,7 +48,7 @@ import useGetUrl from "../../hooks/useGetUrl";
 
 import api from "../../services/api";
 import { RefetchCtx } from "../../context/RefetchCtx";
-import { toastAlert } from "../../components/Alert/Alert";
+import { toastAlert } from "../../components/Alert";
 
 import ColorPicker from "./components/lexical/ui/ColorPicker";
 import Loader from "../../components/Loader";
@@ -59,7 +59,7 @@ import noNoteSelected from "../../assets/select-note.svg";
 import moment from "moment";
 import "moment/locale/pt-br";
 
-import type { pinnedNotesActions, pinnedNotesState } from "../Home/reducers";
+import type { pinnedNotesActions, pinnedNotesState } from "../../reducers/pinNoteReducer";
 
 type Props = {
   labels: FieldArrayWithId<Labels, "labels", "id">[];
