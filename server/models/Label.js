@@ -5,7 +5,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 LabelSchema.pre('findOneAndUpdate', function (next) {
     this.findOneAndUpdate({}, { updatedAt: new Date() });
-
+    
     next();
 });
 
