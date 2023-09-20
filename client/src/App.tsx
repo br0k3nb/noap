@@ -1,4 +1,4 @@
-import RoutesApp from "../routes/Routes";
+import RoutesApp from "./routes/Routes";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 

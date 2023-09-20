@@ -1,5 +1,4 @@
-import { useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useRef, useReducer } from "react";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 
@@ -11,6 +10,7 @@ import NoteDetails from "../NoteDetails";
 
 import api from "../../services/api";
 
+import useGetUrl from "../../hooks/useGetUrl";
 import useNavbar from "../../hooks/useNavbar";
 import useUserData from "../../hooks/useUserData";
 import { useDebounce } from "../../hooks/useDebounce";
@@ -24,26 +24,28 @@ import LabelsCtx from "../../context/LabelCtx";
 
 import default_editor_state from "../../datasets/default_editor_state.json";
 
+import { 
+  pinnedNotesReducer,
+  notesReducer,
+  labelsReducer,
+  label_default_value,
+  note_default_value,
+  pin_notes_default_value
+} from "./reducers";
+
 export default function Home(): JSX.Element {
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [selectedNoteData, setSelectedNoteData] = useState<NoteData | null>(null);
-  const [pinnedNotesHasNextPage, setPinnedNotesHasNextPage] = useState(false);
   const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);
-  const [hasNextPageLabel, setHasNextPageLabel] = useState(false);
-  const [pinnedNotesPage, setPinnedNotesPage] = useState(1);
-  const [totalPinnedDocs, setTotalPinnedDocs] = useState(0);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [searchLabel, setSearchLabel] = useState('');
-  const [pageLabel, setPageLabel] = useState(1);
-  const [totalDocs, setTotalDocs] = useState(0);
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
 
-  const delayedSearchLabel = useDebounce(searchLabel, 500);
-  const delayedSearch = useDebounce(search, 500);
+  const [pinNotesState, dispatchPinNotes] = useReducer(pinnedNotesReducer, pin_notes_default_value);
+  const [labelsState, dispatchLabels] = useReducer(labelsReducer, label_default_value);
+  const [notesState, dispatchNotes] = useReducer(notesReducer, note_default_value);
+
+  const delayedSearchLabel = useDebounce(labelsState.search, 500);
+  const delayedSearch = useDebounce(notesState.search, 500);
   useUpdateViewport(setScreenSize, 500);
   
-  const location = useLocation();
   const { navbar } = useNavbar();
   const { userData: { _id } } = useUserData();
   const { selectedNote } = useSelectedNote();
@@ -68,17 +70,19 @@ export default function Home(): JSX.Element {
     name: "labels",
   });
   
-  const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
-  const getPageInURL = findPageInURL.exec(location.pathname);
+  const currentPage = useGetUrl({
+    options: {
+      usePage: false,
+      getPageInUrl: true
+    }
+  });
 
   //using these refs to prevent appending the same array two times
   const fetchedLabels = useRef(false);
 
   const fetchNotesMetadata = async () => { 
-    if(getPageInURL) setPage(Number(getPageInURL[1]));
-
-    const pageUrl = getPageInURL ? getPageInURL[1] : 1;
-
+    dispatchNotes({ type: "PAGE", payload: currentPage });
+    
     if(_id) {
       try {
         const { 
@@ -90,19 +94,27 @@ export default function Home(): JSX.Element {
               hasNextPage: pinHasNextPage
             }
           }
-        } = await api.get(`/notes/${pageUrl}/${_id}`, {
+        } = await api.get(`/notes/${currentPage}/${_id}`, {
           params: { 
-            pinnedNotesPage: pinnedNotesPage,
+            pinnedNotesPage: pinNotesState.page,
             search: delayedSearch, 
             limit: 10 
           }
         });
   
-        setTotalDocs(totalDocs);
-        setHasNextPage(hasNextPage);
-        setTotalPinnedDocs(totalPinnedDocs);
-        setPinnedNotesHasNextPage(pinHasNextPage);
+        dispatchNotes({ 
+          type: "TOTAL_DOCS_AND_NEXT_PAGE",
+          payload: { totalDocs, hasNextPage }
+        });
 
+        dispatchPinNotes({
+          type: "TOTAL_DOCS_AND_NEXT_PAGE",
+          payload: { 
+            totalDocs: totalPinnedDocs, 
+            hasNextPage: pinHasNextPage 
+          }
+        });
+    
         replacePinNotes(pinDocs);
         return replace(docs);
       } catch (err: any) {       
@@ -134,12 +146,12 @@ export default function Home(): JSX.Element {
         const { data: { docs, hasNextPage } } = await api.get(`/labels/${_id}`, { 
           params: { 
             search: delayedSearchLabel,
-            page: pageLabel,
+            page: labelsState.page,
             limit: 10
           }
         });
 
-        setHasNextPageLabel(hasNextPage);
+        dispatchLabels({ type: "NEXT_PAGE", payload: hasNextPage });
 
         if (!labels.length && !fetchedLabels.current) {
           fetchedLabels.current = true;
@@ -188,45 +200,39 @@ export default function Home(): JSX.Element {
     }
   };
 
-  const { isFetching } = useQuery(["verifyUser", delayedSearch, page, getPageInURL, pinnedNotesPage, _id], fetchNotesMetadata, {
-    refetchInterval: 300000,
-    refetchOnWindowFocus: false
-  });
+  const { isFetching } = useQuery(
+    ["verifyUser", delayedSearch, notesState.page, currentPage, pinNotesState.page, _id], 
+    fetchNotesMetadata,
+    { refetchInterval: 300000, refetchOnWindowFocus: false }
+  );
 
   const { isFetching: noteDataIsFetching } = useQuery(["fetchNoteData", selectedNote, _id], fetchSelectedNoteData, {
     refetchOnWindowFocus: false
   });
 
-  const { isFetching: labelIsFetching } = useQuery(["fetchLabels", delayedSearchLabel, pageLabel, _id], fetchLabels, { 
+  const { isFetching: labelIsFetching } = useQuery(["fetchLabels", delayedSearchLabel, labelsState.page, _id], fetchLabels, {
     refetchOnWindowFocus: false 
   });
 
   const notesProps = {
-    page,
-    search,
-    setPage,
-    setSearch,
-    totalDocs,
     isFetching,
     addNewNote,
-    hasNextPage,
     notesMetadata: fields,
-    totalPinnedDocs,
     pinnedNotes: pinNotes,
-    pinnedNotesPage: pinnedNotesPage,
-    setPinnedNotesPage: setPinnedNotesPage,
-    pinnedNotesHasNextPage: pinnedNotesHasNextPage
+    dispatchPinNotes,
+    dispatchNotes,
+    pinNotesState,
+    notesState,
   };
 
   const navLabelCtxProps = {
-    pageLabel,
-    searchLabel,
     fetchLabels,
     removeLabels,
-    setPageLabel,
     labelIsFetching,
-    setSearchLabel,
-    hasNextPageLabel
+    dispatchLabels: dispatchLabels,
+    pageLabel: labelsState.page,
+    hasNextPageLabel: labelsState.hasNextPage,
+    searchLabel: labelsState.search,
   };
 
   const isMobileDevice = screenSize.width <= 640 ? true : false;
@@ -253,11 +259,10 @@ export default function Home(): JSX.Element {
                 isFetching={isFetching}
               >
                 <LabelsCtx  
-                  pageLabel={pageLabel}
-                  searchLabel={searchLabel}
-                  setPageLabel={setPageLabel}
-                  setSearchLabel={setSearchLabel}
-                  hasNextPageLabel={hasNextPageLabel}
+                  pageLabel={labelsState.page}
+                  searchLabel={labelsState.search}
+                  dispatchLabels={dispatchLabels}
+                  hasNextPageLabel={labelsState.hasNextPage}
                 >
                   <NoteDetails 
                     notes={fields} 
@@ -271,8 +276,9 @@ export default function Home(): JSX.Element {
                     labelIsFetching={labelIsFetching}
                     selectedNoteData={selectedNoteData}
                     setSelectedNoteData={setSelectedNoteData}
-                    setPinnedNotesPage={setPinnedNotesPage}
                     noteDataIsFetching={noteDataIsFetching}
+                    dispatchPinNotes={dispatchPinNotes}
+                    pinNotesState={pinNotesState}
                   />
                 </LabelsCtx>
               </RefetchContext>

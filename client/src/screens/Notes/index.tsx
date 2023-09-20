@@ -1,4 +1,4 @@
-import { SetStateAction, Dispatch, useState } from "react";
+import { useState, Dispatch } from "react";
 import { FieldArrayWithId } from "react-hook-form";
 
 import NoteTopBar from "./NoteTopBar";
@@ -8,68 +8,51 @@ import useNoteSettings from "../../hooks/useNoteSettings";
 
 import "moment/locale/pt-br";
 
+import type { pinnedNotesState, notesState, notesActions, pinnedNotesActions } from '../Home/reducers';
+
 type Props = {
-  page: number;
-  search: string;
-  totalDocs: number;
-  isFetching: boolean;
-  hasNextPage: boolean;
-  totalPinnedDocs: number;
-  pinnedNotesPage: number;
-  pinnedNotesHasNextPage: boolean;
-  addNewNote: () => Promise<void>;
-  setPage: Dispatch<SetStateAction<number>>;
-  setSearch: Dispatch<SetStateAction<string>>;
-  notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
-  pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
-  setPinnedNotesPage: Dispatch<SetStateAction<number>>;
+    pinNotesState: pinnedNotesState;
+    notesState: notesState;
+    isFetching: boolean;
+    addNewNote: () => Promise<void>;
+    notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
+    pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
+    dispatchPinNotes: Dispatch<pinnedNotesActions>;
+    dispatchNotes: Dispatch<notesActions>;
 };
 
-export default function Notes({ 
-    page, 
+export default function Notes({
+    pinNotesState,
+    notesState,
     notesMetadata,
-    search, 
-    setPage, 
-    setSearch, 
-    totalDocs,
     addNewNote, 
-    isFetching, 
-    pinnedNotes,    
-    hasNextPage, 
-    totalPinnedDocs,
-    pinnedNotesPage,
-    setPinnedNotesPage,
-    pinnedNotesHasNextPage
+    isFetching,
+    pinnedNotes,
+    dispatchPinNotes,
+    dispatchNotes
 }: Props) {
     const [showSearch, setShowSearch] = useState(false);    
 
     const { noteSettings: { expanded } } = useNoteSettings();
 
     const navTopBarProps = { 
-        hasNextPage,
-        page,
-        search,
-        setPage, 
-        setSearch, 
-        setShowSearch, 
-        showSearch, 
-        totalDocs: 
-            totalDocs && totalPinnedDocs ? totalDocs + totalPinnedDocs 
-            : !totalDocs && totalPinnedDocs ? totalPinnedDocs : totalDocs
-        ,
+        setShowSearch,
+        showSearch,
         pinnedNotes,
+        pinNotesState,
+        notesState,
+        dispatchNotes
     };
 
     const cardNotesProps = { 
-        page, 
         notesMetadata, 
-        search, 
         isFetching, 
         pinnedNotes,
-        addNewNote, 
-        pinnedNotesPage, 
-        setPinnedNotesPage,
-        pinnedNotesHasNextPage
+        addNewNote,
+        pinNotesState,
+        notesState,
+        dispatchPinNotes,
+        dispatchNotes
     };
 
     return (

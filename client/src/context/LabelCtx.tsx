@@ -1,43 +1,40 @@
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, ReactNode } from 'react';
 import { UseFieldArrayRemove } from "react-hook-form";
-  
-type LabelContext = {
-    pageLabel: number;
-    searchLabel: string;
-    isFetching?: boolean;
-    hasNextPageLabel: boolean;
-    fetchLabels?: () => Promise<void>;
-    removeLabels?: UseFieldArrayRemove;
-    setPageLabel: Dispatch<SetStateAction<number>>;
-    setSearchLabel: Dispatch<SetStateAction<string>>;
-  }
+import type { labelsActions } from '../screens/Home/reducers';
 
-type Props = {
-    children: any,
+interface LabelContext {
     pageLabel: number;
-    isFetching?: boolean;
     searchLabel: string;
+    isFetching?: boolean;
     hasNextPageLabel: boolean;
     fetchLabels?: () => Promise<void>;
     removeLabels?: UseFieldArrayRemove;
-    setPageLabel: Dispatch<SetStateAction<number>>;
-    setSearchLabel: Dispatch<SetStateAction<string>>;
+    dispatchLabels: Dispatch<labelsActions>;
 }
 
-export const LabelsCtx = createContext<LabelContext | null>(null);
+interface LabelContextProps extends LabelContext {
+    children: ReactNode,
+}
+
+const defaultValue = {
+    pageLabel: 0,
+    searchLabel: '',
+    hasNextPageLabel: false,
+    dispatchLabels: () => {},
+};
+
+export const LabelsCtx = createContext<LabelContext>(defaultValue);
 
 export default function LabelsContext({ 
-        children,
-        pageLabel,
-        isFetching, 
-        fetchLabels, 
-        searchLabel,
-        removeLabels,
-        setPageLabel, 
-        setSearchLabel,
-        hasNextPageLabel
-    }: Props) {
-
+    children,
+    pageLabel,
+    isFetching, 
+    fetchLabels, 
+    searchLabel,
+    removeLabels,
+    dispatchLabels,
+    hasNextPageLabel
+}: LabelContextProps) {
     return (
         <LabelsCtx.Provider 
             value={{
@@ -46,8 +43,7 @@ export default function LabelsContext({
                 searchLabel,
                 fetchLabels,
                 removeLabels, 
-                setPageLabel,
-                setSearchLabel,
+                dispatchLabels,
                 hasNextPageLabel
             }}
         >

@@ -8,9 +8,10 @@ import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-ico
 
 import api from '../../../services/api';
 
+import useLabel from '../../../hooks/useLabel';
+
 import { toastAlert } from '../../../components/Alert/Alert';
 import { RefetchCtx } from '../../../context/RefetchCtx';
-import { LabelsCtx } from '../../../context/LabelCtx';
 import SvgLoader from '../../../components/SvgLoader';
 import Modal from '../../../components/Modal';
 
@@ -20,7 +21,7 @@ type Props = {
     checked: boolean;
     isFetching: boolean;
     register: UseFormRegister<FieldValues>;
-    selectedNote: string | null | undefined;
+    selectedNote: string | null;
     setChecked: Dispatch<SetStateAction<boolean>>;
     handleSubmit: UseFormHandleSubmit<FieldValues>;
     labels: FieldArrayWithId<Labels, "labels", "id">[];
@@ -32,14 +33,12 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
     const [showLoader, setShowLoader] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
 
-    const labelData = useContext(LabelsCtx);
     const { 
-        setPageLabel, 
-        setSearchLabel, 
+        dispatchLabels,
         searchLabel, 
         pageLabel, 
         hasNextPageLabel 
-    } = labelData as any;
+    } = useLabel();
 
     const addLabel = async (data: FieldValues) => {
         setShowLoader(true);
@@ -82,13 +81,18 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
     const deviceScreenSize = window.innerWidth;
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        setSearchLabel(currentTarget.value);
-        setPageLabel(1);
+        dispatchLabels({ 
+            type: "PAGE_AND_SEARCH", 
+            payload: {
+                page: 1,
+                search: currentTarget.value
+            }
+        })
     };
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
-        setSearchLabel('');
+        dispatchLabels({ type: "SEARCH", payload: "" });
     };
 
     const hide = { opacity: 0, transitionEnd: { display: "none" } };
@@ -165,7 +169,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                     type='button'
                                     className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                     disabled={pageLabel === 1 ? true : false}
-                                    onClick={() => setPageLabel(pageLabel - 1)}
+                                    onClick={() => dispatchLabels({ type: "PAGE", payload: pageLabel - 1 })}
                                 > 
                                     <MdKeyboardDoubleArrowLeft />
                                 </button>
@@ -176,7 +180,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                                     type='button'
                                     className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                     disabled={hasNextPageLabel ? false : true}
-                                    onClick={() => setPageLabel(pageLabel + 1)}
+                                    onClick={() => dispatchLabels({ type: "PAGE", payload: pageLabel + 1 })}
                                 >
                                     <MdKeyboardDoubleArrowRight />
                                 </button>

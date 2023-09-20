@@ -1,5 +1,5 @@
-import { useState, SetStateAction, Dispatch } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, Dispatch } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
 import { BsFillPinAngleFill } from "react-icons/bs";
@@ -17,31 +17,34 @@ import Loader from "../../components/Loader";
 import moment from "moment";
 import "moment/locale/pt-br";
 
+import type { pinnedNotesState, notesState, notesActions, pinnedNotesActions } from '../Home/reducers';
+
 type Props = {
-    page: number;
-    search: string;
     isFetching: boolean;
-    pinnedNotesPage: number;
-    pinnedNotesHasNextPage: boolean;
     addNewNote: () => Promise<void>;   
     notesMetadata: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
     pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
-    setPinnedNotesPage: Dispatch<SetStateAction<number>>; 
+    dispatchNotes: Dispatch<notesActions>;
+    dispatchPinNotes: Dispatch<pinnedNotesActions>;
+    pinNotesState: pinnedNotesState;
+    notesState: notesState;
 };
 
 export default function CardNotes({ 
-    page, 
     notesMetadata,
-    search,
     isFetching, 
     pinnedNotes,
     addNewNote,
-    pinnedNotesPage,
-    setPinnedNotesPage,
-    pinnedNotesHasNextPage
+    pinNotesState,
+    dispatchNotes,
+    dispatchPinNotes,
+    notesState
  }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
     const [viewPort, setViewPort] = useState({ width: window.innerWidth });
+
+    const { hasNextPage, page, search, totalDocs } = notesState;
+    const { hasNextPage: pinHasNextPage, page: pinPage, totalDocs: pinTotalDocs } = pinNotesState;
 
     const goBackUrl = useGetUrl({
         options: {
@@ -50,6 +53,8 @@ export default function CardNotes({
             goToPageNumber: 1,
         }
     });
+
+    console.log(goBackUrl);
 
     const navigate = useNavigate();
     const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
@@ -140,15 +145,15 @@ export default function CardNotes({
                                                             <div className="flex flex-row items-center space-x-10 justify-center w-full mt-5">
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                    disabled={pinnedNotesPage > 1 ? false : true}
-                                                                    onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
+                                                                    disabled={pinPage > 1 ? false : true}
+                                                                    onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage - 1 })}
                                                                 >
                                                                     previous page
                                                                 </button>
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                    disabled={pinnedNotesHasNextPage ? false : true}
-                                                                    onClick={() => setPinnedNotesPage(pinnedNotesPage + 1)}
+                                                                    disabled={pinPage ? false : true}
+                                                                    onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage + 1 })}
                                                                 >
                                                                     next page
                                                                 </button>
@@ -179,15 +184,15 @@ export default function CardNotes({
                                                         <div className="flex flex-row items-center space-x-10 justify-center w-full mt-5">
                                                             <button 
                                                                 className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                disabled={pinnedNotesPage > 1 ? false : true}
-                                                                onClick={() => setPinnedNotesPage(pinnedNotesPage - 1)}
+                                                                disabled={pinPage > 1 ? false : true}
+                                                                onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage - 1 })}
                                                             >
                                                                 previous page
                                                             </button>
                                                             <button 
                                                                 className="text-gray-300 uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                disabled={pinnedNotesHasNextPage ? false : true}
-                                                                onClick={() => setPinnedNotesPage(pinnedNotesPage + 1)}
+                                                                disabled={pinHasNextPage ? false : true}
+                                                                onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage + 1 })}
                                                             >
                                                                 next page
                                                             </button>
@@ -229,12 +234,12 @@ export default function CardNotes({
                                 <div className="flex flex-col space-y-3 justify-center items-center mt-6 mx-auto">
                                     <img src={no_notes_found} className="mt-5 w-48 dark:opacity-75 md:w-60 lg:w-44"/>
                                     <p className="dark:!text-gray-400 text-stone-600 text-[13px] uppercase tracking-wide">
-                                        {search !== "" ? "No notes were found!" : "Ouhh, it's quite empty here..."}
+                                        {!search ? "No notes were found!" : "Ouhh, it's quite empty here..."}
                                     </p>  
                                     {page > 1 ? (
                                         <button
                                             className="text-gray-900 dark:text-gray-200 text-sm font-light tracking-widest uppercase px-3 h-10 rounded-full dark:hover:!bg-stone-900 hover:bg-[#dadada] border border-gray-500 transition-all duration-500 ease-in-out text-center w-[270px] mx-auto"
-                                            onClick={() => navigate(goBackUrl)}
+                                            onClick={() => navigate(goBackUrl as string)}
                                         > 
                                             Go back
                                         </button>

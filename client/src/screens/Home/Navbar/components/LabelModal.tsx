@@ -1,10 +1,12 @@
-import { SetStateAction, Dispatch, useState, useContext } from 'react';
+import { SetStateAction, Dispatch, useState } from 'react';
 import { useForm, FieldValues, FieldArrayWithId } from 'react-hook-form';
 import { HexColorPicker } from "react-colorful";
 
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { BsThreeDotsVertical, BsSearch, BsFilter } from 'react-icons/bs';
 import { AiFillTags } from 'react-icons/ai';
+
+import useLabel from '../../../../hooks/useLabel';
 
 import Modal from '../../../../components/Modal';
 import SvgLoader from '../../../../components/SvgLoader';
@@ -52,17 +54,15 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
     const { handleSubmit, register, formState, reset } = useForm<Label>();
     const { errors } = formState;
 
-    const labelData = useContext(LabelsCtx);
-    const { 
-        setPageLabel, 
-        setSearchLabel, 
+    const {
         searchLabel, 
         fetchLabels, 
         removeLabels, 
         isFetching, 
         pageLabel, 
-        hasNextPageLabel 
-    } = labelData as any;
+        hasNextPageLabel,
+        dispatchLabels
+    } = useLabel();
 
     const deviceScreenSize = innerWidth;
 
@@ -79,8 +79,13 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
 
     const closeModal = () => {
         setOpen(false);
-        setPageLabel(1);
-        setSearchLabel('');
+        dispatchLabels({
+            type: "PAGE_AND_SEARCH",
+            payload: {
+                search: "",
+                page: 1
+            }
+        });
         setShowSearchBar(false);
         setTimeout(() => setCreateLabel(false), 500);
     };
@@ -108,7 +113,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
             toastAlert({ icon: 'success', title: `${newLabel.data.message}`, timer: 3000 });
             
             setLoader(false);
-            fetchLabels();
+            if(fetchLabels) fetchLabels();
         } catch (err: any) {
             setLoader(false);
             toastAlert({ icon: 'error', title: err.message, timer: 3000 });
@@ -130,8 +135,8 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
             closeDeleteModal();
             
             const findLabel = labels?.find(({_id}) => _id === selectedLabel);
-            removeLabels(labels?.indexOf(findLabel as any));
-            fetchLabels();
+            if(removeLabels) removeLabels(labels?.indexOf(findLabel as any));
+            if(fetchLabels) fetchLabels();
         } catch (err: any) {
             setLoader(false);
             toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
@@ -173,7 +178,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
             });
 
             setLoader(false);
-            fetchLabels();
+            if(fetchLabels) fetchLabels();
             toastAlert({ icon: 'success', title: "Label updated!", timer: 3000 });
         } catch (err: any) {
             setLoader(false);
@@ -198,13 +203,18 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
     const show = { opacity: 1, display: "block" };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        setSearchLabel(currentTarget.value);
-        setPageLabel(1);
+        dispatchLabels({
+            type: "PAGE_AND_SEARCH",
+            payload: {
+                search: currentTarget.value,
+                page: 1
+            }
+        });
     };
 
     const handleShowSearchBar = () => {
         setShowSearchBar(!showSearchBar);
-        setSearchLabel('');
+        dispatchLabels({ type: "SEARCH", payload: "" });
     };
 
     return (
@@ -311,7 +321,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                     <button 
                                         className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                         disabled={pageLabel === 1 ? true : false}
-                                        onClick={() => setPageLabel(pageLabel - 1)}
+                                        onClick={() => dispatchLabels({ type: "PAGE", payload: pageLabel - 1 })}
                                     > 
                                         <MdKeyboardDoubleArrowLeft />
                                     </button>
@@ -321,7 +331,7 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
                                     <button 
                                         className="text-gray-900 dark:text-gray-300 disabled:text-gray-400 btn !bg-[#ffffff] dark:!bg-[#0f1011] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                                         disabled={hasNextPageLabel ? false : true}
-                                        onClick={() => setPageLabel(pageLabel + 1)}
+                                        onClick={() => dispatchLabels({ type: "PAGE", payload: pageLabel + 1 })}
                                     >
                                         <MdKeyboardDoubleArrowRight />
                                     </button>

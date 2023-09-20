@@ -9,47 +9,54 @@ import useSelectedNote from "../../hooks/useSelectedNote";
 
 import { motion } from "framer-motion";
 
+import type { pinnedNotesState, notesState, notesActions } from "../Home/reducers";
+
 type Props = {
-    page: number;
-    search: string;
-    totalDocs: number;
+    pinNotesState: pinnedNotesState;
+    notesState: notesState;
     showSearch: boolean;
-    hasNextPage: boolean;
-    setPage: Dispatch<SetStateAction<number>>;
-    setSearch: Dispatch<SetStateAction<string>>;
     setShowSearch: Dispatch<SetStateAction<boolean>>;
+    dispatchNotes: Dispatch<notesActions>;
 }
 
 export default function NoteTopBar({ 
-    page, 
-    search, 
-    totalDocs, 
+    dispatchNotes, 
+    pinNotesState, 
+    notesState, 
     showSearch, 
-    hasNextPage,
-    setPage, 
-    setSearch, 
     setShowSearch 
 }: Props) {
     const { navbar, setNavbar } = useNavbar();
     const { setSelectedNote } = useSelectedNote();
 
+    const { hasNextPage, page, search, totalDocs } = notesState;
+    const { totalDocs: pinTotalDocs } = pinNotesState;
+
+    const allDocs = 
+        totalDocs && pinTotalDocs ? totalDocs + pinTotalDocs
+        : !totalDocs && pinTotalDocs ? pinTotalDocs : totalDocs;
+
     const handleSearchClick = () => {
         setShowSearch(showSearch ? false : true);
-        setSearch('');
+        dispatchNotes({ type: 'SEARCH', payload: "" });
+        // setSearch('');
     };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
         setSelectedNote('');
-        setSearch(currentTarget.value);
+        dispatchNotes({ type: 'SEARCH', payload: currentTarget.value });
+        // setSearch(currentTarget.value);
     };
 
     const handleNextPageClick = () => {
-        setPage(page + 1);
+        dispatchNotes({ type: 'PAGE', payload: ++notesState.page });
+        // setPage(page + 1);
         setSelectedNote('');
     };
 
     const handlePrevPageClick = () => {
-        setPage(page - 1);
+        dispatchNotes({ type: 'PAGE', payload: --notesState.page });
+        // setPage(page - 1);
         setSelectedNote('');
     }
 
@@ -85,7 +92,7 @@ export default function NoteTopBar({
                         </button>
                     </div>
                     <div className="flex flex-row flex-wrap gap-x-1 justify-between px-3 py-2 max-w-screen text-gray-900 dark:text-gray-300">
-                        <p className="pl-3 pt-1">{totalDocs} notes</p>
+                        <p className="pl-3 pt-1">{allDocs} notes</p>
                         <div className="flex flex-row space-x-2">
                             <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                                 <BsFilter size={25}/> 
@@ -125,7 +132,7 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handlePrevPageClick()}
-                            to={ backwardPage }
+                            to={ backwardPage as string }
                         > 
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
                         </Link>
@@ -144,7 +151,7 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handleNextPageClick()}
-                            to={ forwardPage }
+                            to={ forwardPage as string }
                         > 
                             <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />
                         </Link>

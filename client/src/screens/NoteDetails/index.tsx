@@ -59,8 +59,9 @@ import noNoteSelected from "../../assets/select-note.svg";
 import moment from "moment";
 import "moment/locale/pt-br";
 
+import type { pinnedNotesActions, pinnedNotesState } from "../Home/reducers";
+
 type Props = {
-  setPinnedNotesPage: Dispatch<SetStateAction<number>>;
   labels: FieldArrayWithId<Labels, "labels", "id">[];
   appendPinNotes: UseFieldArrayAppend<NoteMetadata, "noteMetadata">;
   pinNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
@@ -73,6 +74,8 @@ type Props = {
   selectedNoteData: NoteData | null;
   labelIsFetching: boolean;
   noteDataIsFetching: boolean;
+  dispatchPinNotes: Dispatch<pinnedNotesActions>;
+  pinNotesState: pinnedNotesState;
 };
 
 export default function NoteDetails({
@@ -87,8 +90,9 @@ export default function NoteDetails({
   labelIsFetching,
   selectedNoteData,
   setSelectedNoteData,
-  setPinnedNotesPage,
-  noteDataIsFetching
+  noteDataIsFetching,
+  dispatchPinNotes,
+  pinNotesState
 }: Props) {
   const { fetchNotes } = useContext(RefetchCtx) as any;
   
@@ -263,7 +267,7 @@ export default function NoteDetails({
         append(pinNote);
         
         if(pinNotes.length === 1) {
-          setPinnedNotesPage((prevPage) => prevPage - 1);
+          dispatchPinNotes({ type: "PAGE", payload: pinNotesState.page - 1 });
           removePinNotes(pinNotes.indexOf(pinNote));
         }
         else removePinNotes(pinNotes.indexOf(pinNote));

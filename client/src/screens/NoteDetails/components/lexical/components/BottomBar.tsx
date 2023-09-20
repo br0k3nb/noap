@@ -1,12 +1,12 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { AiFillSave } from "react-icons/ai";
 import { BsXLg } from 'react-icons/bs';
 import { MdDeleteForever, MdOutlineSettings } from "react-icons/md";
 
 import { LexicalEditor, EditorState } from "lexical";
 
-import { RefetchCtx } from "../../../../../context/RefetchCtx";
-import { NoteSettingsCtx } from "../../../../../context/NoteSettingsCtx";
+import useRefetch from "../../../../../hooks/useRefetch";
+import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
 import { toastAlert } from "../../../../../components/Alert/Alert";
 import ConfirmationModal from "../../../../../components/ConfirmationModal";
@@ -19,12 +19,12 @@ type BottomBarProps = {
   currentScreenSize: number;
   editor: LexicalEditor;
   saveSpinner: boolean;
-  note: any;
+  note: NoteData;
 };
 
 export default function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {
-    const { noteSettings: { showBottomBar } } = useContext(NoteSettingsCtx) as any;
-    const refetch = useContext(RefetchCtx);
+    const { noteSettings: { showBottomBar } } = useNoteSettings();
+    const { fetchNotes } = useRefetch();
   
     const [open, setOpen] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
@@ -36,7 +36,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
         const deleteLabel = await api.delete(`/note/delete/label/${labelId}/${note._id}`);
         toastAlert({ icon: "success", title: `${deleteLabel.data.message}`, timer: 2000 });
 
-        await refetch?.fetchNotes();
+        await fetchNotes();
         setShowLoader(false);
         setLabelToDelete("");
       } catch (err: any) {
@@ -50,7 +50,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
       try {
         const deleteLabels = await api.delete(`/note/delete-all/label/${note._id}`);
         toastAlert({ icon: "success", title: `${deleteLabels.data.message}`, timer: 2000 });
-        refetch?.fetchNotes();
+        fetchNotes();
         setOpen(false);
       } catch (err: any) {
         console.log(err);
