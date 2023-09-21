@@ -48,6 +48,16 @@ export function CustomRoutes() {
             </NoteSettingsContext>
           }
         />
+        <Route 
+          path='search/:search' 
+          element={ 
+            <NoteSettingsContext>
+              <SelectedNoteContext>
+                <Home /> 
+              </SelectedNoteContext>
+            </NoteSettingsContext>
+          }
+        />
       </Route>
 
       <Route path="/help" element={ <LoginHelp /> } />

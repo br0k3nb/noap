@@ -1,4 +1,4 @@
-import { SetStateAction, Dispatch } from "react";
+import { useState, Dispatch } from "react";
 import { Link } from "react-router-dom";
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
@@ -15,63 +15,84 @@ import type { pinnedNotesState } from "../../reducers/pinNoteReducer";
 type Props = {
     pinNotesState: pinnedNotesState;
     notesState: notesState;
-    showSearch: boolean;
-    setShowSearch: Dispatch<SetStateAction<boolean>>;
     dispatchNotes: Dispatch<notesActions>;
 }
 
-export default function NoteTopBar({ 
-    dispatchNotes, 
-    pinNotesState, 
-    notesState, 
-    showSearch, 
-    setShowSearch 
-}: Props) {
+export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }: Props) {
     const { navbar, setNavbar } = useNavbar();
     const { setSelectedNote } = useSelectedNote();
 
     const { hasNextPage, page, search, totalDocs } = notesState;
     const { totalDocs: pinTotalDocs } = pinNotesState;
 
+    const getSearchInUrl = useGetUrl({
+        options: {
+            usePage: false,
+            getSearchQueryInUrl: true,
+        }
+    });
+
+    const [showSearch, setShowSearch] = useState(getSearchInUrl ? true : false);
+    
     const allDocs = 
         totalDocs && pinTotalDocs ? totalDocs + pinTotalDocs
         : !totalDocs && pinTotalDocs ? pinTotalDocs : totalDocs;
 
+    
+    const getBaseUrl = useGetUrl({
+        options: {
+            usePage: false,
+            absolutePath: true,
+            removeNoteId: true
+        }
+    });
+
     const handleSearchClick = () => {
         setShowSearch(showSearch ? false : true);
-        dispatchNotes({ type: 'SEARCH', payload: "" });
-        // setSearch('');
+
+        if(search && showSearch) {
+            dispatchNotes({ type: 'SEARCH', payload: "" });
+            history.replaceState({}, "", "/notes/page/1");
+        }
     };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        setSelectedNote('');
         dispatchNotes({ type: 'SEARCH', payload: currentTarget.value });
-        // setSearch(currentTarget.value);
+        setSelectedNote('');
+        
+        if(!currentTarget.value) {
+            return history.replaceState({}, "", getBaseUrl as string);
+        } 
+
+        const nextURL = '/notes/page/1/search/' + currentTarget.value;
+        history.replaceState({}, "", nextURL);
     };
 
     const handleNextPageClick = () => {
         dispatchNotes({ type: 'PAGE', payload: ++notesState.page });
-        // setPage(page + 1);
         setSelectedNote('');
     };
 
     const handlePrevPageClick = () => {
         dispatchNotes({ type: 'PAGE', payload: --notesState.page });
-        // setPage(page - 1);
         setSelectedNote('');
     }
 
-    const forwardPage = useGetUrl({ options:{
-        usePage: true,
-        incrementPage: true,
-        absolutePath: true
-    }});
+    const forwardPage = useGetUrl({ 
+        options: {
+            usePage: true,
+            incrementPage: true,
+            absolutePath: true
+        }
+    });
 
-    const backwardPage = useGetUrl({ options:{
-        usePage: true,
-        decrementPage: true,
-        absolutePath: true
-    }});
+    const backwardPage = useGetUrl({ 
+        options: {
+            usePage: true,
+            decrementPage: true,
+            absolutePath: true
+        }
+    });
 
     const hide = { opacity: 0, transitionEnd: { display: "none" }};
     const show = { display: "block", opacity: 1 };
@@ -117,9 +138,9 @@ export default function NoteTopBar({
                 className={`bg-[#f8f8f8] dark:bg-[#0f1011] px-6 pb-2 hidden ${showSearch && "!grid"}`}
             >
                 <input
-                    className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 dark:text-gray-300 text-gray-900 h-10 border !border-stone-400 hover:!border-gray-600 shadow-none"
+                    className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 dark:text-gray-300 text-gray-900 h-10 border !border-stone-400 dark:!border-[#404040] hover:!border-gray-600 shadow-none"
                     onChange={({currentTarget}) => onInputChange(currentTarget)}
-                    placeholder="Search for note names..."
+                    placeholder="Search..."
                     value={search}
                 />
             </motion.div>
@@ -133,7 +154,7 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handlePrevPageClick()}
-                            to={ backwardPage as string }
+                            to={search ?`${backwardPage}/search/${search}` : backwardPage as string}
                         > 
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
                         </Link>
@@ -152,7 +173,7 @@ export default function NoteTopBar({
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handleNextPageClick()}
-                            to={ forwardPage as string }
+                            to={search ?`${forwardPage}/search/${search}` : forwardPage as string }
                         > 
                             <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />
                         </Link>

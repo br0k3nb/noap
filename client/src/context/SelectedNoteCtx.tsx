@@ -1,5 +1,6 @@
 import { createContext, Dispatch, SetStateAction, ReactNode, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+
+import useGetUrl from '../hooks/useGetUrl';
 import useNoteSettings from '../hooks/useNoteSettings';
 
 type SelectedNoteContext = {
@@ -21,15 +22,19 @@ export const SelectedNoteCtx = createContext<SelectedNoteContext>(defaultValue);
 export default function SelectedNoteContext({ children }: SelectedNoteContextProps) {
     const [selectedNote, setSelectedNote] = useState('');
     
-    const location = useLocation();
     const { setNoteSettings } = useNoteSettings();
 
-    const findNoteIdInURL = new RegExp(`note\/(.*)`);
-    const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+    const noteIdInUrl = useGetUrl({
+        options: {
+            usePage: false,
+            getNoteIdInUrl: true,
+        }
+    });
+
     
     useEffect(() => {
-      if(getNoteIdInURL && !selectedNote) {
-        setSelectedNote(getNoteIdInURL[1]);
+        if(noteIdInUrl && !selectedNote) {
+        setSelectedNote(noteIdInUrl as string);
         setNoteSettings((prevNoteSettings) => {
             return {
                 ...prevNoteSettings,
@@ -37,7 +42,7 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
             }
         });
       }
-      else if(!getNoteIdInURL && selectedNote) {
+      else if(!noteIdInUrl && selectedNote) {
         setNoteSettings((prevNoteSettings) => {
             return {
                 ...prevNoteSettings,
@@ -46,7 +51,7 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
         });
         setSelectedNote("");
       }
-    }, [getNoteIdInURL]);
+    }, [noteIdInUrl]);
 
     return (
         <SelectedNoteCtx.Provider value={{ selectedNote, setSelectedNote }}>

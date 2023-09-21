@@ -1,4 +1,4 @@
-import { useState, useRef, useReducer } from "react";
+import { useState, useRef, useReducer, useEffect } from "react";
 import { useQuery } from "react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 
@@ -36,11 +36,27 @@ export default function Home(): JSX.Element {
   const [pinNotesState, dispatchPinNotes] = useReducer(pinnedNotesReducer, pin_notes_default_value);
   const [labelsState, dispatchLabels] = useReducer(labelsReducer, label_default_value);
   const [notesState, dispatchNotes] = useReducer(notesReducer, note_default_value);
-
+  
   const delayedSearchLabel = useDebounce(labelsState.search, 500);
   const delayedSearch = useDebounce(notesState.search, 500);
   useUpdateViewport(setScreenSize, 500);
+
+  const getSearchInUrl = useGetUrl({
+    options: {
+        usePage: false,
+        getSearchQueryInUrl: true,
+    }
+  });
+
+  useEffect(() => {
+    if(getSearchInUrl) {
+      setTimeout(() => {
+        dispatchNotes({ type: 'SEARCH', payload: getSearchInUrl });
+      }, 1000);
+    }
+  }, [getSearchInUrl]);
   
+
   const { navbar } = useNavbar();
   const { userData: { _id } } = useUserData();
   const { selectedNote } = useSelectedNote();
@@ -76,8 +92,8 @@ export default function Home(): JSX.Element {
   const fetchedLabels = useRef(false);
 
   const fetchNotesMetadata = async () => { 
-    dispatchNotes({ type: "PAGE", payload: currentPage });
-    
+    dispatchNotes({ type: "PAGE", payload: currentPage });    
+
     if(_id) {
       try {
         const { 
@@ -92,8 +108,8 @@ export default function Home(): JSX.Element {
         } = await api.get(`/notes/${currentPage}/${_id}`, {
           params: { 
             pinnedNotesPage: pinNotesState.page,
-            search: delayedSearch, 
-            limit: 10 
+            search: delayedSearch,
+            limit: 10
           }
         });
   
@@ -119,7 +135,7 @@ export default function Home(): JSX.Element {
     }
   };
 
-  const fetchSelectedNoteData = async () => { 
+  const fetchSelectedNoteData = async () => {
     if(selectedNote && _id) {
       try {
         const { data: { note } } = await api.get(`/note/${selectedNote}`, {
@@ -218,6 +234,7 @@ export default function Home(): JSX.Element {
     dispatchNotes,
     pinNotesState,
     notesState,
+    delayedSearch
   };
 
   const navLabelCtxProps = {

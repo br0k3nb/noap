@@ -29,6 +29,7 @@ type Props = {
     dispatchPinNotes: Dispatch<pinnedNotesActions>;
     pinNotesState: pinnedNotesState;
     notesState: notesState;
+    delayedSearch: string;
 };
 
 export default function CardNotes({ 
@@ -38,12 +39,13 @@ export default function CardNotes({
     addNewNote,
     pinNotesState,
     dispatchPinNotes,
-    notesState
+    notesState,
+    delayedSearch
  }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
     const [viewPort, setViewPort] = useState({ width: window.innerWidth });
 
-    const { page, search} = notesState;
+    const { page } = notesState;
     const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
 
     const goBackUrl = useGetUrl({
@@ -86,7 +88,7 @@ export default function CardNotes({
                     <>
                         {notesMetadata.length > 0 ? (
                             <div className="w-fit xxs:!w-screen lg:!w-[360px] mx-auto">
-                                {(pinnedNotes.length > 0 && page === 1) && (
+                                {!delayedSearch && (pinnedNotes.length > 0 && page === 1) && (
                                     <>
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
@@ -232,7 +234,7 @@ export default function CardNotes({
                                 <div className="flex flex-col space-y-3 justify-center items-center mt-6 mx-auto">
                                     <img src={no_notes_found} className="mt-5 w-48 dark:opacity-75 md:w-60 lg:w-44"/>
                                     <p className="dark:!text-gray-400 text-stone-600 text-[13px] uppercase tracking-wide">
-                                        {!search ? "No notes were found!" : "Ouhh, it's quite empty here..."}
+                                        {!delayedSearch ? "No notes were found!" : "Ouhh, it's quite empty here..."}
                                     </p>  
                                     {page > 1 ? (
                                         <button
@@ -286,10 +288,13 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
 
     return (
         <Link   
-            key={_id}
+            key={idx}
             relative="path"
             to={`${baseUrl}/note/${_id}`}
-            className={`flex flex-wrap cursor-pointer ${idx === noteArraySize && "mb-48"}`} 
+            className={`
+                flex flex-wrap cursor-pointer 
+                ${(idx === noteArraySize - 1 && (noteArraySize - 1) % 2 == 0) ? "mb-10" : ((idx === noteArraySize - 1 || idx === noteArraySize - 2) && (noteArraySize - 1) % 2 !== 0) && "mb-10"}
+            `} 
             onClick={() => handleNoteClick(_id)}
         >
             <div 

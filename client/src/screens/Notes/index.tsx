@@ -20,6 +20,7 @@ type Props = {
     pinnedNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
     dispatchPinNotes: Dispatch<pinnedNotesActions>;
     dispatchNotes: Dispatch<notesActions>;
+    delayedSearch: string;
 };
 
 export default function Notes({
@@ -30,15 +31,12 @@ export default function Notes({
     isFetching,
     pinnedNotes,
     dispatchPinNotes,
-    dispatchNotes
+    dispatchNotes,
+    delayedSearch
 }: Props) {
-    const [showSearch, setShowSearch] = useState(false);    
-
     const { noteSettings: { expanded } } = useNoteSettings();
 
-    const navTopBarProps = { 
-        setShowSearch,
-        showSearch,
+    const navTopBarProps = {
         pinnedNotes,
         pinNotesState,
         notesState,
@@ -53,7 +51,8 @@ export default function Notes({
         pinNotesState,
         notesState,
         dispatchPinNotes,
-        dispatchNotes
+        dispatchNotes,
+        delayedSearch
     };
 
     return (

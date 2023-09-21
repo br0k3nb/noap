@@ -89,7 +89,8 @@ export default function CreateLabel({
                 <div className="flex">
                     <input 
                         type="radio" 
-                        name="radio-1" 
+                        name="radio-1"
+                        defaultChecked
                         className="radio bg-[#eeeff1] dark:bg-gray-600 border-gray-700 dark:border-gray-500" 
                         onClick={() => setSelectedStyle('default')}
                     />

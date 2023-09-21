@@ -1,16 +1,9 @@
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from "react";
 import { 
-  useState, 
-  useEffect, 
-  useContext, 
-  useRef, 
-  Dispatch, 
-  SetStateAction
-} from "react";
-import { 
-  useForm, 
-  FieldArrayWithId, 
-  UseFieldArrayRemove, 
-  UseFieldArrayAppend, 
+  useForm,
+  FieldArrayWithId,
+  UseFieldArrayRemove,
+  UseFieldArrayAppend,
   FieldValues
 } from "react-hook-form";
 
@@ -44,17 +37,15 @@ import TextEditor from "./components/lexical";
 import useNoteSettings from "../../hooks/useNoteSettings";
 import useSelectedNote from "../../hooks/useSelectedNote";
 import useUserData from "../../hooks/useUserData";
+import useRefetch from "../../hooks/useRefetch";
 import useGetUrl from "../../hooks/useGetUrl";
 
 import api from "../../services/api";
-import { RefetchCtx } from "../../context/RefetchCtx";
 import { toastAlert } from "../../components/Alert";
 
 import ColorPicker from "./components/lexical/ui/ColorPicker";
 import Loader from "../../components/Loader";
 import Modal from "../../components/Modal";
-
-import noNoteSelected from "../../assets/select-note.svg";
 
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -94,7 +85,7 @@ export default function NoteDetails({
   dispatchPinNotes,
   pinNotesState
 }: Props) {
-  const { fetchNotes } = useContext(RefetchCtx) as any;
+  const { fetchNotes } = useRefetch();
   
   const [open, setOpen] = useState(false);
   const [readMode, setReadMode] = useState(false);
@@ -219,13 +210,6 @@ export default function NoteDetails({
 
   const handleOpenLabelModal = () => {
     let fieldsToReset = {};
-
-    // labels.forEach(label => {
-    //   fieldsToReset = {
-    //     ...fieldsToReset,
-    //     [label._id]: false
-    //   }
-    // });
 
     if(selectedNoteData?.labels && selectedNoteData.labels.length > 0) {
       selectedNoteData.labels.forEach(label => {
@@ -367,7 +351,7 @@ export default function NoteDetails({
       absolutePath: true
     }
   });
-  
+
   return (
     <div
       className={`
@@ -375,7 +359,7 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData)  ? (
+      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData) ? (
         <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
@@ -740,7 +724,7 @@ export default function NoteDetails({
             </div>
           )}
         </div>
-      ) : (noteDataIsFetching && getNoteIdInUrl) ? (
+      ) : (noteDataIsFetching && getNoteIdInUrl) && (
           <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[40%] left-[14rem] xxs:!left-0">
             <Loader 
               width={25}
@@ -748,17 +732,17 @@ export default function NoteDetails({
             />
             <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
           </div>
-      ) : (
-        <div className="flex flex-col justify-center items-center my-auto">
-            <img
-              src={noNoteSelected}
-              className="w-screen max-w-xl opacity-90"
-              draggable={false}
-            />
-            <p className="text-xl font-light text-center">
-              The selected note will appear here...
-            </p>
-        </div>
+      // ) : (
+      //   <div className="flex flex-col justify-center items-center my-auto">
+      //       {/* <img
+      //         src={noNoteSelected}
+      //         className="w-screen max-w-xl opacity-90"
+      //         draggable={false}
+      //       />
+      //       <p className="text-xl font-light text-center">
+      //         The selected note will appear here...
+      //       </p> */}
+      //   </div>
       )}
 
       {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData) && (

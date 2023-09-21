@@ -68,7 +68,7 @@ export default function ListLabels({
                         </div>
                         <div className="tooltip tooltip-left before:text-[15px]" data-tip="Search">
                             <div 
-                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-500 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />

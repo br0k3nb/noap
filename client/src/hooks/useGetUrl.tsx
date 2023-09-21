@@ -10,6 +10,7 @@ type Props = {
         goToPageNumber?: number;
         getNoteIdInUrl?: boolean;
         getPageInUrl?: boolean; 
+        getSearchQueryInUrl?: boolean;
     }
 };
 
@@ -23,6 +24,7 @@ export default function useGetUrl({ options }: Props) {
         goToPageNumber,
         getNoteIdInUrl,
         getPageInUrl,
+        getSearchQueryInUrl
     } = options || {};
 
     if(!usePage && (incrementPage || decrementPage)) { 
@@ -40,17 +42,20 @@ export default function useGetUrl({ options }: Props) {
     const location = useLocation();
     
     const findNoteIdInURL = new RegExp(`note\/(.*)`);
+    const findSearchQueryInURL = new RegExp(`search\/(.*)`);
     const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
 
     const pageInUrl = findPageInURL.exec(location.pathname) as Array<string>;
     const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
+    const getSearchInUrl = findSearchQueryInURL.exec(location.pathname);
 
-    if(getNoteIdInUrl && getNoteIdInURL) return getNoteIdInURL[1];
+    if(getNoteIdInUrl) return getNoteIdInURL ? getNoteIdInURL[1] : '';
+    if(getSearchQueryInUrl) return getSearchInUrl ? getSearchInUrl[1] : '';
 
     const baseUrlWithoutPageNumber = pageInUrl[0].slice(0, 11);
-    let pageNumber = parseInt(pageInUrl[1]);
+    let pageNumber = parseInt(pageInUrl[1]);    
 
-    if(getPageInUrl && pageInUrl) return pageNumber;
+    if(getPageInUrl) return pageNumber ? pageNumber : 1;
 
     if(usePage && incrementPage) {
         if(getNoteIdInURL && !removeNoteId) {
