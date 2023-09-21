@@ -19,7 +19,7 @@ export default {
                         {
                             $match: {
                                 author,
-                                'settings.pinned': false
+                                'settings.pinned': false,
                             }
                         },
                         {
@@ -147,13 +147,7 @@ export default {
                 const aggregate = Note.aggregate(
                     [
                         {
-                            $match: {
-                                author,
-                                $or: [
-                                    { name: searchRegex },
-                                    { 'labels.name': searchRegex }
-                                ],
-                            }
+                            $match: { author }
                         }, 
                         {
                             $project: {
@@ -167,25 +161,11 @@ export default {
                                     $cond: { 
                                         if: { $isArray: "$labels" }, 
                                         then: { $size: "$labels" }, 
-                                        else: 0
+                                        else: 1
                                     } 
                                 },
                                 createdAt: 1,
                                 updatedAt: 1,
-                            }
-                        },
-                        {
-                            $lookup: {
-                              from: 'noteStates', 
-                              localField: 'state', 
-                              foreignField: '_id', 
-                              as: 'state'
-                            }
-                        }, 
-                        {
-                            $unwind: {
-                                path: '$state', 
-                                preserveNullAndEmptyArrays: false
                             }
                         },
                         {
@@ -202,16 +182,28 @@ export default {
                             }
                         },
                         {
+                            $match: {
+                                $and: [
+                                    { 
+                                        $or: [
+                                            { 'name': searchRegex },
+                                            { 'body': searchRegex },
+                                            { 'labels.name': searchRegex }
+                                        ] 
+                                    },
+                                ]
+                              }
+                        }, 
+                        {
                             $group: {
                                 _id: "$_id",
                                 author: { $first: "$author" },
                                 name: { $first: "$name"},
                                 body: { $first: "$body"},
-                                image: { $first: "$image" },
-                                state: { $first: "$state" },
+                                image: { $first: "$image" },                                
                                 settings: { $first: "$settings" },
                                 label: { $first: "$labels" },
-                                labelArraySize: {$first: "$labelArraySize"},
+                                labelArraySize: { $first: "$labelArraySize" },
                                 createdAt: { $first: "$createdAt" },
                                 updatedAt: { $first: "$updatedAt" }
                             }
@@ -220,6 +212,7 @@ export default {
                             $sort: { createdAt: 1 }
                         }
                     ]
+                    
                 );
 
                 const notes = await Note.aggregatePaginate(aggregate, { page, limit });
@@ -227,8 +220,8 @@ export default {
             }
 
         } catch (err) {
-            console.log(err);
             res.status(400).json({ message: err });
+            console.log(err);
         }
     },
     async getNote(req, res) {
@@ -322,8 +315,8 @@ export default {
         try {
             const { labels, noteId } = req.body;
 
-            const note = await Note.findById(noteId);
-            
+            const note = await Note.findById(noteId);            
+
             let flag = false;
             let duplicatedLabel = "";
             
