@@ -3,10 +3,13 @@ import qrcode from "qrcode";
 import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
 import nodemailer from "nodemailer";
+import DeviceDetector from "node-device-detector";
+import axios from "axios";
 
 import User from "../models/User.js";
 import Otp from "../models/OTP.js";
 import TFA from "../models/TFA.js";
+import Session from "../models/Session.js";
 import "dotenv/config";
 
 import mailHTML from "../dataset/mailHTML.js";
@@ -48,12 +51,39 @@ export default {
     },
     async login(req , res) {
         try {
-            const { email, password } = req.body;
+            const { email, password, identifier } = req.body;
+            const userAgent = req.headers['user-agent'];
+
+            if(!userAgent || !identifier) {
+                return res.status(401).json({ message: 'Invalid request!' });
+            }
+
             const getUser = await User.find({ email });
             let TFAEnabled = false;
 
-            if(getUser.length === 0) return res.status(400).json({ message: 'Wrong email or password combination!' });
+            if(!getUser.length) {
+                return res.status(400).json({ message: 'Wrong email or password combination!' });
+            }
 
+            const device = new DeviceDetector({
+                clientIndexes: true,
+                deviceIndexes: true,
+                deviceAliasCode: false
+            });        
+
+            const { 
+                os: { name: osName, platform },
+                client: { type, name: browserName, version }
+            } = device.detect(userAgent);
+
+            const {
+                data: {
+                    country_name,
+                    state_prov,
+                    city
+                } 
+            } = await axios.get(`https://api.ipgeolocation.io/ipgeo?apiKey=${process.env.IPGEOLOCATION_KEY}&ip=${identifier}`);
+            
             const { _id, name, TFAStatus, settings, theme } = getUser[0];
 
             if(TFAStatus) {
@@ -69,16 +99,26 @@ export default {
                 const payload = {
                     iss: "login-form",
                     sub: { _id, name, googleAccount: false },
-                    exp: Math.floor(Date.now() / 1000 + SEVEN_DAYS_IN_MS),
+                    exp: Math.floor((Date.now() / 1000) + SEVEN_DAYS_IN_MS),
                 };
 
                 const token = jwt.sign(
                     payload, 
                     process.env.SECRET, 
-                    { algorithm: 'HS256' }
+                    { algorithm: 'HS512' }
                 );
 
-                res.status(200).json({ 
+                await Session.create({
+                    userId: _id,
+                    token,
+                    expAt: Math.floor((Date.now() / 1000) + SEVEN_DAYS_IN_MS),
+                    ip: await bcrypt.hash(identifier, 10),
+                    browserData: `${browserName} - ${version}`,
+                    location: `${city}, ${state_prov}, ${country_name}`,
+                    deviceData: `${type}, ${osName} ${platform}`,
+                });
+
+                return res.status(200).json({ 
                     token, 
                     _id, 
                     name, 
@@ -87,7 +127,8 @@ export default {
                     theme
                 });
             }
-            else res.status(404).json({ message: 'Wrong email or password combination!' });
+
+            return res.status(404).json({ message: 'Wrong email or password combination!' });
         } catch (err) {
             console.log(err);
             res.status(400).json({ message: err });
@@ -129,7 +170,7 @@ export default {
                 const token = jwt.sign(
                     payload,
                     process.env.SECRET,
-                    { algorithm: 'HS256' }
+                    { algorithm: 'HS512' }
                 );
 
                 res.status(200).json({ 
@@ -147,7 +188,7 @@ export default {
                 res.status(400).json({ message: 'User already exists, please sign in using your email and password!' });
             }
             else {
-                const { _id, googleAccount, TFAStatus, settings, theme } = getUser[0];
+                const { _id, googleAccount, TFAStatus, settings } = getUser[0];
 
                 if(TFAStatus) {
                     const TFAStatus = await TFA.find({ _id: getUser[0]?.TFAStatus });
@@ -164,7 +205,7 @@ export default {
                 const token = jwt.sign( 
                     payload, 
                     process.env.SECRET, 
-                    { algorithm: 'HS256' }
+                    { algorithm: 'HS512' }
                 );
 
                 res.status(200).json({ 
@@ -184,11 +225,23 @@ export default {
     },
     async verifyIfTokenIsValid(req , res) {
         try {
-            const { token } = req.body
+            const { token, identifier } = req.body;
 
             jwt.verify(token, `${process.env.SECRET}`, async (err, data) => {
                 if(data) {
                     const findUser = await User.findById(data.sub._id);
+                    const sessions = await Session.find({ userId: data.sub._id });
+                    
+                    if(!sessions.length) {
+                        return res.status(401).json({ message: "Access denied, sign in again"});
+                    }
+                    
+                    const matchingSession = sessions.find((session) => session.token === token);
+                    const verifySessionIp = matchingSession ? await bcrypt.compare(identifier, matchingSession.ip): false;
+
+                    if((matchingSession && !verifySessionIp) || !matchingSession) {
+                        return res.status(401).json({ message: "Access denied, sign in again"});
+                    }
 
                     const userDataObj = {
                         ...data.sub,

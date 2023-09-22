@@ -481,6 +481,13 @@
   resolved "https://registry.yarnpkg.com/@types/animejs/-/animejs-3.1.7.tgz#4d9b23fff04b52e755119625a6087e2bc024527a"
   integrity sha512-kFSyjM+fLo3oE9noWEtUvF82ttN8fTrKohiEMIrSzEzEjnsCmtO0rBCUQBlSPEb2w8vfN+v4/Zo0tK21Bgmq4g==
 
+"@types/bcrypt@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bcrypt/-/bcrypt-5.0.0.tgz#a835afa2882d165aff5690893db314eaa98b9f20"
+  integrity sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/draft-js@*":
   version "0.11.12"
   resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.11.12.tgz#04cc9b8c16dddca6163d91b0310c68980ab8f433"
@@ -505,6 +512,11 @@
   version "4.14.198"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.198.tgz#4d27465257011aedc741a809f1269941fa2c5d4c"
   integrity sha512-trNJ/vtMZYMLhfN45uLq4ShQSw0/S7xCTLLVM+WM1rmFpba/VS42jVUgaO3w/NOLiWR/09lnYk0yMaA/atdIsg==
+
+"@types/node@*":
+  version "20.6.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.6.3.tgz#5b763b321cd3b80f6b8dde7a37e1a77ff9358dd9"
+  integrity sha512-HksnYH4Ljr4VQgEy2lTStbCKv/P590tmPe5HqOnv9Gprffgv5WXAY+Y5Gqniu0GGqeTCUdBnzC3QSrzPkBkAMA==
 
 "@types/prettier@^2.7.2":
   version "2.7.3"

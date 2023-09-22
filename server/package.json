@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.5.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -20,6 +21,7 @@
     "mongoose": "^6.9.0",
     "mongoose-aggregate-paginate-v2": "^1.0.6",
     "mongoose-paginate-v2": "^1.7.1",
+    "node-device-detector": "^2.0.16",
     "nodemailer": "^6.9.1",
     "nodemon": "^3.0.1",
     "qrcode": "^1.5.3",
