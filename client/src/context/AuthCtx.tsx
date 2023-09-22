@@ -26,11 +26,12 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
             if(Object.keys(token).length > 0) {
                 try {
                     const { data } = await api.post("/verify-token", { token: token?.token });
-                    
+
                     const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
 
-                    if(!data.settings.theme || (data.settings.theme && data.settings.theme === 'dark')) document.documentElement.classList.add("dark");
-                    else if (htmlElementHasDarkClass && (data.settings.theme && data.settings.theme === 'light')) {
+                    if(!data.settings.theme || (data.settings.theme && data.settings.theme === 'dark')) {
+                        document.documentElement.classList.add("dark");
+                    } else if (htmlElementHasDarkClass && (data.settings.theme && data.settings.theme === 'light')) {
                         document.documentElement.classList.remove("dark");
                     }
 
