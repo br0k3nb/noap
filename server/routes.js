@@ -2,6 +2,7 @@ import express from 'express'
 import UserController from './controllers/UserController.js';
 import NoteController from './controllers/NoteController.js';
 import LabelController from './controllers/LabelController.js';
+import SessionController from './controllers/SessionController.js';
 
 import verifyUser from './middlewares/verifyUser.js';
 
@@ -25,6 +26,11 @@ router.patch("/settings/change-theme/:id", verifyUser, UserController.changeAppT
 router.post("/settings/note-text/:id", verifyUser, UserController.noteTextExpandedOrCondensed);
 router.post("/settings/pin-notes-folder/:id", verifyUser, UserController.showPinnedNotesInFolder);
 router.patch("/settings/global-note-background-color/:id", verifyUser, UserController.changeGlobalNoteBackgroundColor);
+
+//Sessions
+router.get("/get/sessions/:userId", verifyUser, SessionController.view);
+router.delete("/delete/session/:userId/:sessionId", verifyUser, SessionController.delete);
+router.delete("/delete/all/sessions/:userId", verifyUser, SessionController.deleteAllSessions);
 
 //Notes
 router.post("/add", verifyUser, NoteController.add);

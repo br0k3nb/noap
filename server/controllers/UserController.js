@@ -99,7 +99,7 @@ export default {
                 const payload = {
                     iss: "login-form",
                     sub: { _id, name, googleAccount: false },
-                    exp: Math.floor((Date.now() / 1000) + SEVEN_DAYS_IN_MS),
+                    exp: Math.floor((Date.now() / 1000) + 15000),
                 };
 
                 const token = jwt.sign(
@@ -111,7 +111,7 @@ export default {
                 await Session.create({
                     userId: _id,
                     token,
-                    expAt: Math.floor((Date.now() / 1000) + SEVEN_DAYS_IN_MS),
+                    expAt: Math.floor((Date.now() / 1000) + 15000),
                     ip: await bcrypt.hash(identifier, 10),
                     browserData: `${browserName} - ${version}`,
                     location: `${city}, ${state_prov}, ${country_name}`,
@@ -226,31 +226,74 @@ export default {
     async verifyIfTokenIsValid(req , res) {
         try {
             const { token, identifier } = req.body;
+            const { sub } = jwt.decode(token);
 
-            jwt.verify(token, `${process.env.SECRET}`, async (err, data) => {
-                if(data) {
-                    const findUser = await User.findById(data.sub._id);
-                    const sessions = await Session.find({ userId: data.sub._id });
-                    
-                    if(!sessions.length) {
-                        return res.status(401).json({ message: "Access denied, sign in again"});
-                    }
-                    
-                    const matchingSession = sessions.find((session) => session.token === token);
-                    const verifySessionIp = matchingSession ? await bcrypt.compare(identifier, matchingSession.ip): false;
+            const findUser = await User.findById(sub._id);
+            const sessions = await Session.find({ userId: sub._id });
+            
+            if(!sessions.length) {
+                return res.status(401).json({ message: "Access denied, sign in again"});
+            }
+            
+            const matchingSession = sessions.find((session) => session.token === token);
+            const verifySessionIp = matchingSession ? await bcrypt.compare(identifier, matchingSession.ip): false;
 
-                    if((matchingSession && !verifySessionIp) || !matchingSession) {
-                        return res.status(401).json({ message: "Access denied, sign in again"});
-                    }
+            if((matchingSession && !verifySessionIp) || !matchingSession) {
+                return res.status(401).json({ message: "Access denied, sign in again" });
+            }
 
-                    const userDataObj = {
-                        ...data.sub,
-                        TFAEnabled: findUser.TFAStatus ? true : false,
-                        settings: { ...findUser.settings }
-                    };
+            const userDataObj = {
+                ...sub,
+                TFAEnabled: findUser.TFAStatus ? true : false,
+                settings: { ...findUser.settings }
+            };
 
-                    return res.status(200).json(userDataObj);
-                }
+            return res.status(200).json(userDataObj);
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({ message: err });
+        }
+    },
+    async removeUserSession(req , res) {
+        try {
+            const { token, sessionId } = req.body;
+            const { sub } = jwt.decode(token);
+
+            const sessions = await Session.find({ userId: sub._id });
+            const matchingSession = sessions.find((session) => session.token === token);
+
+            if(!matchingSession) {
+                return res.status(500).json({ message: "Unable to find session!" });
+            }
+
+            await Session.remove({ _id: sessionId });
+            return res.status(200).json({ message: "Session was terminated successfully!" });
+        } catch (err) {
+            console.log(err);
+            res.status(400).json({ message: err });
+        }
+    },
+    async removeAllActiveSessions(req , res) {
+        try {
+            const { token, identifier } = req.body;
+            const { sub } = jwt.decode(token);
+
+            const sessions = await Session.find({ userId: sub._id });
+            const matchingSession = sessions.find((session) => session.token === token);
+
+            if(!matchingSession) {
+                return res.status(500).json({ message: "Unable to find session!" });
+            }
+
+            const verifySessionIp = matchingSession ? await bcrypt.compare(identifier, matchingSession.ip): false;
+
+            if((matchingSession && !verifySessionIp) || !matchingSession) {
+                return res.status(401).json({ message: "Access denied, sign in again" });
+            }
+
+            await Session.remove({});
+            return res.status(200).json({ 
+                message: "All sessions (including yours), were terminated, please sign in again!" 
             });
         } catch (err) {
             console.log(err);
@@ -544,8 +587,6 @@ export default {
         try {
             const { id } = res.params;
             const { theme } = res.body;
-
-            // noteBackgroundColor
 
             const getUserData = await User.findById(id);
 
