@@ -14,12 +14,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserDataContext from '../context/UserDataContext';
 import SelectedNoteContext from "../context/SelectedNoteCtx";
 import NoteSettingsContext from "../context/NoteSettingsCtx";
+import { AxiosInterceptor } from "../components/CustomHttpInterceptor";
 
 export default function RoutesApp() {
   return (
     <BrowserRouter>
       <UserDataContext>
-        <AuthProvider>          
+        <AuthProvider>
           <CustomRoutes />
         </AuthProvider>
       </UserDataContext>
@@ -31,38 +32,40 @@ export function CustomRoutes() {
   const auth = useAuth();
 
   return (
-    <Routes>
-      <Route path="/" element={ <LoginRedirect /> } />
-      <Route
-        path="/notes/page/:page"
-        element={<ProtectedRoute />}
-      >
-        <Route index element={ auth.isLoading ? <GlobalLoader/> : <Home /> } />
-        <Route 
-          path='note/:noteId' 
-          element={ 
-            <NoteSettingsContext>
-              <SelectedNoteContext>
-                <Home /> 
-              </SelectedNoteContext>
-            </NoteSettingsContext>
-          }
-        />
-        <Route 
-          path='search/:search' 
-          element={ 
-            <NoteSettingsContext>
-              <SelectedNoteContext>
-                <Home /> 
-              </SelectedNoteContext>
-            </NoteSettingsContext>
-          }
-        />
-      </Route>
+    <AxiosInterceptor>
+      <Routes>
+        <Route path="/" element={ <LoginRedirect /> } />
+        <Route
+          path="/notes/page/:page"
+          element={<ProtectedRoute />}
+        >
+          <Route index element={ auth.isLoading ? <GlobalLoader/> : <Home /> } />
+          <Route 
+            path='note/:noteId' 
+            element={ 
+              <NoteSettingsContext>
+                <SelectedNoteContext>
+                  <Home /> 
+                </SelectedNoteContext>
+              </NoteSettingsContext>
+            }
+          />
+          <Route 
+            path='search/:search' 
+            element={ 
+              <NoteSettingsContext>
+                <SelectedNoteContext>
+                  <Home /> 
+                </SelectedNoteContext>
+              </NoteSettingsContext>
+            }
+          />
+        </Route>
 
-      <Route path="/help" element={ <LoginHelp /> } />
-      <Route path="/sign-up" element={ <SignUp /> } />
-      <Route path="/*" element={ <Page404 /> } />
-    </Routes>
+        <Route path="/help" element={ <LoginHelp /> } />
+        <Route path="/sign-up" element={ <SignUp /> } />
+        <Route path="/*" element={ <Page404 /> } />
+      </Routes>
+    </AxiosInterceptor>
   )
 }

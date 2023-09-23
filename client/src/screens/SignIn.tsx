@@ -92,6 +92,7 @@ export default function SignIn() {
       } 
       else {
         setSvgLoader("");
+        console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 2500 });
       }
     }

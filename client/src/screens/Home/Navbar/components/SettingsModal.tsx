@@ -1,7 +1,7 @@
 import { SetStateAction, Dispatch, useState } from 'react';
 
 import { BsDoorOpenFill, BsDoorClosedFill, BsShieldLockFill } from "react-icons/bs";
-import { MdAccountCircle, MdDarkMode } from 'react-icons/md';
+import { MdAccountCircle, MdDarkMode, MdCable } from 'react-icons/md';
 import { LuSettings2 } from 'react-icons/lu';
 import { BiLock } from "react-icons/bi";
 
@@ -9,6 +9,7 @@ import useUserData from '../../../../hooks/useUserData';
 import useAuth from '../../../../hooks/useAuth';
 
 import Modal from '../../../../components/Modal';
+import SessionModal from '../../../../components/SessionModal';
 import TwoFactAuthModal from '../../../../components/TwoFactAuthModal';
 import { toastAlert } from '../../../../components/Alert';
 import AccountSettingsModal from "../../../../components/AccountSettingsModal";
@@ -44,7 +45,8 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const [showOpenDoorIcon, setShowOpenDoorIcon] = useState(false);
     const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
     const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
-
+    const [openSessionModal, setOpenSessionModal] = useState(false);
+    
     const auth = useAuth();
 
     const handleShowPinnedNotesInFolder = async (state: boolean) => {
@@ -138,6 +140,11 @@ export default function SettingsModal({ open, setOpen }: Props) {
         setOpenTFAModal(true);
     };
 
+    const handleSessionClick = () => {
+        setOpen(false);
+        setOpenSessionModal(true);
+    };
+
     const handleCloseTFAModal = () => {
         setOpen(true);
         setOpenTFAModal(false);
@@ -173,6 +180,10 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 open={openTFAModal}
                 setOpen={setOpenTFAModal}
                 customCloseFn={handleCloseTFAModal}
+            />
+            <SessionModal
+                open={openSessionModal}
+                setOpen={setOpenSessionModal}
             />
             <Modal
                 open={open}
@@ -223,6 +234,17 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 <div className="flex flex-row justify-center">
                                     Two factor authentication
                                     <BsShieldLockFill size={18} className='ml-2'/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-[#cacaca] border border-transparent transition-all duration-500 hover:!border-gray-500 px-3 rounded-full">
+                            <div 
+                                className='text-xs uppercase text-gray-900 dark:text-gray-300 tracking-wide py-[14px] hover:!tracking-widest duration-300 ease-in-out cursor-pointer'
+                                onClick={() => handleSessionClick()}
+                            >                                
+                                <div className="flex flex-row justify-center">
+                                    Sessions
+                                    <MdCable size={18} className='ml-2'/>
                                 </div>
                             </div>
                         </div>

@@ -2,7 +2,6 @@ import { createContext, useState, useEffect } from 'react';
 import useUserData from '../hooks/useUserData';
 
 import api from '../services/api';
-import bcrypt from 'bcrypt';
 
 export const AuthCtx = createContext<any>(null);
 
@@ -26,7 +25,7 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
             
             if(Object.keys(token).length > 0) { 
                 try {
-                    const { data: { ip } } = await api.get('https://api.ipapi.is/');
+                    const { data: ip } = await api.get('https://whats-my-ip-delta.vercel.app/');
                     const { data } = await api.post("/verify-token", { token: token?.token, identifier: ip });
                     
                     const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
@@ -60,8 +59,8 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
             setLoading(true);
 
             try {
-                const { data: { ipString } } = await api.get('https://api-bdc.net/data/client-ip');
-                const { data } = await api.post("/sign-in", { email, password, identifier: ipString });
+                const { data: ip } = await api.get('https://whats-my-ip-delta.vercel.app/');
+                const { data } = await api.post("/sign-in", { email, password, identifier: ip });
 
                 if(!data.TFAEnabled && !data?.googleAccount) {
                     localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({ token: data.token }));
@@ -78,6 +77,7 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
 
             } catch (err: any) { 
                 callback(null, err);
+                console.log(err);
             } finally { 
                 setLoading(false);
             }
