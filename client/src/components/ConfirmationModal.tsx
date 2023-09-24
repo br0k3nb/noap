@@ -24,6 +24,7 @@ type Props = {
         cancelButtonAction?: () => void;
         cancelButtonClassName?: string;
         alertComponentWrapperClassName?: string;
+        actionButtonsWrapperClassName?: string;
     };
     actionButtonFn: () => void;
     setOpen: Dispatch<SetStateAction<boolean>>;
@@ -46,7 +47,8 @@ export default function ConfirmationModal({ open, options, setOpen, actionButton
         mainTextClassName,
         modalWrapperClassName,
         subTextClassName,
-        titleWrapperClassName
+        titleWrapperClassName,
+        actionButtonsWrapperClassName
     } = options || {};
 
     const default_action_button_class = "bg-red-700 hover:bg-red-800 border border-gray-900 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-full dark:shadow-none transition-all duration-500 ease-in-out";
@@ -100,7 +102,7 @@ export default function ConfirmationModal({ open, options, setOpen, actionButton
                     </div>
                 </div>
             )}
-            <div className="mt-5 flex flex-row justify-evenly">
+            <div className={`mt-5 flex flex-row justify-evenly ${actionButtonsWrapperClassName && actionButtonsWrapperClassName}`}>
                 <button
                     className={`${default_cancel_button_class} ${cancelButtonClassName && cancelButtonClassName}`}
                     onClick={() => cancelButtonAction ? cancelButtonAction() : setOpen(false)}

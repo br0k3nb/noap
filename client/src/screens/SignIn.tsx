@@ -31,7 +31,9 @@ export default function SignIn() {
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
-    onError: (error) => toastAlert({ icon: "error", title: `Login failed, ${error}}`, timer: 2500 })
+    onError: (error) => {
+      toastAlert({ icon: "error", title: `Login failed, ${error}`, timer: 2500 });
+    }
   });
 
   const fetchGoogleAccountData = async ({ access_token }: { access_token: string }) => {
@@ -46,22 +48,26 @@ export default function SignIn() {
         }
       );
 
+      const { data: ip } = await api.get('https://whats-my-ip-delta.vercel.app/');
+
       const { 
         data: {
           _id,
           token,
-          message,
           settings,
           TFAEnabled,
           googleAccount,
           name: userName
         }
-      } = await api.post("/sign-in/google", { email, name, id });
+      } = await api.post("/sign-in/google", { email, name, id, identifier: ip });
 
-      toastAlert({ icon: "success", title: message, timer: 2000 });
       setSvgLoader("");
 
-      localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({ token }));
+      if(!settings.theme || (settings.theme && settings.theme === 'dark')) {
+        document.documentElement.classList.add("dark");
+      }
+
+      localStorage.setItem("@NOAP:SYSTEM", token);
       setUserDataContext({
         _id,
         settings,
@@ -101,7 +107,7 @@ export default function SignIn() {
   };
 
   const userTFAAuth = () => {
-    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({token: userData.token}));
+    localStorage.setItem("@NOAP:SYSTEM", userData.token);
     auth.setUserLoggedIn(true);
   };
 

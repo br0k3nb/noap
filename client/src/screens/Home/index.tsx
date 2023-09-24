@@ -18,6 +18,7 @@ import useNoteSettings from "../../hooks/useNoteSettings";
 import useSelectedNote from "../../hooks/useSelectedNote";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
+import SessionsContext from "../../context/SessionCtx";
 import RefetchContext from "../../context/RefetchCtx";
 import NavbarContext from "../../context/NavbarCtx";
 import LabelsCtx from "../../context/LabelCtx";
@@ -65,6 +66,7 @@ export default function Home(): JSX.Element {
   const { control } = useForm<NoteMetadata>();
   const { control: labelsControl } = useForm<Labels>();
   const { control: pinnedNotesControl } = useForm<NoteMetadata>();
+  const { control: sesionsControl } = useForm<Sessions>();
 
   const { fields, append, replace, remove } = useFieldArray({
     control,
@@ -79,6 +81,11 @@ export default function Home(): JSX.Element {
   const { fields: labels, append: appendLabels, replace: replaceLabels, remove: removeLabels } = useFieldArray({
     control: labelsControl,
     name: "labels",
+  });
+
+  const { fields: sessions, replace: replaceSessions, remove: removeSessions } = useFieldArray({
+    control: sesionsControl,
+    name: "sessions",
   });
   
   const currentPage = useGetUrl({
@@ -173,7 +180,20 @@ export default function Home(): JSX.Element {
           toastAlert({ icon: "error", title: err.message, timer: 3000 });
       }
     }  
-  }
+  };
+  
+  const fetchSessions = async() => {
+    try {
+        if(_id) {
+          const { data } = await api.get(`/get/sessions/${_id}`);
+
+          replaceSessions(data);
+        }
+    } catch (err: any) {
+        console.log(err);
+        toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    }
+  };
 
   const addNewNote = async () => {
     setShowLoaderOnNavbar(true);
@@ -225,6 +245,11 @@ export default function Home(): JSX.Element {
     refetchOnWindowFocus: false 
   });
 
+  const { isFetching: sessionIsFetching } = useQuery(["fetch-sessions"], fetchSessions, { 
+    refetchInterval: 300000,
+    refetchOnWindowFocus: true,
+  });
+
   const notesProps = {
     isFetching,
     addNewNote,
@@ -253,11 +278,18 @@ export default function Home(): JSX.Element {
     <div className="!h-screen">
       <NavbarContext>
         <LabelsCtx {...navLabelCtxProps}>
-          <Nav
-            labels={labels}
-            addNewNote={addNewNote} 
-            showSvgLoader={showLoaderOnNavbar}
-          />
+          <SessionsContext
+            sessions={sessions}
+            fetchSessions={fetchSessions}
+            isFetching={sessionIsFetching}
+            removeSession={removeSessions}
+          >
+            <Nav
+              labels={labels}
+              addNewNote={addNewNote} 
+              showSvgLoader={showLoaderOnNavbar}
+            />
+          </SessionsContext>
         </LabelsCtx>
         <div 
           className={`

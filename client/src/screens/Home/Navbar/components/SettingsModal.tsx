@@ -164,6 +164,11 @@ export default function SettingsModal({ open, setOpen }: Props) {
         else setOpenAccSettingsModal(false);
     };
 
+    const handleCloseSessionModal = () => {
+        setOpen(true);
+        setOpenSessionModal(false);
+    }
+
     const accSettingsModalProps = {
         setUserIsAuth,
         open: openAuthModal,
@@ -184,6 +189,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
             <SessionModal
                 open={openSessionModal}
                 setOpen={setOpenSessionModal}
+                closeFn={handleCloseSessionModal}
             />
             <Modal
                 open={open}
@@ -221,7 +227,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 onClick={() => handleOpenAccountSettingsModal()}
                             >
                                 <div className="flex flex-row justify-center">
-                                    <p className='pt-[3px]'>Account settings</p>
+                                    <p className='my-auto'>Account settings</p>
                                     <BiLock size={21} className='ml-2'/>
                                 </div>
                             </div>
@@ -232,7 +238,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 onClick={() => handleTFAClick()}
                             >                                
                                 <div className="flex flex-row justify-center">
-                                    Two factor authentication
+                                    <p className='my-auto'>Two factor authentication</p>
                                     <BsShieldLockFill size={18} className='ml-2'/>
                                 </div>
                             </div>
@@ -243,7 +249,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 onClick={() => handleSessionClick()}
                             >                                
                                 <div className="flex flex-row justify-center">
-                                    Sessions
+                                    <p className='my-auto'>Sessions</p>
                                     <MdCable size={18} className='ml-2'/>
                                 </div>
                             </div>
@@ -258,7 +264,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 onClick={() => setOpenSignOutConfirmationModal(true)}
                             >
                                 <div className="flex flex-row justify-center">
-                                    <p>Log out</p>
+                                    <p className='my-auto'>Log out</p>
                                     {
                                         !showOpenDoorIcon ? ( 
                                             <BsDoorClosedFill size={18} className='ml-2 '/> 
@@ -283,7 +289,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 type="checkbox" 
                                 disabled={showSPNIFLoader ? true : false}
                                 checked={showPinnedNotesInFolder ? showPinnedNotesInFolder : false}
-                                className={`toggle !bg-gray-300 ${showSPNIFLoader && "cursor-not-allowed"}`}
+                                className={`toggle ${showSPNIFLoader && "cursor-not-allowed"}`}
                                 onChange={(e) => handleShowPinnedNotesInFolder(!e.target.checked)}
                             />
                         </label>
@@ -297,7 +303,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 type="checkbox" 
                                 disabled={showNTCLoader ? true : false}
                                 checked={noteTextExpanded ? noteTextExpanded : false}
-                                className={`toggle !bg-gray-300 ${showNTCLoader && "cursor-not-allowed"}`}
+                                className={`toggle ${showNTCLoader && "cursor-not-allowed"}`}
                                 onChange={() => handleNoteTextCondition()}
                             />
                         </label>

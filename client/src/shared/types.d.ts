@@ -67,3 +67,26 @@ declare type Labels = {
       createdAt: string;
     }[];
 };
+
+declare type Sessions = {
+  readonly sessions: {
+    _id: string;
+    userId: string;
+    token: string;
+    expAt: number;
+    ip: string;
+    browserData: string;
+    location: string;
+    countryFlag: string;
+    deviceType: string;
+    deviceData: {
+      id: string;
+      type: string;
+      brand: string;
+      model: string;
+      code: string;
+    };
+    clientData: string;
+    createdAt: string;
+  }[];
+};

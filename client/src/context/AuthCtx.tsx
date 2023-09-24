@@ -1,7 +1,10 @@
 import { createContext, useState, useEffect } from 'react';
+
+import { useNavigate } from 'react-router-dom';
 import useUserData from '../hooks/useUserData';
 
 import api from '../services/api';
+import { toastAlert } from '../components/Alert';
 
 export const AuthCtx = createContext<any>(null);
 
@@ -12,21 +15,23 @@ type SignInType = {
 };
 
 export default function AuthContext({ children }: { children: JSX.Element }) {
-    const token = JSON.parse(localStorage.getItem("@NOAP:SYSTEM") || "{}");
-    
+    const token = localStorage.getItem("@NOAP:SYSTEM") || "{}";
+
+    const navigate = useNavigate();
+
     const [loading, setLoading] = useState(false);
-    const [userLoggedIn, setUserLoggedIn] = useState(token?.token ? true : false);
+    const [userLoggedIn, setUserLoggedIn] = useState(token ? true : false);
     
-    const { setUserData } = useUserData();
-    
+    const { userData: { _id }, setUserData } = useUserData();
+
     useEffect(() => {
         const isLoggedIn = async () => {
             setLoading(true);
             
-            if(Object.keys(token).length > 0) { 
+            if(token) { 
                 try {
                     const { data: ip } = await api.get('https://whats-my-ip-delta.vercel.app/');
-                    const { data } = await api.post("/verify-token", { token: token?.token, identifier: ip });
+                    const { data } = await api.post("/verify-token", { token, identifier: ip });
                     
                     const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
 
@@ -63,7 +68,7 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                 const { data } = await api.post("/sign-in", { email, password, identifier: ip });
 
                 if(!data.TFAEnabled && !data?.googleAccount) {
-                    localStorage.setItem("@NOAP:SYSTEM", JSON.stringify({ token: data.token }));
+                    localStorage.setItem("@NOAP:SYSTEM", data.token);
                     setUserLoggedIn(true);
                 }
                 
@@ -82,12 +87,23 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                 setLoading(false);
             }
         },
-        signOut: () => {
+        signOut: async () => {
             const htmlElementHasDarkClass = document.documentElement.classList.contains("dark");
             if(htmlElementHasDarkClass) document.documentElement.classList.remove("dark");
-            
-            localStorage.removeItem("@NOAP:SYSTEM");
+
             setUserLoggedIn(false);
+
+            if(_id) {
+                try {
+                    await api.post("/sign-out", { token, userId: _id });
+    
+                    localStorage.removeItem("@NOAP:SYSTEM");
+                    navigate("/");
+                } catch (err: any) {
+                    console.log(err);
+                    toastAlert({ icon: "error", title: "Error logging user out!", timer: 2000 });
+                }
+            }
         },
         setUserLoggedIn
     };

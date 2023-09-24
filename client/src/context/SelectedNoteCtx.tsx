@@ -34,13 +34,13 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
     
     useEffect(() => {
         if(noteIdInUrl && !selectedNote) {
-        setSelectedNote(noteIdInUrl as string);
-        setNoteSettings((prevNoteSettings) => {
-            return {
-                ...prevNoteSettings,
-                expanded: innerWidth < 1030 ? true : false
-            }
-        });
+            setSelectedNote(noteIdInUrl as string);
+            setNoteSettings((prevNoteSettings) => {
+                return {
+                    ...prevNoteSettings,
+                    expanded: innerWidth < 1030 ? true : false
+                }
+            });
       }
       else if(!noteIdInUrl && selectedNote) {
         setNoteSettings((prevNoteSettings) => {
