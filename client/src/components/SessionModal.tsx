@@ -62,10 +62,10 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
             options={{
                 modalWrapperClassName: "w-[35rem] xxs:!w-[21rem] !px-0 overflow-y-hidden",
                 titleWrapperClassName: "!px-6",
-                onClose: closeFn,                
+                onClose: closeFn,
             }}
         >
-            <div className="px-6 mt-5">
+            <div className="px-6 mt-5 ">
                 <ConfirmationModal
                     open={openConfirmationModal}
                     setOpen={setOpenConfirmationModal}
@@ -73,7 +73,7 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
                     mainText={`Are you sure you want disconnect this session?`}
                     options={{
                         actionButtonText: "Disconnect",
-                        modalWrapperClassName: "!w-96",
+                        modalWrapperClassName: "!w-96 xxs:!w-80",
                         mainTextClassName: "text-[14px] xxs:text-[12px]",
                         cancelButtonText: "Go back",
                         actionButtonsWrapperClassName: "border border-transparent border-t-gray-600 pt-4"
@@ -86,10 +86,13 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
                 <div className="overflow-y-scroll max-h-96 px-2 scrollbar-thin dark:scrollbar-thumb-gray-300">
                     {(!isFetching && sessions) ? (
                         <div className="mt-5 flex flex-col space-y-5">
-                            {sessions.map(session => {
+                            {sessions.map((session, index) => {
                                 return (
                                     <div 
-                                        className="card max-h-64 xxs:max-h-96 sm:card-side dark:bg-[#1c1d1e] border border-gray-500"
+                                        className={`
+                                            card max-h-64 xxs:max-h-96 sm:card-side dark:bg-[#1c1d1e] border border-gray-500 
+                                            ${index === (sessions.length -1) && "xxs:!mb-16"}
+                                        `}
                                         key={session._id}
                                     >
                                         <figure className="w-32 xxs:w-full xxs:text-[100px] object-cover border border-transparent border-r-gray-500 xxs:border-r-transparent xxs:border-b-gray-500">
