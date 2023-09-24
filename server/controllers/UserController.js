@@ -317,7 +317,7 @@ export default {
             const verifySessionIp = matchingSession ? identifier: false;
 
             if((matchingSession && !verifySessionIp) || !matchingSession) {
-                return res.status(401).json({ message: "Access denied, sign in again" });
+                return res.status(401).json({ message: "Access denied, sign in again" }); 
             }
 
             const userDataObj = {
