@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import 'dotenv/config';
 
-import bcrypt from "bcryptjs";
 import Session from "../models/Session.js";
 
 export default (req, res, next) => {
@@ -25,7 +24,6 @@ export default (req, res, next) => {
 
   jwt.verify(token, `${process.env.SECRET}`, async (err, data) => {
     if (err) {
-      console.log(err);
       return res.status(401).send({ message: "Access denied, sign in again" });
     }
 

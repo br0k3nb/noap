@@ -17,6 +17,7 @@ router.post("/2fa/verify", UserController.verify2FAcode);
 router.post("/find-user", UserController.findAndSendCode);
 router.post("/sign-in/google", UserController.googleLogin);
 router.patch("/change-pass", UserController.changePassword);
+router.post("/sign-out", verifyUser, UserController.signOutUser);
 router.post("/verify-user", verifyUser, UserController.verifyUser);
 router.post("/2fa/qrcode", verifyUser, UserController.generate2FAQrcode);
 router.post("/verify-token", verifyUser, UserController.verifyIfTokenIsValid);

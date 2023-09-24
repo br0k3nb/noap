@@ -25,7 +25,15 @@ export default new mongoose.Schema({
         type: String,
         required: true
     },
+    countryFlag: {
+        type: mongoose.Schema.Types.Mixed,
+        required: true
+    },
     deviceData: {
+        type: mongoose.Schema.Types.Mixed,
+        required: true
+    },
+    clientData: {
         type: String,
         required: true
     },
