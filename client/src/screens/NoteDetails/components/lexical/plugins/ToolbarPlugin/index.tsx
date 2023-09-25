@@ -1,9 +1,9 @@
-import type { LexicalEditor, NodeKey, TextNode, ElementNode } from "lexical";
+import type { LexicalEditor, NodeKey } from "lexical";
 import type { LanguageNameWithIcon } from "../../../../../../datasets/code_language_maps";
 
-import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction, useContext } from "react";
+import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 
-import { $createCodeNode, $isCodeNode, getLanguageFriendlyName } from "@lexical/code";
+import { $createCodeNode, $isCodeNode, getLanguageFriendlyName, $isCodeHighlightNode,  } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { 
   $isListNode, 
@@ -35,7 +35,6 @@ import {
 import {
   $createParagraphNode,
   $getNodeByKey,
-  $getRoot,
   $getSelection,
   $isRangeSelection,
   $isRootOrShadowRoot,
@@ -44,6 +43,7 @@ import {
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   DEPRECATED_$isGridSelection,
+  INSERT_PARAGRAPH_COMMAND,
   FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   INDENT_CONTENT_COMMAND,
@@ -51,6 +51,7 @@ import {
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
+  LexicalNode
 } from "lexical";
 
 import { IS_APPLE } from "../../shared/environment";
@@ -101,7 +102,7 @@ import figmaIcon from '../../images/icons/figma.svg';
 
 import CODE_LANGUAGE_FRIENDLY_NAME_MAP, { CODE_LANGUAGE_MAP } from '../../../../../../datasets/code_language_maps';
 import useUpdateViewport from "../../../../../../hooks/useUpdateViewport";
-import { UserDataCtx } from "../../../../../../context/UserDataContext";
+import useUserData from "../../../../../../hooks/useUserData";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -248,7 +249,7 @@ function BlockFormatDropDown({
   if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
   else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
-  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+  const { userData: { settings: { theme } } } = useUserData();
 
   return (
     <DropDown
@@ -405,7 +406,7 @@ function FontDropDown({
   if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
   else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
-  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+  const { userData: { settings: { theme } } } = useUserData();
 
   return (
     <DropDown
@@ -459,7 +460,7 @@ function FontDropDown({
 }
 
 export default function ToolbarPlugin() {
-  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+  const { userData: { settings: { theme } } } = useUserData();
 
   const default_font_style = 'Roboto';
   const default_font_color = theme === "dark" ? '#ffffff' : '#000000';
@@ -472,7 +473,7 @@ export default function ToolbarPlugin() {
   const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>('paragraph');
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
   const [fontSize, setFontSize] = useState('14px');
-  const [fontColor, setFontColor] = useState(default_font_color);
+  const [fontColor, setFontColor] = useState("");
   const [bgColor, setBgColor] = useState('#374151');
   const [fontFamily, setFontFamily] = useState(default_font_style);
   const [isLink, setIsLink] = useState(false);
@@ -494,54 +495,6 @@ export default function ToolbarPlugin() {
   const prevNodeKey = useRef<null | string>(null);
   const prevFontColorSelection = useRef<string | null>(null);
   const prevFontFamilySelection = useRef<string | null>(null);
-  const pervElKeyFontFamily = useRef<null | string>(null);
-  const pervElKeyFontColor = useRef<null | string>(null);
-
-  const handleUpdateFontFamily = (fontFamily: string) => {
-    editor.update(() => {
-      const selection = $getSelection();
-
-      if ($isRangeSelection(selection)) {
-        const node = getSelectedNode(selection);
-        
-        if(pervElKeyFontFamily.current !== node.__key) {
-          if(node.__text?.length === 1) selection.focus.offset = 0;
-
-          $patchStyleText(selection, { ["font-family"] : fontFamily });
-
-          if(selection.focus.offset !== selection.anchor.offset) {
-            selection.focus.offset = selection.focus.offset + 1;
-            selection.anchor.offset = selection.anchor.offset + 1;
-          }
-        }
-
-        pervElKeyFontFamily.current = node.__key;
-      }
-    });
-  };
-
-  const handleUpdateFontColor = (fontFamily: string) => {
-    editor.update(() => {
-      const selection = $getSelection();
-
-      if ($isRangeSelection(selection)) {
-        const node = getSelectedNode(selection);
-        
-        if(pervElKeyFontColor.current !== node.__key) {
-          if(node.__text?.length === 1) selection.focus.offset = 0;
-
-          $patchStyleText(selection, { color : fontFamily });
-
-          if(selection.focus.offset !== selection.anchor.offset) {
-            selection.focus.offset = selection.focus.offset + 1;
-            selection.anchor.offset = selection.anchor.offset + 1;
-          }
-        }
-
-        pervElKeyFontColor.current = node.__key;
-      }
-    });
-  };
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -559,9 +512,6 @@ export default function ToolbarPlugin() {
 
       if (element === null) element = anchorNode.getTopLevelElementOrThrow();
 
-      const elementKey = element.getKey();
-      const elementDOM = activeEditor.getElementByKey(elementKey);
-
       // Update text format
       setIsBold(selection.hasFormat("bold"));
       setIsItalic(selection.hasFormat("italic"));
@@ -570,32 +520,13 @@ export default function ToolbarPlugin() {
       setIsSubscript(selection.hasFormat("subscript"));
       setIsSuperscript(selection.hasFormat("superscript"));
       setIsCode(selection.hasFormat("code"));
-
+      
       // Update links
       const node = getSelectedNode(selection);
       const parent = node.getParent();
 
       if ($isLinkNode(parent) || $isLinkNode(node)) setIsLink(true);
       else setIsLink(false);
-
-      if (elementDOM !== null) {
-        setSelectedElementKey(elementKey);
-
-        if ($isListNode(element)) {
-          const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
-          const type = parentList ? parentList.getListType() : element.getListType();
-          setBlockType(type);
-        } else {
-          const type = $isHeadingNode(element) ? element.getTag() : element.getType();
-          if (type in blockTypeToBlockName) setBlockType(type as keyof typeof blockTypeToBlockName);
-
-          if ($isCodeNode(element)) {
-            const language = element.getLanguage();
-            setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : "");
-            return;
-          }
-        }
-      }
 
       // Handle buttons
       if(!prevNodeKey || prevNodeKey.current !== anchorNode.getKey()) {
@@ -611,53 +542,54 @@ export default function ToolbarPlugin() {
       
       if((selectionFontStyle || lastSelectedFontFamily)) {
         if(selectionFontStyle) {
-          handleUpdateFontFamily(selectionFontStyle);
           setFontFamily(selectionFontStyle);
-        }
-        else {
+        } else {
           const fontFamilyCondition = prevFontFamilySelection.current ? prevFontFamilySelection.current : lastSelectedFontFamily;
-
-          handleUpdateFontFamily(fontFamilyCondition);
           setFontFamily(fontFamilyCondition);
         }
       }
 
       if((selectionFontColor || lastSelectedFontColor)) {
         if(selectionFontColor) {
-          handleUpdateFontColor(selectionFontColor);
           setFontColor(selectionFontColor);
         } else {
           const fontColorCondition = prevFontColorSelection.current ? prevFontColorSelection.current : lastSelectedFontColor;
-         
-          handleUpdateFontColor(fontColorCondition);
           setFontColor(fontColorCondition);
         }
       }
 
       setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#374151"));
 
-      prevNodeKey.current = anchorNode.getKey();
       if(selection._cachedNodes) {
         const selecStyle = selection.style;
 
         if(!selecStyle && prevFontFamilySelection.current) {
-          handleUpdateFontFamily(prevFontFamilySelection.current);
           setFontFamily(prevFontFamilySelection.current);
         }
 
         if(!selecStyle && prevFontColorSelection.current) {
-          handleUpdateFontColor(prevFontColorSelection.current);
           setFontColor(prevFontColorSelection.current);
         }
     
-        if(selectionFontStyle) prevFontFamilySelection.current = selectionFontStyle;
-        else prevFontFamilySelection.current = !selecStyle && lastSelectedFontFamily ? lastSelectedFontFamily : default_font_style;
+        if(selectionFontStyle) {
+          prevFontFamilySelection.current = selectionFontStyle;
+        } else {
+          prevFontFamilySelection.current = !selecStyle && lastSelectedFontFamily ? lastSelectedFontFamily : default_font_style;
+        }
 
-        if(selectionFontColor) prevFontColorSelection.current = selectionFontColor;
-        else prevFontColorSelection.current = lastSelectedFontColor ? lastSelectedFontColor : default_font_color;
+        if(selectionFontColor) {
+          prevFontColorSelection.current = selectionFontColor;
+        } else {
+          prevFontColorSelection.current = lastSelectedFontColor ? lastSelectedFontColor : default_font_color;
+        }
 
-        if(!lastSelectedFontFamily.length && selectionFontStyle.length > 0) setLastSelectedFontFamily(selectionFontStyle);
-        if(!lastSelectedFontColor && selectionFontColor) setLastSelectedFontColor(selectionFontColor);
+        if(!lastSelectedFontFamily.length && selectionFontStyle.length) {
+          setLastSelectedFontFamily(selectionFontStyle);
+        }
+
+        if(!lastSelectedFontColor && selectionFontColor) {
+          setLastSelectedFontColor(selectionFontColor);
+        }
       }
     }
   }, [activeEditor, lastSelectedFontFamily, lastSelectedFontColor]);
@@ -668,11 +600,101 @@ export default function ToolbarPlugin() {
       (_payload, newEditor) => {
         updateToolbar();
         setActiveEditor(newEditor);
+        const selection = $getSelection();
+
+        if($isRangeSelection(selection)) {
+          const selectedNodes = selection.getNodes();
+
+          if(selectedNodes) {
+            for (const element of selectedNodes) {
+              if ($isCodeNode(element) || $isCodeHighlightNode(element)) {
+                const type = $isCodeHighlightNode(element) ? 
+                  (element.getParent() as LexicalNode).getType() : element.getType();
+
+                if (type in blockTypeToBlockName) {
+                  setBlockType(type as keyof typeof blockTypeToBlockName);
+                }
+
+                const language = $isCodeHighlightNode(element) ? 
+                  (element.getParent() as LexicalNode).getLanguage() : element.getLanguage();
+
+                setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : "");
+                setSelectedElementKey(
+                  $isCodeHighlightNode(element) ? 
+                    (element.getParent() as LexicalNode).getKey() : element.getKey()
+                );
+
+                return false;
+              } 
+            }
+
+            const firstElement = selectedNodes[0];
+            const fistElementParent = firstElement.getParent() ? 
+              firstElement.getParent() as LexicalNode : firstElement;
+            
+            const anchorNode = selection.anchor.getNode();
+
+            setSelectedElementKey(fistElementParent.getKey());
+
+            if ($isListNode(fistElementParent)) {
+              const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+              const type = parentList ? parentList.getListType() : fistElementParent.getListType();
+              setBlockType(type);
+            } else {
+              const type = $isHeadingNode(fistElementParent) ? fistElementParent.getTag() : fistElementParent.getType();
+              if (type in blockTypeToBlockName) setBlockType(type as keyof typeof blockTypeToBlockName);
+    
+              if ($isCodeNode(fistElementParent)) {
+                const language = fistElementParent.getLanguage();
+                setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : "");
+
+                return false;
+              }
+            }
+          }
+        };
+        
+        activeEditor.update(() => {
+          if ($isRangeSelection(selection)) {
+            const anchorNode = selection.anchor.getNode();
+            const elementDOM = activeEditor.getElementByKey(selection.getNodes()[0].getKey()) as HTMLElement;
+
+            if(!prevNodeKey.current || (prevNodeKey.current !== anchorNode.getKey())) {
+              $patchStyleText(selection, { 
+                color: !fontColor ? elementDOM.style["color"] : fontColor,
+                ["font-family"]: fontFamily
+              });
+              prevNodeKey.current = anchorNode.getKey();
+            }
+
+            if(!fontColor) {
+              setFontColor(elementDOM.style["color"]);
+              setLastSelectedFontColor(elementDOM.style["color"]);
+            }
+          }
+        });
+
         return false;
       },
       COMMAND_PRIORITY_CRITICAL
     );
-  }, [editor, updateToolbar]);
+  }, [editor, updateToolbar, prevNodeKey, fontColor, fontFamily]);
+
+  useEffect(() => {
+    return activeEditor.registerCommand(
+      INSERT_PARAGRAPH_COMMAND,
+      () => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const anchorNode = selection.anchor.getNode();
+          prevNodeKey.current = anchorNode.getKey();
+        }
+
+        return false;
+      },
+      COMMAND_PRIORITY_CRITICAL
+    );
+  }, [activeEditor, fontColor, fontFamily, updateToolbar]);
 
   useEffect(() => {
     return mergeRegister(
@@ -707,7 +729,7 @@ export default function ToolbarPlugin() {
         if ($isRangeSelection(selection)) {
           const getNativeSelection = window.getSelection();
           const getCurrentSelectedNode = $getNodeByKey(selection.anchor.key);
-        
+
           if(getCurrentSelectedNode && getCurrentSelectedNode.__parent) {
             const getParentOfCurrentSelectedNode = $getNodeByKey(getCurrentSelectedNode.__parent);
             
