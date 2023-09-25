@@ -77,23 +77,25 @@ export default function ConfirmationModal({ open, options, setOpen, actionButton
             )}
             {alertComponentText && (
                 <div className={`alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32 ${alertComponentWrapperClassName && alertComponentWrapperClassName}`}>
-                    <div className={`text-[13.5px] uppercase tracking-wide`}>
-                        {alertComponentIcon  === "warning" ? ( 
-                            <AiFillWarning 
-                                size={17}
-                                className="stroke-info flex-shrink-0 w-6 h-6 text-yellow-600" 
-                            />
-                         ) : alertComponentIcon === "info" ? (
-                            <AiFillInfoCircle 
-                                size={17}
-                                className="stroke-info flex-shrink-0 w-6 h-6 text-blue-500" 
-                            />
-                         ) : (
-                            <AiFillWarning 
-                                size={17}
-                                className="stroke-info flex-shrink-0 w-6 h-6 text-yellow-600" 
-                            />
-                         )}
+                    <div className={`text-[13.5px] uppercase tracking-wide flex flex-row`}>
+                        <div className="mr-3 my-auto">
+                            {alertComponentIcon  === "warning" ? ( 
+                                <AiFillWarning 
+                                    size={30}
+                                    className="stroke-info flex-shrink-0 xxs:!w-6 xxs:!h-6 text-yellow-600" 
+                                />
+                            ) : alertComponentIcon === "info" ? (
+                                <AiFillInfoCircle 
+                                    size={30}
+                                    className="stroke-info flex-shrink-0 text-blue-500" 
+                                />
+                            ) : (
+                                <AiFillWarning 
+                                    size={30}
+                                    className="stroke-info flex-shrink-0 text-yellow-600" 
+                                />
+                            )}
+                        </div>
                         <span 
                             className={`text-gray-300 ${alertComponentTextClassName && alertComponentTextClassName}`}
                         >

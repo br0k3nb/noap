@@ -207,7 +207,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                     mainText='Are you sure you want to sign out ?'
                     options={{ 
                         actionButtonText: "Sign out",
-                        modalWrapperClassName: "!w-96",
+                        modalWrapperClassName: "!w-96 xxs:!w-80",
                         mainTextClassName: "text-center text-[14px] xxs:text-[12px]",
                         cancelButtonText: "Go back"
                     }}

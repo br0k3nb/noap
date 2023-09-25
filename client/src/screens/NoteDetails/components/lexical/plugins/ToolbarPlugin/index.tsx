@@ -463,7 +463,6 @@ export default function ToolbarPlugin() {
   const { userData: { settings: { theme } } } = useUserData();
 
   const default_font_style = 'Roboto';
-  const default_font_color = theme === "dark" ? '#ffffff' : '#000000';
 
   const [editor] = useLexicalComposerContext();
   
@@ -580,7 +579,7 @@ export default function ToolbarPlugin() {
         if(selectionFontColor) {
           prevFontColorSelection.current = selectionFontColor;
         } else {
-          prevFontColorSelection.current = lastSelectedFontColor ? lastSelectedFontColor : default_font_color;
+          prevFontColorSelection.current = lastSelectedFontColor ? lastSelectedFontColor : "";
         }
 
         if(!lastSelectedFontFamily.length && selectionFontStyle.length) {
@@ -656,20 +655,22 @@ export default function ToolbarPlugin() {
         
         activeEditor.update(() => {
           if ($isRangeSelection(selection)) {
-            const anchorNode = selection.anchor.getNode();
             const elementDOM = activeEditor.getElementByKey(selection.getNodes()[0].getKey()) as HTMLElement;
-
-            if(!prevNodeKey.current || (prevNodeKey.current !== anchorNode.getKey())) {
-              $patchStyleText(selection, { 
-                color: !fontColor ? elementDOM.style["color"] : fontColor,
-                ["font-family"]: fontFamily
-              });
-              prevNodeKey.current = anchorNode.getKey();
-            }
-
-            if(!fontColor) {
-              setFontColor(elementDOM.style["color"]);
-              setLastSelectedFontColor(elementDOM.style["color"]);
+            if(elementDOM) {
+              const anchorNode = selection.anchor.getNode();
+              
+              if(!prevNodeKey.current || (prevNodeKey.current !== anchorNode.getKey())) {
+                $patchStyleText(selection, { 
+                  color: fontColor,
+                  ["font-family"]: fontFamily
+                });
+                prevNodeKey.current = anchorNode.getKey();
+              }
+  
+              if(!fontColor) {
+                setFontColor(elementDOM.style["color"]);
+                setLastSelectedFontColor(elementDOM.style["color"]);
+              }
             }
           }
         });
@@ -862,7 +863,7 @@ export default function ToolbarPlugin() {
 
   return (
     <div  
-      className="!z-40 !relative toolbar !h-[2.50rem] mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#ffffff] dark:text-gray-50 border border-transparent !border-r-0 !border-b-stone-300 dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500"
+      className="!z-30 !relative toolbar !h-[2.50rem] mt-[0.02rem] dark:!bg-[#0f1011] !bg-[#ffffff] dark:text-gray-50 border border-transparent !border-r-0 !border-b-stone-300 dark:!border-b-[#404040] overflow-y-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500"
       style={{ 
         width: !getNavbar?.checkVisibility() ? screenSize.width : screenSize.width - 442
       }}

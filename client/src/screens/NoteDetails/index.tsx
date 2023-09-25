@@ -438,7 +438,7 @@ export default function NoteDetails({
               </label>
               <ul
                 tabIndex={0}
-                className="dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
+                className="!z-50 dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
               >
                 <li>
                   <a
@@ -597,8 +597,8 @@ export default function NoteDetails({
             mainText="Are you sure you want to delete this note?"
             options={{
               alertComponentIcon: "warning",
-              alertComponentText:
-                "Be aware that this action can not be undone!",
+              alertComponentText: "Be aware that this action can not be undone!",
+              alertComponentTextClassName: "text-start",
               subTextClassName: "px-6",
               mainTextClassName: "mb-5 text-xs",
               modalWrapperClassName: "!w-96 xxs:!w-80 border border-gray-600",
