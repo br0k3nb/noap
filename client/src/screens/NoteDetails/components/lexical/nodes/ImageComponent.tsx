@@ -1,3 +1,5 @@
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+
 import type {
   GridSelection,
   LexicalEditor,
@@ -34,7 +36,6 @@ import {
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 
-import { Suspense, useCallback, useEffect, useRef, useState, useContext } from "react";
 import { motion } from "framer-motion";
 
 import { BsTrash, BsThreeDotsVertical, BsFillFileEarmarkArrowDownFill } from 'react-icons/bs';
@@ -50,9 +51,6 @@ import ContentEditable from "../ui/ContentEditable";
 import ImageResizer from "../ui/ImageResizer";
 import Placeholder from "../ui/Placeholder";
 import { $isImageNode } from "./ImageNode";
-
-import { NoteSettingsCtx } from "../../../../../context/NoteSettingsCtx";
-import { UserDataCtx } from "../../../../../context/UserDataContext";
 
 import Modal from "../../../../../components/Modal";
 
@@ -80,26 +78,34 @@ function LazyImage({
   src,
   width,
   height,
-  maxWidth,
   maxHeight
 }: {
   altText?: string;
   className?: string | null;
   height: "inherit" | number;
   imageRef?: { current: null | HTMLImageElement };
-  maxWidth: number | string;
   src: string;
-  width: "inherit" | number;
+  width: number;
   maxHeight?: number | string;
 }): JSX.Element {
   useSuspenseImage(src);
+  const rootEditorEl = document.getElementById("ContentEditable__root") as HTMLDivElement;
+  const { width: clientWidth } = rootEditorEl.getBoundingClientRect();
+
+  const newWidth = width > (clientWidth - 56) ? width - (Math.abs((clientWidth - 56) - width) + 70) : width;
+
   return (
     <img
       className={className || ''}
       src={src}
       alt={altText}
       ref={imageRef}
-      style={{ height, maxWidth, width, maxHeight: maxHeight ? maxHeight : '' }}
+      style={{ 
+        height, 
+        maxWidth: innerWidth <= 640 ? clientWidth - 53 : newWidth,
+        width: newWidth, 
+        maxHeight: maxHeight ? maxHeight : '' 
+      }}
       draggable="false"
     />
   );
@@ -124,7 +130,7 @@ export default function ImageComponent({
   showCaption: boolean;
   caption?: LexicalEditor;
   captionsEnabled: boolean;
-  width: "inherit" | number;
+  width: number;
   height: "inherit" | number;
   isAExcalidrawImage?: boolean
 }): JSX.Element {
@@ -140,11 +146,8 @@ export default function ImageComponent({
   const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
   const [selection, setSelection] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
   const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth, height: innerHeight });
-  
-  useUpdateViewport(setCurrentScreenSize, 500);
 
-  const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
-  const editorWidth = rootEditorDiv.clientWidth;
+  useUpdateViewport(setCurrentScreenSize, 500);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -309,8 +312,6 @@ export default function ImageComponent({
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = isSelected || isResizing;
 
-  const { noteSettings: { expanded } } = useContext(NoteSettingsCtx) as any;
-
   const donwloadImage = (srcLink: string) => {
     const a = Object.assign(document.createElement("a"), { 
       href: srcLink, 
@@ -344,10 +345,12 @@ export default function ImageComponent({
           height={'inherit'}
           className={"!rounded-xl mt-6"}
           width={currentScreenSize.width - 100}
-          maxWidth={1200}
         />
       </Modal>
-      <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <div 
+        onMouseEnter={() => setHover(true)} 
+        onMouseLeave={() => setHover(false)}
+      >
         <div draggable={draggable} className="!object-cover !rounded-lg !relative">
             <motion.div 
               initial={{ opacity: 0 }}
@@ -369,7 +372,10 @@ export default function ImageComponent({
                       />
                     </div>
                   </label>
-                  <ul tabIndex={0} className="dropdown-content menu shadow rounded-box w-36 bg-[#ffffff] dark:bg-[#181818] text-gray-900 border border-gray-900 dark:text-gray-300">
+                  <ul 
+                    tabIndex={0} 
+                    className="dropdown-content menu shadow rounded-box w-[158px] bg-[#ffffff] dark:bg-[#181818] text-gray-900 border border-gray-900 dark:text-gray-300"
+                  >
                     {/* <li className="text-xs uppercase tracking-widest">
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move up</a>
                     </li>
@@ -377,15 +383,21 @@ export default function ImageComponent({
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move down</a>
                     </li> */}
                     <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]" onClick={() => donwloadImage(src)}>
+                      <a 
+                        className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
+                        onClick={() => donwloadImage(src)}
+                      >
                         <div className="flex flex-row space-x-2">
-                          <span>Download</span>
+                          <span className="my-auto text-[11px]">Download</span>
                           <BsFillFileEarmarkArrowDownFill size={16}/>
                         </div>
                       </a>
                     </li>
                     <li className="text-xs uppercase tracking-widest">
-                      <a className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]" onClick={() => setOpenFullscreenModal(true)}>
+                      <a 
+                        className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
+                        onClick={() => setOpenFullscreenModal(true)}
+                      >
                         <div className="flex flex-row space-x-2">
                           <span className="my-auto text-[11px]">Fullscreen</span>
                           <AiOutlineFullscreen size={20}/>
@@ -400,7 +412,7 @@ export default function ImageComponent({
                           onClick={() => setSelected(true)}
                         >
                           <div className="flex flex-row space-x-2">
-                            <span>Delete</span>
+                            <span className="my-auto text-[11px]">Delete</span>
                             <BsTrash size={16}/>
                           </div>
                         </a>
@@ -421,7 +433,6 @@ export default function ImageComponent({
               imageRef={imageRef}
               width={width}
               height={height}
-              maxWidth={currentScreenSize.width <= 640 ? editorWidth - 56 : editorWidth - 56}
             />
         </div>
         {(showCaption && caption) && (
@@ -441,8 +452,12 @@ export default function ImageComponent({
                 />
               ) : ( <HistoryPlugin externalHistoryState={historyState} /> )}
               <RichTextPlugin
-                contentEditable={ <ContentEditable className="ImageNode__contentEditable !object-cover" />}
-                placeholder={<Placeholder className="ImageNode__placeholder"> Enter a caption... </Placeholder>}
+                contentEditable={ 
+                  <ContentEditable className="ImageNode__contentEditable !object-cover" />
+                }
+                placeholder={
+                  <Placeholder className="ImageNode__placeholder"> Enter a caption... </Placeholder>
+                }
                 ErrorBoundary={LexicalErrorBoundary}
               />
             </LexicalNestedComposer>
@@ -455,7 +470,7 @@ export default function ImageComponent({
             editor={editor}
             buttonRef={buttonRef}
             imageRef={imageRef}
-            maxWidth={!expanded ? currentScreenSize.width - 495 : currentScreenSize.width - 58}
+            maxWidth={0}
             onResizeStart={onResizeStart}
             onResizeEnd={onResizeEnd}
             captionsEnabled={captionsEnabled}

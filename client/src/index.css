@@ -81,6 +81,11 @@
       after:border-b-transparent 
       after:border-r-transparent
   }
+  .active-item {
+    @apply
+    dark:!bg-red-700
+    !bg-green-600
+  }
 }
 
 @font-face {

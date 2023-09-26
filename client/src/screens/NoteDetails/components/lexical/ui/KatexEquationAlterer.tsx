@@ -51,10 +51,9 @@ export default function KatexEquationAlterer({ onConfirm, initialEquation = '' }
       </div>
       <div className="KatexEquationAlterer_defaultRow uppercase text-xs tracking-widest mt-5">Visualization </div>
       <div className="KatexEquationAlterer_centerRow">
-        <KatexRenderer 
-          equation={equation} 
-          inline={false} 
-          onDoubleClick={() => null}
+        <KatexRenderer
+          equation={equation}
+          inline={false}
         />
       </div>
       <div className="KatexEquationAlterer_dialogActions">

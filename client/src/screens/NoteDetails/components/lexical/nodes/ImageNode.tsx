@@ -197,7 +197,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
           <ImageComponent
             src={this.__src}
             altText={this.__altText}
-            width={this.__width}
+            width={this.__width as number}
             height={this.__height}
             nodeKey={this.getKey()}
             showCaption={this.__showCaption}

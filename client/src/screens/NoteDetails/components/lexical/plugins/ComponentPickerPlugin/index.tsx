@@ -1,3 +1,6 @@
+import { useCallback, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+
 import { $createCodeNode } from "@lexical/code";
 import {
   INSERT_CHECK_LIST_COMMAND,
@@ -22,8 +25,6 @@ import {
   FORMAT_ELEMENT_COMMAND,
   TextNode,
 } from "lexical";
-import { useCallback, useMemo, useState, useContext } from "react";
-import { createPortal } from "react-dom";
 
 import useModal from "../../hooks/useModal";
 import { EmbedConfigs } from "../AutoEmbedPlugin";
@@ -34,15 +35,11 @@ import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 // import { InsertPollDialog } from "../PollPlugin";
 // import { InsertNewTableDialog, InsertTableDialog } from "../TablePlugin";
 
+import useUserData from "../../../../../../hooks/useUserData";
+
 import twitterIcon from '../../images/icons/tweet.svg';
 import youtubeIcon from '../../images/icons/youtube.svg';
 import figmaIcon from '../../images/icons/figma.svg';
-
-import { INSERT_FIGMA_COMMAND } from "../FigmaPlugin";
-import { INSERT_TWEET_COMMAND } from "../TwitterPlugin";
-import { INSERT_YOUTUBE_COMMAND } from "../YouTubePlugin";
-
-import { UserDataCtx } from "../../../../../../context/UserDataContext";
 
 class ComponentPickerOption extends MenuOption {
   // What shows up in the editor
@@ -63,7 +60,7 @@ class ComponentPickerOption extends MenuOption {
       keywords?: Array<string>;
       keyboardShortcut?: string;
       onSelect: (queryString: string) => void;
-    }
+    },
   ) {
     super(title);
     this.title = title;
@@ -87,8 +84,8 @@ function ComponentPickerMenuItem({
   onMouseEnter: () => void;
   option: ComponentPickerOption;
 }) {
-  let className = "item !bg-[#f8f8f8] text-gray-900 dark:!text-gray-300 hover:!bg-[#e1e1e1] dark:!bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
-  if (isSelected) className += " selected";
+  let className = "!rounded-lg item bg-[#f8f8f8] text-gray-900 dark:!text-gray-300 hover:!bg-[#e1e1e1] dark:bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
+  if (isSelected) className += " !bg-[#bbbbbb] dark:!bg-[#323232]";
 
   return (
     <div className="hover:bg-[#e1e1e1] dark:hover:!bg-[#323232] rounded">
@@ -171,7 +168,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
     return options;
   }, [editor, queryString]);
 
-  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+  const { userData: { settings: { theme } } } = useUserData();
 
   const options = useMemo(() => {
     const baseOptions = [
@@ -378,7 +375,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
                     : overflowXAxis && overflowYAxis && "!absolute !-left-52 !-top-48"}
                   `}
                 >
-                  <ul className="h-[200px] xxs:!h-[180px] border border-gray-600">
+                  <ul className="max-h-[200px] xxs:!h-[180px] border border-gray-600">
                     {options.map((option, i: number) => (
                       <div 
                         key={option.key}

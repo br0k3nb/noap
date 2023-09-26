@@ -1144,12 +1144,22 @@ export default function ToolbarPlugin() {
                 onClick={() => {
                   showModal(
                     "Insert Equation", 
-                    (onClose) => <InsertEquationDialog activeEditor={activeEditor} onClose={onClose} />
+                    (onClose) => {
+                      return (
+                        <InsertEquationDialog 
+                          activeEditor={activeEditor} 
+                          onClose={onClose} 
+                        />
+                      )
+                    }
                   )
                 }}
               >
                 <div className="flex flex-row space-x-2 ml-3">
-                  <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={equationIcon} />
+                  <img 
+                    className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} 
+                    src={equationIcon} 
+                  />
                   <span className="text-[15px] text-gray-900 dark:text-gray-300">Equation</span>
                 </div>
               </DropDownItem>

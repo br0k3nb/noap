@@ -104,9 +104,11 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
           }
         },
       });
+    } else if(files && !files[0].type.startsWith("image")) {
+      toastAlert({ icon: "error", title: `Only images are supported!`, timer: 3000 });
+    } else {
+      toastAlert({ icon: "error", title: `Image too large!`, timer: 3000 });
     }
-    else if(files && !files[0].type.startsWith("image")) toastAlert({ icon: "error", title: `Only images are supported!`, timer: 3000 });
-    else toastAlert({ icon: "error", title: `Image too large!`, timer: 3000 });
   };
 
   return (
@@ -279,12 +281,16 @@ function onDrop(event: DragEvent, editor: LexicalEditor): boolean {
   if (canDropImage(event)) {
     const range = getDragSelection(event);
     node.remove();
+
     const rangeSelection = $createRangeSelection();
-    if (range !== null && range !== undefined) rangeSelection.applyDOMRange(range);
+    if (range !== null && range !== undefined) {
+      rangeSelection.applyDOMRange(range);
+    }
 
     $setSelection(rangeSelection);
     editor.dispatchCommand(INSERT_IMAGE_COMMAND, data);
   }
+
   return true;
 }
 
@@ -316,6 +322,7 @@ declare global {
 
 function canDropImage(event: DragEvent): boolean {
   const target = event.target;
+
   return !!(
     target &&
     target instanceof HTMLElement &&
@@ -328,20 +335,22 @@ function canDropImage(event: DragEvent): boolean {
 function getDragSelection(event: DragEvent): Range | null | undefined {
   let range;
   const target = event.target as null | Element | Document;
+
   const targetWindow =
     target == null
       ? null
       : target.nodeType === 9
       ? (target as Document).defaultView
       : (target as Element).ownerDocument.defaultView;
+
   const domSelection = getDOMSelection(targetWindow);
+
   if (document.caretRangeFromPoint) {
     range = document.caretRangeFromPoint(event.clientX, event.clientY);
   } else if (event.rangeParent && domSelection !== null) {
     domSelection.collapse(event.rangeParent, event.rangeOffset || 0);
     range = domSelection.getRangeAt(0);
-  } 
-  else throw Error(`Cannot get the selection when dragging`);
+  } else throw Error(`Cannot get the selection when dragging`);
 
   return range;
 }

@@ -23,6 +23,7 @@ class EmojiOption extends MenuOption {
     this.keywords = options.keywords || [];
   }
 }
+
 function EmojiMenuItem({
   index,
   isSelected,
@@ -38,15 +39,15 @@ function EmojiMenuItem({
   onMouseEnter: () => void;
   option: EmojiOption;
 }) {
-  let className = "item";
-  if (isSelected) className += " selected";
+  let className = "!rounded-lg item bg-[#f8f8f8] text-gray-900 dark:!text-gray-300 hover:!bg-[#e1e1e1] dark:bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
+  if (isSelected) className += " !bg-[#bbbbbb] dark:!bg-[#323232]";
 
   return (
     <>  
       <li
         key={option.key}
         tabIndex={-1}
-        className={"!py-3 !bg-gray-800 hover:!bg-gray-900"}
+        className={className}
         ref={option.setRefElement}
         role="option"
         aria-selected={isSelected}
@@ -55,10 +56,10 @@ function EmojiMenuItem({
         onClick={onClick}
       >
         <div className="flex flex-row space-x-2 ml-1 !truncate">
-          <span className="text-gray-300 my-auto">
+          <span className="my-auto !text-[22px]">
             {option.emoji}
           </span>
-          <span className="text-gray-300 text-sm">
+          <span className="text-sm">
             {option.title}
           </span>
         </div>
@@ -160,15 +161,15 @@ export default function EmojiPickerPlugin() {
 
         return anchorElementRef.current && options.length
           ? createPortal(
-              <div 
-                className={`typeahead-popover emoji-menu 
+              <div
+                className={`typeahead-popover emoji-menu bg-[#f8f8f8] dark:!bg-[#1c1d1e] dark:hover:!bg-[#222222] !w-[13rem]
                   ${overflowXAxis && !overflowYAxis ? "!absolute !-left-52" 
                     : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5" 
                     : overflowXAxis && overflowYAxis ? "!absolute !-left-52 !-top-40" 
                     : undefined}
                 `}
               >
-                <ul className="!h-[180px] border border-gray-600 !bg-gray-800">
+                <ul className="max-h-[200px] xxs:!max-h-[180px] border border-gray-600">
                   {options.map((option: EmojiOption, index) => (
                     <div key={option.key}>
                       <EmojiMenuItem

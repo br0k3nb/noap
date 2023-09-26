@@ -11,14 +11,12 @@ import {
   DROP_COMMAND,
   LexicalEditor,
 } from 'lexical';
-import { DragEvent as ReactDragEvent, useEffect, useRef, useState, useContext } from 'react';
+import { DragEvent as ReactDragEvent, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { isHTMLElement } from '../../utils/guard';
 import { Point } from '../../utils/point';
 import { Rect } from '../../utils/rect';
-
-import { UserDataCtx } from '../../../../../../context/UserDataContext';
 
 import './index.css';
 
@@ -47,10 +45,42 @@ function getTopLevelNodeKeys(editor: LexicalEditor): string[] {
   return editor.getEditorState().read(() => $getRoot().getChildrenKeys());
 }
 
+function getCollapsedMargins(elem: HTMLElement): {
+  marginTop: number;
+  marginBottom: number;
+} {
+  const getMargin = (
+    element: Element | null,
+    margin: 'marginTop' | 'marginBottom',
+  ): number =>
+    element ? parseFloat(window.getComputedStyle(element)[margin]) : 0;
+
+  const {marginTop, marginBottom} = window.getComputedStyle(elem);
+  const prevElemSiblingMarginBottom = getMargin(
+    elem.previousElementSibling,
+    'marginBottom',
+  );
+  const nextElemSiblingMarginTop = getMargin(
+    elem.nextElementSibling,
+    'marginTop',
+  );
+  const collapsedTopMargin = Math.max(
+    parseFloat(marginTop),
+    prevElemSiblingMarginBottom,
+  );
+  const collapsedBottomMargin = Math.max(
+    parseFloat(marginBottom),
+    nextElemSiblingMarginTop,
+  );
+
+  return {marginBottom: collapsedBottomMargin, marginTop: collapsedTopMargin};
+}
+
 function getBlockElement(
   anchorElem: HTMLElement,
   editor: LexicalEditor,
   event: MouseEvent,
+  useEdgeAsDefault = false
 ): HTMLElement | null {
   const anchorElementRect = anchorElem.getBoundingClientRect();
   const topLevelNodeKeys = getTopLevelNodeKeys(editor);
@@ -58,6 +88,30 @@ function getBlockElement(
   let blockElem: HTMLElement | null = null;
   
   editor.getEditorState().read(() => {
+    if (useEdgeAsDefault) {
+      const [firstNode, lastNode] = [
+        editor.getElementByKey(topLevelNodeKeys[0]),
+        editor.getElementByKey(topLevelNodeKeys[topLevelNodeKeys.length - 1]),
+      ];
+
+      const [firstNodeRect, lastNodeRect] = [
+        firstNode?.getBoundingClientRect(),
+        lastNode?.getBoundingClientRect(),
+      ];
+
+      if (firstNodeRect && lastNodeRect) {
+        if (event.y < firstNodeRect.top) {
+          blockElem = firstNode;
+        } else if (event.y > lastNodeRect.bottom) {
+          blockElem = lastNode;
+        }
+
+        if (blockElem) {
+          return;
+        }
+      }
+    }
+
     let index = getCurrentIndex(topLevelNodeKeys.length);
     let direction = Indeterminate;
     
@@ -69,13 +123,13 @@ function getBlockElement(
       
       const point = new Point(event.x, event.y);
       const domRect = Rect.fromDOM(elem);
-      const { marginTop, marginBottom } = window.getComputedStyle(elem);
+      const { marginTop, marginBottom } = getCollapsedMargins(elem);
 
       const rect = domRect.generateNewRect({
-        bottom: domRect.bottom + parseFloat(marginBottom),
+        bottom: domRect.bottom + marginBottom,
         left: anchorElementRect.left,
         right: anchorElementRect.right,
-        top: domRect.top - parseFloat(marginTop),
+        top: domRect.top - marginTop,
       });
 
       const {
@@ -99,19 +153,21 @@ function getBlockElement(
     }
   });
 
-  if((blockElem as any)?.children[0]?.parentElement.className.startsWith("PlaygroundEditorTheme__paragraph")) {
-    customMargin = `${(blockElem as any)?.clientHeight / 2 + 30}`;
+  if(blockElem) {
+    if ((blockElem as HTMLElement)?.tagName === "HR") {
+      customMargin = `${(blockElem as any)?.clientHeight / 2 + 29}`
+    } else if ((blockElem as HTMLElement).children[0]?.className.startsWith("editor-image")) {
+      customMargin = `${(blockElem as HTMLElement)?.clientHeight / 8}`;
+    } else if ((blockElem as any)?.children[0]?.parentElement.className.startsWith("PlaygroundEditorTheme__paragraph")) {
+      customMargin = `${(blockElem as any)?.clientHeight / 2 + 30}`;
+    }  
   }
 
-  else if ((blockElem as any)?.children[0]?.className.startsWith('PlaygroundEditorTheme__listItem')) {
-    customMargin = `${(blockElem as any)?.clientHeight / 2 + 25}`
-  }  
-
-  else if ((blockElem as any)?.tagName === "HR") {
-    customMargin = `${(blockElem as any)?.clientHeight / 2 + 29}`
-  }
+  // else if ((blockElem as any)?.children[0]?.className.startsWith('PlaygroundEditorTheme__listItem')) {
+  //   customMargin = `${(blockElem as any)?.clientHeight / 2 + 25}`
+  // }  
     
-  else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 25}`;
+  // else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 25}`;
 
   return blockElem;
 }
@@ -170,11 +226,15 @@ function setTargetLine(
   const { top: targetBlockElemTop, height: targetBlockElemHeight } = targetBlockElem.getBoundingClientRect();
   const { top: anchorTop, width: anchorWidth } = anchorElem.getBoundingClientRect();
 
-  let lineTop = targetBlockElemTop;
-  // At the bottom of the target
+  const { marginTop, marginBottom } = getCollapsedMargins(targetBlockElem);
 
-  if (mouseY - targetBlockElemTop > targetBlockElemHeight / 2) lineTop += targetBlockElemHeight + parseFloat(targetStyle.marginBottom);
-  else lineTop -= parseFloat(targetStyle.marginTop);
+  let lineTop = targetBlockElemTop;
+
+  if (mouseY >= targetBlockElemTop) {
+    lineTop += targetBlockElemHeight + marginBottom / 2;
+  } else {
+    lineTop -= marginTop / 2;
+  }
 
   const top = lineTop - anchorTop - TARGET_LINE_HALF_HEIGHT;
   const left = TEXT_BOX_HORIZONTAL_PADDING - SPACE;
@@ -340,7 +400,7 @@ function useDraggableBlockMenu(
   return createPortal(
     <>
       <div
-        className='icon draggable-block-menu rounded-md'
+        className='icon draggable-block-menu rounded-md !bg-[#323232] hover:!bg-[#161616]'
         ref={menuRef}
         draggable={true}
         onDragStart={onDragStart}

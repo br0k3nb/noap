@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -18,11 +10,9 @@ import type {
 
 import katex from "katex";
 import { $applyNodeReplacement, DecoratorNode, DOMExportOutput } from "lexical";
-import * as React from "react";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 
-const EquationComponent = React.lazy(
-  // @ts-ignore
+const EquationComponent = lazy(
   () => import("./EquationComponent")
 );
 

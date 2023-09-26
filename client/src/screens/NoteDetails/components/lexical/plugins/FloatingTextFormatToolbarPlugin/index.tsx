@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { $isCodeHighlightNode } from '@lexical/code';
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -11,15 +13,14 @@ import {
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from 'lexical';
-import { useCallback, useEffect, useRef, useState, useContext } from 'react';
 import { createPortal } from 'react-dom';
 
 import { getDOMRangeRect } from '../../utils/getDOMRangeRect';
 import { getSelectedNode } from '../../utils/getSelectedNode';
 import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition';
-import { INSERT_INLINE_COMMAND } from '../CommentPlugin';
+// import { INSERT_INLINE_COMMAND } from '../CommentPlugin';
 
-import { UserDataCtx } from '../../../../../../context/UserDataContext';
+import useUserData from '../../../../../../hooks/useUserData';
 
 import './index.css';
 
@@ -49,16 +50,13 @@ function TextFormatFloatingToolbar({
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
   const insertLink = useCallback(() => {
-    if (!isLink) {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://');
-    } else {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-    }
+    if (!isLink) editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://');
+    else editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
   }, [editor, isLink]);
 
-  const insertComment = () => {
-    editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
-  };
+  // const insertComment = () => {
+  //   editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
+  // };
 
   function mouseMoveListener(e: MouseEvent) {
     if (
@@ -104,7 +102,7 @@ function TextFormatFloatingToolbar({
     ) {
       const rangeRect = getDOMRangeRect(nativeSelection, rootElement);
 
-      setFloatingElemPosition(rangeRect, popupCharStylesEditorElem, anchorElem);
+      setFloatingElemPosition(rangeRect, popupCharStylesEditorElem, anchorElem, -90);
     }
   }, [editor, anchorElem]);
 
@@ -149,84 +147,78 @@ function TextFormatFloatingToolbar({
     );
   }, [editor, updateTextFormatFloatingToolbar]);
 
-  const { userData: { settings: { theme } } } = useContext(UserDataCtx) as any;
+  const { userData: { settings: { theme } } } = useUserData();
+
+  const baseStyle = 'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232] ';
+  const baseActiveStyle = ' dark:!bg-[#525252] !bg-[#bbbbbb]';
 
   return (
-    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup bg-[#f8f8f8] dark:bg-[#1c1d1e]">
+    <div 
+      className="floating-text-format-popup bg-[#f8f8f8] dark:bg-[#1c1d1e]"
+      ref={popupCharStylesEditorRef} 
+    >
       {editor.isEditable() && (
         <>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isBold ? 'active' : '')}
-            aria-label="Format text as bold">
-            <i className={`format bold ${theme === "dark" && "comp-picker"}`} />
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
+            className={baseStyle + (isBold ? baseActiveStyle : '')}
+            aria-label="Format text as bold"
+          >
+              <i className={`format bold ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isItalic ? 'active' : '')}
-            aria-label="Format text as italics">
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
+            className={baseStyle + (isItalic ? baseActiveStyle : '')}
+            aria-label="Format text as italics"
+          >
             <i className={` format italic ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isUnderline ? 'active' : '')}
-            aria-label="Format text to underlined">
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
+            className={baseStyle + (isUnderline ? baseActiveStyle : '')}
+            aria-label="Format text to underlined"
+          >
             <i className={`format underline ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isStrikethrough ? 'active' : '')}
-            aria-label="Format text with a strikethrough">
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')}
+            className={baseStyle + (isStrikethrough ? baseActiveStyle : '')}
+            aria-label="Format text with a strikethrough"
+          >
             <i className={`format strikethrough ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isSubscript ? 'active' : '')}
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript')}
+            className={baseStyle + (isSubscript ? baseActiveStyle : '')}
             title="Subscript"
-            aria-label="Format Subscript">
+            aria-label="Format Subscript"
+          >
             <i className={`format subscript ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isSuperscript ? 'active' : '')}
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript')}
+            className={baseStyle + (isSuperscript ? baseActiveStyle : '')}
             title="Superscript"
-            aria-label="Format Superscript">
+            aria-label="Format Superscript"
+          >
             <i className={`format superscript ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
-            }}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isCode ? 'active' : '')}
-            aria-label="Insert code block">
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')}
+            className={baseStyle + (isCode ? baseActiveStyle : '')}
+            aria-label="Insert code block"
+          >
             <i className={`format code ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
             onClick={insertLink}
-            className={'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232]' + (isLink ? 'active' : '')}
-            aria-label="Insert link">
+            className={baseStyle + (isLink ? baseActiveStyle : '')}
+            aria-label="Insert link"
+          >
             <i className={`format link ${theme === "dark" && "comp-picker"}`} />
           </button>
         </>
       )}
-      {/* <button
-        onClick={insertComment}
-        className={'popup-item spaced insert-comment'}
-        aria-label="Insert comment">
-        <i className="format add-comment" />
-      </button> */}
     </div>
   );
 }
@@ -297,9 +289,8 @@ function useFloatingTextFormatToolbar(
 
   useEffect(() => {
     document.addEventListener('selectionchange', updatePopup);
-    return () => {
-      document.removeEventListener('selectionchange', updatePopup);
-    };
+
+    return () => document.removeEventListener('selectionchange', updatePopup);
   }, [updatePopup]);
 
   useEffect(() => {

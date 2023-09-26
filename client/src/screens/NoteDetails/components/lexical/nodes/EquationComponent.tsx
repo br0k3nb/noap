@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -10,9 +12,6 @@ import {
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import EquationEditor from "../ui/EquationEditor";
 import KatexRenderer from "../ui/KatexRenderer";
 import { $isEquationNode } from "./EquationNode";
 
@@ -27,7 +26,7 @@ export default function EquationComponent({ equation, inline, nodeKey }: Equatio
   const [equationValue, setEquationValue] = useState(equation);
   const [showEquationEditor, setShowEquationEditor] = useState<boolean>(false);
   const inputRef = useRef(null);
-
+  
   const onHide = useCallback(
     (restoreSelection?: boolean) => {
       setShowEquationEditor(false);
@@ -95,21 +94,9 @@ export default function EquationComponent({ equation, inline, nodeKey }: Equatio
   }, [editor, nodeKey, onHide, showEquationEditor]);
 
   return (
-    <>
-      {showEquationEditor ? (
-        <EquationEditor
-          equation={equationValue}
-          setEquation={setEquationValue}
-          inline={inline}
-          ref={inputRef}
-        />
-      ) : (
-        <KatexRenderer
-          equation={equationValue}
-          inline={inline}
-          onDoubleClick={() => setShowEquationEditor(true)}
-        />
-      )}
-    </>
+    <KatexRenderer
+      equation={equationValue}
+      inline={inline}
+    />
   );
 }

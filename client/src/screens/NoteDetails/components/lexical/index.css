@@ -241,10 +241,6 @@ pre::-webkit-scrollbar-thumb {
   border-radius: 8px;
 }
 
-.typeahead-popover ul li.selected {
-  background: #111827;
-}
-
 .typeahead-popover li {
   margin: 0 8px 0 8px;
   padding: 8px;
@@ -657,7 +653,7 @@ i.prettier-error {
 
 .dropdown-lexical .item {
   padding: 8px;
-  color: rgb(229 231 235) !important;
+  /* color: rgb(229 231 235) !important; */
   cursor: pointer;
   line-height: 15px;
   font-size: 16px;
@@ -1490,7 +1486,7 @@ button.item i {
 }
 
 button.item.dropdown-item-active {
-  background-color: rgba(223, 232, 250, 0.3);
+  /* background-color: rgba(223, 232, 250, 0.3); */
 }
 
 button.item.dropdown-item-active i {

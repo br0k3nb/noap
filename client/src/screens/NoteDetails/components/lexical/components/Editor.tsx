@@ -11,7 +11,6 @@ import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { EditorState } from "lexical";
 
-import { useSettings } from "../context/SettingsContext";
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 import AutoEmbedPlugin from "../plugins/AutoEmbedPlugin";
 import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
@@ -41,6 +40,7 @@ import { CAN_USE_DOM } from "../shared/canUseDOM";
 import TwitterPlugin from "../plugins/TwitterPlugin";
 import YouTubePlugin from "../plugins/YouTubePlugin";
 
+import { useSettings } from "../context/SettingsContext";
 import useUserData from "../../../../../hooks/useUserData";
 import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
@@ -118,6 +118,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     return (
       <div className="editor-container plain-text dark:!bg-[#0f1011]">
         {!readMode && <ToolbarPlugin />}
+        <EquationsPlugin />
         <DragDropPaste />
         <ComponentPickerPlugin />
         <AutoEmbedPlugin />
@@ -202,12 +203,11 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
             <YouTubePlugin />
             <FigmaPlugin />
             <HorizontalRulePlugin />
-            <EquationsPlugin />
             <ExcalidrawPlugin />
             <TabFocusPlugin />
             <TabIndentationPlugin />
             <CollapsiblePlugin />
-            
+
             {floatingAnchorElem && (
               <>
                 {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
