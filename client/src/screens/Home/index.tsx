@@ -29,7 +29,7 @@ import { pinnedNotesReducer, pin_notes_default_value  } from "../../reducers/pin
 import { notesReducer, note_default_value} from "../../reducers/noteReducer";
 import { labelsReducer, label_default_value } from "../../reducers/labelReducer";
 
-export default function Home(): JSX.Element {
+export default function Home() {
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [selectedNoteData, setSelectedNoteData] = useState<NoteData | null>(null);
   const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);
@@ -44,8 +44,8 @@ export default function Home(): JSX.Element {
 
   const getSearchInUrl = useGetUrl({
     options: {
-        usePage: false,
-        getSearchQueryInUrl: true,
+      usePage: false,
+      getSearchQueryInUrl: true,
     }
   });
 

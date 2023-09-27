@@ -7,29 +7,13 @@ import {
   FieldValues
 } from "react-hook-form";
 
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import {
-  AiOutlineFullscreen,
-  AiOutlineFullscreenExit,
-  AiFillDelete,
-  AiOutlineEllipsis,
-  AiFillRead,
-  AiFillEdit,
-  AiFillInfoCircle
-} from "react-icons/ai";
-import {
-  BsTagsFill,
-  BsPeopleFill,
-  BsArrowDown,
-  BsArrowUp,
-  BsFillPinAngleFill
-} from "react-icons/bs";
+import { AiFillInfoCircle } from "react-icons/ai";
 
-import { IoMdColorPalette } from 'react-icons/io';
-
-import { BiRename } from 'react-icons/bi';
-
+import NoteTopBar from "././components/NoteTopBar";
+import NoteInfoModal from "./components/NoteInfoModal";
+import RenameNoteModal from "./components/RenameNoteModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import TextEditor from "./components/lexical";
@@ -208,67 +192,6 @@ export default function NoteDetails({
     handleReverseReadMode();
   };
 
-  const handleOpenLabelModal = () => {
-    let fieldsToReset = {};
-
-    if(selectedNoteData?.labels && selectedNoteData.labels.length > 0) {
-      selectedNoteData.labels.forEach(label => {
-        fieldsToReset = {
-          ...fieldsToReset,
-          [label._id]: true
-        }        
-      });
-    }
-    
-    reset(fieldsToReset);
-    setOpenlabelModal(true);
-  };
-
-  const handlePinNote = async () => {
-    try {
-      const { data: { message } } = await api.post(`/note/pin-note/${selectedNoteData?._id}`, {
-        condition: !selectedNoteData?.settings.pinned
-      });
-
-      setNoteSettings((prevNoteSettings) => {
-        return {
-        ...prevNoteSettings,
-          pinned: !selectedNoteData?.settings.pinned
-        }
-      });
-
-      setSelectedNoteData((prevData: any) => {
-        return {
-          ...prevData,
-          settings: {
-            ...prevData?.settings,
-            pinned: !selectedNoteData?.settings.pinned
-          }
-        }
-      });
-
-      if(pinNote?.settings.pinned) {
-        append(pinNote);
-        
-        if(pinNotes.length === 1) {
-          dispatchPinNotes({ type: "PAGE", payload: pinNotesState.page - 1 });
-          removePinNotes(pinNotes.indexOf(pinNote));
-        }
-        else removePinNotes(pinNotes.indexOf(pinNote));
-      }
-      else {
-        appendPinNotes(note);
-        remove(notes.indexOf(note));
-      }
-      
-      fetchNotes();
-      toastAlert({ icon: "success", title: message, timer: 2000 });
-    } catch (err: any) {
-      console.log(err);
-      toastAlert({ icon: "error", title: err.message, timer: 2000 });
-    }
-  };
-
   const days = (date: string) => moment(date).format("ll");
 
   const lastUpdated = () => {
@@ -282,7 +205,7 @@ export default function NoteDetails({
 
     try {
       await api.post(`/note/rename/${noteId}`, { name: data.name });
-      await fetchNotes();
+      fetchNotes();
 
       toastAlert({ icon: "success", title: "Updated!", timer: 2000 });
     } catch (err: any) {
@@ -344,14 +267,6 @@ export default function NoteDetails({
     }
   });
 
-  const getUrlWithoutNoteId = useGetUrl({
-    options: { 
-      usePage: false, 
-      removeNoteId: true, 
-      absolutePath: true
-    }
-  });
-
   return (
     <div
       className={`
@@ -359,237 +274,33 @@ export default function NoteDetails({
         ${!expanded && "hidden lg:flex"}
       `}
     >
-      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData) ? (
-        <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
-          <div className="flex flex-row mb-1 mt-1"> 
-            <div
-              className="tooltip tooltip-right tooltip-right-color-controller"
-              data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
-            >
-              <Link
-                onClick={() => handleExpand()}
-                to={`${innerWidth < 1030 ? getUrlWithoutNoteId : ''}`}
-              >
-                {expanded ? (
-                  <div className="hover:!bg-[#dadada] dark:hover:!bg-stone-600 px-1 py-1 rounded">
-                    <AiOutlineFullscreenExit size={22} />
-                  </div>
-                  
-                ) : (
-                  <div className="hover:!bg-[#dadada] dark:hover:!bg-stone-600 px-1 py-1 rounded">
-                    <AiOutlineFullscreen size={22} />
-                  </div>
-                )}
-              </Link>
-            </div>
-            {innerWidth > 1030 && (
-              <>
-                <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-                <div
-                  className="tooltip tooltip-right tooltip-right-color-controller"
-                  data-tip={`${selectedNoteData?.settings.pinned ? "Unpin note" : "Pin note"}`}
-                >
-                  <button 
-                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
-                    onClick={() => handlePinNote()}
-                  >
-                    {selectedNoteData?.settings.pinned ? (
-                      <BsFillPinAngleFill size={22} />
-                    ) : ( 
-                      <BsFillPinAngleFill size={22} /> 
-                    )}
-                  </button>
-                </div>
-                <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-                <div
-                  className="tooltip tooltip-right tooltip-right-color-controller"
-                  data-tip={`Attach labels`}
-                >
-                  <button 
-                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
-                    onClick={() => handleOpenLabelModal()}
-                  >                    
-                    <BsTagsFill size={22} />
-                  </button>
-                </div>
-                <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-                <div
-                  className="tooltip tooltip-right tooltip-right-color-controller"
-                  data-tip={readMode ? "Edit mode" : "Read mode"}
-                >
-                  <button 
-                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-1 rounded" 
-                    onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
-                  >                    
-                    {!readMode ? <AiFillRead size={22} /> : <AiFillEdit size={22} />}
-                  </button>
-                </div>
-              </>
-            )}
-            <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none"/>
-            <div className="dropdown hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px] cursor-pointer">
-              <label tabIndex={0} className="cursor-pointer">
-                <div
-                  className="tooltip tooltip-right tooltip-right-color-controller"
-                  data-tip="Actions"
-                >
-                  <AiOutlineEllipsis size={24} className="mt-[3px]" />
-                </div>
-              </label>
-              <ul
-                tabIndex={0}
-                className="!z-50 dropdown-content menu p-2 shadow rounded-box !w-52 !h-64 bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900"
-              >
-                <li>
-                  <a
-                    className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                    onClick={() => handlePinNote()}
-                  >
-                    <label
-                      htmlFor="my-modal-4"
-                      className="text-gray-900 dark:text-gray-300 cursor-pointer"
-                    >
-                        <div className="flex flex-row space-x-2">
-                          {selectedNoteData?.settings.pinned ? (
-                            <>
-                              <p className="py-1 text-xs uppercase tracking-widest">
-                                Unpin note
-                              </p>
-                              <BsFillPinAngleFill size={20} className="pt-[3px]" />
-                            </>
-                          ) : (
-                            <>  
-                              <p className="py-1 text-xs uppercase tracking-widest">
-                                Pin note
-                              </p>
-                              <BsFillPinAngleFill size={20} className="pt-[3px]" />
-                            </>
-                          )}
-                          
-                        </div>
-                      </label>
-                    </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <a
-                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                      onClick={() => handleOpenLabelModal()}
-                    >
-                      <label
-                        htmlFor="my-modal-4"
-                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Attach labels
-                          </p>
-                          <BsTagsFill size={20} className="pt-[3px]" />
-                        </div>
-                      </label>
-                    </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <button
-                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                      onClick={() => handleToggleReadMode(readMode ? "edit" : "full")}
-                    >
-                      <label
-                        htmlFor="my-modal-4"
-                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            {readMode ? "Edit mode" : "Read mode"}
-                          </p>
-                          {!readMode ? <AiFillRead size={22} className="pt-[3px]" /> : <AiFillEdit size={22} className="pt-[3px]" />}
-                        </div>
-                      </label>
-                    </button>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <a className="cursor-not-allowed active:!bg-transparent">
-                      <label htmlFor="my-modal-4" className="text-gray-600">
-                        <div className="flex flex-row space-x-2 cursor-not-allowed">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Share Note
-                          </p>
-                          <BsPeopleFill size={20} className="pt-[3px]" />
-                        </div>
-                      </label>
-                    </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <button
-                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                      onClick={() => handleToggleBottomBar()}
-                    >
-                      <label
-                        htmlFor="my-modal-4"
-                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <p className="py-1 text-[11px] uppercase tracking-widest">
-                            {showBottomBar ? "Hide bottom bar" : "Show bottom bar"}
-                          </p>
-                          {showBottomBar ? (
-                            <BsArrowDown size={20} className="pt-[3px]" />
-                          ) : (
-                            <BsArrowUp size={20} className="pt-[3px]" />
-                          )}
-                        </div>
-                      </label>
-                    </button>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <button
-                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                      onClick={() => setRenameNote(!renameNote)}
-                    >
-                      <label
-                        htmlFor="my-modal-4"
-                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Rename note
-                          </p>
-                          <BiRename size={22} className="pt-[2px]" />
-                        </div>
-                      </label>
-                    </button>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <a
-                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                      onClick={() => setOpenChangeNoteBackgroundModal(true)}
-                    >
-                      <label
-                        htmlFor="my-modal-4"
-                        className="text-gray-900 dark:text-gray-300 cursor-pointer"
-                      >
-                        <div className="flex flex-row space-x-2">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Change note background
-                          </p>
-                          <IoMdColorPalette size={32} className="mt-[4px]" />
-                        </div>
-                      </label>
-                    </a>
-                    <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
-                    <a
-                      className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
-                      onClick={() => setOpen(true)}
-                    >
-                      <label
-                        htmlFor="my-modal-4"
-                        className="text-red-600 cursor-pointer"
-                      >
-                        <div className="flex flex-row space-x-2 ">
-                          <p className="py-1 text-xs uppercase tracking-widest">
-                            Delete note
-                          </p>
-                          <AiFillDelete size={20} className="pt-1" />
-                        </div>
-                      </label>
-                    </a>
-                </li>
-              </ul>
-            </div>
-          </div>
+      {((!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData)) && (
+        <>
+          <NoteTopBar
+            append={append}
+            appendPinNotes={appendPinNotes}
+            dispatchPinNotes={dispatchPinNotes}
+            handleExpand={handleExpand}
+            handleToggleBottomBar={handleToggleBottomBar}
+            handleToggleReadMode={handleToggleReadMode}
+            labels={labels}
+            noteDataIsFetching={noteDataIsFetching}
+            notes={notes}
+            pinNotes={pinNotes}
+            pinNotesState={pinNotesState}
+            readMode={readMode}
+            remove={remove}
+            removePinNotes={removePinNotes}
+            renameNote={renameNote}
+            reset={reset}
+            selectedNoteData={selectedNoteData}
+            setOpen={setOpen}
+            setOpenChangeNoteBackgroundModal={setOpenChangeNoteBackgroundModal}
+            setOpenlabelModal={setOpenlabelModal}
+            setRenameNote={setRenameNote}
+            setSelectedNoteData={setSelectedNoteData}
+            showBottomBar={showBottomBar}
+          />
           <ConfirmationModal
             open={open}
             setOpen={setOpen}
@@ -613,42 +324,14 @@ export default function NoteDetails({
             register={register}
             handleSubmit={handleSubmit}
           />
-          <Modal
-            open={renameNote}
-            setOpen={setRenameNote}
-            title="Rename note"
-            options={{
-              titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "px-0 w-[23rem] xxs:!w-[20rem]"
-            }}
-          >
-            <div className="px-6">
-              <form 
-                onSubmit={handleSubmitNoteName(handleRenameNote)} 
-                className="mt-5"
-              >
-                <label 
-                  htmlFor="notename"
-                  className="text-[15px] tracking-widest uppercase ml-1"
-                >
-                  Note name
-                </label>
-                <input 
-                  id="notename"
-                  className="sign-text-inputs border border-gray-600 text-gray-900 dark:bg-stone-900 dark:text-gray-300 placeholder:text-gray-300 mt-2 mb-3 shadow-none"
-                  type="text"
-                  {...registerNoteName("name")}
-                />
-                <button 
-                  className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full"
-                >
-                  {showLoader ? (
-                    <p className="animate-pulse text-gray-300">Loading...</p>
-                  ) : "Save name"}
-                </button>
-              </form>
-            </div>
-          </Modal>
+          <RenameNoteModal
+            handleRenameNote={handleRenameNote}
+            handleSubmitNoteName={handleSubmitNoteName}
+            registerNoteName={registerNoteName}
+            renameNote={renameNote}
+            setRenameNote={setRenameNote}
+            showLoader={showLoader}
+          />
           <Modal
             open={openChangeNoteBackgroundModal}
             setOpen={setOpenChangeNoteBackgroundModal}
@@ -672,42 +355,16 @@ export default function NoteDetails({
                 />
             </div>
           </Modal>
-          <Modal
-            open={openNoteInfoModal}
-            setOpen={setOpenNoteInfoModal}
-            title="Note info"
-            options={{
-              titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "px-0 w-[27rem] xxs:!w-[19rem]"
-            }}
-          >
-            <div className="px-8 mt-5">
-                <div className="flex flex-row justify-between">
-                  <p className="text-[13px] uppercase tracking-wider">Note name: </p>
-                  <p className="text-[13px] uppercase tracking-wider">
-                    {
-                      note ? 
-                        innerWidth <= 640 ? note?.name?.slice(0, 16) : note?.name?.slice(0, 31) 
-                      : innerWidth <= 640 ? pinNote?.name?.slice(0, 16) : pinNote?.name?.slice(0, 31)
-                    }
-                  </p>
-                </div>
-                <div className="flex flex-row justify-between mt-3">
-                  <p className=" text-[13px] uppercase tracking-wider">Mode: </p>
-                  <p className=" text-[13px] uppercase tracking-wider">{readMode ? "Read mode" : "Edit mode"}</p>
-                </div>
-                <div className="flex flex-row justify-between mt-3">
-                  <p className=" text-[13px] uppercase tracking-wider">Shared: </p>
-                  <p className=" text-[13px] uppercase tracking-wider">false</p>
-                </div>
-                <div className="flex flex-row justify-between mt-3">
-                  <p className=" text-[13px] uppercase tracking-wider">Contributors: </p>
-                  <p className=" text-[13px] uppercase tracking-wider">You</p>
-                </div>
-            </div>
-          </Modal>
+          <NoteInfoModal
+            note={note}
+            openNoteInfoModal={openNoteInfoModal}
+            pinNote={pinNote}
+            readMode={readMode}
+            setOpenNoteInfoModal={setOpenNoteInfoModal}
+          />
+
           {innerWidth > 1350 ? (
-            <div className="flex flex-row justify-start mr-3 py-2 absolute right-0">
+            <div className="flex flex-row justify-start mr-3 py-2 absolute right-0 top-2">
               <div className="flex flex-row">
                 <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
                   {!readMode ? "Editing" : "Reading"} - {note ? note?.name?.slice(0, 48) : pinNote?.name?.slice(0, 48)}
@@ -719,37 +376,31 @@ export default function NoteDetails({
               </p>
             </div>
           ) : (
-            <div className="flex flex-row justify-start mr-[14px] py-2 absolute right-0">
+            <div className="flex flex-row justify-start mr-[14px] py-2 absolute right-0 top-2">
               <AiFillInfoCircle size={22} onClick={() => setOpenNoteInfoModal(true)}/>
             </div>
           )}
-        </div>
-      ) : (noteDataIsFetching && getNoteIdInUrl) && (
-          <div className="w-screen h-screen flex flex-col items-center absolute top-[24rem] xxs:top-[40%] left-[14rem] xxs:!left-0">
-            <Loader 
-              width={25}
-              height={25}
-            />
-            <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
-          </div>
-      // ) : (
-      //   <div className="flex flex-col justify-center items-center my-auto">
-      //       {/* <img
-      //         src={noNoteSelected}
-      //         className="w-screen max-w-xl opacity-90"
-      //         draggable={false}
-      //       />
-      //       <p className="text-xl font-light text-center">
-      //         The selected note will appear here...
-      //       </p> */}
-      //   </div>
+        </>
       )}
 
-      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData) && (
+      {(!noteDataIsFetching && getNoteIdInUrl) && (selectedNote && selectedNoteData) ? (
         <div className="!overflow-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900">
             <TextEditor noteData={selectedNoteData} />
         </div>
-      )}
+      ) : (noteDataIsFetching && getNoteIdInUrl) && (
+        <div 
+          className="h-screen flex flex-col items-center absolute top-[40%] mx-auto"
+          style={{
+            width: (innerWidth > 640 && !expanded) ? innerWidth - 440 : innerWidth
+          }}
+        >
+          <Loader 
+            width={25}
+            height={25}
+          />
+          <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
+        </div>
+    )}
     </div>
   );
 };

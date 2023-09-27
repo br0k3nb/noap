@@ -97,7 +97,9 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       else editor.setEditable(true);
     }, [readMode]);
 
-    const editorHeight = currentScreenSize.width > 640 ? currentScreenSize.height - 100 : currentScreenSize.height - 65;
+    const editorHeight = currentScreenSize.width > 640 ? 
+      readMode ? currentScreenSize.height - 55 : currentScreenSize.height - 100
+      : currentScreenSize.height - 65;
 
     const tweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
     const noteTextCondition = tweentyPercentMarginOfScreen < 1001 ? tweentyPercentMarginOfScreen : 1000;
@@ -196,8 +198,6 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
             {/* <AutocompletePlugin /> */}
             {/* <PollPlugin /> */}
             {/* <MarkdownShortcutPlugin /> */}
-            {/* <LexicalClickableLinkPlugin />
-            <ClickableLinkPlugin /> */}
             <CodeHighlightPlugin />
             <TwitterPlugin />
             <YouTubePlugin />

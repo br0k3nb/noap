@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState } from "react";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -12,10 +12,10 @@ import PlaygroundNodes from "./nodes/PlaygroundNodes";
 import { TableContext } from "./plugins/TablePlugin";
 import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 
+import useRefetch from "../../../../hooks/useRefetch";
 import useSelectedNote from "../../../../hooks/useSelectedNote";
 
 import { toastAlert } from "../../../../components/Alert";
-import { RefetchCtx } from "../../../../context/RefetchCtx";
 
 import api from "../../../../services/api";
 
@@ -32,7 +32,7 @@ export default function App({ noteData }: Props): JSX.Element {
   const [saveSpinner, setSaveSpinner] = useState(false);
   
   const { selectedNote } = useSelectedNote();
-  const refetchNoteCtx = useContext(RefetchCtx);
+  const { fetchNotes } = useRefetch();
   
   useEffect(() => { lastSelectedNotes.current = selectedNote }, [selectedNote]);
     
@@ -59,7 +59,7 @@ export default function App({ noteData }: Props): JSX.Element {
       }
       
       try {
-        if (currentState) {        
+        if (currentState) {
           const state = JSON.stringify(currentState);
           
           const compressState = pack({ state });
@@ -75,7 +75,7 @@ export default function App({ noteData }: Props): JSX.Element {
             }
           );
           
-          refetchNoteCtx?.fetchNotes();
+          fetchNotes();
           setSaveSpinner(false);
           
           toastAlert({ icon: "success", title: message, timer: 2000 });
