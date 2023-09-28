@@ -269,6 +269,7 @@ export default function Home() {
     dispatchLabels: dispatchLabels,
     pageLabel: labelsState.page,
     hasNextPageLabel: labelsState.hasNextPage,
+    refetchNoteData: fetchSelectedNoteData,
     searchLabel: labelsState.search,
   };
 
@@ -299,6 +300,7 @@ export default function Home() {
           <div className="flex flex-row h-screen">
             <Notes {...notesProps}/>
               <RefetchContext 
+                fetchSelectedNote={fetchSelectedNoteData}
                 fetchNotes={fetchNotesMetadata} 
                 isFetching={isFetching}
               >

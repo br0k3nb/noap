@@ -67,7 +67,7 @@ export default function NoteDetails({
   setSelectedNoteData,
   noteDataIsFetching,
   dispatchPinNotes,
-  pinNotesState
+  pinNotesState,
 }: Props) {
   const { fetchNotes } = useRefetch();
   
@@ -356,10 +356,9 @@ export default function NoteDetails({
             </div>
           </Modal>
           <NoteInfoModal
-            note={note}
-            openNoteInfoModal={openNoteInfoModal}
-            pinNote={pinNote}
             readMode={readMode}
+            note={selectedNoteData}
+            openNoteInfoModal={openNoteInfoModal}
             setOpenNoteInfoModal={setOpenNoteInfoModal}
           />
 
@@ -390,9 +389,7 @@ export default function NoteDetails({
       ) : (noteDataIsFetching && getNoteIdInUrl) && (
         <div 
           className="h-screen flex flex-col items-center absolute top-[40%] mx-auto"
-          style={{
-            width: (innerWidth > 640 && !expanded) ? innerWidth - 440 : innerWidth
-          }}
+          style={{ width: (innerWidth > 640 && !expanded) ? innerWidth - 440 : innerWidth }}
         >
           <Loader 
             width={25}

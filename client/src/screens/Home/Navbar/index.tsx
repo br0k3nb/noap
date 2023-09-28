@@ -38,7 +38,7 @@ export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
   const auth = useAuth();
   const { navbar } = useNavbar();
   const { noteSettings: { expanded } } = useNoteSettings();
-  const { userData: { _id, settings: { theme }} } = useUserData();
+  const { userData: { settings: { theme } } } = useUserData();
 
   useUpdateViewport(setDeviceScreenSize, 500);
 
@@ -48,8 +48,7 @@ export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
   return (
     <div className={`${expanded && "hidden"}`}>
       <LabelModal 
-        open={openLabelModal} 
-        userId={ _id } 
+        open={openLabelModal}
         setOpen={setOpenLabelModal} 
         labels={labels}
       />
@@ -77,7 +76,10 @@ export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
             >
               <div className="flex items-center justify-center w-11 h-11 pb-1 mt-auto hover:text-gray-300 absolute top-6">
                 <div className="rounded-full border border-stone-400 dark:!border-[#424242] bg-[#e2e2e2] dark:!bg-[#242424] dark:hover:!bg-[#181818] hover:bg-[#d1d1d1] text-lg w-[2.75rem] h-[2.75rem] transition-all duration-500 ease-in-out">
-                  <img src={logoN} className={`h-5 w-5 mx-auto mt-[10.5px] ${theme !== 'dark' && "comp-picker"}`}/>
+                  <img 
+                    src={logoN} 
+                    className={`h-5 w-5 mx-auto mt-[10.5px] ${theme !== 'dark' && "comp-picker"}`}
+                  />
                 </div>
               </div>
               <div className="!bg-gray-600 h-1 w-1 rounded-full absolute top-[98px]"/>

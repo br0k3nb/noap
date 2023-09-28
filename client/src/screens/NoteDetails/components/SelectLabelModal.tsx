@@ -1,4 +1,4 @@
-import { useState, SetStateAction, Dispatch, useContext } from 'react';
+import { useState, SetStateAction, Dispatch } from 'react';
 import { FieldArrayWithId, FieldValues, UseFormRegister, UseFormHandleSubmit } from 'react-hook-form';
 
 import { BsSearch, BsFilter } from 'react-icons/bs';
@@ -8,10 +8,10 @@ import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-ico
 
 import api from '../../../services/api';
 
+import useRefetch from '../../../hooks/useRefetch';
 import useLabel from '../../../hooks/useLabel';
 
 import { toastAlert } from '../../../components/Alert';
-import { RefetchCtx } from '../../../context/RefetchCtx';
 import SvgLoader from '../../../components/SvgLoader';
 import Modal from '../../../components/Modal';
 
@@ -28,17 +28,18 @@ type Props = {
 }
 
 export default function SelectLabelModal({ labels, checked, setChecked, isFetching, selectedNote, register, handleSubmit }: Props) {
-    const refetch = useContext(RefetchCtx);
-
+    
     const [showLoader, setShowLoader] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
-
+    
     const { 
         dispatchLabels,
         searchLabel, 
         pageLabel, 
         hasNextPageLabel 
     } = useLabel();
+
+    const { fetchNotes, fetchSelectedNote } = useRefetch();
 
     const addLabel = async (data: FieldValues) => {
         setShowLoader(true);
@@ -56,8 +57,10 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
             const { data: { message } } = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
             toastAlert({ icon: "success", title: message, timer: 2000 });
-            await refetch?.fetchNotes();
             setShowLoader(false);
+
+            fetchNotes();
+            if(fetchSelectedNote) fetchSelectedNote();
         } catch (err: any) {
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
             setShowLoader(false);

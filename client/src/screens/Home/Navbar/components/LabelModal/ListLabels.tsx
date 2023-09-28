@@ -172,7 +172,10 @@ export default function ListLabels({
                 </div>
             </div>
             <div className="flex justify-center items-center border border-transparent border-t-gray-600">
-                <button  className='text-sm uppercase rounded-full mt-5' onClick={() => onAddNewLabelClick()}>
+                <button 
+                    className='text-sm uppercase rounded-full mt-5' 
+                    onClick={() => onAddNewLabelClick()}
+                >
                     <span className='px-6 py-1 rounded-full transition-all duration-500 border border-transparent hover:text-[15px]'>
                         Add a new label
                     </span>

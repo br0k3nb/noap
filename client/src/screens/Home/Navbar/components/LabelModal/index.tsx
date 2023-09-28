@@ -16,9 +16,8 @@ import api from '../../../../../services/api';
 type Props = {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
-    userId: string;
     labels: FieldArrayWithId<Labels, "labels", "id">[];
-}
+};
 
 type Label = {
     _id: string;
@@ -28,9 +27,9 @@ type Label = {
     editName: string;
     outlined: string;
     default: string;
-}
+};
 
-export default function LabelModal({ open, setOpen, userId, labels }: Props) {
+export default function LabelModal({ open, setOpen, labels }: Props) {
     const [loader, setLoader] = useState(false);
     const [color, setColor] = useState("#0e63b9");
     const [fontColor, setFontColor] = useState("#ffffff");
@@ -106,12 +105,12 @@ export default function LabelModal({ open, setOpen, userId, labels }: Props) {
             if(fetchLabels) fetchLabels();
         } catch (err: any) {
             setLoader(false);
-            toastAlert({ icon: 'error', title: `${err.message}`, timer: 3000 });
+            toastAlert({ icon: 'error', title: err.message, timer: 3000 });
         }
     };
 
     const resetLabelInfoToEdit = (label: FieldArrayWithId<Labels, "labels", "id">) => {
-        const { _id, name, color, fontColor }: any = labels?.find(({_id}) => _id === label._id);
+        const { _id, name, color, fontColor }: any = labels.find(({_id}) => _id === label._id);
         
         reset({ editName: name });
         setEditId(_id);

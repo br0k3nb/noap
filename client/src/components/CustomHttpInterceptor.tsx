@@ -22,7 +22,8 @@ const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
             response => response,
             error => {
                 const errorStatus = error?.response?.status;
-            
+                const errorMessage = error?.response?.data?.message as string
+
                 if ((errorStatus >= 500 && errorStatus <= 599)){
                     //(500 - 599) = Server error responses
                     return Promise.reject({ message: "Server error, please try again or later" });
@@ -31,8 +32,12 @@ const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
                 if(error?.code === "ERR_NETWORK") {
                     return Promise.reject({ message: "Connection to server failed, please verify your internet connection" });
                 }
-
-                auth.signOut();
+                
+                if(errorMessage && 
+                    (errorMessage.startsWith("Authentication") ||
+                    errorMessage.startsWith("Access") ||
+                    errorMessage.startsWith("Session"))
+                ) auth.signOut();
 
                 return Promise.reject(error?.response?.data);
             },

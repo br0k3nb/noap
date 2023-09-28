@@ -24,7 +24,7 @@ type BottomBarProps = {
 
 export default function BottomBar({ save, editor, saveSpinner, note, currentScreenSize } : BottomBarProps) {
     const { noteSettings: { showBottomBar } } = useNoteSettings();
-    const { fetchNotes } = useRefetch();
+    const { fetchNotes, fetchSelectedNote } = useRefetch();
   
     const [open, setOpen] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
@@ -33,12 +33,14 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
     const deleteLabel = async (labelId: string) => {
       setShowLoader(true);
       try {
-        const deleteLabel = await api.delete(`/note/delete/label/${labelId}/${note._id}`);
-        toastAlert({ icon: "success", title: `${deleteLabel.data.message}`, timer: 2000 });
+        const { data: { message } } = await api.delete(`/note/delete/label/${labelId}/${note._id}`);
+        toastAlert({ icon: "success", title: message, timer: 2000 });
 
-        await fetchNotes();
         setShowLoader(false);
         setLabelToDelete("");
+
+        if(fetchSelectedNote) fetchSelectedNote();
+        fetchNotes();
       } catch (err: any) {
         toastAlert({ icon: "error", title: err.message, timer: 2000 });
         setLabelToDelete("");
@@ -48,10 +50,12 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
   
     const deleteAllLabels = async () => {
       try {
-        const deleteLabels = await api.delete(`/note/delete-all/label/${note._id}`);
-        toastAlert({ icon: "success", title: `${deleteLabels.data.message}`, timer: 2000 });
-        fetchNotes();
+        const { data: { message } } = await api.delete(`/note/delete-all/label/${note._id}`);
+        toastAlert({ icon: "success", title: message, timer: 2000 });
         setOpen(false);
+
+        if(fetchSelectedNote) fetchSelectedNote();
+        fetchNotes();
       } catch (err: any) {
         console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 2000 });
@@ -78,36 +82,25 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                   </div>
                 </label>
                 <ul 
-                  tabIndex={0} 
-                  className="dropdown-content menu shadow rounded-box w-60 bg-[#d9dbde] dark:!bg-[#1c1d1e] !z-50 border border-gray-600"
+                  tabIndex={0}
+                  className="!pr-1 rounded-box !z-50 dropdown-content menu shadow bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500"
                 >
-                  <li>
-                    <button
-                      className="bg-[#ffffff] text-xs uppercase tracking-widest py-4 active:bg-gray-500 hover:text-red-600 disabled:dark:hover:text-gray-300 disabled:hover:text-gray-900 transition-all duration-500 ease-in-out disabled:cursor-not-allowed dark:!bg-[#1c1d1e] disabled:dark:!bg-[#323232]"
-                      disabled={(!note?.labels || note?.labels.length === 0) && true}
-                      onClick={() => setOpen(true)}
-                    >
-                      <div className="flex flex-row space-x-2">
-                        <p className="py-1 text-xs uppercase tracking-widest">
-                          Detach all labels
-                        </p>
-                        <MdDeleteForever size={22} className="mt-[1px]"/>
-                      </div>
-                    </button>
-                  </li>
-                  {/* <li>
-                    <button
-                      className="text-xs uppercase tracking-widest py-4 active:bg-gray-500"
-                      onClick={() => setOpenLabelModal(true)}
-                    >
-                    <div className="flex flex-row space-x-2 ">
-                        <p className="py-1 text-xs uppercase tracking-widest">
-                          Add new label 
-                        </p>
-                        <MdNewLabel size={22} className="mt-[1px] rotate-180"/>
-                      </div>
-                    </button>
-                  </li> */}
+                  <div className="pr-2 !w-[220px] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500">
+                    <li>
+                      <button
+                        className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040] disabled:cursor-not-allowed disabled:!opacity-40 disabled:bg-inherit"
+                        disabled={(!note?.labels || note?.labels.length === 0) && true}
+                        onClick={() => setOpen(true)}
+                      >
+                        <div className="flex flex-row space-x-2 text-gray-900 dark:text-gray-300">
+                          <p className="py-1 text-xs uppercase tracking-widest">
+                            Detach all labels
+                          </p>
+                          <MdDeleteForever size={22} className="mt-[1px]"/>
+                        </div>
+                      </button>
+                    </li>
+                  </div>
                 </ul>
               </div>
             </div>  
@@ -118,7 +111,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 width: currentScreenSize < 1280 ? editorWidth - 150 : editorWidth - 270
               }}
             >
-              {note?.labels && note?.labels.length > 0 && (
+              {note.labels.length > 0 && (
                 <>
                   {note.labels.map((val: any, idx: number) => {
                     const { color, fontColor, name, _id, type } = val;
@@ -135,7 +128,12 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                                   {name.length > 30 ? name.slice(0, 30) + '...' : name.slice(0, 30)}
                                 </p>
                                 <div 
-                                  className={`${(showLoader && labelToDelete === _id) ? "tooltip tooltip-open tooltip-right" : "tooltip tooltip-right"}`} 
+                                  className={`
+                                    ${(showLoader && labelToDelete === _id) ? 
+                                      "tooltip tooltip-open tooltip-right tooltip-right-color-controller" 
+                                      : "tooltip tooltip-right tooltip-right-color-controller"
+                                    }
+                                  `} 
                                   data-tip={`${(showLoader && labelToDelete === _id) ? "Detaching..." : "Detach"}`}
                                 >
                                   <BsXLg 

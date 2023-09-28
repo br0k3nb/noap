@@ -334,7 +334,7 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
                                         {labelArraySize > 1 && (
                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
                                             <p className="text-[9px] ml-[4.5px] mt-[4px]">
-                                                {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize)}
+                                                {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize - 1)}
                                             </p>
                                         </div>
                                         )}
@@ -350,7 +350,7 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
                                         {labelArraySize > 1 && (
                                         <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
                                             <p className="text-[9px] ml-[4.5px] mt-[4px]">
-                                                {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize)}
+                                                {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize - 1)}
                                             </p>
                                         </div>
                                         )}
