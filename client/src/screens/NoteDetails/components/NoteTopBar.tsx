@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { UseFormReset, FieldValues, FieldArrayWithId, UseFieldArrayRemove, UseFieldArrayAppend } from 'react-hook-form';
 import { Link } from "react-router-dom";
 
@@ -15,7 +15,8 @@ import {
   BsPeopleFill,
   BsArrowDown,
   BsArrowUp,
-  BsFillPinAngleFill
+  BsFillPinAngleFill,
+  BsFillFileEarmarkImageFill
 } from "react-icons/bs";
   
 import { IoMdColorPalette } from 'react-icons/io';
@@ -24,6 +25,7 @@ import { BiRename } from 'react-icons/bi';
 import useNoteSettings from "../../../hooks/useNoteSettings";
 import useGetUrl from "../../../hooks/useGetUrl";
 
+import NoteImageModal from './NoteImageModal';
 import { toastAlert } from "../../../components/Alert";
 import api from "../../../components/CustomHttpInterceptor";
 
@@ -80,6 +82,7 @@ export default function NoteTopBar({
   handleToggleBottomBar,
   setOpenChangeNoteBackgroundModal,
 }: NoteDropdownType) {
+    const [openNoteImageModal, setOpenNoteImageModal] = useState(false);
     const { noteSettings: { expanded }, setNoteSettings } = useNoteSettings();
 
     const getUrlWithoutNoteId = useGetUrl({
@@ -157,8 +160,13 @@ export default function NoteTopBar({
         }
     };
 
-    return (        
-        <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
+  return (
+    <>
+      <NoteImageModal
+        open={openNoteImageModal}
+        setOpen={setOpenNoteImageModal}
+      />
+      <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
           <div className="flex flex-row mb-1 mt-1"> 
             <div
               className="tooltip tooltip-right tooltip-right-color-controller"
@@ -372,7 +380,24 @@ export default function NoteTopBar({
                           </div>
                         </label>
                       </a>
-                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none"/>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none" />
+                      <a
+                        className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                        onClick={() => setOpenNoteImageModal(true)}
+                      >
+                        <label
+                          htmlFor="my-modal-4"
+                          className="text-gray-900 dark:text-gray-300 cursor-pointer"
+                        >
+                          <div className="flex flex-row space-x-2">
+                            <p className="py-2 text-xs uppercase tracking-widest">
+                              Change note image
+                            </p>
+                            <BsFillFileEarmarkImageFill size={20} className="my-auto" />
+                          </div>
+                        </label>
+                      </a>
+                      <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none" />
                       <a
                         className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                         onClick={() => setOpen(true)}
@@ -395,5 +420,6 @@ export default function NoteTopBar({
             </div>
           </div>
         </div>
-    )
+    </>
+  )
 }

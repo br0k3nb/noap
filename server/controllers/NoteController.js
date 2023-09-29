@@ -452,4 +452,19 @@ export default {
             req.status(400).json({ message: err });
         }
     },
+    async changeNoteImage(res, req) {
+        try {
+            const { noteId } = res.params;
+            const { image } = res.body;
+
+            const getNoteData = await Note.findById(noteId);
+
+            await Note.findByIdAndUpdate({ _id: noteId }, { image });
+
+            return req.status(200).json({ message: "Updated!" });
+        } catch (err) {
+            console.log(err);
+            req.status(400).json({ message: err });
+        }
+    },
 }
