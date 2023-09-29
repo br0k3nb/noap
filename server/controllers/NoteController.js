@@ -457,8 +457,6 @@ export default {
             const { noteId } = res.params;
             const { image } = res.body;
 
-            const getNoteData = await Note.findById(noteId);
-
             await Note.findByIdAndUpdate({ _id: noteId }, { image });
 
             return req.status(200).json({ message: "Updated!" });
