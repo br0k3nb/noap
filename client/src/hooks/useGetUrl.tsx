@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 type Props = {
     options: {
@@ -38,72 +38,58 @@ export default function useGetUrl({ options }: Props) {
     if(incrementPage && decrementPage) {
         throw new Error("IncrementPage and decrementPage are mutually exclusive");
     }
-
-    const location = useLocation();
     
-    const findNoteIdInURL = new RegExp(`note\/(.*)`);
-    const findSearchQueryInURL = new RegExp(`search\/(.*)`);
-    const findPageInURL = new RegExp(`notes\/page\/([0-9]+)`);
+    const { noteId, page: pageNumber, search } = useParams();
 
-    const pageInUrl = findPageInURL.exec(location.pathname) as Array<string>;
-    const getNoteIdInURL = findNoteIdInURL.exec(location.pathname);
-    const getSearchInUrl = findSearchQueryInURL.exec(location.pathname);
+    const page = pageNumber ? parseInt(pageNumber) : 1;
+    const baseUrl = "notes/page/";
 
-    if(getNoteIdInUrl) return getNoteIdInURL ? getNoteIdInURL[1] : '';
-    if(getSearchQueryInUrl) return getSearchInUrl ? getSearchInUrl[1] : '';
-
-    const baseUrlWithoutPageNumber = pageInUrl[0].slice(0, 11);
-    let pageNumber = parseInt(pageInUrl[1]);    
-
-    if(getPageInUrl) return pageNumber ? pageNumber : 1;
+    if(getNoteIdInUrl) return noteId ? noteId : '';
+    if(getSearchQueryInUrl) return search ? search : '';
+    if(getPageInUrl) return page;
 
     if(usePage && incrementPage) {
-        if(getNoteIdInURL && !removeNoteId) {
-            const noteId = getNoteIdInURL[0];
-
+        if(noteId && !removeNoteId) {
             if(absolutePath) {
-                return `/${baseUrlWithoutPageNumber + (++pageNumber) + "/" + noteId}`;    
+                return `/${baseUrl + (page + 1) + "/" + noteId}`;
             }
-            return `${baseUrlWithoutPageNumber + (++pageNumber) + "/" + noteId}`;
+            return `${baseUrl + (page + 1) + "/" + noteId}`;
         } 
 
         if(absolutePath) {
-            return `/${baseUrlWithoutPageNumber + (++pageNumber)}`; 
+            return `/${baseUrl + (page + 1)}`; 
         }
-        return `${baseUrlWithoutPageNumber + (++pageNumber)}`;
+        return `${baseUrl + (page + 1)}`;
     }
 
     if(usePage && decrementPage) {
-        if(getNoteIdInURL && !removeNoteId) {
-            const noteId = getNoteIdInURL[0];
-            
+        if(noteId && !removeNoteId) {
             if(absolutePath) {
-                return `/${baseUrlWithoutPageNumber + (--pageNumber) + "/" + noteId}`;    
+                return `/${baseUrl + (page - 1) + "/" + noteId}`;    
             }
-            return `${baseUrlWithoutPageNumber + (--pageNumber) + "/" + noteId}`;
+            return `${baseUrl + (page - 1) + "/" + noteId}`;
         }
         
         if(absolutePath) {
-            return `/${baseUrlWithoutPageNumber + (--pageNumber)}`; 
+            return `/${baseUrl + (page - 1)}`; 
         }
-        return `${baseUrlWithoutPageNumber + (--pageNumber)}`;
+        return `${baseUrl + (page - 1)}`;
     }
 
     if(!usePage) {
-        const customPageNumber = (goToPageNumber ? goToPageNumber : pageNumber);
+        const customPageNumber = (goToPageNumber ? goToPageNumber : page);
 
-        if(getNoteIdInURL && !removeNoteId) {
-            const noteId = getNoteIdInURL[0];
+        if(noteId && !removeNoteId) {
             if(absolutePath) {
-                return `/${baseUrlWithoutPageNumber + customPageNumber + "/" + noteId}`;
+                return `/${baseUrl + customPageNumber + "/" + noteId}`;
             }
-            return `${baseUrlWithoutPageNumber + customPageNumber + "/" + noteId}`;
+            return `${baseUrl + customPageNumber + "/" + noteId}`;
         }
 
         if(absolutePath) {
-            return `/${baseUrlWithoutPageNumber + customPageNumber}`; 
+            return `/${baseUrl + customPageNumber}`; 
         }
-        return `${baseUrlWithoutPageNumber + customPageNumber}`;
+        return `${baseUrl + customPageNumber}`;
     }
 
     return '';

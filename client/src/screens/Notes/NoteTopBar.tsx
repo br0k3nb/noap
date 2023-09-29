@@ -82,7 +82,8 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
         options: {
             usePage: true,
             incrementPage: true,
-            absolutePath: true
+            absolutePath: true,
+            removeNoteId: true
         }
     });
 
@@ -90,7 +91,8 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
         options: {
             usePage: true,
             decrementPage: true,
-            absolutePath: true
+            absolutePath: true,
+            removeNoteId: true
         }
     });
 
@@ -138,7 +140,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
                 className={`bg-[#f8f8f8] dark:bg-[#0f1011] px-6 pb-2 hidden ${showSearch && "!grid"}`}
             >
                 <input
-                    className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 dark:text-gray-300 text-gray-900 h-10 border !border-stone-400 dark:!border-[#404040] hover:!border-gray-600 shadow-none"
+                    className="sign-text-inputs bg-[#eeeff1] dark:bg-[#1c1d1e] dark:text-gray-300 text-gray-900 h-10 border !border-stone-400 dark:!border-[#404040] hover:!border-gray-600 shadow-none"
                     onChange={({currentTarget}) => onInputChange(currentTarget)}
                     placeholder="Search..."
                     value={search}
