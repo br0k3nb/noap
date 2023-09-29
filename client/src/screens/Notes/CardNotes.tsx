@@ -366,7 +366,11 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
                 {image !== '' && (
                     <img 
                         src={image}
-                        className={`mt-3 rounded-b-[6.5px] object-cover !h-[3.49rem] ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[164px] xxs:!w-[9.98rem]"} xxs:!h-[3.52rem] min-w-[98.9%]`}
+                        className={`
+                            ${selectedNote === _id && "!border-black dark:!border-[#626262]"}
+                            ${customWidth ? "w-[9.1rem] xxs:!w-[8.88rem]" : "w-[164px] xxs:!w-[9.98rem]"}
+                            border border-b-0 border-r-0 border-l-0 dark:border-t-[#2f2f2f] border-t-[#d6d3d1] mt-3 rounded-b-[6.5px] object-cover !h-[3.49rem] xxs:!h-[3.52rem] min-w-[98.9%]
+                        `}
                     />
                 )}
             </div>
