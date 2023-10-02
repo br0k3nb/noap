@@ -93,7 +93,7 @@ export default function Lists({
                                         <div className={`mt-7 !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="mx-auto collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 hover:!border-gray-900 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="mx-auto collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg border-stone-300 hover:!border-[#404040] dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
@@ -107,12 +107,11 @@ export default function Lists({
                                                         type="checkbox"
                                                         onClick={() => setPinWasClicked(!pinWasClicked)}
                                                     />
-                                                    <div className="collapse-title">
-                                                        <div className="mt-2 mb-2 flex flex-row space-x-2 items-center justify-center">
-                                                            <p className="uppercase text-xs tracking-widest my-auto ml-8">
-                                                                Pinned notes
-                                                            </p>
-                                                            <div className="my-auto ">
+                                                    <div className="collapse-title !pr-20">
+                                                        <div className="mt-2 mb-2 flex flex-row space-x-2 justify-center items-center">
+                                                            <p className="uppercase text-xs tracking-widest my-auto">Pinned notes</p>
+                                                            <BsFillPinAngleFill />
+                                                            <div className="absolute right-20">
                                                                 {pinWasClicked ? (
                                                                     <MdOutlineKeyboardArrowDown 
                                                                         size={26} 
@@ -127,17 +126,19 @@ export default function Lists({
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="collapse-content">
-                                                        <div className="flex flex-row flex-wrap my-5 justify-center items-center">
+                                                    <div className="collapse-content !px-0 !mx-0">
+                                                        <div className="flex flex-row flex-wrap my-5">
                                                             {pinnedNotes.map((pinnedNotes, idx) => {
                                                                 return (
                                                                     <Cards  
                                                                         key={pinnedNotes._id}
                                                                         idx={idx}
-                                                                        note={pinnedNotes}
-                                                                        customWidth={"!w-[300px] !border-r-[1px] !border-l-[1px]"}
-                                                                        handleNoteClick={handleNoteClick}
                                                                         days={days}
+                                                                        note={pinnedNotes}
+                                                                        handleNoteClick={handleNoteClick}
+                                                                        customBodyWidth={"!w-[70vw] md:!w-[70vw] xl:!w-[210px] lg:!w-[210px] xxs:!w-[70vw]"}
+                                                                        customWidth={"!w-[90vw] sm:!w-[84vw] md:!w-[89vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen"}
+                                                                        customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[120px] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
                                                                     />
                                                                 )
                                                             })} 
@@ -177,7 +178,7 @@ export default function Lists({
                                                                     handleNoteClick={handleNoteClick}
                                                                     customBodyWidth={"!w-[70vw] md:!w-[70vw] xl:!w-[210px] lg:!w-[210px] xxs:!w-[70vw]"}
                                                                     customWidth={"!w-[92vw] sm:!w-[93vw] md:!w-[94vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen"}
-                                                                    customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[30vw] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
+                                                                    customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[110px] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
                                                                 />
                                                             )
                                                         })} 
@@ -220,7 +221,7 @@ export default function Lists({
                                                 handleNoteClick={handleNoteClick}
                                                 customBodyWidth={"!w-[70vw] md:!w-[70vw] xl:!w-[210px] lg:!w-[210px] xxs:!w-[70vw]"}
                                                 customWidth={"!w-[92vw] sm:!w-[93vw] md:!w-[94vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen"}
-                                                customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[30vw] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
+                                                customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[130px] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
                                             />
                                         )  
                                     })}
