@@ -42,6 +42,10 @@ export default new mongoose.Schema({
             type: String,
             required: false,
         },
+        noteVisualization: {
+            type: String,
+            required: false,
+        },
         theme: {
             type: String,
             required: false,

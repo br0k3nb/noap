@@ -26,6 +26,7 @@ router.patch("/convert/account/google", UserController.convertIntoGoogleAccount)
 router.patch("/settings/change-theme/:id", verifyUser, UserController.changeAppTheme);
 router.post("/settings/note-text/:id", verifyUser, UserController.noteTextExpandedOrCondensed);
 router.post("/settings/pin-notes-folder/:id", verifyUser, UserController.showPinnedNotesInFolder);
+router.patch("/settings/note-visualization/:id", verifyUser, UserController.changeNoteVisualization);
 router.patch("/settings/global-note-background-color/:id", verifyUser, UserController.changeGlobalNoteBackgroundColor);
 
 //Sessions

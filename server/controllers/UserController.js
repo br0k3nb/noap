@@ -719,4 +719,24 @@ export default {
             req.status(400).json({ message: err });
         }
     },
+    async changeNoteVisualization(res, req) {
+        try {
+            const { id } = res.params;
+            const { visualization } = res.body;
+
+            const getUserData = await User.findById(id);
+
+            await User.findByIdAndUpdate({ _id: id }, {
+                settings: {
+                    ...getUserData.settings,
+                    noteVisualization: visualization
+                }
+            });
+
+            return req.status(200).json({ message: "Updated!" })
+        } catch (err) {
+            console.log(err);
+            req.status(400).json({ message: err });
+        }
+    },
 }
