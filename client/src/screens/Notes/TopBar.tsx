@@ -1,7 +1,9 @@
 import { useState, Dispatch } from "react";
 import { Link } from "react-router-dom";
+
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { LiaThListSolid } from 'react-icons/lia';
 
 import useGetUrl from "../../hooks/useGetUrl";
 import useNavbar from "../../hooks/useNavbar";
@@ -124,12 +126,21 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
                             <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Search">
                                 <button 
                                     type="button"
-                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-1 py-1 rounded"
+                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[7px] py-2 rounded"
                                     onClick={() => handleSearchClick()}
                                 >
-                                    <BsSearch size={25} className="py-1" />
+                                    <BsSearch size={18} />
                                 </button>
                             </div>
+                            {/* <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Note visualization">
+                                <button 
+                                    type="button"
+                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-[6px] rounded"
+                                    onClick={() => handleSearchClick()}
+                                >
+                                    <LiaThListSolid size={22} />
+                                </button>
+                            </div> */}
                         </div>
                     </div>
                 </div>

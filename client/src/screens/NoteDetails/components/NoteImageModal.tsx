@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
+import { FieldArrayWithId } from "react-hook-form";
 
 import Compressor from 'compressorjs';
 import imageCompression from 'browser-image-compression';
@@ -13,17 +14,24 @@ import { toastAlert } from "../../../components/Alert";
 import api from "../../../components/CustomHttpInterceptor";
 
 type NoteInfoModalType = {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  notes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[];
+  pinNotes: FieldArrayWithId<NoteMetadata, "noteMetadata", "id">[]
 };
 
-export default function NoteInfoModal({ open, setOpen }: NoteInfoModalType) {
+export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteInfoModalType) {
     const { fetchNotes } = useRefetch();
     const { selectedNote } = useSelectedNote();
 
     const [image, setImage] = useState("");
     const [loader, setLoader] = useState(false);
   
+    const note = notes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
+    const pinNote = pinNotes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
+
+    const { image: currentImage } = note ? note : pinNote || {};
+
     const loadImage = (files: FileList | null) => {
       if(files && files[0].size <= 5006613 && files[0].type.startsWith("image")) { //aprox 5mb
         setLoader(true);
@@ -74,6 +82,22 @@ export default function NoteInfoModal({ open, setOpen }: NoteInfoModalType) {
         }
     };
 
+    const handleDeleteImage = async () => {
+      try {
+        setLoader(true);
+
+        await api.post(`/note/image/${selectedNote}`, { image: "" });
+        toastAlert({ icon: "success", title: `Image updated!`, timer: 3000 });
+
+        fetchNotes();
+      } catch (err: any) {
+        console.log(err);
+        toastAlert({ icon: "error", title: err.message, timer: 3000 });
+      } finally {
+        setLoader(false);
+      }
+    };
+
     return (
         <Modal
             open={open}
@@ -93,17 +117,28 @@ export default function NoteInfoModal({ open, setOpen }: NoteInfoModalType) {
                 />
             </div>
             <div className="w-[320px] xxs:w-[275px] mx-auto mt-5">
-                <button 
-                    className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
-                    disabled={(!image && !loader) && true}
-                    onClick={() => {
-                        if(!loader) handleImage();
-                    }}
-                >
-                    {loader ? (
-                        <p className="animate-pulse text-gray-300">Loading...</p>
-                    ) : "Confirm"}
-                </button>
+              <button 
+                  className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
+                  disabled={(!image && !loader) && true}
+                  onClick={() => {
+                      if(!loader) handleImage();
+                  }}
+              >
+                  {loader ? (
+                      <p className="animate-pulse text-gray-300">Loading...</p>
+                  ) : "Confirm"}
+              </button>
+              <button 
+                  className="mt-1 mb-3 text-white rounded-full bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
+                  disabled={(!currentImage && !loader) && true}
+                  onClick={() => {
+                    if(!loader) handleDeleteImage();
+                  }}
+              >
+                  {loader ? (
+                      <p className="animate-pulse text-gray-300">Loading...</p>
+                  ) : "Delete current image"}
+              </button>
             </div>
         </Modal>
     )

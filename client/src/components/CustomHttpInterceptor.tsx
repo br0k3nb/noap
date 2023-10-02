@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ReactNode, useEffect } from 'react'
+import { useEffect } from 'react'
 import useAuth from '../hooks/useAuth';
 
 // const api = axios.create({ baseURL: ` http://localhost:3001/` });

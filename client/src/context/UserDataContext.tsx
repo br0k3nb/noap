@@ -12,6 +12,7 @@ type UserDataType = {
       showPinnedNotesInFolder?: boolean;
       noteBackgroundColor?: string;
       noteTextExpanded?: boolean;
+      noteVisualization?: string;
       language?: string;
       theme: string;
     }

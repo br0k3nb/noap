@@ -18,7 +18,7 @@ import {
   BsFillPinAngleFill,
   BsFillFileEarmarkImageFill
 } from "react-icons/bs";
-  
+
 import { IoMdColorPalette } from 'react-icons/io';
 import { BiRename } from 'react-icons/bi';
 
@@ -163,6 +163,8 @@ export default function NoteTopBar({
   return (
     <>
       <NoteImageModal
+        notes={notes}
+        pinNotes={pinNotes}
         open={openNoteImageModal}
         setOpen={setOpenNoteImageModal}
       />

@@ -299,7 +299,7 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
         >
             <div 
                 className={`
-                    text-gray-900 dark:text-gray-300 rounded-lg h-[18.4rem] border border-stone-300 dark:border-[#323232] bg-[#ffffff] dark:bg-[#181818] pt-3 shadow-lg hover:shadow-gray-400 dark:shadow-transparent hover:border transition duration-300 dark:hover:border-gray-500
+                    text-gray-900 dark:text-gray-300 rounded-lg h-[18.4rem] border border-stone-300 dark:border-[#323232] bg-[#ffffff] hover:bg-[#f3f3f3] dark:hover:!bg-[#202020] dark:bg-[#181818] pt-3 shadow-lg hover:shadow-gray-400 dark:shadow-transparent hover:border transition duration-300 dark:hover:border-gray-500
                     ${selectedNote === _id && "!border-black dark:!border-[#626262]"}
                     ${customWidth ? customWidth : "w-[165px] xxs:!w-[159.5px]"}
                 `}

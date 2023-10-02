@@ -1,8 +1,9 @@
 import { useState, Dispatch } from "react";
 import { FieldArrayWithId } from "react-hook-form";
 
-import NoteTopBar from "./NoteTopBar";
+import NoteTopBar from "./TopBar";
 import CardNotes from "./CardNotes";
+import Lists from "./Lists";
 
 import useNoteSettings from "../../hooks/useNoteSettings";
 
@@ -10,6 +11,7 @@ import "moment/locale/pt-br";
 
 import type { notesState, notesActions } from '../../reducers/noteReducer';
 import type { pinnedNotesActions,  pinnedNotesState } from "../../reducers/pinNoteReducer";
+import useUserData from "../../hooks/useUserData";
 
 type Props = {
     pinNotesState: pinnedNotesState;
@@ -55,6 +57,8 @@ export default function Notes({
         delayedSearch
     };
 
+    const { userData: { settings: { noteVisualization } } } = useUserData();
+
     return (
         <div 
             className={`
@@ -63,7 +67,12 @@ export default function Notes({
             `}
         >
             <NoteTopBar {...navTopBarProps} />
-            <CardNotes {...cardNotesProps} />
+            
+            {!noteVisualization || noteVisualization === "cards" ? (
+                <CardNotes {...cardNotesProps} />
+            ): (
+                <Lists {...cardNotesProps} />
+            )}
         </div>
     );
 }

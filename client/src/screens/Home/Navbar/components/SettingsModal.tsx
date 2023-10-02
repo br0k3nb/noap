@@ -28,9 +28,10 @@ export default function SettingsModal({ open, setOpen }: Props) {
             _id,
             googleAccount,
             settings: {
-                showPinnedNotesInFolder,
+                theme,
                 noteTextExpanded,
-                theme
+                noteVisualization,
+                showPinnedNotesInFolder,
             }
         }, 
         setUserData 
@@ -44,6 +45,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const [showThemeLoader, setShowThemeLoader] = useState(false);
     const [showOpenDoorIcon, setShowOpenDoorIcon] = useState(false);
     const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
+    const [showNoteVisualizationLoader, setShowNoteVisualizationLoader] = useState(false);
     const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
     const [openSessionModal, setOpenSessionModal] = useState(false);
     
@@ -57,7 +59,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 condition: !state
             });
 
-            setUserData((prevUserData: any) => {
+            setUserData(prevUserData => {
                 return {
                     ...prevUserData,
                     settings: {
@@ -84,7 +86,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 condition: !noteTextExpanded
             });
 
-            setUserData((prevUserData: any) => {
+            setUserData(prevUserData => {
                 return {
                     ...prevUserData,
                     settings: {
@@ -116,7 +118,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 if(!value.startsWith("dark") && htmlElementHasDarkClass) document.documentElement.classList.remove("dark");
                 else document.documentElement.classList.add("dark");
     
-                setUserData((prevUserData: any) => {
+                setUserData(prevUserData => {
                     return {
                         ...prevUserData,
                         settings: {
@@ -131,6 +133,33 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 toastAlert({ icon: 'error', title: err.message, timer: 3000 });
             } finally {
                 setShowThemeLoader(false);
+            }
+        }
+    };
+
+    const handleNoteVisualization = async (value: string) => {
+        if(value !== theme) {
+            setShowNoteVisualizationLoader(true);
+            try {
+                await api.patch(`/settings/note-visualization/${_id}`, {
+                    visualization: value
+                });
+    
+                setUserData(prevUserData => {
+                    return {
+                        ...prevUserData,
+                        settings: {
+                            ...prevUserData.settings,
+                            noteVisualization: value
+                        }
+                    }
+                });
+
+            } catch (err: any) {
+                console.log(err);
+                toastAlert({ icon: 'error', title: err.message, timer: 3000 });
+            } finally {
+                setShowNoteVisualizationLoader(false);
             }
         }
     };
@@ -178,6 +207,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
         customOnCloseFunction: handleCloseAccountSettingsModal
     };
 
+    console.log(innerHeight - 400)
     return (
         <>
             <AccountSettingsModal {...accSettingsModalProps} />
@@ -196,7 +226,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 title='Settings'
                 setOpen={setOpen}
                 options={{
-                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] max-h-[42rem] !px-0 overflow-y-hidden",
+                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] max-h-[41rem] !px-0 overflow-y-hidden",
                     titleWrapperClassName: "!px-6"
                 }}
             >
@@ -212,9 +242,10 @@ export default function SettingsModal({ open, setOpen }: Props) {
                         cancelButtonText: "Go back"
                     }}
                 />
+                
                 <div 
                     className="px-6 mt-5 mb-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500"
-                    style={{ height: innerWidth <= 640 ? innerHeight - 200 : innerHeight - 300 }}
+                    style={{ height: innerWidth <= 640 ? innerHeight - 200 : 520 }}
                 >
                     <div className="flex flex-col space-y-4">
                         <div className="flex flex-row space-x-2">
@@ -306,6 +337,21 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 className={`toggle ${showNTCLoader && "cursor-not-allowed"}`}
                                 onChange={() => handleNoteTextCondition()}
                             />
+                        </label>
+                        <label className="label tracking-widest !py-0 flex flex-col space-y-2 justify-start items-start !mt-[19px]">
+                            <p className='label-text uppercase text-xs xxs:!text-[11px] text-gray-900 dark:text-gray-300'>
+                                Note visualization
+                            </p>
+                            <select
+                                id='theme-selector'
+                                className="select select-ghost border border-transparent focus:outline-0 w-full transition-all duration-500 hover:!border-gray-500 px-5 !h-[40px] rounded-full !text-gray-900 dark:!text-gray-300 text-xs uppercase tracking-widest bg-[#dbdbdb] hover:bg-[#cacaca] dark:bg-[#32353b] dark:hover:!bg-[#222222]"
+                                onChange={(e) => handleNoteVisualization(e.target.value)}
+                                value={showNoteVisualizationLoader ? 'loader' : noteVisualization}
+                            >
+                                <option value={'cards'}>Cards</option>
+                                <option value={'fragments'}>Fragments</option>
+                                {showNoteVisualizationLoader && ( <option value={'loader'}>Loading...</option> )}
+                            </select>
                         </label>
                         <div className="flex flex-row space-x-2 !mt-8">
                             <MdDarkMode size={21} />
