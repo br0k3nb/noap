@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react"
 
 import { RiArrowGoBackFill } from "react-icons/ri";
+import { AiOutlineClose } from 'react-icons/ai';
 
 type Props = {
     open: boolean;
@@ -62,7 +63,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                         )}
                         <div className="flex flex-row justify-between space-x-2">
                             {(showGoBackButton && goBackButtonAction) && (
-                                <div className="tooltip tooltip-bottom before:bg-[#eeeff1] dark:before:bg-[#404040] before:border before:border-gray-900 before:text-gray-900 dark:before:border-gray-600 dark:before:text-gray-300" data-tip="Go back">
+                                <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px] before:text-[15px]" data-tip="Go back">
                                     <div 
                                         className="btn btn-sm btn-circle bg-[#ffffff] hover:bg-[#eeeff1] bg-inherit dark:hover:!bg-[#323232] border border-gray-600"
                                         onClick={() => goBackButtonAction()}
@@ -81,7 +82,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                         className={`btn btn-sm btn-circle text-gray-900 dark:text-gray-300 bg-[#ffffff] dark:!bg-[#404040] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                         onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                     >
-                                        ✕
+                                        <AiOutlineClose size={16} className="my-[7px]" />
                                     </label>
                                 </div>
                             ) : ( 
@@ -90,7 +91,7 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                     className={`transition-all duration-300 ease-in-out bg-[#ffffff] border border-gray-500 text-gray-900 dark:text-gray-300 btn btn-sm btn-circle bg-inherit hover:bg-[#eeeff1] dark:hover:!bg-[#323232] pb-[1px] ${closeButtonClassName && closeButtonClassName}`}
                                     onClick={() => onClose ? onClose() : setOpen && setOpen(false)}
                                 >
-                                    ✕
+                                    <AiOutlineClose size={16} className="my-[7px]"/>
                                 </label>
                             )} 
                         </div>

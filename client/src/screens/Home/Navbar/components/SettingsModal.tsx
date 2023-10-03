@@ -226,7 +226,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 title='Settings'
                 setOpen={setOpen}
                 options={{
-                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] max-h-[41rem] !px-0 overflow-y-hidden",
+                    modalWrapperClassName: "w-[25rem] xxs:!w-[21rem] !px-0 overflow-y-hidden",
                     titleWrapperClassName: "!px-6"
                 }}
             >
@@ -244,7 +244,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 />
                 
                 <div 
-                    className="px-6 mt-5 mb-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500"
+                    className="px-6 mt-5 mb-2 xxs:max-h-96 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"
                     style={{ height: innerWidth <= 640 ? innerHeight - 200 : 520 }}
                 >
                     <div className="flex flex-col space-y-4">

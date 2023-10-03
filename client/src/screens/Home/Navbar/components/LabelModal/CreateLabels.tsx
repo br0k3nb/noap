@@ -75,7 +75,7 @@ export default function CreateLabel({
     
 
     return (
-        <div className="mt-5">
+        <div className="mt-5 xxs:max-h-96 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
             <div className="px-6 mb-3">
                 <p className='text-lg tracking-tight font-light'>
                     Add a new label
@@ -131,7 +131,7 @@ export default function CreateLabel({
                                 {errors.name?.message as string}
                             </p>
                             <input
-                                className={`sign-text-inputs dark:bg-stone-900 border border-gray-600 shadow-none active:border ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
+                                className={`sign-text-inputs text-gray-900 dark:text-gray-300 bg-[#ffffff] border dark:border-[#404040] border-stone-400 dark:bg-[#1c1d1e] shadow-none active:border ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
                                 placeholder="Name"
                                 {...register("name", { required: "Name is required!" })}
                             />   
@@ -148,14 +148,7 @@ export default function CreateLabel({
                                     </button>
                                 </label>
                                 {showColorPicker === 'color' && (
-                                    <div 
-                                        className="absolute xxs:top-[16rem] xxs:left-[3rem] top-[14rem] left-[5.4rem] flex flex-col"
-                                        style={
-                                            selectedStyle === 'default' && innerWidth <= 639 ? { top: '18rem'}
-                                            : selectedStyle === 'default' && innerWidth > 639 ? { top: '16rem' }
-                                            : undefined
-                                        }
-                                    >
+                                    <div className="absolute xxs:!top-[14rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col">
                                         <HexColorPicker 
                                             color={color} 
                                             onChange={setColor} 
@@ -190,14 +183,7 @@ export default function CreateLabel({
                                     </label>
                                 )}
                                 {showColorPicker === 'fontColor' && (
-                                    <div 
-                                        className="absolute xxs:top-[18rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col"
-                                        style={
-                                            selectedStyle !== 'default' && innerWidth <= 639 ? { top: '16rem' }
-                                            : selectedStyle !== 'default' && innerWidth > 639 ? { top: '14rem' }
-                                            : undefined
-                                        }
-                                    >
+                                    <div className="absolute xxs:!top-[14rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col">
                                         <HexColorPicker 
                                             color={fontColor} 
                                             onChange={setFontColor} 
