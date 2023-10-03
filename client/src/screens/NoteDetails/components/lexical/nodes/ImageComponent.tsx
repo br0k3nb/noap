@@ -374,7 +374,7 @@ export default function ImageComponent({
                   </label>
                   <ul 
                     tabIndex={0} 
-                    className="dropdown-content menu shadow rounded-box w-[158px] bg-[#ffffff] dark:bg-[#181818] text-gray-900 border border-gray-900 dark:text-gray-300"
+                    className="dropdown-content menu shadow rounded-box w-[158px] bg-[#ffffff] dark:bg-[#181818] !text-gray-900 border border-gray-900"
                   >
                     {/* <li className="text-xs uppercase tracking-widest">
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move up</a>
@@ -384,11 +384,11 @@ export default function ImageComponent({
                     </li> */}
                     <li className="text-xs uppercase tracking-widest">
                       <a 
-                        className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
+                        className="hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
                         onClick={() => donwloadImage(src)}
                       >
-                        <div className="flex flex-row space-x-2">
-                          <span className="my-auto text-[11px]">Download</span>
+                        <div className="flex flex-row space-x-2 !text-gray-900 dark:!text-gray-300">
+                          <span className="my-auto text-[11px] text-inherit">Download</span>
                           <BsFillFileEarmarkArrowDownFill size={16}/>
                         </div>
                       </a>
@@ -398,7 +398,7 @@ export default function ImageComponent({
                         className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
                         onClick={() => setOpenFullscreenModal(true)}
                       >
-                        <div className="flex flex-row space-x-2">
+                        <div className="flex flex-row space-x-2 !text-gray-900 dark:!text-gray-300">
                           <span className="my-auto text-[11px]">Fullscreen</span>
                           <AiOutlineFullscreen size={20}/>
                         </div>
@@ -411,7 +411,7 @@ export default function ImageComponent({
                           className="active:!bg-gray-600 hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
                           onClick={() => setSelected(true)}
                         >
-                          <div className="flex flex-row space-x-2">
+                          <div className="flex flex-row space-x-2 !text-gray-900 dark:!text-gray-300">
                             <span className="my-auto text-[11px]">Delete</span>
                             <BsTrash size={16}/>
                           </div>

@@ -170,7 +170,7 @@ export default function SignIn() {
                     {svgLoader === "email" ? (
                       <SvgLoader options={{ showLoadingText: true }} />
                     ) : (svgLoader == "google" || svgLoader === "") && (
-                      <p className="items-center justify-center text-[15px] py-[2px] tracking-wide !text-gray-300">
+                      <p className="items-center justify-center text-[15px] py-[2px] tracking-wide !text-white">
                         Sign in with email
                       </p> 
                     )}

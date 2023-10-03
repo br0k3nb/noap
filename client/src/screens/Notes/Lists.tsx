@@ -2,7 +2,7 @@ import { useState, Dispatch } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
-import { BsFillPinAngleFill, BsJournalRichtext } from "react-icons/bs";
+import { BsFillPinAngleFill } from "react-icons/bs";
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md';
 
 import useGetUrl from "../../hooks/useGetUrl";
@@ -87,17 +87,17 @@ export default function Lists({
                 ) : (
                     <>
                         {notesMetadata.length > 0 ? (
-                            <div className="w-fit xxs:!w-screen lg:!w-[360px] mx-auto">
+                            <div className="w-fit xxs:!w-screen lg:!w-[360px]">
                                 {!delayedSearch && (pinnedNotes.length > 0 && page === 1) && (
                                     <>
-                                        <div className={`mt-7 !z-0`}>
+                                        <div className={`mt-5 !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="mx-auto collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg border-stone-300 hover:!border-[#404040] dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="py-2 collapse border border-l-0 border-r-0 border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-none border-stone-300 hover:!border-[#404040] dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
-                                                            ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
-                                                            : 358,
+                                                            ? (viewPort.width <= 640 ? viewPort.width : viewPort.width - 50)
+                                                            : 378,
                                                         zIndex: 0,
                                                         position: 'static'
                                                     }}
@@ -127,7 +127,7 @@ export default function Lists({
                                                         </div>
                                                     </div>
                                                     <div className="collapse-content !px-0 !mx-0">
-                                                        <div className="flex flex-row flex-wrap my-5">
+                                                        <div className="flex flex-row flex-wrap mt-5 mb-2">
                                                             {pinnedNotes.map((pinnedNotes, idx) => {
                                                                 return (
                                                                     <Cards  
@@ -137,12 +137,12 @@ export default function Lists({
                                                                         note={pinnedNotes}
                                                                         handleNoteClick={handleNoteClick}
                                                                         customBodyWidth={"!w-[70vw] md:!w-[70vw] xl:!w-[210px] lg:!w-[210px] xxs:!w-[70vw]"}
-                                                                        customWidth={"!w-[90vw] sm:!w-[84vw] md:!w-[89vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen"}
                                                                         customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[120px] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
+                                                                        customWidth={"!w-[90vw] sm:!w-[92vw] md:!w-[95vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen dark:!bg-[#181818] !bg-[#eeeff1] hover:!bg-[#dddddd] shadow-none"}
                                                                     />
                                                                 )
                                                             })} 
-                                                            <div className="flex flex-row items-center space-x-10 justify-center w-full mt-5">
+                                                            <div className="flex flex-row items-center space-x-10 justify-center w-full mt-7">
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinPage > 1 ? false : true}
@@ -162,7 +162,7 @@ export default function Lists({
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="xxs:px-2 mt-5">
+                                                <div className="xxs:px-2 mt-7 pl-0 pr-0 md:pr-5 lg:pr-0 lg:!pl-5 xl:!pl-5">
                                                     <div className="flex flex-row space-x-2 justify-center items-center">
                                                         <p className="uppercase text-xs tracking-widest">Pinned notes</p>
                                                         <BsFillPinAngleFill />
@@ -210,21 +210,23 @@ export default function Lists({
                                         </div>
                                     </>
                                 )}
-                                <div className="flex flex-row flex-wrap px-2 my-5 mb-36 justify-center items-center">
-                                    {notesMetadata.map((unpinnedNotes, idx) => {
-                                        return (
-                                            <Cards  
-                                                key={unpinnedNotes._id}
-                                                idx={idx}
-                                                days={days}
-                                                note={unpinnedNotes}
-                                                handleNoteClick={handleNoteClick}
-                                                customBodyWidth={"!w-[70vw] md:!w-[70vw] xl:!w-[210px] lg:!w-[210px] xxs:!w-[70vw]"}
-                                                customWidth={"!w-[92vw] sm:!w-[93vw] md:!w-[94vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen"}
-                                                customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[130px] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
-                                            />
-                                        )  
-                                    })}
+                                <div className="pl-0 pr-0 md:pr-5 lg:pr-0 lg:!pl-5 xl:!pl-5">
+                                    <div className="flex flex-row flex-wrap my-5 mb-36 justify-center items-center">
+                                        {notesMetadata.map((unpinnedNotes, idx) => {
+                                            return (
+                                                <Cards  
+                                                    key={unpinnedNotes._id}
+                                                    idx={idx}
+                                                    days={days}
+                                                    note={unpinnedNotes}
+                                                    handleNoteClick={handleNoteClick}
+                                                    customBodyWidth={"!w-[70vw] md:!w-[70vw] xl:!w-[210px] lg:!w-[210px] xxs:!w-[70vw]"}
+                                                    customWidth={"!w-[92vw] sm:!w-[93vw] md:!w-[94vw] xl:!w-[380px] lg:!w-[380px] xxs:!w-screen"}
+                                                    customImageWidth={"!w-[20px] sm:!w-[106px] md:!w-[130px] xl:!w-[120px] lg:!w-[120px] xxs:!w-[94px]"}
+                                                />
+                                            )  
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                             ) : (

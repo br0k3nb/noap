@@ -93,10 +93,10 @@ export default function CardNotes({
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="hover:!border-[#404040] collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="xxs:ml-0 ml-3 hover:!border-[#404040] collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
                                                     style={{
                                                         width: viewPort.width <= 1023 
-                                                            ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 115)
+                                                            ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 100)
                                                             : 344,
                                                         zIndex: 0,
                                                         position: 'static'
