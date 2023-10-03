@@ -77,7 +77,7 @@ export default function CardNotes({
 
     return (
         <div 
-            className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-500 !scrollbar-rounded overflow-x-hidden"
+            className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300 !scrollbar-rounded overflow-x-hidden"
         >
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">

@@ -81,7 +81,7 @@ export default function EditLabel({
     };
 
     return (
-        <div className="mt-5">
+        <div className="mt-5 xxs:max-h-96 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
             <div className="px-6 mb-3">
                 <p className='text-lg tracking-tight font-light'>Edit label</p>
             </div>
@@ -95,7 +95,10 @@ export default function EditLabel({
                         onClick={() => setSelectedStyle('default')}
                     />
                     <div className="ml-6">
-                        <div className="badge badge-accent !py-3 uppercase text-xs tracking-widest" style={{ backgroundColor: color, borderColor: color, color: fontColor }}>
+                        <div 
+                            className="badge badge-accent !py-3 uppercase text-xs tracking-widest"
+                            style={{ backgroundColor: color, borderColor: color, color: fontColor }}
+                        >
                             first style
                         </div>
                     </div>
@@ -108,14 +111,19 @@ export default function EditLabel({
                         onClick={() => setSelectedStyle('outlined')}
                     />
                     <div className="ml-6">
-                        <div className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest" style={{ borderColor: color, color: color }}>
+                        <div
+                            className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest"
+                            style={{ borderColor: color, color: color }}
+                        >
                             second style
                         </div>
                     </div>
                 </div>
             </div>
             <div className="mt-6 !mb-0">
-                <p className='text-sm text-gray-500 !mb-4 uppercase tracking-widest px-6'>Now, enter the label details</p>
+                <p className='text-sm text-gray-500 !mb-4 uppercase tracking-widest px-6'>
+                    Now, enter the label details
+                </p>
                 <div className="mt-2 flex flex-col space-y-4">
                     <form noValidate onSubmit={handleSubmit(editLabel)}>
                         <div className="px-6">
@@ -123,7 +131,7 @@ export default function EditLabel({
                                 {errors.editName?.message as string}
                             </p>
                             <input
-                                className={`sign-text-inputs dark:bg-stone-900 shadow-none border border-gray-500 ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
+                                className={`sign-text-inputs text-gray-900 dark:text-gray-300 dark:bg-stone-900 shadow-none border dark:border-[#404040] border-stone-400 ${errors.name?.message && 'border border-red-600 focus:border-red-600 active:border-red-600'}`}
                                 placeholder="Name"
                                 {...register("editName", { required: "Name is required!" })}
                             />   
@@ -139,11 +147,7 @@ export default function EditLabel({
                                     </button>
                                 </label>
                                 {showColorPicker === 'color' && (
-                                    <div 
-                                        className="absolute xxs:top-[16rem] xxs:left-[3rem] top-[14rem] left-[5.4rem] flex flex-col"
-                                        style={ selectedStyle === 'default' && window.innerWidth <= 639 ? { top: '18rem' } 
-                                        : selectedStyle === 'default' && window.innerWidth > 639 ? { top: '16rem' } : undefined }
-                                    >
+                                    <div className="absolute xxs:!top-[14rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col">
                                         <HexColorPicker color={color} onChange={setColor} />
                                         <button 
                                             type="button"
@@ -172,13 +176,7 @@ export default function EditLabel({
                                     </label>
                                 )}
                                 {showColorPicker === 'fontColor' && (
-                                    <div 
-                                        className="absolute xxs:top-[18rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col"
-                                        style={ 
-                                            selectedStyle !== 'default' && window.innerWidth <= 639 ? { top: '16rem'}
-                                            : selectedStyle !== 'default' && window.innerWidth > 639 ? { top: '14rem' } : undefined
-                                        }
-                                    >
+                                    <div className="absolute xxs:!top-[14rem] xxs:left-[3rem] top-[16rem] left-[5.4rem] flex flex-col">
                                         <HexColorPicker color={fontColor} onChange={setFontColor} />
                                         <button 
                                             className='text-sm uppercase tracking-widest rounded-full mx-auto my-2 xxs:!mt-4' 

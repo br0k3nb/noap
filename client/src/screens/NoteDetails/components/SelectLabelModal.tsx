@@ -47,24 +47,21 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
         try {
             const labels = [];
 
-            for (const [key, value] of Object.entries(data)) value && labels.push(key);
-
-            if(!labels.length) {
-                setShowLoader(false);    
-                return toastAlert({ icon: "error", title: `Please, select a label!`, timer: 2000 });
-            };
+            for (const [key, value] of Object.entries(data)) {
+                value && labels.push(key);
+            }
 
             const { data: { message } } = await api.post(`/note/add/label`, { labels, noteId: selectedNote });
             
             toastAlert({ icon: "success", title: message, timer: 2000 });
-            setShowLoader(false);
 
             fetchNotes();
             if(fetchSelectedNote) fetchSelectedNote();
         } catch (err: any) {
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
-            setShowLoader(false);
             console.log(err);
+        } finally {
+            setShowLoader(false);
         }
     };
 
@@ -110,9 +107,9 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                             <BsFilter size={25}/> 
                         </div>
-                        <div className="tooltip tooltip-left text-gray-900 dark:text-gray-300 before:text-[15px]" data-tip="Search">
+                        <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px] before:text-[15px]" data-tip="Search">
                             <div 
-                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-gray-700 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-600 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer"
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
@@ -126,7 +123,7 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                     className={`bg-inhreit dark:!bg-[#0f1011] hidden ${showSearchBar && "!grid"} px-6`}
                 >
                     <input
-                        className="text-gray-900 dark:text-gray-300 sign-text-inputs shadow-none border !border-stone-300 bg-[#eeeff1] dark:bg-stone-900 dark:border-transparent active:border focus:border-gray-400 h-10 mb-2"
+                        className="text-gray-900 dark:text-gray-300 sign-text-inputs shadow-none bg-[#eeeff1] dark:bg-[#1c1d1e] border border-stone-400 dark:border-[#404040] h-10 mb-2"
                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                         placeholder="Search..."
                         value={searchLabel}
@@ -134,22 +131,31 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 </motion.div>
                 {isFetching ? <SvgLoader options={{ showLoadingText: true, wrapperClassName: "my-36" }} /> : labels.length > 0 ? (
                     <form onSubmit={handleSubmit(addLabel)}>
-                        <div className="flex flex-col mt-4 text-sm px-1 h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
+                        <div className="flex flex-col mt-4 text-sm px-1 h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin  scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
                             {labels.map((chip: any, idx: number) => {
                                 const { color, fontColor, name, _id, type } = chip;
                                 
                                 return (                                        
-                                    <div className={`flex justify-between px-6 ${idx === labels.length - 1 && "mb-5"}`} key={idx}>
+                                    <div 
+                                        key={idx}
+                                        className={`flex justify-between px-6 ${idx === labels.length - 1 && "mb-5"}`} 
+                                    >
                                         <div className="my-auto">
                                             {type === 'outlined' ? (
-                                                <div className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate" style={{ borderColor: color, color }}>
+                                                <div 
+                                                    className="badge badge-accent badge-outline !py-3 uppercase text-xs tracking-widest truncate" 
+                                                    style={{ borderColor: color, color }}
+                                                >
                                                     {(name.length > 24 && deviceScreenSize > 640) ? name.slice(0,24) + '...' 
-                                                    : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,17) + '...' : name}
+                                                    : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,15) + '...' : name}
                                                 </div>
                                             ) : (
-                                                <div className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate" style={{ backgroundColor:color, borderColor: color, color: fontColor }}>
+                                                <div 
+                                                    className="badge badge-accent !py-3 uppercase text-xs tracking-widest truncate" 
+                                                    style={{ backgroundColor:color, borderColor: color, color: fontColor }}
+                                                >
                                                     {(name.length > 24 && deviceScreenSize > 640) ? name.slice(0,24) + '...' 
-                                                    : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,17) + '...' : name}
+                                                    : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,15) + '...' : name}
                                                 </div>
                                             )}
                                         </div>
@@ -209,7 +215,9 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                 ) : (
                     <div className="flex flex-col space-y-4 items-center justify-center my-10 text-gray-500">
                         <AiFillTags size={60} className='!mt-5'/>
-                        <p className='text-gray-900 dark:text-gray-300 text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>No labels were found!</p>
+                        <p className='text-gray-900 dark:text-gray-300 text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>
+                            No labels were found!
+                        </p>
                     </div>
                 )}
             </div>

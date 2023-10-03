@@ -66,9 +66,9 @@ export default function ListLabels({
                         <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                             <BsFilter size={25}/> 
                         </div>
-                        <div className="tooltip tooltip-left before:text-[15px]" data-tip="Search">
+                        <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px] before:text-[15px]" data-tip="Search">
                             <div 
-                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-500 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-600 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
@@ -82,7 +82,7 @@ export default function ListLabels({
                     className={`hidden ${showSearchBar && "!grid"} px-6`}
                 >
                     <input
-                        className="sign-text-inputs bg-[#eeeff1] dark:bg-stone-900 border border-gray-600 h-10 mb-2 shadow-none"
+                        className="sign-text-inputs bg-[#eeeff1] dark:bg-[#1c1d1e] border border-stone-400 dark:border-[#404040] h-10 mb-2 shadow-none"
                         onChange={({currentTarget}) => onInputChange(currentTarget)}
                         placeholder="Search..."
                         value={searchLabel}
@@ -91,7 +91,7 @@ export default function ListLabels({
                 {isFetching ? (
                     <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} />
                 ) : !isFetching && labels.length ? (
-                    <div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900">
+                    <div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
                         {labels.map((label, idx: number) => {
                             const { color, fontColor, name, type } = label;
 
@@ -114,30 +114,28 @@ export default function ListLabels({
                                             : (name.length > 17 && deviceScreenSize <= 640) ? name.slice(0,17) + '...' : name}
                                         </div>
                                     )}
-                                    {/* <div className='tooltip tooltip-left xxs:before:bg-transparent' data-tip={ innerWidth > 640 ? "Actions" : "" }> */}
-                                        <div className="flex items-center justify-center cursor-pointer">
-                                            <div className="dropdown dropdown-left">
-                                                <label tabIndex={0} className='cursor-pointer'>
-                                                    <BsThreeDotsVertical size={16} onClick={() => setShowDropdown(idx)} /> 
-                                                </label>
-                                                <ul 
-                                                    tabIndex={0} 
-                                                    className="dropdown-content menu shadow rounded-box w-36 dark:!bg-[#17181b] border border-gray-600"
-                                                    style={idx !== showDropdown ? { display: 'none' }: undefined}
-                                                >
-                                                    <li className="text-xs uppercase tracking-widest">
-                                                        <a className="active:!bg-gray-600" onClick={() => resetLabelInfoToEdit(label)}>
-                                                            Edit label
-                                                        </a>
-                                                    </li>
-                                                    <li className="text-xs uppercase tracking-widest">
-                                                        <a id="delete" className="active:!bg-gray-600" onClick={() => openDeleteModal(label._id)}>
-                                                            Delete label
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        {/* </div> */}
+                                    <div className="flex items-center justify-center cursor-pointer">
+                                        <div className="dropdown dropdown-left">
+                                            <label tabIndex={0} className='cursor-pointer'>
+                                                <BsThreeDotsVertical size={16} onClick={() => setShowDropdown(idx)} /> 
+                                            </label>
+                                            <ul 
+                                                tabIndex={0} 
+                                                className="dropdown-content menu shadow rounded-box w-[150px] dark:!bg-[#17181b] bg-[#ffffff] border border-gray-600"
+                                                style={idx !== showDropdown ? { display: 'none' }: undefined}
+                                            >
+                                                <li className="text-xs uppercase tracking-widest">
+                                                    <a className="active:!bg-inherit" onClick={() => resetLabelInfoToEdit(label)}>
+                                                        Edit label
+                                                    </a>
+                                                </li>
+                                                <li className="text-xs uppercase tracking-widest">
+                                                    <a id="delete" className="active:!bg-inherit" onClick={() => openDeleteModal(label._id)}>
+                                                        Delete label
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             )
@@ -146,7 +144,9 @@ export default function ListLabels({
                 ) : (
                     <div className="flex flex-col space-y-4 items-center justify-center h-[12.8rem] text-gray-500">
                         <AiFillTags size={60} className='!mt-5'/>
-                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>No labels were found!</p>
+                        <p className='text-[13px] uppercase tracking-widest !mb-9 xxs:text-xs'>
+                            No labels were found!
+                        </p>
                     </div>
                 )}
             </div>

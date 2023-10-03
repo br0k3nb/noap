@@ -248,7 +248,7 @@ export default function NoteTopBar({
                 tabIndex={0}
                 className="!pr-1 rounded-box !z-50 dropdown-content menu shadow bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500"
               >
-                <div className="pr-2 !w-[200px] xxs:!h-64 h-96 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-500">
+                <div className="pr-2 !w-[200px] xxs:!h-64 h-96 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
                   <li>
                     <a
                       className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
