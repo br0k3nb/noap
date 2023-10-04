@@ -6,7 +6,7 @@
 <br>
 
 <div align="center">
-  <img src="https://github.com/br0k3nb/Noap-typescript/blob/master/client/src/assets/noap-09-10-23.gif">
+  <img src="https://github.com/br0k3nb/Noap-typescript/blob/master/src/assets/noap-09-10-23.gif">
 </div>
 <br>
 <br>
