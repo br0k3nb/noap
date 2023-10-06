@@ -207,7 +207,6 @@ export default function SettingsModal({ open, setOpen }: Props) {
         customOnCloseFunction: handleCloseAccountSettingsModal
     };
 
-    console.log(innerHeight - 400)
     return (
         <>
             <AccountSettingsModal {...accSettingsModalProps} />

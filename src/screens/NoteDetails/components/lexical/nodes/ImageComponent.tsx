@@ -151,7 +151,9 @@ export default function ImageComponent({
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
+      console.log("rwer9wqi");
       if (isSelected && $isNodeSelection($getSelection())) {
+        console.log("inside if");
         const event: KeyboardEvent = payload;
         event.preventDefault();
         const node = $getNodeByKey(nodeKey);
@@ -214,6 +216,7 @@ export default function ImageComponent({
     
     if((event.target as any)?.id && (event.target as any)?.id === 'delete') {
       const ev = new KeyboardEvent('keypress', { key: 'Delete', keyCode: 46 });
+      console.log("mouseCLick ev")
       onDelete(ev);
     }
 
@@ -364,6 +367,7 @@ export default function ImageComponent({
                     tabIndex={0}
                     className={`text-[11px] uppercase tracking-widest cursor-pointer`}
                     style={resizeBar ? { fontSize: 10, paddingTop: 1 }: undefined}
+                    onMouseEnter={() => setSelected(true)}
                   >
                     <div className="rounded-full py-1 pl-[1px]">
                       <BsThreeDotsVertical 
