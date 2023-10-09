@@ -25,7 +25,7 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
     const { selectedNote } = useSelectedNote();
 
     const [image, setImage] = useState("");
-    const [loader, setLoader] = useState(false);
+    const [loader, setLoader] = useState("");
   
     const note = notes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
     const pinNote = pinNotes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
@@ -34,7 +34,7 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
 
     const loadImage = (files: FileList | null) => {
       if(files && files[0].size <= 5006613 && files[0].type.startsWith("image")) { //aprox 5mb
-        setLoader(true);
+        setLoader("add");
         new Compressor(files[0], {      
           quality: 0.3,
           success: async (compressedResult) => {
@@ -48,7 +48,7 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
                 const reader = new FileReader();
                 reader.onload = async function () {
                   if (typeof reader.result === "string") {
-                    setLoader(false);
+                    setLoader("");
                     setImage(reader.result);
                   }
                   return "";
@@ -68,7 +68,7 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
 
     const handleImage = async () => {
         try {
-            setLoader(true);
+            setLoader("add");
 
             await api.post(`/note/image/${selectedNote}`, { image });
             toastAlert({ icon: "success", title: `Image updated!`, timer: 3000 });
@@ -78,13 +78,13 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
             console.log(err);
             toastAlert({ icon: "error", title: err.message, timer: 3000 });
         } finally {
-            setLoader(false);
+            setLoader("");
         }
     };
 
     const handleDeleteImage = async () => {
       try {
-        setLoader(true);
+        setLoader("delete");
 
         await api.post(`/note/image/${selectedNote}`, { image: "" });
         toastAlert({ icon: "success", title: `Image updated!`, timer: 3000 });
@@ -94,10 +94,10 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
         console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
       } finally {
-        setLoader(false);
+        setLoader("");
       }
     };
-
+    
     return (
         <Modal
             open={open}
@@ -119,24 +119,22 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
             <div className="w-[320px] xxs:w-[275px] mx-auto mt-5">
               <button 
                   className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
-                  disabled={(!image && !loader) && true}
+                  disabled={(!image || !!loader.length) && true}
                   onClick={() => {
                       if(!loader) handleImage();
                   }}
               >
-                  {loader ? (
-                      <p className="animate-pulse text-gray-300">Loading...</p>
+                  {loader === 'add' ? (
+                    <p className="animate-pulse text-gray-300">Loading...</p>
                   ) : "Confirm"}
               </button>
               <button 
-                  className="mt-1 mb-3 text-white rounded-full bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
-                  disabled={(!currentImage && !loader) && true}
-                  onClick={() => {
-                    if(!loader) handleDeleteImage();
-                  }}
+                  className="mt-1 mb-3 text-white rounded-full bg-red-600 hover:bg-red-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-red-600 disabled:cursor-not-allowed"
+                  disabled={(!currentImage || !!loader.length) && true}
+                  onClick={() => handleDeleteImage()}
               >
-                  {loader ? (
-                      <p className="animate-pulse text-gray-300">Loading...</p>
+                  {loader === "delete" ? (
+                    <p className="animate-pulse text-gray-300">Loading...</p>
                   ) : "Delete current image"}
               </button>
             </div>

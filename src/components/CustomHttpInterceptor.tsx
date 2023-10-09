@@ -13,7 +13,7 @@ const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
 
     useEffect(() => {
 
-        const requestInterceptor = api.interceptors.request.use(async config => {
+        const requestInterceptor = api.interceptors.request.use(config => {
             const token = localStorage.getItem('@NOAP:SYSTEM') || "{}";
             if (token) config.headers.Authorization = `Bearer ${token}`;
         
