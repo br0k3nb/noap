@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
 import {
@@ -17,7 +19,6 @@ import {
   DROP_COMMAND,
   LexicalEditor,
 } from "lexical";
-import { useEffect, useRef, useState } from "react";
 
 import Compressor from 'compressorjs';
 import imageCompression from 'browser-image-compression';
@@ -33,15 +34,13 @@ import FileInput from "../../ui/FileInput";
 import TextInput from "../../ui/TextInput";
 
 import { toastAlert } from "../../../../../../components/Alert";
-import SvgLoader from "../../../../../../components/SvgLoader";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
 const getDOMSelection = (targetWindow: Window | null): Selection | null =>
   CAN_USE_DOM ? (targetWindow || window).getSelection() : null;
 
-export const INSERT_IMAGE_COMMAND =
-  createCommand("INSERT_IMAGE_COMMAND");
+export const INSERT_IMAGE_COMMAND = createCommand("INSERT_IMAGE_COMMAND");
 
 export function InsertImageUriDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
   const [src, setSrc] = useState("");
@@ -74,8 +73,6 @@ export function InsertImageUriDialogBody({ onClick }: { onClick: (payload: Inser
 export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
   const [src, setSrc] = useState("");
   const [loader, setLoader] = useState(false);
-
-  const isDisabled = src === "";
 
   const loadImage = (files: FileList | null) => {
     if(files && files[0].size <= 5006613 && files[0].type.startsWith("image")) { //aprox 5mb
@@ -112,25 +109,41 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
   };
 
   return (
-    <div className="w-[320px] xxs:w-[275px]">
-      <FileInput 
-        label="Upload image"
-        onChange={loadImage} 
-        accept="image/*"
-        data-test-id="image-modal-file-upload"
-      />
-      <DialogActions>
-        {loader ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "bg-gray-700 py-3 px-3 rounded-lg" }}/>) : (
-          <Button
-            className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
-            data-test-id="image-modal-file-upload-btn"
-            disabled={isDisabled}
-            onClick={() => onClick({ src, altText: '' })}
-          >
-            <p className="py-[3px]">Confirm</p>
-          </Button>
-        )}
-      </DialogActions>
+    <div
+      className={`
+        px-6 ${src && "xxs:max-h-[400px] md:max-h-[500px] max-h-[600px] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"}`
+      }
+    >
+      <div className={`${src ? "w-[360px]" : "w-[320px]"} xxs:w-[275px] mx-auto`}>
+        <FileInput
+          label="Upload image"
+          onChange={loadImage}
+          accept="image/*"
+          data-test-id="image-modal-file-upload"
+          inputWrapperClassName={`${src ? "!w-[360px]" : "!w-[320px]"}`}
+        />
+      </div>
+      {src && (
+        <>
+          <p className="text-xs dark:text-gray-300 text-gray-900 uppercase my-5 tracking-widest">Preview image </p>
+          <img
+            src={src}
+            alt="Selected image"
+            className="max-w-[360px] xxs:max-w-[17rem] xxs:mx-auto"
+          />
+        </>
+      )}
+      <div className="w-full xxs:w-[275px] mx-auto mt-5">
+        <button 
+          className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
+          disabled={(!src || loader) && true}
+          onClick={() => onClick({ src, altText: '' })}
+        >
+          {loader ? (
+            <p className="animate-pulse text-gray-300">Loading...</p>
+          ) : "Confirm"}
+        </button>
+      </div>
     </div>
   );
 }
