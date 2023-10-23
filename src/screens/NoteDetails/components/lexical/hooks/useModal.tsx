@@ -12,15 +12,12 @@ export default function useModal(): [
     title: string;
   }>(null);
 
-  const onClose = useCallback(() => {
-    setModalContent(null);
-  }, []);
+  const onClose = useCallback(() => { setModalContent(null) }, []);
 
   const modal = useMemo(() => {
-    if (modalContent === null) {
-      return null;
-    }
-    const {title, content, closeOnClickOutside} = modalContent;
+    if (modalContent === null) return null;
+
+    const { title, content, closeOnClickOutside } = modalContent;
     return (
       <Modal
         onClose={onClose}

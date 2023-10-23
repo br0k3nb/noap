@@ -68,7 +68,7 @@ function PortalImpl({
             <BsXLg size={18} className='text-gray-900 dark:text-gray-300' />
           </button>
         </div>
-        <div className="Modal__content">{children}</div>
+        <div className="Modal__content !px-6">{children}</div>
       </div>
     </div>
   );
