@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useEffect } from "react"
 
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { AiOutlineClose } from 'react-icons/ai';
@@ -33,6 +33,16 @@ export default function Modal({ children, open, setOpen, title, options }: Props
         showCloseTooltip,
         goBackButtonAction
     } = options || {};
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.keyCode === 27 && setOpen) setOpen(false);
+        };
+
+        addEventListener("keydown", handleKeyDown);
+
+        return () => removeEventListener("keydown", handleKeyDown);
+    }, []);
 
     return (
         <>

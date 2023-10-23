@@ -28,7 +28,7 @@ import {
 
 import useModal from "../../hooks/useModal";
 import { EmbedConfigs } from "../AutoEmbedPlugin";
-import { InsertImageDialog } from "../ImagesPlugin";
+import { InsertImageModal } from "../ImagesPlugin";
 import { InsertEquationDialog } from "../EquationsPlugin";
 import { INSERT_EXCALIDRAW_COMMAND } from "../ExcalidrawPlugin";
 import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
@@ -120,6 +120,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
   const [editor] = useLexicalComposerContext();
   const [modal, showModal] = useModal();
   const [queryString, setQueryString] = useState<string | null>(null);
+  const [openInsertImageModal, setOpenInsertImageModal] = useState(false);
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch("/", { minLength: 0 });
 
@@ -174,7 +175,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
     const baseOptions = [
       new ComponentPickerOption("Paragraph", {
         icon: <i className={`icon paragraph ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["normal", "paragraph", "p", "text"],
+        keywords: ["normal", "paragraph", "p", "text", "parágrafo"],
         onSelect: () =>
           editor.update(() => {
             const selection = $getSelection();
@@ -187,7 +188,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
         (n) =>
           new ComponentPickerOption(`Heading ${n}`, {
             icon: <i className={`icon h${n} ${theme === 'dark' && 'comp-picker'}`} />,
-            keywords: ["heading", "header", `h${n}`],
+            keywords: ["heading", "header", `h${n}`, "título"],
             onSelect: () =>
               editor.update(() => {
                 const selection = $getSelection();
@@ -202,13 +203,13 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       ),
       new ComponentPickerOption("Numbered List", {
         icon: <i className={`icon number ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["numbered list", "ordered list", "ol"],
+        keywords: ["numbered list", "ordered list", "ol", "lista ordenada"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined),
       }),
       new ComponentPickerOption("Bulleted List", {
         icon: <i className={`icon bullet  ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["bulleted list", "unordered list", "ul"],
+        keywords: ["bulleted list", "unordered list", "ul", "lista desordenada"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),
       }),
@@ -220,7 +221,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       }),
       new ComponentPickerOption("Quote", {
         icon: <i className={`icon quote ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["block quote"],
+        keywords: ["block quote", "citação"],
         onSelect: () =>
           editor.update(() => {
             const selection = $getSelection();
@@ -251,13 +252,13 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       }),
       new ComponentPickerOption("Divider", {
         icon: <i className={`icon horizontal-rule ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["horizontal rule", "divider", "hr"],
+        keywords: ["horizontal rule", "divider", "hr", "régua", "divisor", "linha"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined),
       }),
       new ComponentPickerOption("Excalidraw", {
         icon: <i className={`icon diagram-2 ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["excalidraw", "diagram", "drawing"],
+        keywords: ["excalidraw", "diagram", "drawing", "desenhar"],
         onSelect: () =>
           editor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined),
       }),
@@ -281,7 +282,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       ),
       new ComponentPickerOption("Equation", {
         icon: <i className={`icon equation ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["equation", "latex", "math"],
+        keywords: ["equation", "latex", "math", "equação", "matematica", "matemática"],
         onSelect: () =>
           showModal("Insert Equation", (onClose) => (
             <InsertEquationDialog activeEditor={editor} onClose={onClose} />
@@ -289,11 +290,10 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
       }),
       new ComponentPickerOption("Image", {
         icon: <i className={`icon image ${theme === 'dark' && 'comp-picker'}`} />,
-        keywords: ["image", "photo", "picture", "file"],
-        onSelect: () =>
-          showModal("Insert Image", (onClose) => (
-            <InsertImageDialog activeEditor={editor} onClose={onClose} />
-          )),
+        keywords: ["image", "photo", "picture", "file", "imagem", "foto"],
+        onSelect: () => {
+          setOpenInsertImageModal(true);
+        }
       }),
       new ComponentPickerOption("Collapsible", {
         icon: <i className={`icon caret-right ${theme === 'dark' && 'comp-picker'}`} />,
@@ -305,7 +305,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
         (alignment) =>
           new ComponentPickerOption(`Align ${alignment}`, {
             icon: <i className={`icon ${alignment}-align ${theme === 'dark' && 'comp-picker'}`} />,
-            keywords: ["align", "justify", alignment],
+            keywords: ["align", "justify", "alinhamento", "alinhar", alignment],
             onSelect: () =>
               // @ts-ignore Correct types, but since they're dynamic TS doesn't like it.
               editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment),
@@ -348,6 +348,13 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
 
   return (
     <>
+      {openInsertImageModal && (
+        <InsertImageModal
+          open={openInsertImageModal}
+          setOpen={setOpenInsertImageModal}
+          activeEditor={editor}
+        />
+      )}
       {modal}
       <LexicalTypeaheadMenuPlugin<ComponentPickerOption>
         onQueryChange={setQueryString}

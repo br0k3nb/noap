@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
 import {
@@ -17,7 +19,6 @@ import {
   DROP_COMMAND,
   LexicalEditor,
 } from "lexical";
-import { useEffect, useRef, useState } from "react";
 
 import Compressor from 'compressorjs';
 import imageCompression from 'browser-image-compression';
@@ -28,28 +29,54 @@ import { CAN_USE_DOM } from "../../shared/canUseDOM";
   
 import { $createImageNode, $isImageNode, ImageNode, ImagePayload } from "../../nodes/ImageNode";
 import Button from "../../ui/Button";
-import { DialogActions, DialogButtonsList } from "../../ui/Dialog";
+import { DialogButtonsList } from "../../ui/Dialog";
 import FileInput from "../../ui/FileInput";
 import TextInput from "../../ui/TextInput";
 
 import { toastAlert } from "../../../../../../components/Alert";
-import SvgLoader from "../../../../../../components/SvgLoader";
+
+import Modal from "../../../../../../components/Modal";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
 const getDOMSelection = (targetWindow: Window | null): Selection | null =>
   CAN_USE_DOM ? (targetWindow || window).getSelection() : null;
 
-export const INSERT_IMAGE_COMMAND =
-  createCommand("INSERT_IMAGE_COMMAND");
+export const INSERT_IMAGE_COMMAND = createCommand("INSERT_IMAGE_COMMAND");
 
-export function InsertImageUriDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
+type InsertImageDialogBodyType = {
+  onClick: (payload: InsertImagePayload) => void;
+};
+
+export function InsertImageUriDialogBody({ onClick }: InsertImageDialogBodyType) {
   const [src, setSrc] = useState("");
+  const [imageIsLoading, setImageIsLoading] = useState(true);
+  const [urlIsAValidImage, setUrlIsAValidImage] = useState(false);
 
-  const isDisabled = src === "";
+  useEffect(() => {
+    const verifyIfImageIsValid = async () => {
+      try {
+        setImageIsLoading(true);
+
+        const img = new Image();
+        img.src = src;
+
+        const result = await new Promise((resolve) => {
+          img.onerror = () => resolve(false);
+          img.onload = () => resolve(true);
+        });
+
+        setUrlIsAValidImage(result as boolean);
+      } finally {
+        setImageIsLoading(false);
+      }
+    };
+
+    verifyIfImageIsValid();
+  }, [src]);
 
   return (
-    <>
+    <div className="!mt-2 cursor-default pr-2 pl-3 xxs:!px-0 xxs:max-h-[400px] md:max-h-[500px] max-h-[600px] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
       <TextInput
         label="Image URL"
         placeholder="i.e. https://source.unsplash.com/random"
@@ -57,25 +84,34 @@ export function InsertImageUriDialogBody({ onClick }: { onClick: (payload: Inser
         value={src}
         data-test-id="image-modal-url-input"
       />
-      <DialogActions>
-        <Button
-          className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
-          data-test-id="image-modal-file-upload-btn"
-          disabled={isDisabled}
+      {urlIsAValidImage && (
+        <>
+          <p className="text-[13px] dark:text-gray-300 text-gray-900 uppercase my-5 tracking-widest">Preview image</p>
+          <img
+            src={src}
+            className="max-w-[360px] xxs:max-w-[17rem] xxs:mx-auto"
+            draggable={false}
+          />
+        </>
+      )}
+      <div className="w-full xxs:w-[275px] mx-auto mt-5">
+        <button 
+          className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
+          disabled={!urlIsAValidImage && true}
           onClick={() => onClick({ src, altText: '' })}
         >
-          <p className="py-[3px]">Confirm</p>
-        </Button>
-      </DialogActions>
-    </>
+          {(imageIsLoading && src) ? (
+            <p className="animate-pulse text-gray-300">Validating link...</p>
+          ) : "Confirm"}
+        </button>
+      </div>
+    </div>
   );
 }
 
-export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: InsertImagePayload) => void }) {
+export function InsertImageUploadedDialogBody({ onClick }: InsertImageDialogBodyType) {
   const [src, setSrc] = useState("");
   const [loader, setLoader] = useState(false);
-
-  const isDisabled = src === "";
 
   const loadImage = (files: FileList | null) => {
     if(files && files[0].size <= 5006613 && files[0].type.startsWith("image")) { //aprox 5mb
@@ -112,30 +148,54 @@ export function InsertImageUploadedDialogBody({ onClick }: { onClick: (payload: 
   };
 
   return (
-    <div className="w-[320px] xxs:w-[275px]">
-      <FileInput 
-        label="Upload image"
-        onChange={loadImage} 
-        accept="image/*"
-        data-test-id="image-modal-file-upload"
-      />
-      <DialogActions>
-        {loader ? ( <SvgLoader options={{ showLoadingText: true, wrapperClassName: "bg-gray-700 py-3 px-3 rounded-lg" }}/>) : (
-          <Button
-            className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all duration-300 ease-in-out !text-sm uppercase tracking-widest cursor-pointer disabled:cursor-not-allowed disabled:!bg-gray-700/60"
-            data-test-id="image-modal-file-upload-btn"
-            disabled={isDisabled}
-            onClick={() => onClick({ src, altText: '' })}
-          >
-            <p className="py-[3px]">Confirm</p>
-          </Button>
-        )}
-      </DialogActions>
+    <div
+      className={`
+        cursor-default pr-2 pl-3 xxs:!px-0 ${src && "xxs:max-h-[400px] md:max-h-[500px] max-h-[600px] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"}`
+      }
+    >
+      <div className="w-[360px] xxs:w-[275px] mx-auto">
+        <FileInput
+          label="Upload image"
+          onChange={loadImage}
+          accept="image/*"
+          data-test-id="image-modal-file-upload"
+          inputWrapperClassName="w-[360px]"
+        />
+      </div>
+      {src && (
+        <>
+          <p className="text-xs dark:text-gray-300 text-gray-900 uppercase my-5 tracking-widest">Preview image</p>
+          <img
+            src={src}
+            alt="Selected image"
+            className="max-w-[360px] xxs:max-w-[17rem] xxs:mx-auto"
+            draggable={false}
+          />
+        </>
+      )}
+      <div className="w-full xxs:w-[275px] mx-auto mt-5">
+        <button 
+          className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
+          disabled={(!src || loader) && true}
+          onClick={() => onClick({ src, altText: '' })}
+        >
+          {loader ? (
+            <p className="animate-pulse text-gray-300">Loading...</p>
+          ) : "Confirm"}
+        </button>
+      </div>
     </div>
   );
 }
 
-export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: LexicalEditor; onClose: () => void; }) {
+type InsertImageModalType = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  onClose?: () => void;
+  activeEditor: LexicalEditor;
+}
+
+export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType) {
   const [mode, setMode] = useState<null | "url" | "file">(null);
   const hasModifier = useRef(false);
 
@@ -149,44 +209,58 @@ export function InsertImageDialog({ activeEditor, onClose }: { activeEditor: Lex
 
   const onClick = (payload: InsertImagePayload) => {
     activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
-    onClose();
+    setOpen(false);
   };
 
   return (
-    <>
-      {!mode && (
-        <DialogButtonsList
-          customClassName={"!mt-1 !mb-0"}
-        >
-          <Button
-            data-test-id="image-modal-option-url"
-            className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
-            onClick={() => setMode("url")}
-          >
-            <div className="flex w-[54px] justify-between">
-              <span>URL</span> 
-              <BsLink size={20} />
-            </div>
-          </Button>
-          <Button
-            data-test-id="image-modal-option-file"
-            className="!mb-2 bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
-            onClick={() => setMode("file")}
-          >
-            <div className="flex w-[55px] justify-between">
-              <span>File</span> 
-              <BsFillFolderSymlinkFill size={17} className="mt-[2px]" />
-            </div>
-          </Button>
-        </DialogButtonsList>
-      )}
-      {mode === "url" && <InsertImageUriDialogBody onClick={onClick} />}
-      {mode === "file" && <InsertImageUploadedDialogBody onClick={onClick} />}
-    </>
-  );
+    <Modal
+      open={true}
+      setOpen={setOpen}
+      title="Insert image"
+      options={{
+        modalWrapperClassName: `${mode ? "w-[27.2rem]" : "w-[22rem]"} xxs:!w-[21rem] !px-0 overflow-y-hidden`,
+        titleWrapperClassName: "!px-6",
+        showGoBackButton: mode ? true : false,
+        goBackButtonAction: () => setMode(null),
+      }}
+    >
+      <div className="px-6 mt-5">
+        {!mode && (
+          <DialogButtonsList>
+            <Button
+              data-test-id="image-modal-option-url"
+              className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+              onClick={() => setMode("url")}
+            >
+              <div className="flex w-[54px] justify-between">
+                <span>URL</span> 
+                <BsLink size={20} />
+              </div>
+            </Button>
+            <Button
+              data-test-id="image-modal-option-file"
+              className="!mb-2 bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+              onClick={() => setMode("file")}
+            >
+              <div className="flex w-[55px] justify-between">
+                <span>File</span> 
+                <BsFillFolderSymlinkFill size={17} className="mt-[2px]" />
+              </div>
+            </Button>
+          </DialogButtonsList>
+        )}
+        {mode === "url" && <InsertImageUriDialogBody onClick={onClick} />}
+        {mode === "file" && <InsertImageUploadedDialogBody onClick={onClick} />}
+      </div>
+    </Modal>
+  )
 }
 
-export default function ImagesPlugin({captionsEnabled} : {captionsEnabled?: boolean}): JSX.Element | null {
+type ImagesPlugin = {
+  captionsEnabled?: boolean;
+}
+
+export default function ImagesPlugin({ captionsEnabled } : ImagesPlugin): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {

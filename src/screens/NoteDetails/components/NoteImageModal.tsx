@@ -68,17 +68,17 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
 
     const handleImage = async () => {
         try {
-            setLoader("add");
+          setLoader("add");
 
-            await api.post(`/note/image/${selectedNote}`, { image });
-            toastAlert({ icon: "success", title: `Image updated!`, timer: 3000 });
+          await api.post(`/note/image/${selectedNote}`, { image });
+          toastAlert({ icon: "success", title: `Image updated!`, timer: 3000 });
 
-            fetchNotes();
+          fetchNotes();
         } catch (err: any) {
-            console.log(err);
-            toastAlert({ icon: "error", title: err.message, timer: 3000 });
+          console.log(err);
+          toastAlert({ icon: "error", title: err.message, timer: 3000 });
         } finally {
-            setLoader("");
+          setLoader("");
         }
     };
 
@@ -99,30 +99,46 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
     };
     
     return (
-        <Modal
-            open={open}
-            setOpen={setOpen}
-            title="Note image"
-            options={{
-              titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "px-0 !w-[22rem] !pb-2",
-            }}
+      <Modal
+        open={open}
+        setOpen={setOpen}
+        title="Note image"
+        options={{
+          titleWrapperClassName: "!px-6",
+          modalWrapperClassName: `px-0 ${image ? "!w-[25rem]" : "!w-[22rem]"} xxs:!w-[21rem] !pb-2`,
+        }}
+      >
+          <div
+            className={`
+              ${image && "xxs:max-h-[400px] md:max-h-[500px] max-h-[600px] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"}`
+            }
           >
-            <div className="w-[320px] xxs:w-[275px] mx-auto mt-5">
-                <FileInput
-                    label="Upload image"
-                    onChange={loadImage}
-                    accept="image/*"
-                    data-test-id="image-modal-file-upload"
-                />
+            <div className={`${image ? "w-[360px]" : "w-[320px]"} xxs:w-[275px] mx-auto mt-5`}>
+              <FileInput
+                label="Upload image"
+                onChange={loadImage}
+                accept="image/*"
+                data-test-id="image-modal-file-upload"
+                inputWrapperClassName={`${image ? "!w-[360px]" : "!w-[320px]"}`}
+              />
             </div>
-            <div className="w-[320px] xxs:w-[275px] mx-auto mt-5">
+            <div className="mx-5 xxs:px-[30px]">
+              {image && (
+                <>
+                  <p className="text-xs dark:text-gray-300 text-gray-900 uppercase my-5 tracking-widest">Preview image </p>
+                  <img
+                    src={image}
+                    alt="Selected image"
+                    className="w-fit xxs:max-w-[17rem] xxs:mx-auto"
+                  />
+                </>
+              )}
+            </div>
+            <div className="w-[90%] xxs:w-[275px] mx-auto mt-5">
               <button 
                   className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
                   disabled={(!image || !!loader.length) && true}
-                  onClick={() => {
-                      if(!loader) handleImage();
-                  }}
+                  onClick={() => handleImage()}
               >
                   {loader === 'add' ? (
                     <p className="animate-pulse text-gray-300">Loading...</p>
@@ -138,6 +154,7 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
                   ) : "Delete current image"}
               </button>
             </div>
-        </Modal>
+          </div>
+      </Modal>
     )
 }
