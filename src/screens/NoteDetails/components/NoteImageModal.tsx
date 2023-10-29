@@ -122,14 +122,14 @@ export default function NoteInfoModal({ open, setOpen, notes, pinNotes }: NoteIn
                 inputWrapperClassName={`${image ? "!w-[360px]" : "!w-[320px]"}`}
               />
             </div>
-            <div className="mx-5 xxs:px-[30px]">
+            <div className="mx-5 xxs:px-[9px]">
               {image && (
                 <>
                   <p className="text-xs dark:text-gray-300 text-gray-900 uppercase my-5 tracking-widest">Preview image </p>
                   <img
                     src={image}
                     alt="Selected image"
-                    className="w-fit xxs:max-w-[17rem] xxs:mx-auto"
+                    className="w-fit xxs:max-w-[17rem] xxs:mx-auto rounded"
                   />
                 </>
               )}

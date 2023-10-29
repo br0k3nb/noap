@@ -166,9 +166,10 @@ export default function ColorPicker({
             ref={innerDivRef}
           >
             <TextInput
-              label="Hex" 
-              onChange={onSetHex} 
-              value={inputColor} 
+              label="Hex"
+              onChange={onSetHex}
+              value={inputColor}
+              inputClassname={"!w-[32px]"}
             />
             <div className="color-picker-basic-color">
               {basicColors.map((basicColor) => (
@@ -244,7 +245,8 @@ export default function ColorPicker({
             <TextInput
               label="Hex" 
               onChange={onSetHex} 
-              value={inputColor} 
+              value={inputColor}
+              inputClassname={"!w-[32px]"}
             />
             <div className="color-picker-basic-color">
               {basicColors.map((basicColor) => (
