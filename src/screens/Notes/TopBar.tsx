@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import { GrChapterAdd } from 'react-icons/gr';
+import { VscAdd } from 'react-icons/vsc';
 
 import useGetUrl from "../../hooks/useGetUrl";
 import useNavbar from "../../hooks/useNavbar";
@@ -18,9 +18,10 @@ type Props = {
     pinNotesState: pinnedNotesState;
     notesState: notesState;
     dispatchNotes: Dispatch<notesActions>;
+    addNewNote: () => void;
 }
 
-export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }: Props) {
+export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, addNewNote }: Props) {
     const { navbar, setNavbar } = useNavbar();
     const { setSelectedNote } = useSelectedNote();
 
@@ -35,6 +36,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
     });
 
     const [showSearch, setShowSearch] = useState(getSearchInUrl ? true : false);
+    const [isAddingNote, setIsAddingNote] = useState(false);
     
     const allDocs = 
         totalDocs && pinTotalDocs ? totalDocs + pinTotalDocs
@@ -79,6 +81,15 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
         dispatchNotes({ type: 'PAGE', payload: --notesState.page });
         setSelectedNote('');
     }
+
+    const handleAddNewNote = async () => {
+        try {
+            setIsAddingNote(true);
+            await addNewNote();
+        } finally {
+            setIsAddingNote(false);
+        }
+    };
 
     const forwardPage = useGetUrl({ 
         options: {
@@ -132,15 +143,17 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState }:
                                     <BsSearch size={18} />
                                 </button>
                             </div>
-                            {/* <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Note visualization">
-                                <button 
-                                    type="button"
-                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[5px] py-[6px] rounded"
-                                    onClick={() => handleSearchClick()}
-                                >
-                                    <LiaThListSolid size={22} />
-                                </button>
-                            </div> */}
+                            <button 
+                                type="button"
+                                className="sm:hidden hover:bg-[#dadada] dark:hover:bg-stone-600 px-[7px] py-2 rounded"
+                                onClick={() => handleAddNewNote()}
+                            >
+                                {isAddingNote ? (
+                                    <span className="loading loading-spinner loading-xs mb-1" />
+                                ) : (
+                                    <VscAdd size={18} />
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

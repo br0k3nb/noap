@@ -42,7 +42,8 @@ export default function Notes({
         pinnedNotes,
         pinNotesState,
         notesState,
-        dispatchNotes
+        dispatchNotes,
+        addNewNote
     };
 
     const cardNotesProps = { 
