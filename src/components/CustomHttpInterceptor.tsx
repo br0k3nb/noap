@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect } from 'react'
 import useAuth from '../hooks/useAuth';
 
-// const api = axios.create({ baseURL: `http://localhost:3001/` });
+// const api = axios.create({ baseURL: `http://localhost:3002/` });
 
 // const api = axios.create({ baseURL: `https://noap-backend.onrender.com/` });
 

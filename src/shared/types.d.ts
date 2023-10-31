@@ -25,6 +25,7 @@ declare type NoteData = {
     permissions?: string[];
     noteBackgroundColor?: string;
   };
+  pageLocation?: string | number;
   updatedAt?: string;
   createdAt: string;
 };
@@ -50,6 +51,7 @@ declare type NoteMetadata = {
       permissions?: string[];
       noteBackgroundColor?: string;
     };
+    pageLocation: string | number;
     updatedAt?: string;
     createdAt: string;
   }[];

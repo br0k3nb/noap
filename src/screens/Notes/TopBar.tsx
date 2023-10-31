@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { BsJournalText, BsSearch, BsFilter, BsXLg, BsList } from "react-icons/bs";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import { LiaThListSolid } from 'react-icons/lia';
+import { GrChapterAdd } from 'react-icons/gr';
 
 import useGetUrl from "../../hooks/useGetUrl";
 import useNavbar from "../../hooks/useNavbar";

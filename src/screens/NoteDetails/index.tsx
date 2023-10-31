@@ -51,6 +51,7 @@ type Props = {
   noteDataIsFetching: boolean;
   dispatchPinNotes: Dispatch<pinnedNotesActions>;
   pinNotesState: pinnedNotesState;
+  fetchNotesMetadata: () => void;
 };
 
 export default function NoteDetails({
@@ -68,6 +69,7 @@ export default function NoteDetails({
   noteDataIsFetching,
   dispatchPinNotes,
   pinNotesState,
+  fetchNotesMetadata,
 }: Props) {
   const { fetchNotes } = useRefetch();
   
@@ -96,6 +98,20 @@ export default function NoteDetails({
   const pinNote = pinNotes.find(({ _id }) => _id === selectedNote) as FieldArrayWithId<NoteMetadata, "noteMetadata", "id">;
 
   const fullscreenChangeCallbackWasCalled = useRef(false);
+
+  const getNoteIdInUrl = useGetUrl({
+    options: { 
+      usePage: false,    
+      getNoteIdInUrl: true,
+    }
+  });
+
+  const getPageInUrl = useGetUrl({
+    options: { 
+      usePage: false,    
+      getPageInUrl: true,
+    }
+  });
 
   useEffect(() => { 
     resetNoteName({ name: selectedNoteData?.name });
@@ -133,7 +149,7 @@ export default function NoteDetails({
     });
   };
 
-  const removeNote = () => {
+  const removeNote = async () => {
     if(setSelectedNote) setSelectedNote("");
 
     setOpen(false);
@@ -145,8 +161,10 @@ export default function NoteDetails({
     });
     
     deleteNote(selectedNote as string);
-    remove(notes.indexOf(note));
-    navigate('/');
+    // remove(notes.indexOf(note));
+
+    await fetchNotesMetadata();
+    navigate(`/notes/page/${!(notes.length - 1) ? (getPageInUrl as number) - 1 : getPageInUrl}`);
   };
 
   const handleExpand = () => {
@@ -259,13 +277,6 @@ export default function NoteDetails({
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
     }
   };
-
-  const getNoteIdInUrl = useGetUrl({
-    options: { 
-      usePage: false, 
-      getNoteIdInUrl: true 
-    }
-  });
 
   return (
     <div

@@ -1,6 +1,7 @@
 import { useState, useRef, useReducer, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 
 import { toastAlert } from "../../components/Alert";
 
@@ -49,6 +50,8 @@ export default function Home() {
     }
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if(getSearchInUrl) {
       setTimeout(() => {
@@ -57,11 +60,10 @@ export default function Home() {
     }
   }, [getSearchInUrl]);
   
-
   const { navbar } = useNavbar();
   const { userData: { _id } } = useUserData();
-  const { selectedNote } = useSelectedNote();
-  const { noteSettings: { expanded: noteIsExpanded } } = useNoteSettings();
+  const { selectedNote, setSelectedNote } = useSelectedNote();
+  const { noteSettings: { expanded: noteIsExpanded }, setNoteSettings } = useNoteSettings();
 
   const { control } = useForm<NoteMetadata>();
   const { control: labelsControl } = useForm<Labels>();
@@ -198,8 +200,11 @@ export default function Home() {
   const addNewNote = async () => {
     setShowLoaderOnNavbar(true);
 
+    const basePageNumber = String(notesState.totalDocs / 10)[0];
+    const documentsPerPage = String(notesState.totalDocs / 10)[1];
+
     try {
-      await api.post(`/add`, {
+      const { data: { noteId, pageLocation } } = await api.post(`/add`, {
           name: "Unnamed note",
           body: "",
           labels: [],
@@ -210,10 +215,21 @@ export default function Home() {
             pinned: false
           },
           author: _id,
+          pageLocation: (basePageNumber && documentsPerPage !== "0") ? Number(basePageNumber) + 1 : basePageNumber
         }
       );
 
-      fetchNotesMetadata();
+      await fetchNotesMetadata();
+
+      setSelectedNote(noteId);
+      setNoteSettings((prevSettings) => {
+        return {
+          ...prevSettings,
+          expanded: window.outerWidth <= 1030 ? true : false
+        }
+      });
+      
+      navigate(`/notes/page/${pageLocation}/note/${noteId}`);
     } catch (err: any) {
       console.log(err);
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
@@ -324,6 +340,7 @@ export default function Home() {
                     setSelectedNoteData={setSelectedNoteData}
                     noteDataIsFetching={noteDataIsFetching}
                     dispatchPinNotes={dispatchPinNotes}
+                    fetchNotesMetadata={fetchNotesMetadata}
                     pinNotesState={pinNotesState}
                   />
                 </LabelsCtx>
