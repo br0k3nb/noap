@@ -353,7 +353,7 @@ export default function NoteDetails({
               modalWrapperClassName: "px-0 w-[23rem] xxs:!w-[20rem]",
             }}
           >
-            <div className="px-6 mt-5 max-h-96 overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">            
+            <div className="px-6 mt-5 max-h-96 lg:max-h-[31rem] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">            
                 <ColorPicker
                   disabled={false}
                   color={'#000000'}
