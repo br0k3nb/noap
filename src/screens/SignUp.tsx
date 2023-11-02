@@ -18,17 +18,22 @@ export default function SignUp () {
   const [wasSubmited, setWasSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  const handleForm = async ({ name, email, password }: FieldValues) => {
-    setWasSubmitted(true);
+  const handleForm = async ({ name, email, password, confirmPassword }: FieldValues) => {
     try {
+      setWasSubmitted(true);
+
+      if(password !== confirmPassword) {
+        return toastAlert({ icon: 'error', title: "Passwords don't match!", timer: 2000 });
+      }
+
       const { data: { message } } = await api.post("/sign-up", { name, email, password });
       toastAlert({ icon: 'success', title: message, timer: 2500 });
-      setWasSubmitted(false);
 
       setTimeout(() => navigate("/"), 1000);
     } catch (err: any) {
-      setWasSubmitted(false);
       toastAlert({ icon: 'error', title: err?.message, timer: 2000 });
+    } finally {
+      setWasSubmitted(false);
     }
   };
 
@@ -37,15 +42,26 @@ export default function SignUp () {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-row h-screen bg-slate-800"
+      className="flex flex-row h-screen bg-[#0f1011]"
     >
-      <img className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-slate-800 opacity-90" src={note} draggable={false}/>
+      <img 
+        className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-[#0f1011] opacity-90 border border-transparent border-r-[#404040]" 
+        draggable={false} 
+        src={note} 
+      />
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
-        <div className="flex flex-row h-screen bg-slate-800">
-          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full lg:shadow-inner lg:shadow-gray-900">
+        <div className="flex flex-row h-screen bg-[#0f1011]">
+          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full">
             <div className="flex flex-col w-[70%] xxs:w-[85%]">            
-              <img src={noapLogo} className='!w-[190px] xxs:w-44 sm:w-52 mx-auto'/>
-              <form onSubmit={handleSubmit(handleForm)} className='w-full' noValidate>
+              <img 
+                className='!w-[190px] xxs:w-44 sm:w-52 mx-auto'
+                src={noapLogo}
+              />
+              <form 
+                onSubmit={handleSubmit(handleForm)}
+                className='w-full'
+                noValidate
+              >
                 <div className="mb-2 mt-5 flex flex-col space-y-1">
                   <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
                     {errors.name?.message as string}
@@ -70,7 +86,7 @@ export default function SignUp () {
                     })}
                   />
                 </div>
-                <div className="mb-7 mt-3 flex flex-col space-y-1">
+                <div className="mb-2 mt-3 flex flex-col space-y-1">
                   <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
                     {errors.password?.message as string}
                   </p>
@@ -85,8 +101,27 @@ export default function SignUp () {
                     })}
                   />
                 </div>
-                <button className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-700 text-white py-2">
-                  {wasSubmited ? (<SvgLoader options={{ showLoadingText: true }}/>) : (<p className="text-[15px] py-[2px] tracking-widest"> Sign up </p>)}
+                <div className="mb-7 mt-3 flex flex-col space-y-1">
+                  <p className='text-red-500 ml-1 uppercase text-xs tracking-widest'>
+                    {errors.password?.message as string}
+                  </p>
+                  <input
+                    type="password"
+                    className="sign-text-inputs bg-gray-100"
+                    placeholder="Confirm password"
+                    {...register("confirmPassword", {
+                      required: "Password is required!",
+                      minLength: { value: 6, message: "Password is too short!" },
+                      maxLength: { value: 16, message: "Too many characters!" },
+                    })}
+                  />
+                </div>
+                <button className="trasition-all duration-200 hover:bg-red-700/90 uppercase mb-3 rounded-full text-sm w-full bg-red-700 text-white py-2">
+                  {wasSubmited ? (
+                    <SvgLoader options={{ showLoadingText: true }}/>
+                    ) : (
+                      <p className="text-[15px] py-[2px] tracking-widest"> Sign up </p>
+                  )}
                 </button>
                 <p className="text-md xxs:text-sm text-gray-300 text-[12px] xxs:!text-[10px] uppercase tracking-widest mt-2 text-center">
                   Already have an account ?

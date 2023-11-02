@@ -118,7 +118,7 @@ export default function SignIn() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-row h-screen bg-slate-800"
+      className="flex flex-row h-screen bg-[#0f1011]"
     >
       <Verify2FAModal
         customUserId={{ _id: userData._id }}
@@ -126,12 +126,20 @@ export default function SignIn() {
         customFn={userTFAAuth}
         setOpen={setOpenTFAModal}
       />
-      <img src={note} className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-slate-800 opacity-90" draggable={false} />
+      <img 
+        className="hidden object-cover lg:flex lg:w-[65%] w-1/2 bg-[#0f1011] opacity-90 border border-transparent border-r-[#404040]" 
+        draggable={false} 
+        src={note} 
+      />
       <div className="w-screen md:w-[76%] md:mx-auto lg:w-1/2 xl:w-[50%] lg:mx-auto">
-        <div className="flex flex-row h-screen bg-slate-800">
-          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full lg:shadow-inner lg:shadow-gray-900">
+        <div className="flex flex-row h-screen bg-[#0f1011]">
+          <div className="flex flex-col px-8 justify-center items-center mx-auto xxs:px-0 md:px-0 xl:px-5 w-full">
             <div className="flex flex-col w-[70%] xxs:w-[85%]">
-              <img src={noapLogo} className="!w-[190px] xxs:w-44 sm:w-52 mx-auto" draggable={false}/>
+              <img 
+                className="!w-[190px] xxs:w-44 sm:w-52 mx-auto" 
+                draggable={false}
+                src={noapLogo} 
+              />
               <form onSubmit={handleSubmit(handleForm)} noValidate>
                 <div className="mb-2 mt-5 flex flex-col space-y-1">
                   <p className="text-red-500 ml-1 uppercase text-xs tracking-widest">
@@ -167,7 +175,7 @@ export default function SignIn() {
                     // prevent sending the form clicking in the sign in with email after clicking in the sign with google button
                     type={svgLoader === "googe" ? "button" : "submit"}
                     disabled={svgLoader === "google" && true}
-                    className="trasition-all duration-300 uppercase rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full bg-red-700/90 text-white py-[9.5px] disabled:!bg-red-800/60 disabled:cursor-not-allowed hover:bg-red-800"
+                    className="trasition-all duration-300 uppercase rounded-full shadow-md text-sm w-full bg-red-700/90 text-white py-[9.5px] disabled:!bg-red-800/60 disabled:cursor-not-allowed hover:bg-red-800"
                   >
                     {svgLoader === "email" ? (
                       <SvgLoader options={{ showLoadingText: true }} />
@@ -183,7 +191,7 @@ export default function SignIn() {
                     type="button"
                     disabled={svgLoader === "email" && true}
                     onClick={() => (svgLoader === 'google' || svgLoader === "") && login()}
-                    className="disabled:!bg-gray-200/80 disabled:cursor-not-allowed text-gray-900 mb-5 bg-gray-200 trasition-all duration-300 ease-in-out uppercase rounded-full shadow-md shadow-slate-900/80 hover:shadow-gray-900 text-sm w-full py-2 hover:bg-gray-300/90"
+                    className="disabled:!bg-gray-200/80 disabled:cursor-not-allowed text-gray-900 mb-5 bg-[#eeeff1] trasition-all duration-300 ease-in-out uppercase rounded-full text-sm w-full py-2 hover:bg-[#cdcdcf]"
                   >
                     {svgLoader === "google" ? (
                       <SvgLoader options={{ showLoadingText: true, LoaderClassName: "!text-black" }} />
