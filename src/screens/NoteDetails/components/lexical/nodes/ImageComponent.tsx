@@ -151,9 +151,7 @@ export default function ImageComponent({
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
-      console.log("rwer9wqi");
       if (isSelected && $isNodeSelection($getSelection())) {
-        console.log("inside if");
         const event: KeyboardEvent = payload;
         event.preventDefault();
         const node = $getNodeByKey(nodeKey);
@@ -216,7 +214,6 @@ export default function ImageComponent({
     
     if((event.target as any)?.id && (event.target as any)?.id === 'delete') {
       const ev = new KeyboardEvent('keypress', { key: 'Delete', keyCode: 46 });
-      console.log("mouseCLick ev")
       onDelete(ev);
     }
 
@@ -344,7 +341,7 @@ export default function ImageComponent({
       >
         <LazyImage
           src={src}
-          maxHeight={currentScreenSize.width <= 640 ? currentScreenSize.height - 220 : currentScreenSize.height - 400}
+          maxHeight={currentScreenSize.width <= 640 ? currentScreenSize.height - 220 : currentScreenSize.height - 250}
           height={'inherit'}
           className={"!rounded-xl mt-6"}
           width={currentScreenSize.width - 100}

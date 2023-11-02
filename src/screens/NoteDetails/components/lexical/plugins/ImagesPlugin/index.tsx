@@ -218,7 +218,7 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
       setOpen={setOpen}
       title="Insert image"
       options={{
-        modalWrapperClassName: `${mode ? "w-[27.2rem]" : "w-[22rem]"} xxs:!w-[21rem] !px-0 overflow-y-hidden`,
+        modalWrapperClassName: `${mode ? "w-[27.2rem]" : "w-[22rem]"} xxs:!w-[21.5rem] !px-0 overflow-y-hidden`,
         titleWrapperClassName: "!px-6",
         showGoBackButton: mode ? true : false,
         goBackButtonAction: () => setMode(null),

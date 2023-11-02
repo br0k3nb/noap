@@ -293,7 +293,7 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
             to={`${baseUrl}/note/${_id}`}
             className={`
                 flex flex-wrap cursor-pointer 
-                ${(idx === noteArraySize - 1 && (noteArraySize - 1) % 2 == 0) ? "mb-10" : ((idx === noteArraySize - 1 || idx === noteArraySize - 2) && (noteArraySize - 1) % 2 !== 0) && "mb-10"}
+                ${(idx === noteArraySize - 1 && (noteArraySize - 1) % 2 == 0) && "mb-10"}
             `} 
             onClick={() => handleNoteClick(_id)}
         >

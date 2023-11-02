@@ -38,7 +38,7 @@
   .ExcalidrawModal__modal {
     position: relative;
     z-index: 10;
-    top: 50px;
+    top: 0px;
     width: auto;
     height: auto;
     left: 0;

@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from "react-hook-form";
 import { useGoogleLogin } from "@react-oauth/google";
+
 import { FcGoogle } from "react-icons/fc";
+import { HiOutlineMail } from "react-icons/hi";
 
 import { motion } from "framer-motion";
 
@@ -170,9 +172,10 @@ export default function SignIn() {
                     {svgLoader === "email" ? (
                       <SvgLoader options={{ showLoadingText: true }} />
                     ) : (svgLoader == "google" || svgLoader === "") && (
-                      <p className="items-center justify-center text-[15px] py-[2px] tracking-wide !text-white">
-                        Sign in with email
-                      </p> 
+                      <div className="flex flex-row items-center justify-center text-[15px] py-[0.060rem] tracking-wide !text-white">
+                        <span>Sign in with email</span>
+                        <HiOutlineMail size={23} className="ml-2" />
+                      </div>
                     )}
                   </button>
                   <p className="text-sm uppercase tracking-widest text-gray-400 my-3"> OR </p>
@@ -186,8 +189,8 @@ export default function SignIn() {
                       <SvgLoader options={{ showLoadingText: true, LoaderClassName: "!text-black" }} />
                     ) : (svgLoader === "email" || svgLoader === "") && (
                       <div className="flex items-center justify-center">
-                        <FcGoogle size={26} className="mr-2" />
                         <span className="">Sign in with Google</span>
+                        <FcGoogle size={26} className="ml-2" />
                       </div>
                     )}
                   </button>

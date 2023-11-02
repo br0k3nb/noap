@@ -1,9 +1,12 @@
-import { ReactPortal, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Dispatch, ReactPortal, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import {
   AiFillDelete,
-  AiFillSave
+  AiFillSave,
+  AiOutlineClose
 } from "react-icons/ai";
+
+// import { GrClose } from "react-icons/gr";
 
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { createPortal } from "react-dom";
@@ -35,6 +38,7 @@ type Props = {
    * Callback when the save button is clicked
    */
   onSave: (elements: ReadonlyArray<ExcalidrawElementFragment>) => void;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 /**
@@ -48,6 +52,7 @@ export default function ExcalidrawModal({
   initialElements,
   isShown = false,
   onDelete,
+  setOpen,
 }: Props): ReactPortal | null {
   const excaliDrawModelRef = useRef<HTMLDivElement | null>(null);
 
@@ -68,7 +73,7 @@ export default function ExcalidrawModal({
         !excaliDrawModelRef.current.contains(target as Node) &&
         closeOnClickOutside
       ) {
-        onDelete();
+        setOpen(false);
       }
     };
 
@@ -90,7 +95,7 @@ export default function ExcalidrawModal({
     const currentModalRef = excaliDrawModelRef.current;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onDelete();
+      if (event.key === "Escape") setOpen(false);
     };
 
     if (currentModalRef !== null) {
@@ -157,11 +162,7 @@ export default function ExcalidrawModal({
   const onChange = (els: ReadonlyArray<ExcalidrawElementFragment>) => {
     setElements(els);
   };
-
-  // This is a hacky work-around for Excalidraw + Vite.
-  // In DEV, Vite pulls this in fine, in prod it doesn't. It seems
-  // like a module resolution issue with ESM vs CJS?
-  
+    
   const _Excalidraw =
   //@ts-ignore
     Excalidraw.$$typeof != null ? Excalidraw : Excalidraw.default;
@@ -169,11 +170,11 @@ export default function ExcalidrawModal({
   return createPortal(
     <div className="ExcalidrawModal__overlay" role="dialog">
       <div
-        className="ExcalidrawModal__modal xxs:!w-[350px]"
+        className="ExcalidrawModal__modal xxs:!w-[screen] xxs:!h-screen"
         ref={excaliDrawModelRef}
         tabIndex={-1}
       >
-        <div className="ExcalidrawModal__row xxs:!w-[350px]">
+        <div className="ExcalidrawModal__row xxs:!w-screen xxs:!h-screen">
           {discardModalOpen && <ShowDiscardDialog />}
           <_Excalidraw
             onChange={onChange}
@@ -183,6 +184,12 @@ export default function ExcalidrawModal({
             }}
           />
           <div className="ExcalidrawModal__actions">
+            <button className="action-button" onClick={() => setOpen(false)}>
+              <div className="flex flex-row space-x-2">
+                <p className="text-[12.5px] uppercase tracking-wide">close</p>
+                <AiOutlineClose className="mt-[1px]"/>
+              </div>
+            </button>
             <button className="action-button" onClick={discard}>
               <div className="flex flex-row space-x-2">
                 <p className="text-[12.5px] uppercase tracking-wide">delete</p>

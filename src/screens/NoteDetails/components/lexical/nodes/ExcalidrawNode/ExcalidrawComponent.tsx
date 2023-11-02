@@ -123,6 +123,7 @@ export default function ExcalidrawComponent({ nodeKey, data }: { data: string; n
         initialElements={elements}
         isShown={isModalOpen}
         onDelete={deleteNode}
+        setOpen={setModalOpen}
         onSave={(newData) => {
           editor.setEditable(true);
           setData(newData);
