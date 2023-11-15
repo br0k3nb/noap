@@ -1,4 +1,4 @@
-import { useState, Dispatch } from "react";
+import { useState, Dispatch, memo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
@@ -272,7 +272,7 @@ type CardsProps = {
 
 };
 
-export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, noteArraySize }: CardsProps) {
+export function Test ({ note, idx, handleNoteClick, days, hours, customWidth, noteArraySize }: CardsProps) {
     const { image, label, _id, body, createdAt, updatedAt, name: noteName, labelArraySize } = note;
     const { color, type, fontColor, name } = label || {};
 
@@ -377,3 +377,5 @@ export function Cards ({ note, idx, handleNoteClick, days, hours, customWidth, n
         </Link>
     );
 }
+
+export const Cards = memo(Test);

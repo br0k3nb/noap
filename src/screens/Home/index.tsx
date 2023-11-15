@@ -7,7 +7,8 @@ import { toastAlert } from "../../components/Alert";
 
 import Notes from "../Notes";
 import Nav from "./Navbar";
-import NoteDetails from "../NoteDetails";
+import NoteBody from "../NoteBody";
+import NoteToolbar from "../NoteActionsToolbar";
 
 import api from "../../services/api";
 
@@ -326,23 +327,27 @@ export default function Home() {
                   dispatchLabels={dispatchLabels}
                   hasNextPageLabel={labelsState.hasNextPage}
                 >
-                  <NoteDetails 
-                    notes={fields} 
-                    remove={remove}
-                    append={append}
-                    labels={labels}
-                    pinNotes={pinNotes}
-                    deleteNote={deleteNote} 
-                    appendPinNotes={appendPinNotes}
-                    removePinNotes={removePinNotes}
-                    labelIsFetching={labelIsFetching}
-                    selectedNoteData={selectedNoteData}
-                    setSelectedNoteData={setSelectedNoteData}
-                    noteDataIsFetching={noteDataIsFetching}
-                    dispatchPinNotes={dispatchPinNotes}
-                    fetchNotesMetadata={fetchNotesMetadata}
-                    pinNotesState={pinNotesState}
-                  />
+                  <div
+                    className={`
+                      !z-50 flex flex-col overflow-hidden w-screen h-screen bg-[#ffffff] dark:bg-[#0f1011] text-black dark:text-gray-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
+                      ${!noteIsExpanded && "hidden lg:flex"}
+                    `}
+                    id="note-body"
+                  >
+                    <NoteToolbar
+                      labels={labels}
+                      labelIsFetching={labelIsFetching}
+                      selectedNoteData={selectedNoteData}
+                      noteDataIsFetching={noteDataIsFetching}
+                      setSelectedNoteData={setSelectedNoteData}
+                      notes={{ append, deleteNote, fetchNotesMetadata, notesMetadata: fields, remove }}
+                      pinNotes={{ pinNotesMetadata: pinNotes, appendPinNotes, dispatchPinNotes, pinNotesState, removePinNotes }}
+                    />
+                    <NoteBody 
+                      noteDataIsFetching={noteDataIsFetching}
+                      selectedNoteData={selectedNoteData}
+                    />          
+                  </div>
                 </LabelsCtx>
               </RefetchContext>
           </div>

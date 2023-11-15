@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import Button from '../ui/Button';
+import Button from './Button';
 import KatexRenderer from './KatexRenderer';
 
 import "./KatexEquationAlterer.css";

@@ -1,4 +1,4 @@
-import { useState, Dispatch } from "react";
+import { useState, Dispatch , memo } from "react";
 import { FieldArrayWithId } from "react-hook-form";
 
 import NoteTopBar from "./TopBar";

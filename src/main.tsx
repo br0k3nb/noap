@@ -4,7 +4,7 @@ import App from './App';
 
 import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 
-disableReactDevTools();
+if (location.hostname !== "localhost") disableReactDevTools();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

@@ -4,7 +4,7 @@ import { FieldArrayWithId } from "react-hook-form";
 import Compressor from 'compressorjs';
 import imageCompression from 'browser-image-compression';
 
-import FileInput from "./lexical/ui/FileInput";
+import FileInput from "../../NoteBody/components/lexical/ui/FileInput";
 
 import useSelectedNote from "../../../hooks/useSelectedNote";
 import useRefetch from "../../../hooks/useRefetch";
