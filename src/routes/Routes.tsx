@@ -43,21 +43,25 @@ export function CustomRoutes() {
           <Route 
             path='note/:noteId' 
             element={ 
-              <NoteSettingsContext>
-                <SelectedNoteContext>
-                  <Home /> 
-                </SelectedNoteContext>
-              </NoteSettingsContext>
+              auth.isLoading ? <GlobalLoader/> : (
+                <NoteSettingsContext>
+                  <SelectedNoteContext>
+                    <Home /> 
+                  </SelectedNoteContext>
+                </NoteSettingsContext>
+              )
             }
           />
           <Route 
             path='search/:search' 
-            element={ 
-              <NoteSettingsContext>
-                <SelectedNoteContext>
-                  <Home /> 
-                </SelectedNoteContext>
-              </NoteSettingsContext>
+            element={
+              auth.isLoading ? <GlobalLoader/> : (
+                <NoteSettingsContext>
+                  <SelectedNoteContext>
+                    <Home /> 
+                  </SelectedNoteContext>
+                </NoteSettingsContext>
+              )
             }
           />
         </Route>

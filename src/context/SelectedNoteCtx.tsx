@@ -30,7 +30,6 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
             getNoteIdInUrl: true,
         }
     });
-
     
     useEffect(() => {
         if(noteIdInUrl && !selectedNote) {
@@ -41,16 +40,15 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
                     expanded: innerWidth < 1030 ? true : false
                 }
             });
-      }
-      else if(!noteIdInUrl && selectedNote) {
-        setNoteSettings((prevNoteSettings) => {
-            return {
-                ...prevNoteSettings,
-                expanded: false
-            }
-        });
-        setSelectedNote("");
-      }
+        } else if(!noteIdInUrl && selectedNote) {
+            setNoteSettings((prevNoteSettings) => {
+                return {
+                    ...prevNoteSettings,
+                    expanded: false
+                }
+            });
+            setSelectedNote("");
+        }
     }, [noteIdInUrl]);
 
     return (
