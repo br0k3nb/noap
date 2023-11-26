@@ -45,8 +45,7 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                     
                     setUserLoggedIn(true);
                 } catch (err: any) {
-                    console.log(err);
-                    if(!err?.code || err?.code > 1) localStorage.removeItem("@NOAP:SYSTEM");
+                    if(err) localStorage.removeItem("@NOAP:SYSTEM");
                     
                     setUserLoggedIn(false);
                 } finally {
