@@ -1,40 +1,31 @@
 import { useParams } from "react-router-dom";
 
 type Props = {
-    options: {
-        usePage: boolean;
-        absolutePath?: boolean;
-        incrementPage?: boolean;
-        decrementPage?: boolean;
-        removeNoteId?: boolean;
-        goToPageNumber?: number;
-        getNoteIdInUrl?: boolean;
-        getPageInUrl?: boolean; 
-        getSearchQueryInUrl?: boolean;
-    }
+    usePage?: boolean;
+    absolutePath?: boolean;
+    incrementPage?: boolean;
+    decrementPage?: boolean;
+    removeNoteId?: boolean;
+    goToPageNumber?: number;
+    getNoteIdInUrl?: boolean;
+    getPageInUrl?: boolean; 
+    getSearchQueryInUrl?: boolean;
+    removeNoteIdAndIncrementPage?: boolean;
+    removeNoteIdAndDecrementPage?: boolean,
 };
 
-export default function useGetUrl({ options }: Props) {
-    const { 
-        usePage,
-        absolutePath, 
-        incrementPage, 
-        decrementPage, 
-        removeNoteId, 
-        goToPageNumber,
-        getNoteIdInUrl,
-        getPageInUrl,
-        getSearchQueryInUrl
-    } = options || {};
-
-    if(!usePage && (incrementPage || decrementPage)) { 
-        throw new Error("To use 'incrementPage' or 'decrementPage' you must set the 'usePage' property as true");
-    }
-
-    if(usePage && (!incrementPage && !decrementPage)) { 
-        throw new Error("Please specify the 'incrementPage' or 'decrementPage' property");
-    }
-
+export default function useGetUrl({
+    removeNoteId,
+    absolutePath,
+    getPageInUrl,
+    incrementPage,
+    decrementPage,
+    getNoteIdInUrl,
+    goToPageNumber,
+    getSearchQueryInUrl,
+    removeNoteIdAndIncrementPage,
+    removeNoteIdAndDecrementPage,
+}: Props) {
     if(incrementPage && decrementPage) {
         throw new Error("IncrementPage and decrementPage are mutually exclusive");
     }
@@ -42,55 +33,52 @@ export default function useGetUrl({ options }: Props) {
     const { noteId, page: pageNumber, search } = useParams();
 
     const page = pageNumber ? parseInt(pageNumber) : 1;
-    const baseUrl = "notes/page/";
+    const baseUrl = 'notes/page/';
 
-    if(getNoteIdInUrl) return noteId ? noteId : '';
-    if(getSearchQueryInUrl) return search ? search : '';
-    if(getPageInUrl) return page;
+    let url = '';
+    let getters = [] as string[];
 
-    if(usePage && incrementPage) {
-        if(noteId && !removeNoteId) {
-            if(absolutePath) {
-                return `/${baseUrl + (page + 1) + "/" + noteId}`;
-            }
-            return `${baseUrl + (page + 1) + "/" + noteId}`;
-        } 
+    if(getPageInUrl) getters = [...getters, page.toString()];
+    if(getNoteIdInUrl) getters = [...getters, noteId ? noteId : ''];
+    if(getSearchQueryInUrl) getters = [...getters, search ? search : ''];
 
-        if(absolutePath) {
-            return `/${baseUrl + (page + 1)}`; 
+    if(getters.length) return getters;
+
+    switch (true) {
+        case removeNoteIdAndIncrementPage: {
+            url = baseUrl + (page + 1);
+            break;
         }
-        return `${baseUrl + (page + 1)}`;
-    }
-
-    if(usePage && decrementPage) {
-        if(noteId && !removeNoteId) {
-            if(absolutePath) {
-                return `/${baseUrl + (page - 1) + "/" + noteId}`;    
-            }
-            return `${baseUrl + (page - 1) + "/" + noteId}`;
+        case removeNoteIdAndDecrementPage: {
+            url = baseUrl + (page - 1);
+            break;
         }
-        
-        if(absolutePath) {
-            return `/${baseUrl + (page - 1)}`; 
+        case removeNoteId: {
+            url = baseUrl + page;
+            break;
         }
-        return `${baseUrl + (page - 1)}`;
-    }
+        case incrementPage: {
+            if(search) url = baseUrl + (page + 1) + '/search' + search;
+            else url = baseUrl + (page + 1);
 
-    if(!usePage) {
-        const customPageNumber = (goToPageNumber ? goToPageNumber : page);
-
-        if(noteId && !removeNoteId) {
-            if(absolutePath) {
-                return `/${baseUrl + customPageNumber + "/" + noteId}`;
-            }
-            return `${baseUrl + customPageNumber + "/" + noteId}`;
+            break;
         }
+        case decrementPage: {
+            if(search) url = baseUrl + (page - 1) + '/search' + search;
+            else url = baseUrl + (page - 1);
 
-        if(absolutePath) {
-            return `/${baseUrl + customPageNumber}`; 
+            break;
         }
-        return `${baseUrl + customPageNumber}`;
-    }
+        case typeof goToPageNumber === "number": {
+            if(search) url = baseUrl + goToPageNumber + '/search' + search;
+            else url = baseUrl + goToPageNumber;
 
-    return '';
+            break;
+        }
+        default: return 'Specify a parameter to use this hook';
+    };
+
+    if(absolutePath) url = url.padStart((url.length + 1), '/');
+
+    return url;
 }

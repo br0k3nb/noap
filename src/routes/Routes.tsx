@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserDataContext from '../context/UserDataContext';
 import SelectedNoteContext from "../context/SelectedNoteCtx";
 import NoteSettingsContext from "../context/NoteSettingsCtx";
+import PreventUpdatePageFromUrlContext from "../context/PreventPageUpdateCtx";
 import { AxiosInterceptor } from "../components/CustomHttpInterceptor";
 
 export default function RoutesApp() {
@@ -39,14 +40,24 @@ export function CustomRoutes() {
           path="/notes/page/:page"
           element={<ProtectedRoute />}
         >
-          <Route index element={ auth.isLoading ? <GlobalLoader/> : <Home /> } />
+          <Route 
+            index element={ 
+              auth.isLoading ? <GlobalLoader/> :  (
+                <PreventUpdatePageFromUrlContext>
+                  <Home />
+                </PreventUpdatePageFromUrlContext>
+              )
+            } 
+          />
           <Route 
             path='note/:noteId' 
             element={ 
               auth.isLoading ? <GlobalLoader/> : (
                 <NoteSettingsContext>
                   <SelectedNoteContext>
-                    <Home /> 
+                    <PreventUpdatePageFromUrlContext>
+                      <Home /> 
+                    </PreventUpdatePageFromUrlContext>
                   </SelectedNoteContext>
                 </NoteSettingsContext>
               )
@@ -58,14 +69,15 @@ export function CustomRoutes() {
               auth.isLoading ? <GlobalLoader/> : (
                 <NoteSettingsContext>
                   <SelectedNoteContext>
-                    <Home /> 
+                    <PreventUpdatePageFromUrlContext>
+                      <Home /> 
+                    </PreventUpdatePageFromUrlContext>
                   </SelectedNoteContext>
                 </NoteSettingsContext>
               )
             }
           />
         </Route>
-
         <Route path="/help" element={ <LoginHelp /> } />
         <Route path="/sign-up" element={ <SignUp /> } />
         <Route path="/*" element={ <Page404 /> } />

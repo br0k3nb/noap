@@ -19,6 +19,7 @@ import { useDebounce } from "../../hooks/useDebounce";
 import useNoteSettings from "../../hooks/useNoteSettings";
 import useSelectedNote from "../../hooks/useSelectedNote";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
+import usePreventPageUpdateFromUrl from "../../hooks/usePreventPageUpdateFromUrl";
 
 import SessionsContext from "../../context/SessionCtx";
 import RefetchContext from "../../context/RefetchCtx";
@@ -35,7 +36,7 @@ export default function Home() {
   const [screenSize, setScreenSize] = useState<any>({ width: window.innerWidth });
   const [selectedNoteData, setSelectedNoteData] = useState<NoteData | null>(null);
   const [showLoaderOnNavbar, setShowLoaderOnNavbar] = useState(false);
-
+  
   const [pinNotesState, dispatchPinNotes] = useReducer(pinnedNotesReducer, pin_notes_default_value);
   const [labelsState, dispatchLabels] = useReducer(labelsReducer, label_default_value);
   const [notesState, dispatchNotes] = useReducer(notesReducer, note_default_value);
@@ -43,33 +44,27 @@ export default function Home() {
   const delayedSearchLabel = useDebounce(labelsState.search, 500);
   const delayedSearch = useDebounce(notesState.search, 500);
   useUpdateViewport(setScreenSize, 500);
-
-  const getSearchInUrl = useGetUrl({
-    options: {
-      usePage: false,
-      getSearchQueryInUrl: true,
-    }
-  });
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if(getSearchInUrl) {
-      setTimeout(() => {
-        dispatchNotes({ type: 'SEARCH', payload: getSearchInUrl });
-      }, 1000);
-    }
-  }, [getSearchInUrl]);
   
+  const navigate = useNavigate();
   const { navbar } = useNavbar();
   const { userData: { _id } } = useUserData();
   const { selectedNote, setSelectedNote } = useSelectedNote();
+  const { preventPageUpdateFromUrl } = usePreventPageUpdateFromUrl();
   const { noteSettings: { expanded: noteIsExpanded }, setNoteSettings } = useNoteSettings();
+  const [currentPage, searchInUrl] = useGetUrl({ getPageInUrl: true, getSearchQueryInUrl: true });
 
   const { control } = useForm<NoteMetadata>();
   const { control: labelsControl } = useForm<Labels>();
   const { control: pinnedNotesControl } = useForm<NoteMetadata>();
   const { control: sesionsControl } = useForm<Sessions>();
+  
+  useEffect(() => {
+    if(searchInUrl) {
+      setTimeout(() => {
+        dispatchNotes({ type: 'SEARCH', payload: searchInUrl });
+      }, 1000);
+    }
+  }, [searchInUrl]);
 
   const { fields, append, replace, remove } = useFieldArray({
     control,
@@ -90,19 +85,14 @@ export default function Home() {
     control: sesionsControl,
     name: "sessions",
   });
-  
-  const currentPage = useGetUrl({
-    options: {
-      usePage: false,
-      getPageInUrl: true
-    }
-  });
 
   //using these refs to prevent appending the same array two times
   const fetchedLabels = useRef(false);
 
-  const fetchNotesMetadata = async () => { 
-    dispatchNotes({ type: "PAGE", payload: currentPage });    
+  const fetchNotesMetadata = async () => {
+    if(!preventPageUpdateFromUrl) {
+      dispatchNotes({ type: "PAGE", payload: currentPage });
+    }
 
     if(_id) {
       try {
@@ -115,7 +105,7 @@ export default function Home() {
               hasNextPage: pinHasNextPage
             }
           }
-        } = await api.get(`/notes/${currentPage}/${_id}`, {
+        } = await api.get(`/notes/${notesState.page}/${_id}`, {
           params: { 
             pinnedNotesPage: pinNotesState.page,
             search: delayedSearch,
@@ -249,7 +239,7 @@ export default function Home() {
   };
 
   const { isFetching } = useQuery(
-    ["verifyUser", delayedSearch, notesState.page, currentPage, pinNotesState.page, _id], 
+    ["verifyUser", delayedSearch, notesState.page, currentPage, pinNotesState.page, _id, preventPageUpdateFromUrl], 
     fetchNotesMetadata,
     { refetchInterval: 300000, refetchOnWindowFocus: false }
   );
@@ -291,7 +281,7 @@ export default function Home() {
   };
 
   const isMobileDevice = screenSize.width <= 640 ? true : false;
-
+  
   return (
     <div className="!h-screen">
       <NavbarContext>
@@ -316,40 +306,40 @@ export default function Home() {
         >
           <div className="flex flex-row h-screen">
             <Notes {...notesProps}/>
-              <RefetchContext 
-                fetchSelectedNote={fetchSelectedNoteData}
-                fetchNotes={fetchNotesMetadata} 
-                isFetching={isFetching}
+            <RefetchContext 
+              fetchSelectedNote={fetchSelectedNoteData}
+              fetchNotes={fetchNotesMetadata} 
+              isFetching={isFetching}
+            >
+              <LabelsCtx  
+                pageLabel={labelsState.page}
+                searchLabel={labelsState.search}
+                dispatchLabels={dispatchLabels}
+                hasNextPageLabel={labelsState.hasNextPage}
               >
-                <LabelsCtx  
-                  pageLabel={labelsState.page}
-                  searchLabel={labelsState.search}
-                  dispatchLabels={dispatchLabels}
-                  hasNextPageLabel={labelsState.hasNextPage}
+                <div
+                  className={`
+                    !z-50 flex flex-col overflow-hidden w-screen h-screen bg-[#ffffff] dark:bg-[#0f1011] text-black dark:text-gray-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
+                    ${!noteIsExpanded && "hidden lg:flex"}
+                  `}
+                  id="note-body"
                 >
-                  <div
-                    className={`
-                      !z-50 flex flex-col overflow-hidden w-screen h-screen bg-[#ffffff] dark:bg-[#0f1011] text-black dark:text-gray-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 
-                      ${!noteIsExpanded && "hidden lg:flex"}
-                    `}
-                    id="note-body"
-                  >
-                    <NoteToolbar
-                      labels={labels}
-                      labelIsFetching={labelIsFetching}
-                      selectedNoteData={selectedNoteData}
-                      noteDataIsFetching={noteDataIsFetching}
-                      setSelectedNoteData={setSelectedNoteData}
-                      notes={{ append, deleteNote, fetchNotesMetadata, notesMetadata: fields, remove }}
-                      pinNotes={{ pinNotesMetadata: pinNotes, appendPinNotes, dispatchPinNotes, pinNotesState, removePinNotes }}
-                    />
-                    <NoteBody 
-                      noteDataIsFetching={noteDataIsFetching}
-                      selectedNoteData={selectedNoteData}
-                    />          
-                  </div>
-                </LabelsCtx>
-              </RefetchContext>
+                  <NoteToolbar
+                    labels={labels}
+                    labelIsFetching={labelIsFetching}
+                    selectedNoteData={selectedNoteData}
+                    noteDataIsFetching={noteDataIsFetching}
+                    setSelectedNoteData={setSelectedNoteData}
+                    notes={{ append, deleteNote, fetchNotesMetadata, notesMetadata: fields, remove }}
+                    pinNotes={{ pinNotesMetadata: pinNotes, appendPinNotes, dispatchPinNotes, pinNotesState, removePinNotes }}
+                  />
+                  <NoteBody 
+                    noteDataIsFetching={noteDataIsFetching}
+                    selectedNoteData={selectedNoteData}
+                  />          
+                </div>
+              </LabelsCtx>
+            </RefetchContext>
           </div>
         </div>
       </NavbarContext>

@@ -98,26 +98,12 @@ export default function index({
   const [openChangeNoteBackgroundModal, setOpenChangeNoteBackgroundModal] = useState(false);
 
   const { notesMetadata, append, remove, deleteNote, fetchNotesMetadata } = notes;
-  const {
-    appendPinNotes,
-    dispatchPinNotes,
-    pinNotesMetadata,
-    pinNotesState,
-    removePinNotes,
-  } = pinNotes;
+  const { appendPinNotes, dispatchPinNotes, pinNotesMetadata, pinNotesState, removePinNotes } = pinNotes;
 
-  const {
-    noteSettings: { expanded },
-    setNoteSettings,
-  } = useNoteSettings();
+  const { noteSettings: { expanded }, setNoteSettings } = useNoteSettings();
 
-  const getUrlWithoutNoteId = useGetUrl({
-    options: {
-      usePage: false,
-      removeNoteId: true,
-      absolutePath: true,
-    },
-  });
+  const [pageInUrl, noteIdInUrl] = useGetUrl({ getPageInUrl: true, getNoteIdInUrl: true });
+  const getUrlWithoutNoteId = useGetUrl({ removeNoteId: true, absolutePath: true });
 
   const navigate = useNavigate();
   const { fetchNotes } = useRefetch();
@@ -137,20 +123,6 @@ export default function index({
   const { userData, setUserData } = useUserData();
 
   const fullscreenChangeCallbackWasCalled = useRef(false);
-
-  const getPageInUrl = useGetUrl({
-    options: {
-      usePage: false,
-      getPageInUrl: true,
-    },
-  });
-
-  const getNoteIdInUrl = useGetUrl({
-    options: {
-      usePage: false,
-      getNoteIdInUrl: true,
-    },
-  });
 
   useEffect(() => {
     resetNoteName({ name: selectedNoteData?.name });
@@ -314,8 +286,8 @@ export default function index({
     navigate(
       `/notes/page/${
         !(notesMetadata.length - 1)
-          ? (getPageInUrl as number) - 1
-          : getPageInUrl
+          ? (Number(pageInUrl) - 1)
+          : pageInUrl
       }`
     );
   };
@@ -394,7 +366,7 @@ export default function index({
   return (
     <>
       {!noteDataIsFetching &&
-        getNoteIdInUrl &&
+        noteIdInUrl &&
         selectedNote &&
         selectedNoteData && (
           <>

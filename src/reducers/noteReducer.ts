@@ -21,7 +21,7 @@ export const notesReducer = (state: notesState, action: notesActions) => {
         case "PAGE" : {
             return {
               ...state,
-              page: action.payload,
+              page: Number(action.payload),
             };
         }
         case "TOTAL_DOCS" : {

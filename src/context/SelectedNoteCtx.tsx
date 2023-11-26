@@ -23,14 +23,8 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
     const [selectedNote, setSelectedNote] = useState('');
     
     const { setNoteSettings } = useNoteSettings();
+    const [noteIdInUrl] = useGetUrl({ getNoteIdInUrl: true });
 
-    const noteIdInUrl = useGetUrl({
-        options: {
-            usePage: false,
-            getNoteIdInUrl: true,
-        }
-    });
-    
     useEffect(() => {
         if(noteIdInUrl && !selectedNote) {
             setSelectedNote(noteIdInUrl as string);

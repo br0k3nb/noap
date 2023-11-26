@@ -12,19 +12,10 @@ type Props = {
   noteDataIsFetching: boolean;
 };
 
-export default function NoteBody({
-  selectedNoteData,
-  noteDataIsFetching
-}: Props) {
-  const { noteSettings: { expanded } } = useNoteSettings();
+export default function NoteBody({ selectedNoteData, noteDataIsFetching }: Props) {
   const { selectedNote } = useSelectedNote();
-
-  const getNoteIdInUrl = useGetUrl({
-    options: { 
-      usePage: false,    
-      getNoteIdInUrl: true,
-    }
-  });
+  const { noteSettings: { expanded } } = useNoteSettings();
+  const getNoteIdInUrl = useGetUrl({ getNoteIdInUrl: true });
 
   return (
     <>

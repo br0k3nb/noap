@@ -8,6 +8,7 @@ import { VscAdd } from 'react-icons/vsc';
 import useGetUrl from "../../hooks/useGetUrl";
 import useNavbar from "../../hooks/useNavbar";
 import useSelectedNote from "../../hooks/useSelectedNote";
+import usePreventPageUpdateFromUrl from "../../hooks/usePreventPageUpdateFromUrl";
 
 import { motion } from "framer-motion";
 
@@ -24,16 +25,14 @@ type Props = {
 export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, addNewNote }: Props) {
     const { navbar, setNavbar } = useNavbar();
     const { setSelectedNote } = useSelectedNote();
-
+    const { setPreventPageUpdateFromUrl } = usePreventPageUpdateFromUrl();
     const { hasNextPage, page, search, totalDocs } = notesState;
     const { totalDocs: pinTotalDocs } = pinNotesState;
 
-    const getSearchInUrl = useGetUrl({
-        options: {
-            usePage: false,
-            getSearchQueryInUrl: true,
-        }
-    });
+    const [getSearchInUrl] = useGetUrl({ getSearchQueryInUrl: true });    
+    const getBaseUrl = useGetUrl({ absolutePath: true, removeNoteId: true });
+    const forwardPage = useGetUrl({ removeNoteIdAndIncrementPage: true, absolutePath: true });
+    const backwardPage = useGetUrl({ removeNoteIdAndDecrementPage: true, absolutePath: true });
 
     const [showSearch, setShowSearch] = useState(getSearchInUrl ? true : false);
     const [isAddingNote, setIsAddingNote] = useState(false);
@@ -41,15 +40,6 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
     const allDocs = 
         totalDocs && pinTotalDocs ? totalDocs + pinTotalDocs
         : !totalDocs && pinTotalDocs ? pinTotalDocs : totalDocs;
-
-    
-    const getBaseUrl = useGetUrl({
-        options: {
-            usePage: false,
-            absolutePath: true,
-            removeNoteId: true
-        }
-    });
 
     const handleSearchClick = () => {
         setShowSearch(showSearch ? false : true);
@@ -61,13 +51,18 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
     };
 
     const onInputChange = (currentTarget: HTMLInputElement) => {
-        dispatchNotes({ type: 'SEARCH', payload: currentTarget.value });
+        setPreventPageUpdateFromUrl(true);
         setSelectedNote('');
+
+        dispatchNotes({ type: 'PAGE', payload: 1 });
+        dispatchNotes({ type: 'SEARCH', payload: currentTarget.value });
         
         if(!currentTarget.value) {
+            setPreventPageUpdateFromUrl(false);
+            dispatchNotes({ type: 'PAGE', payload: getBaseUrl.slice(12) });
             return history.replaceState({}, "", getBaseUrl as string);
-        } 
-
+        }
+        
         const nextURL = '/notes/page/1/search/' + currentTarget.value;
         history.replaceState({}, "", nextURL);
     };
@@ -91,23 +86,16 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
         }
     };
 
-    const forwardPage = useGetUrl({ 
-        options: {
-            usePage: true,
-            incrementPage: true,
-            absolutePath: true,
-            removeNoteId: true
-        }
-    });
+    const getFowardPage = () => {
+        if(notesState.search) {
+            const basePageNumber = location.pathname.slice(12);
+            const getNumberFromCurrentLocation = new RegExp(/\d+?(?=\/)/);
+            const currentLocationPageNumber = basePageNumber.match(getNumberFromCurrentLocation) as string[];
 
-    const backwardPage = useGetUrl({ 
-        options: {
-            usePage: true,
-            decrementPage: true,
-            absolutePath: true,
-            removeNoteId: true
+            return `/notes/page/${Number(currentLocationPageNumber[0]) + 1}`;   
         }
-    });
+        else return forwardPage;
+    }
 
     const hide = { opacity: 0, transitionEnd: { display: "none" }};
     const show = { display: "block", opacity: 1 };
@@ -199,7 +187,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
                             onClick={() => handleNextPageClick()}
-                            to={search ?`${forwardPage}/search/${search}` : forwardPage as string }
+                            to={search ?`${getFowardPage()}/search/${search}` : forwardPage as string }
                         > 
                             <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />
                         </Link>

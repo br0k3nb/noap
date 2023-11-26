@@ -47,19 +47,13 @@ export default function CardNotes({
 
     const { page } = notesState;
     const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
-
-    const goBackUrl = useGetUrl({
-        options: {
-            usePage: false,
-            absolutePath: true,
-            goToPageNumber: 1,
-        }
-    });
-
+    
     const navigate = useNavigate();
-    const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
     const { setSelectedNote } = useSelectedNote();
     const { setNoteSettings } = useNoteSettings();
+    const goBackUrl = useGetUrl({ absolutePath: true, goToPageNumber: 1 });
+    const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
+
     useUpdateViewport(setViewPort, 500);
 
     const hours = (date: string) => moment(date).format("LT");
@@ -276,15 +270,8 @@ export function Test ({ note, idx, handleNoteClick, days, hours, customWidth, no
     const { image, label, _id, body, createdAt, updatedAt, name: noteName, labelArraySize } = note;
     const { color, type, fontColor, name } = label || {};
 
-    const baseUrl = useGetUrl({
-        options: {
-            usePage: false,
-            absolutePath: true,
-            removeNoteId: true
-        }
-    });
-
     const { selectedNote } = useSelectedNote();
+    const baseUrl = useGetUrl({ absolutePath: true, removeNoteId: true });
 
     return (
         <Link   
