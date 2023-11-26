@@ -11,7 +11,7 @@ type Props = {
         subText?: string;
         loader?: boolean;
         onClose?: () => void;
-        alertComponentIcon?: string;
+        alertComponentIcon?: "warning" | "info";
         alertComponentText?: string;
         alertComponentTextClassName?: string;
         modalWrapperClassName?: string;

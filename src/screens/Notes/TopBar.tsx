@@ -125,7 +125,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                             <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Search">
                                 <button 
                                     type="button"
-                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[7px] py-2 rounded"
+                                    className="lg:hover:bg-[#dadada] lg:dark:hover:bg-stone-600 px-[7px] py-2 rounded"
                                     onClick={() => handleSearchClick()}
                                 >
                                     <BsSearch size={18} />
@@ -133,7 +133,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                             </div>
                             <button 
                                 type="button"
-                                className="sm:hidden hover:bg-[#dadada] dark:hover:bg-stone-600 px-[7px] py-2 rounded"
+                                className="sm:hidden px-[7px] py-2 rounded"
                                 onClick={() => handleAddNewNote()}
                             >
                                 {isAddingNote ? (

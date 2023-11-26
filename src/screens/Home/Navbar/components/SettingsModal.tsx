@@ -233,8 +233,12 @@ export default function SettingsModal({ open, setOpen }: Props) {
                     open={openSignOutConfirmationModal}
                     setOpen={setOpenSignOutConfirmationModal}
                     actionButtonFn={() => auth.signOut()}
-                    mainText='Are you sure you want to sign out ?'
+                    mainText=''
                     options={{ 
+                        alertComponentIcon: "warning",
+                        alertComponentText: "Are you sure to sign out ?",
+                        alertComponentTextClassName: "text-start text-sm pt-1 px-5 xxs:px-2 xxs:text-xs",
+                        actionButtonsWrapperClassName: "border border-transparent border-t-gray-600 pt-4",
                         actionButtonText: "Sign out",
                         modalWrapperClassName: "!w-96 xxs:!w-80",
                         mainTextClassName: "text-center text-[14px] xxs:text-[12px]",
@@ -294,7 +298,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 onClick={() => setOpenSignOutConfirmationModal(true)}
                             >
                                 <div className="flex flex-row justify-center">
-                                    <p className='my-auto'>Log out</p>
+                                    <p className='my-auto'>Sign out</p>
                                     {
                                         !showOpenDoorIcon ? ( 
                                             <BsDoorClosedFill size={18} className='ml-2 '/> 

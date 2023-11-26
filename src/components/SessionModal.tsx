@@ -7,6 +7,7 @@ import { TfiMobile } from 'react-icons/tfi';
 
 import useUserData from "../hooks/useUserData";
 import useSession from "../hooks/useSession";
+import useAuth from "../hooks/useAuth";
 
 import Modal from "./Modal";
 import ConfirmationModal from "./ConfirmationModal";
@@ -26,15 +27,19 @@ type Props = {
 export default function SessionModal({ open, setOpen, closeFn }: Props) {
     const { sessions, isFetching, fetchSessions } = useSession();
     const { userData: { _id } } = useUserData();
+    const { signOut } = useAuth();
 
     const [isDeleting, setIsDeleting] = useState('');
-    const [openConfirmationModal, setOpenConfirmationModal] = useState(false)
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
     const [selectedSession, setSelectedSession] = useState<null | string>(null);
+    const [disconnectAllSessionsLoader, setDisconnectAllSessionsLoader] = useState(false);
+    const [openTerminateAllConfirmationModal, setOpenTerminateAllConfirmationModal] = useState(false);
+
     const token = localStorage.getItem("@NOAP:SYSTEM") || "{}";
 
     const days = (date: string) => moment(date).format("ll");
     
-    const handleDisconnectSessions = async (sessionId: string) => {
+    const handleDisconnectSession = async (sessionId: string) => {
         try {
             setIsDeleting(sessionId);
             await api.delete(`/delete/session/${_id}/${sessionId}`);
@@ -46,6 +51,21 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
         } finally {
             setIsDeleting('');
             setOpenConfirmationModal(false);
+        }
+    };
+    
+    const handleDisconnectAllSessions = async () => {
+        try {
+            setDisconnectAllSessionsLoader(true);
+            const { data: { message } } = await api.delete(`/delete/all/sessions/${_id}`);
+            await signOut();
+
+            toastAlert({ icon: "success", title: message, timer: 2000 });
+        } catch (err: any) {
+            toastAlert({ icon: "error", title: err.message, timer: 2000 });
+        } finally {
+            setDisconnectAllSessionsLoader(false);
+            setOpenTerminateAllConfirmationModal(false);
         }
     };
 
@@ -69,7 +89,7 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
                 <ConfirmationModal
                     open={openConfirmationModal}
                     setOpen={setOpenConfirmationModal}
-                    actionButtonFn={() => handleDisconnectSessions(selectedSession as string)}
+                    actionButtonFn={() => handleDisconnectSession(selectedSession as string)}
                     mainText={`Are you sure you want disconnect this session?`}
                     options={{
                         actionButtonText: "Disconnect",
@@ -79,13 +99,29 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
                         actionButtonsWrapperClassName: "border border-transparent border-t-gray-600 pt-4"
                     }}
                 />
+                <ConfirmationModal
+                    open={openTerminateAllConfirmationModal}
+                    setOpen={setOpenTerminateAllConfirmationModal}
+                    actionButtonFn={() => handleDisconnectAllSessions()}
+                    mainText={""}
+                    options={{
+                        alertComponentIcon: "warning",
+                        alertComponentText: "Are you sure you terminate all sessions (including yours) ?",
+                        alertComponentWrapperClassName: "xxs:px-2",
+                        alertComponentTextClassName: "text-start xxs:text-xs",
+                        actionButtonText: disconnectAllSessionsLoader ? "Disconnecting..." : "Disconnect",
+                        modalWrapperClassName: "!w-96 xxs:!w-80",
+                        cancelButtonText: "Go back",
+                        actionButtonsWrapperClassName: "border border-transparent border-t-gray-600 pt-4",
+                    }}
+                />
                 <div className="flex flex-row space-x-2 pb-2">
                     <p className="text-xs uppercase tracking-widest">Active sessions</p>
                     <MdCable size={18} />
                 </div>
                 <div className="overflow-y-scroll max-h-96 px-2 scrollbar-thin dark:scrollbar-thumb-gray-300">
                     {(!isFetching && sessions) ? (
-                        <div className="mt-5 flex flex-col space-y-5">
+                        <div className="flex flex-col space-y-5 mt-5 mb-3">
                             {sessions.map((session, index) => {
                                 return (
                                     <div 
@@ -144,6 +180,16 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
                         </div>
                     )}
                 </div>
+                <button 
+                    className="px-3 w-full py-2 mt-5 rounded-full border border-gray-500 text-[14px] xxs:text-[12px] uppercase tracking-wide hover:bg-red-700 hover:text-white shadow-md transition-all duration-500 ease-in-out"
+                    onClick={() =>  setOpenTerminateAllConfirmationModal(true)}
+                    type="button"
+                >
+                    <div className="flex flex-row space-x-2 justify-center">
+                        <span>Disconnect all active sessions</span>
+                        <VscDebugDisconnect className="my-auto text-lg"/>
+                    </div>
+                </button>
             </div>
         </Modal>
     ) 
