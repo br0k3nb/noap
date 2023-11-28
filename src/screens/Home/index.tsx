@@ -146,7 +146,14 @@ export default function Home() {
       } catch (err: any) {
         console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
+
         setSelectedNoteData(null);
+        setNoteSettings((prevNoteSettings) => {
+          return {
+              ...prevNoteSettings,
+              expanded: false
+          }
+        });
       } 
     }
   };
