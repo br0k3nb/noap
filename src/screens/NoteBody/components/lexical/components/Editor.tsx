@@ -92,6 +92,22 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       return () => removeEventListener("resize", updateViewPortWidth);
     }, [isSmallWidthViewport, expanded]);
 
+    useEffect(() => { 
+      let timer: ReturnType<typeof setTimeout> | null = null;  
+      const editorContainer = document.getElementById("editor-parent-container") as HTMLElement;
+    
+      const fn = () => {
+        if(timer) clearTimeout(timer);
+
+        timer = setTimeout(() => {
+          save(editor.getEditorState());
+        }, 5000);
+      };
+      editorContainer.addEventListener("keyup", fn, false);
+
+      return () => editorContainer.removeEventListener("keyup", fn);
+    }, []);
+
     useEffect(() => {
       if(readMode) editor.setEditable(false);
       else editor.setEditable(true);

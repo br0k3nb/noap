@@ -2,9 +2,7 @@ import { useRef, useEffect, useState } from "react";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { CLEAR_HISTORY_COMMAND } from "lexical";
-
-import { pack, unpack } from "msgpackr";
+import { CLEAR_HISTORY_COMMAND, EditorState } from "lexical";
 
 import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
 import { SharedHistoryContext } from "./context/SharedHistoryContext";
@@ -15,10 +13,9 @@ import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
 import useRefetch from "../../../../hooks/useRefetch";
 import useSelectedNote from "../../../../hooks/useSelectedNote";
 
-import { toastAlert } from "../../../../components/Alert";
-
 import api from "../../../../services/api";
 
+import { toastAlert } from "../../../../components/Alert";
 import Editor from "./components/Editor";
 
 type Props = { 
@@ -26,7 +23,7 @@ type Props = {
 };
 
 export default function App({ noteData }: Props): JSX.Element {
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<HTMLElement | null>(null);
   const lastSelectedNotes = useRef<string | null | undefined>(null);
 
   const [saveSpinner, setSaveSpinner] = useState(false);
@@ -34,42 +31,41 @@ export default function App({ noteData }: Props): JSX.Element {
   const { selectedNote } = useSelectedNote();
   const { fetchNotes } = useRefetch();
   
-  useEffect(() => { lastSelectedNotes.current = selectedNote }, [selectedNote]);
+  useEffect(() => { 
+    lastSelectedNotes.current = selectedNote 
+  }, [selectedNote]);
     
-    const saveNote = async (currentState: any) => {
-      setSaveSpinner(true);
+  const saveNote = async (currentState: EditorState) => {
+    setSaveSpinner(true);
 
+    if(!editorRef?.current) throw new Error("Editor error!");
+    else {
       let imageSrc = '';
-      
-      const body = editorRef?.current.firstChild.children[0].innerHTML;
-
+      const body = (editorRef?.current.firstChild as HTMLElement).children[0].innerHTML;
+  
       const findImages = body.match(/<img[^>]+>/gm);
-
       const removeAllHTMLTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
-      const addSpaceBeforeCaptalLetters = removeAllHTMLTags.replace(/(?<=[a-z])(?=[A-Z0-9])/g, ' ').trim().toString();
+      const addSpaceBeforeCaptalLetters = removeAllHTMLTags.replace(/(?<=[a-z])(?=[A-Z0-9])/g, ' ').trim().toString().slice(0,136);
       const removeImageActionMenuText = addSpaceBeforeCaptalLetters.replace(/✕Download Fullscreen Delete/g, "");
       const removeLoadingStatusText = removeImageActionMenuText.replace(/loading\.\.\./g, "");
       const removeBottomBarText = removeLoadingStatusText.replace(/Detach all labels No labels attached!Save note Confirmation✕Are you sure you want to remove all labels attached to this note\?This action will only detach labels from this note!Cancel Delete/gm, "");
-
-      if(findImages && findImages.length !== 0) {
+  
+      if(findImages && findImages.length) {
         const regToGetSrcFromImg = new RegExp(/<img.*?src=["|'](.*?)["|']/);
-        const srcFromImg = regToGetSrcFromImg.exec(findImages[0]) as any;
-
+        const srcFromImg = regToGetSrcFromImg.exec(findImages[0]) as RegExpExecArray;
+  
         imageSrc = srcFromImg[1];
       }
       
       try {
         if (currentState) {
           const state = JSON.stringify(currentState);
-          
-          const compressState = pack({ state });
-          const resultState = unpack(compressState);
-
+  
           const { data: { message } } = await api.patch("/edit",
             {
-              body: removeBottomBarText ? removeBottomBarText.slice(0,136) : '',
+              body: removeBottomBarText ? removeBottomBarText : '',
               image: imageSrc,
-              state: resultState.state,
+              state: state,
               _id: selectedNote,
               stateId: noteData.state._id
             }
@@ -84,6 +80,7 @@ export default function App({ noteData }: Props): JSX.Element {
         console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 2000 });
       }
+    }
   };
 
   const initialConfig = {
