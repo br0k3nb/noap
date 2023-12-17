@@ -100,7 +100,7 @@ export default function index({
   const { notesMetadata, append, remove, deleteNote, fetchNotesMetadata } = notes;
   const { appendPinNotes, dispatchPinNotes, pinNotesMetadata, pinNotesState, removePinNotes } = pinNotes;
 
-  const { noteSettings: { expanded }, setNoteSettings } = useNoteSettings();
+  const { noteSettings: { expanded, status }, setNoteSettings } = useNoteSettings();
 
   const [pageInUrl, noteIdInUrl] = useGetUrl({ getPageInUrl: true, getNoteIdInUrl: true });
   const getUrlWithoutNoteId = useGetUrl({ removeNoteId: true, absolutePath: true });
@@ -715,14 +715,19 @@ export default function index({
               openNoteInfoModal={openNoteInfoModal}
               setOpenNoteInfoModal={setOpenNoteInfoModal}
             />
-
             {innerWidth > 1350 ? (
               <div className="flex flex-row justify-start mr-3 py-2 absolute right-0 top-2">
                 <div className="flex flex-row">
-                  <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">
-                    {!readMode ? "Editing" : "Reading"} -{" "}
+                  <div className="flex flex-row space-x-2">
+                    <span className={`text-sm xxs:text-[10px] px-0 ${status && status === 'saving' && "animate-pulse font-bold text-white"}`}>
+                      {!status ? "Editing" : (status[0].toUpperCase() + status.slice(1))}
+                    </span>
+                    {status && status === 'saving' && <span className="loading loading-spinner loading-sm"/>}
+                  </div>
+                  <span className="px-2">-</span>
+                  <span className="text-sm xxs:text-[10px] xxs:px-0">
                     {selectedNoteData?.name?.slice(0, 48)}
-                  </p>
+                  </span>
                 </div>
                 <div className="mx-1 h-[21px] xxs:!h-[13.5px] xxs:mt-[3px] xxs:mx-2 w-[1px] border border-transparent border-r-gray-500" />
                 <p className="px-2 text-sm xxs:text-[10px] xxs:px-0">

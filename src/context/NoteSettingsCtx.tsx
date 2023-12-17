@@ -9,6 +9,7 @@ type NoteSettingsObjType = {
     pinned: boolean;
     permissions?: string[];
     noteBackgroundColor?: string;
+    status?: 'editing' | 'saving' | 'reading';
 };
 
 type NoteSettingsContextProps = {

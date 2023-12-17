@@ -108,7 +108,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
             <div 
               className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
               style={{
-                width: currentScreenSize < 1280 ? editorWidth - 150 : editorWidth - 270
+                width: currentScreenSize < 1280 ? editorWidth - 150 : editorWidth - 55
               }}
             >
               {note.labels.length > 0 && (
@@ -170,7 +170,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 </>
               )}
             </div>
-              <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
+              {/* <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
               <button
                 onClick={() => save(editor.getEditorState())}
                 className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-[#d9dbde] dark:!bg-[#202020] px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 hover:text-gray-200 transition-all ease-in-out duration-500"
@@ -189,7 +189,7 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                     <AiFillSave size={20} />
                   </div>
                 )}
-              </button>
+              </button> */}
           </div>
         </div>
         <ConfirmationModal

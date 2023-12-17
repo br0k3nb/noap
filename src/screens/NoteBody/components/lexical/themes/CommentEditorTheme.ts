@@ -1,4 +1,4 @@
-import baseTheme from './PlaygroundEditorTheme';
+import baseTheme from './EditorTheme';
 
 import './CommentEditorTheme.css';
 

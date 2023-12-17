@@ -6,12 +6,13 @@ import { CLEAR_HISTORY_COMMAND, EditorState } from "lexical";
 
 import { SharedAutocompleteContext } from "./context/SharedAutocompleteContext";
 import { SharedHistoryContext } from "./context/SharedHistoryContext";
-import PlaygroundNodes from "./nodes/PlaygroundNodes";
+import NoapNodes from "./nodes/NoapNodes";
 import { TableContext } from "./plugins/TablePlugin";
-import PlaygroundEditorTheme from "./themes/PlaygroundEditorTheme";
+import EditorTheme from "./themes/EditorTheme";
 
 import useRefetch from "../../../../hooks/useRefetch";
 import useSelectedNote from "../../../../hooks/useSelectedNote";
+import useNoteSettings from "../../../../hooks/useNoteSettings";
 
 import api from "../../../../services/api";
 
@@ -28,6 +29,7 @@ export default function App({ noteData }: Props): JSX.Element {
 
   const [saveSpinner, setSaveSpinner] = useState(false);
   
+  const { setNoteSettings, noteSettings }  = useNoteSettings();
   const { selectedNote } = useSelectedNote();
   const { fetchNotes } = useRefetch();
   
@@ -59,8 +61,14 @@ export default function App({ noteData }: Props): JSX.Element {
       
       try {
         if (currentState) {
+          setNoteSettings((prevSettings) => {
+            return {
+              ...prevSettings,
+              status: "saving"
+            }
+          });
+
           const state = JSON.stringify(currentState);
-  
           const { data: { message } } = await api.patch("/edit",
             {
               body: removeBottomBarText ? removeBottomBarText : '',
@@ -79,6 +87,13 @@ export default function App({ noteData }: Props): JSX.Element {
       } catch (err: any) {
         console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 2000 });
+      } finally {
+        setNoteSettings((prevSettings) => {
+          return {
+            ...prevSettings,
+            status: "editing"
+          }
+        });
       }
     }
   };
@@ -86,9 +101,9 @@ export default function App({ noteData }: Props): JSX.Element {
   const initialConfig = {
     editorState: undefined,
     namespace: "Noap",
-    nodes: [...PlaygroundNodes],
+    nodes: [...NoapNodes],
     onError: (error: Error) => { throw error },
-    theme: PlaygroundEditorTheme,
+    theme: EditorTheme,
   };
 
   const UpdatePlugin = () => {

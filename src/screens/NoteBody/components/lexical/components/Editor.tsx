@@ -101,7 +101,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
         timer = setTimeout(() => {
           save(editor.getEditorState());
-        }, 5000);
+        }, 2500);
       };
       editorContainer.addEventListener("keyup", fn, false);
 

@@ -3,7 +3,6 @@ import type { Klass, LexicalNode } from 'lexical';
 import { CodeHighlightNode, CodeNode } from '@lexical/code';
 import { HashtagNode } from '@lexical/hashtag';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
-// import { ListItemNode } from '@lexical/list';
 import { ListItemNode, ListNode } from './ListNode';
 import { MarkNode } from '@lexical/mark';
 import { OverflowNode } from '@lexical/overflow';
@@ -28,7 +27,7 @@ import { TableNode as NewTableNode } from './TableNode';
 import { TweetNode } from './TweetNode';
 import { YouTubeNode } from './YouTubeNode';
 
-const PlaygroundNodes: Array<Klass<LexicalNode>> = [
+const NoapNodes: Array<Klass<LexicalNode>> = [
     HeadingNode,
     ListNode,
     ListItemNode,
@@ -62,4 +61,4 @@ const PlaygroundNodes: Array<Klass<LexicalNode>> = [
     CollapsibleTitleNode
 ];
 
-export default PlaygroundNodes;
+export default NoapNodes;

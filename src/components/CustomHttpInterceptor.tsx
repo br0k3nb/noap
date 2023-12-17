@@ -12,7 +12,6 @@ const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
     const auth = useAuth();
 
     useEffect(() => {
-
         const requestInterceptor = api.interceptors.request.use(config => {
             const token = localStorage.getItem('@NOAP:SYSTEM') || "{}";
             if (token) config.headers.Authorization = `Bearer ${token}`;
