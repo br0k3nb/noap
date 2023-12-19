@@ -29,7 +29,7 @@ export default function App({ noteData }: Props): JSX.Element {
 
   const [saveSpinner, setSaveSpinner] = useState(false);
   
-  const { setNoteSettings, noteSettings }  = useNoteSettings();
+  const { setNoteSettings }  = useNoteSettings();
   const { selectedNote } = useSelectedNote();
   const { fetchNotes } = useRefetch();
   

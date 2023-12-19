@@ -1,7 +1,8 @@
-import { useState, Dispatch } from "react";
+import { useState, Dispatch, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FieldArrayWithId } from "react-hook-form";
 
+import { AiFillInfoCircle } from "react-icons/ai";
 import { BsFillPinAngleFill } from "react-icons/bs";
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from 'react-icons/md';
 
@@ -11,8 +12,9 @@ import useSelectedNote from "../../hooks/useSelectedNote";
 import useNoteSettings from "../../hooks/useNoteSettings";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
-import no_notes_found from '../../assets/no_notes_found.svg';
+import Modal from "../../components/Modal";
 import Loader from "../../components/Loader";
+import no_notes_found from '../../assets/no_notes_found.svg';
 
 import moment from "moment";
 import "moment/locale/pt-br";
@@ -43,36 +45,103 @@ export default function Lists({
     delayedSearch
  }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
+    const [pageWasRefreshed, setPageWasRefreshed] = useState(false);
     const [viewPort, setViewPort] = useState({ width: window.innerWidth });
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
     const { page } = notesState;
     const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
     
     const navigate = useNavigate();
     const { setSelectedNote } = useSelectedNote();
-    const { setNoteSettings } = useNoteSettings();
+    const baseUrl = useGetUrl({ absolutePath: true, removeNoteId: true });
+    const { setNoteSettings, noteSettings: { status } } = useNoteSettings();
     const goBackUrl = useGetUrl({ absolutePath: true, goToPageNumber: 1 });
     const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
 
     useUpdateViewport(setViewPort, 500);
 
-    // const hours = (date: string) => moment(date).format("LT");
     const days = (date: string) => moment(date).format("ll");
 
-    const handleNoteClick = (_id: string) => {
-        setSelectedNote(_id);
-        setNoteSettings((prevSettings) => {
-            return {
-                ...prevSettings,
-                expanded: window.outerWidth <= 1030 ? true : false
+    useEffect(() => {
+        const fn = (e: Event) => {
+            if(status && status === "saving") {
+                e.preventDefault();
+                console.log('fsidfhasjfhjadsfa');
+                setPageWasRefreshed(true);
+                setOpenConfirmationModal(true);
             }
-        });
+        };
+        window.addEventListener('beforeunload', fn);
+
+        return () => window.removeEventListener('beforeunload', fn);
+    }, [status]);
+
+    useEffect(() => {
+        if(status && status !== 'saving') {
+            if(selectedNoteId) {
+                setSelectedNote(selectedNoteId);
+                navigate(`${baseUrl}/note/${selectedNoteId}`);
+                setSelectedNoteId(null);
+                setOpenConfirmationModal(false);
+            } else if (pageWasRefreshed) {
+                setPageWasRefreshed(false);
+                setOpenConfirmationModal(false);
+                location.reload();
+            }
+        }
+    }, [status]);
+
+    const handleNoteClick = (_id: string) => {
+        if(status && status === 'saving') {
+            setSelectedNoteId(_id);
+            setOpenConfirmationModal(true);
+        } else {
+            setSelectedNote(_id);
+            setNoteSettings((prevSettings) => {
+                return {
+                    ...prevSettings,
+                    expanded: window.outerWidth <= 1030 ? true : false
+                }
+            });
+        }
     };
 
     return (
         <div 
             className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-500 overflow-x-hidden"
         >
+            <Modal
+                title="Hold up..."
+                open={openConfirmationModal}
+                setOpen={setOpenConfirmationModal}
+                options={{
+                    titleWrapperClassName: "!px-6",
+                    titleCustomClassName: "xxs:!text-[20px]",
+                    modalWrapperClassName: "px-0 w-[24rem] xxs:!w-[21rem]",
+                }}
+            >
+                <div className="px-6">
+                    <div className="flex flex-col justify-center items-center space-y-6 mt-5">
+                        <div className="alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32">
+                            <div className="text-[13.5px] uppercase tracking-wide flex flex-row">
+                                <div className="mr-3 my-auto">
+                                    <AiFillInfoCircle 
+                                        size={30}
+                                        className="stroke-info flex-shrink-0 text-blue-500" 
+                                    />
+                                </div>
+                                <span className="text-gray-300">
+                                    To avoid any data loss, please wait for the note finish saving!
+                                </span>
+                            </div>
+                        </div>
+                        <p className="text-md uppercase tracking-wide animate-pulse">Saving...</p>
+                        <span className="loading loading-spinner loading-lg"/>
+                    </div>
+                </div>
+            </Modal>
             {isFetching ? (
                     <div className="flex flex-col items-center mt-14">
                         <Loader />
