@@ -52,7 +52,7 @@ export default function ConfirmationModal({ open, options, setOpen, actionButton
     } = options || {};
 
     const default_action_button_class = "bg-red-700 hover:bg-red-800 border border-gray-900 text-gray-100 px-7 py-3 xxs:py-[10px] xxs:px-4 rounded-full dark:shadow-none transition-all duration-500 ease-in-out";
-    const default_cancel_button_class = "bg-gray-600 hover:bg-gray-700 text-gray-100 border border-gray-900 px-7 mr-8 py-[10px] xxs:px-6 rounded-full dark:shadow-none transition-all duration-500 ease-in-out";
+    const default_cancel_button_class = "dark:bg-gray-600 bg-[#eaeaea] dark:hover:bg-gray-700 hover:bg-[#d7d7d7] dark:text-gray-100 text-gray-900 border border-gray-900 px-7 mr-8 py-[10px] xxs:px-6 rounded-full dark:shadow-none transition-all duration-500 ease-in-out";
 
     const modalProps = {
         open,
@@ -76,7 +76,7 @@ export default function ConfirmationModal({ open, options, setOpen, actionButton
                 </p>
             )}
             {alertComponentText && (
-                <div className={`alert !bg-neutral-900 mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32 ${alertComponentWrapperClassName && alertComponentWrapperClassName}`}>
+                <div className={`alert dark:!bg-neutral-900 !bg-[#eaeaea] mx-auto w-[21.2rem] xxs:w-[16.5rem] max-h-32 ${alertComponentWrapperClassName && alertComponentWrapperClassName}`}>
                     <div className={`text-[13.5px] uppercase tracking-wide flex flex-row`}>
                         <div className="mr-3 my-auto">
                             {alertComponentIcon  === "warning" ? ( 
@@ -97,7 +97,7 @@ export default function ConfirmationModal({ open, options, setOpen, actionButton
                             )}
                         </div>
                         <span 
-                            className={`text-gray-300 ${alertComponentTextClassName && alertComponentTextClassName}`}
+                            className={`dark:text-gray-300 text-gray-900 ${alertComponentTextClassName && alertComponentTextClassName}`}
                         >
                             {alertComponentText}
                         </span>

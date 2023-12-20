@@ -255,7 +255,7 @@ function BlockFormatDropDown({
     <DropDown
       disabled={disabled}
       modalClassName={`
-        w-44 h-72 overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 
+        w-44 h-72 overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 
         ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
       `}
       buttonClassName="toolbar-item block-controls"
@@ -1220,7 +1220,7 @@ export default function ToolbarPlugin() {
         <DropDown
           disabled={!isEditable}
           modalClassName={`
-            w-44 h-72 overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
+            w-44 h-72 overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
             ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
           `}
           buttonLabel="Align"

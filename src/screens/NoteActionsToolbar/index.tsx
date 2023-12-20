@@ -736,6 +736,12 @@ export default function index({
               </div>
             ) : (
               <div className="flex flex-row justify-start mr-[14px] py-2 absolute right-0 top-2">
+                {status && status === "saving" && (
+                  <div className="flex flex-row space-x-2 mr-5">
+                    <p className="text-sm tracking-wide">Saving...</p>
+                    <span className="loading loading-spinner loading-sm"/>
+                  </div>
+                )}
                 <AiFillInfoCircle
                   size={22}
                   onClick={() => setOpenNoteInfoModal(true)}

@@ -27,7 +27,7 @@ export default function NoteInfoModal({
             title="Note info"
             options={{
               titleWrapperClassName: "!px-6",
-              modalWrapperClassName: "max-h-[27rem] max-h-96 px-0 w-[27rem] xxs:!w-[21rem]"
+              modalWrapperClassName: "max-h-[27rem] max-h-96 px-0 w-[27rem] xxs:!w-[19rem]"
             }}
           >
             <div className="px-8 mt-5">

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AiFillSave } from "react-icons/ai";
 import { BsXLg } from 'react-icons/bs';
 import { MdDeleteForever, MdOutlineSettings } from "react-icons/md";
 
@@ -10,7 +9,6 @@ import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
 import { toastAlert } from "../../../../../components/Alert";
 import ConfirmationModal from "../../../../../components/ConfirmationModal";
-import SvgLoader from "../../../../../components/SvgLoader";
 
 import api from "../../../../../services/api";
 
@@ -106,10 +104,8 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
             </div>  
             <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] !mr-2"/>
             <div 
-              className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
-              style={{
-                width: currentScreenSize < 1280 ? editorWidth - 150 : editorWidth - 55
-              }}
+              className="overflow-x-scroll overflow-y-hidden flex space-x-2 pt-[1.5px] lg:mr-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500"
+              style={{ width: editorWidth - 60 }}
             >
               {note.labels.length > 0 && (
                 <>
@@ -170,26 +166,6 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                 </>
               )}
             </div>
-              {/* <div className="h-5 w-[1px] border border-gray-600 dark:border-[#404040] mt-[0.35rem] mr-0 ml-0 xl:!ml-5"/>
-              <button
-                onClick={() => save(editor.getEditorState())}
-                className="!ml-5 text-xs h-[33px] tracking-widest uppercase bg-[#d9dbde] dark:!bg-[#202020] px-2 xxs:px-[6px] xl:px-5 rounded-2xl hover:bg-green-700 hover:text-gray-200 transition-all ease-in-out duration-500"
-              >
-                {saveSpinner ? ( 
-                  <SvgLoader 
-                    options={{ 
-                      showLoadingText: true, 
-                      LoadingTextClassName: "!text-[12px]", 
-                      wrapperClassName: "xxs:px-2"
-                    }} 
-                  /> 
-                ) : (
-                  <div className="flex space-x-0 xl:space-x-2">
-                    <p className="mt-[2px] hidden xl:inline">Save note</p>
-                    <AiFillSave size={20} />
-                  </div>
-                )}
-              </button> */}
           </div>
         </div>
         <ConfirmationModal
