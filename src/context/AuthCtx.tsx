@@ -78,7 +78,6 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                 setLoading(false);
                 
                 callback(data, null);
-
             } catch (err: any) { 
                 callback(null, err);
                 console.log(err);

@@ -279,7 +279,7 @@ export default function Home() {
   const navLabelCtxProps = {
     fetchLabels,
     removeLabels,
-    labelIsFetching,
+    isFetching: labelIsFetching,
     dispatchLabels: dispatchLabels,
     pageLabel: labelsState.page,
     hasNextPageLabel: labelsState.hasNextPage,

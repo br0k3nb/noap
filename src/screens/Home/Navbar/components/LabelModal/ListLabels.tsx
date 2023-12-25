@@ -89,7 +89,7 @@ export default function ListLabels({
                     />
                 </motion.div>
                 {isFetching ? (
-                    <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px]" }} />
+                    <SvgLoader options={{ showLoadingText: true, wrapperClassName: "!my-[70px] !mr-4" }} />
                 ) : !isFetching && labels.length ? (
                     <div className="flex flex-col space-y-2 mt-4 text-sm w-[19.5rem] mx-auto xxs:!w-[15rem] h-[12.8rem] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
                         {labels.map((label, idx: number) => {

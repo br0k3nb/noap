@@ -25,7 +25,7 @@ export default function Page404() {
           </h1>
           <div className="flex text-md tracking-widest uppercase justify-center mt-8">
             <a
-              className="w-full border border-gray-500 rounded-[30px] py-2 xxs:py-2 text-center bg-red-700 hover:bg-red-800 hover:-translate-y-0 hover:scale-105 transition duration-200"
+              className="w-full rounded-[30px] py-2 xxs:py-2 text-center bg-red-700 hover:bg-red-800 transition duration-300 text-white font-thin"
               href="/notes/page/1"
             >
               Go back

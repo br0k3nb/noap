@@ -34,7 +34,7 @@ const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
                     return Promise.reject({ message: "Connection to server failed, please verify your internet connection" });
                 }
 
-                if(error.code !== "ECONNABORTED" && 
+                if((typeof errorMessage === "string" && error.code !== "ECONNABORTED") && 
                     (errorMessage.startsWith("Authentication") ||
                     errorMessage.startsWith("Access") ||
                     errorMessage.startsWith("Session"))
