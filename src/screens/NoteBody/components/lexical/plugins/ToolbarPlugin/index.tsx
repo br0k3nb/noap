@@ -1,4 +1,4 @@
-import type { LexicalEditor, NodeKey } from "lexical";
+import type { LexicalEditor, NodeKey, EditorState } from "lexical";
 import type { LanguageNameWithIcon } from "../../../../../../datasets/code_language_maps";
 
 import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
@@ -103,6 +103,7 @@ import figmaIcon from '../../images/icons/figma.svg';
 import CODE_LANGUAGE_FRIENDLY_NAME_MAP, { CODE_LANGUAGE_MAP } from '../../../../../../datasets/code_language_maps';
 import useUpdateViewport from "../../../../../../hooks/useUpdateViewport";
 import useUserData from "../../../../../../hooks/useUserData";
+import useSaveNote from "../../../../../../hooks/useSaveNote";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -363,7 +364,8 @@ function FontDropDown({
   setFontFamily,
   isFontSizeModal,
   disabled = false,
-  setLastSelectedFontFamily
+  setLastSelectedFontFamily,
+  delayedSaveNoteFn
 }: {
   editor: LexicalEditor;
   value: string;
@@ -373,6 +375,7 @@ function FontDropDown({
   setFontSize?: Dispatch<SetStateAction<string>>;
   setFontFamily?: Dispatch<SetStateAction<string>>;
   setLastSelectedFontFamily?: Dispatch<SetStateAction<string>>;
+  delayedSaveNoteFn?: () => any;
 }): JSX.Element {
 
   const handleClick = useCallback(
@@ -388,6 +391,8 @@ function FontDropDown({
           $patchStyleText(selection, {
             [styleType ? styleType : style]: option,
           });
+
+          if(delayedSaveNoteFn) delayedSaveNoteFn();
         }
       });
     },
@@ -460,13 +465,8 @@ function FontDropDown({
 }
 
 export default function ToolbarPlugin() {
-  const { userData: { settings: { theme } } } = useUserData();
-
-  const default_font_style = 'Roboto';
-
   const [editor] = useLexicalComposerContext();
-  
-  const [modal, showModal] = useModal();
+  const default_font_style = 'Roboto';
 
   const [activeEditor, setActiveEditor] = useState(editor);
   const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>('paragraph');
@@ -495,6 +495,20 @@ export default function ToolbarPlugin() {
   const prevNodeKey = useRef<null | string>(null);
   const prevFontColorSelection = useRef<string | null>(null);
   const prevFontFamilySelection = useRef<string | null>(null);
+
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const delayedSaveNoteFn = useCallback(() => {
+    if(timer) clearTimeout(timer);
+    
+    timer = setTimeout(() => {
+      if(saveNoteFn) saveNoteFn(editor.getEditorState());
+    }, 2500);
+  }, [timer]);
+  
+  const { saveNoteFn } = useSaveNote();
+  const [modal, showModal] = useModal();
+  const { userData: { settings: { theme } } } = useUserData();
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -743,6 +757,8 @@ export default function ToolbarPlugin() {
           }
 
           $patchStyleText(selection, styles);
+
+          delayedSaveNoteFn();
         }
       });
     },
@@ -763,6 +779,8 @@ export default function ToolbarPlugin() {
 
           if ($isDecoratorBlockNode(node)) node.setFormat('');
         });
+
+        delayedSaveNoteFn();
       }
     });
   }, [activeEditor]);
@@ -783,6 +801,8 @@ export default function ToolbarPlugin() {
   const insertLink = useCallback(() => {
     if (!isLink) editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
     else editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+
+    delayedSaveNoteFn();
   }, [editor, isLink]);
 
   const onCodeLanguageSelect = useCallback(
@@ -791,6 +811,7 @@ export default function ToolbarPlugin() {
         if (selectedElementKey !== null) {
           const node = $getNodeByKey(selectedElementKey);
           if ($isCodeNode(node)) node.setLanguage(value);
+          delayedSaveNoteFn();
         }
       });
     },
@@ -808,6 +829,8 @@ export default function ToolbarPlugin() {
           $patchStyleText(selection, {
             "font-size": option
           });
+
+          delayedSaveNoteFn();
         }
       });
     },
@@ -820,6 +843,8 @@ export default function ToolbarPlugin() {
       if(parsedFontSize < 100) {
         setFontSize((parsedFontSize + 1) + 'px');
         updateFontSize((parsedFontSize + 1) + 'px');
+
+        delayedSaveNoteFn();
       }
     }
   }
@@ -830,6 +855,8 @@ export default function ToolbarPlugin() {
       if(parsedFontSize > 1) {       
         setFontSize((parsedFontSize - 1) + 'px');
         updateFontSize((parsedFontSize - 1) + 'px');
+
+        delayedSaveNoteFn();
       }
     }
   }
@@ -860,7 +887,7 @@ export default function ToolbarPlugin() {
         </>
       )}
     </div>
-  );
+  );  
 
   return (
     <>
@@ -879,7 +906,10 @@ export default function ToolbarPlugin() {
       >
         <button
           disabled={!canUndo || !isEditable}
-          onClick={() => activeEditor.dispatchCommand(UNDO_COMMAND, undefined)}
+          onClick={() => {
+            activeEditor.dispatchCommand(UNDO_COMMAND, undefined)
+            delayedSaveNoteFn();
+          }}
           title={IS_APPLE ? "Undo (⌘Z)" : "Undo (Ctrl+Z)"}
           className="toolbar-item spaced"
           aria-label="Undo"
@@ -888,7 +918,10 @@ export default function ToolbarPlugin() {
         </button>
         <button
           disabled={!canRedo || !isEditable}
-          onClick={() => activeEditor.dispatchCommand(REDO_COMMAND, undefined)}
+          onClick={() => {
+            activeEditor.dispatchCommand(REDO_COMMAND, undefined)
+            delayedSaveNoteFn();
+          }}
           title={IS_APPLE ? "Redo (⌘Y)" : "Redo (Ctrl+Y)"}
           className="toolbar-item"
           aria-label="Redo"
@@ -952,6 +985,7 @@ export default function ToolbarPlugin() {
               editor={editor} 
               setFontFamily={setFontFamily}
               setLastSelectedFontFamily={setLastSelectedFontFamily}
+              delayedSaveNoteFn={delayedSaveNoteFn}
             />
             <Divider />
             <div className="mx-1 flex flex-row space-x-2 my-auto">
@@ -968,6 +1002,7 @@ export default function ToolbarPlugin() {
                 style={"font-size"} 
                 value={fontSize ? fontSize : '14px'} 
                 editor={editor}
+                delayedSaveNoteFn={delayedSaveNoteFn}
               />
               <button 
                 onClick={() => handleDecrementFontSizeButton()}
@@ -979,7 +1014,10 @@ export default function ToolbarPlugin() {
             <Divider />
             <button
               disabled={!isEditable}
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
+              onClick={() => { 
+                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+                delayedSaveNoteFn();
+              }}
               className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isBold ? "active" : "")}
               title={IS_APPLE ? "Bold (⌘B)" : "Bold (Ctrl+B)"}
               aria-label={`Format text as bold. Shortcut: ${IS_APPLE ? "⌘B" : "Ctrl+B"}`}
@@ -988,7 +1026,10 @@ export default function ToolbarPlugin() {
             </button>
             <button
               disabled={!isEditable}
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+                delayedSaveNoteFn();
+              }}
               className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isItalic ? "active" : "")}
               title={IS_APPLE ? "Italic (⌘I)" : "Italic (Ctrl+I)"}
               aria-label={`Format text as italics. Shortcut: ${IS_APPLE ? "⌘I" : "Ctrl+I"}`}
@@ -997,7 +1038,10 @@ export default function ToolbarPlugin() {
             </button>
             <button
               disabled={!isEditable}
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+                delayedSaveNoteFn();
+              }}
               className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isUnderline ? "active" : "")}
               title={IS_APPLE ? "Underline (⌘U)" : "Underline (Ctrl+U)"}
               aria-label={`Format text to underlined. Shortcut: ${IS_APPLE ? "⌘U" : "Ctrl+U"}`}
@@ -1006,7 +1050,10 @@ export default function ToolbarPlugin() {
             </button>
             <button
               disabled={!isEditable}
-              onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")}
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+                delayedSaveNoteFn();
+              }}
               className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isCode ? "active" : "")}
               title="Insert code block"
               aria-label="Insert code block"
@@ -1052,7 +1099,10 @@ export default function ToolbarPlugin() {
             >
               <div className="my-2">
                 <DropDownItem
-                  onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")}
+                  onClick={() => {
+                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+                    delayedSaveNoteFn();
+                  }}
                   className={"rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isStrikethrough)}
                   title="Strikethrough"
                   aria-label="Format text with a strikethrough"
@@ -1063,7 +1113,10 @@ export default function ToolbarPlugin() {
                   </div>
                 </DropDownItem>
                 <DropDownItem
-                  onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript")}
+                  onClick={() => {
+                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "subscript");
+                    delayedSaveNoteFn();
+                  }}
                   className={"rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isSubscript)}
                   title="Subscript"
                   aria-label="Format text with a subscript"
@@ -1074,7 +1127,10 @@ export default function ToolbarPlugin() {
                   </div>
                 </DropDownItem>
                 <DropDownItem
-                  onClick={() => activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript")}
+                  onClick={() => {
+                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript");
+                    delayedSaveNoteFn();
+                  }}
                   className={"rounded-lg !w-[10.69rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px] " + dropDownActiveClass(isSuperscript)}
                   title="Superscript"
                   aria-label="Format text with a superscript"
@@ -1114,7 +1170,10 @@ export default function ToolbarPlugin() {
               <div className="my-2">
                 <DropDownItem 
                   className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)} 
+                  onClick={() => {
+                    activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
+                    delayedSaveNoteFn();
+                  }} 
                 >
                   <div className="flex flex-row space-x-2 ml-3">
                     <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={horizontalRuleIcon} />
@@ -1123,7 +1182,10 @@ export default function ToolbarPlugin() {
                 </DropDownItem>
                 <DropDownItem
                   className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => activeEditor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined)}
+                  onClick={() => {
+                    activeEditor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined);
+                    delayedSaveNoteFn();
+                  }}
                 >
                   <div className="flex flex-row space-x-2 ml-3">
                     <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={excalidrawIcon} />
@@ -1190,7 +1252,10 @@ export default function ToolbarPlugin() {
                 </DropDownItem> */}
                 <DropDownItem 
                   className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined)} 
+                  onClick={() => {
+                    editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined);
+                    delayedSaveNoteFn();
+                  }} 
                 >
                   <div className="flex flex-row space-x-2 ml-3">
                     <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={collapsibleIcon} />
@@ -1201,7 +1266,10 @@ export default function ToolbarPlugin() {
                   <DropDownItem
                     key={embedConfig.type}
                     className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                    onClick={() => activeEditor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type)}
+                    onClick={() => {
+                      activeEditor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type)
+                      delayedSaveNoteFn();
+                    }}
                   >
                     <div className="flex flex-row space-x-2 ml-3">
                       <img 
@@ -1230,7 +1298,10 @@ export default function ToolbarPlugin() {
           <div className="my-2">
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-              onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")} 
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left")
+                delayedSaveNoteFn();
+              }} 
             >
               <div className="flex flex-row space-x-2 ml-3">
                 <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={leftAlignIcon} />
@@ -1239,7 +1310,10 @@ export default function ToolbarPlugin() {
             </DropDownItem>
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-              onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")} 
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center")
+                delayedSaveNoteFn();
+              }} 
             >
               <div className="flex flex-row space-x-2 ml-3">
                 <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={centerAlignIcon}/>
@@ -1248,7 +1322,10 @@ export default function ToolbarPlugin() {
             </DropDownItem>
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-              onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")} 
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right")
+                delayedSaveNoteFn();
+              }} 
             >
               <div className="flex flex-row space-x-2 ml-3">
                 <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={rightAlignIcon}/>
@@ -1257,7 +1334,10 @@ export default function ToolbarPlugin() {
             </DropDownItem>
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-              onClick={() => activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")} 
+              onClick={() => {
+                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify")
+                delayedSaveNoteFn();
+              }} 
             >
               <div className="flex flex-row space-x-2 ml-3">
                 <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1.5px]`} src={justifyAlignIcon}/>
@@ -1269,7 +1349,10 @@ export default function ToolbarPlugin() {
             </div>
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-              onClick={() => activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)} 
+              onClick={() => {
+                activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)
+                delayedSaveNoteFn();
+              }}
             >
               <div className="flex flex-row space-x-2 ml-3">
                 <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={outdentIcon} />
@@ -1278,7 +1361,10 @@ export default function ToolbarPlugin() {
             </DropDownItem>
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-              onClick={() => activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)} 
+              onClick={() => {
+                activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)
+                delayedSaveNoteFn();
+              }}
             >
               <div className="flex flex-row space-x-2 ml-3">
                 <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[2px]`} src={indentIcon} />

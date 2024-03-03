@@ -20,9 +20,10 @@ type Props = {
     notesState: notesState;
     dispatchNotes: Dispatch<notesActions>;
     addNewNote: () => void;
+    isFetching: boolean;
 }
 
-export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, addNewNote }: Props) {
+export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, addNewNote, isFetching }: Props) {
     const { navbar, setNavbar } = useNavbar();
     const { setSelectedNote } = useSelectedNote();
     const { setPreventPageUpdateFromUrl } = usePreventPageUpdateFromUrl();
@@ -167,7 +168,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                     ) : (
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
-                            onClick={() => handlePrevPageClick()}
+                            onClick={() => !isFetching && handlePrevPageClick()}
                             to={search ?`${backwardPage}/search/${search}` : backwardPage as string}
                         > 
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
@@ -186,7 +187,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                     ) : (
                         <Link 
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
-                            onClick={() => handleNextPageClick()}
+                            onClick={() => !isFetching && handleNextPageClick()}
                             to={search ?`${getFowardPage()}/search/${search}` : forwardPage as string }
                         > 
                             <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />

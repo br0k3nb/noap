@@ -26,7 +26,7 @@ declare type NoteData = {
     noteBackgroundColor?: string;
   };
   pageLocation?: string | number;
-  updatedAt?: string;
+  updatedAt: string;
   createdAt: string;
 };
 
@@ -52,7 +52,7 @@ declare type NoteMetadata = {
       noteBackgroundColor?: string;
     };
     pageLocation: string | number;
-    updatedAt?: string;
+    updatedAt: string;
     createdAt: string;
   }[];
 };

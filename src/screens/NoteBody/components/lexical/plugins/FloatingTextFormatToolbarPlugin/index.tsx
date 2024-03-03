@@ -21,6 +21,7 @@ import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition';
 // import { INSERT_INLINE_COMMAND } from '../CommentPlugin';
 
 import useUserData from '../../../../../../hooks/useUserData';
+import useSaveNote from '../../../../../../hooks/useSaveNote';
 
 import './index.css';
 
@@ -52,6 +53,7 @@ function TextFormatFloatingToolbar({
   const insertLink = useCallback(() => {
     if (!isLink) editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://');
     else editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    delayedSaveNoteFn();
   }, [editor, isLink]);
 
   // const insertComment = () => {
@@ -147,7 +149,18 @@ function TextFormatFloatingToolbar({
     );
   }, [editor, updateTextFormatFloatingToolbar]);
 
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
   const { userData: { settings: { theme } } } = useUserData();
+  const { saveNoteFn } = useSaveNote();
+
+  const delayedSaveNoteFn = useCallback(() => {
+    if(timer) clearTimeout(timer);
+    
+    timer = setTimeout(() => {
+      if(saveNoteFn) saveNoteFn(editor.getEditorState());
+    }, 2500);
+  }, [timer]);
 
   const baseStyle = 'popup-item spaced hover:!bg-[#c1c1c1] dark:hover:!bg-[#323232] ';
   const baseActiveStyle = ' dark:!bg-[#525252] !bg-[#bbbbbb]';
@@ -160,35 +173,50 @@ function TextFormatFloatingToolbar({
       {editor.isEditable() && (
         <>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isBold ? baseActiveStyle : '')}
             aria-label="Format text as bold"
           >
               <i className={`format bold ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isItalic ? baseActiveStyle : '')}
             aria-label="Format text as italics"
           >
             <i className={` format italic ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isUnderline ? baseActiveStyle : '')}
             aria-label="Format text to underlined"
           >
             <i className={`format underline ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isStrikethrough ? baseActiveStyle : '')}
             aria-label="Format text with a strikethrough"
           >
             <i className={`format strikethrough ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isSubscript ? baseActiveStyle : '')}
             title="Subscript"
             aria-label="Format Subscript"
@@ -196,7 +224,10 @@ function TextFormatFloatingToolbar({
             <i className={`format subscript ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isSuperscript ? baseActiveStyle : '')}
             title="Superscript"
             aria-label="Format Superscript"
@@ -204,7 +235,10 @@ function TextFormatFloatingToolbar({
             <i className={`format superscript ${theme === "dark" && "comp-picker"}`} />
           </button>
           <button
-            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')}
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
+              delayedSaveNoteFn();
+            }}
             className={baseStyle + (isCode ? baseActiveStyle : '')}
             aria-label="Insert code block"
           >

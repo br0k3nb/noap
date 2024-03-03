@@ -7,6 +7,9 @@ import { AiFillTags } from 'react-icons/ai';
 
 import { motion } from "framer-motion";
 
+import SvgLoader from "../../../../../components/SvgLoader";
+import useLabel from "../../../../../hooks/useLabel";
+
 type Props = {
     labels: FieldArrayWithId<Labels, "labels", "id">[];    
     resetLabelInfoToEdit: (label: FieldArrayWithId<Labels, "labels", "id">) => void;
@@ -15,9 +18,6 @@ type Props = {
     setShowSearchBar: Dispatch<SetStateAction<boolean>>;
     onAddNewLabelClick: () => void;
 }
-
-import SvgLoader from "../../../../../components/SvgLoader";
-import useLabel from "../../../../../hooks/useLabel";
 
 export default function ListLabels({ 
     labels,

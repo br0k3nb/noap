@@ -43,7 +43,8 @@ export default function Notes({
         pinNotesState,
         notesState,
         dispatchNotes,
-        addNewNote
+        addNewNote,
+        isFetching
     };
 
     const cardNotesProps = { 

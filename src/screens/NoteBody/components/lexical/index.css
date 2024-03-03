@@ -229,7 +229,7 @@ pre::-webkit-scrollbar-thumb {
 
 .typeahead-popover ul {
   -ms-overflow-style: none;
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
 }
 
 .typeahead-popover ul li {
@@ -301,9 +301,6 @@ pre::-webkit-scrollbar-thumb {
   width: 150px;
 }
 
-.emoji-menu {
-  width: 200px;
-}
 
 i.palette {
   background-image: url(images/icons/palette.svg);
@@ -662,7 +659,7 @@ i.prettier-error {
   justify-content: center;
   border-radius: 8px;
   border: 0;
-  max-width: 230px;
+  max-width: 250px;
 }
 
 .dropdown-lexical .item.fontsize-item,

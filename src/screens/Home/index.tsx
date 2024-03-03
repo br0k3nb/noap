@@ -288,7 +288,7 @@ export default function Home() {
   };
 
   const isMobileDevice = screenSize.width <= 640 ? true : false;
-  
+
   return (
     <div className="!h-screen">
       <NavbarContext>

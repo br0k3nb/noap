@@ -34,8 +34,9 @@ import FileInput from "../../ui/FileInput";
 import TextInput from "../../ui/TextInput";
 
 import { toastAlert } from "../../../../../../components/Alert";
-
 import Modal from "../../../../../../components/Modal";
+
+import useSaveNote from "../../../../../../hooks/useSaveNote";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -262,6 +263,7 @@ type ImagesPlugin = {
 
 export default function ImagesPlugin({ captionsEnabled } : ImagesPlugin): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
+  const { saveNoteFn } = useSaveNote();
 
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
@@ -278,6 +280,7 @@ export default function ImagesPlugin({ captionsEnabled } : ImagesPlugin): JSX.El
             $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
           }
 
+          setTimeout(() => saveNoteFn(editor.getEditorState()), 2500);
           return true;
         },
         COMMAND_PRIORITY_EDITOR

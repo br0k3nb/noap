@@ -1,6 +1,6 @@
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {eventFiles} from '@lexical/rich-text';
-import {mergeRegister} from '@lexical/utils';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { eventFiles } from '@lexical/rich-text';
+import { mergeRegister } from '@lexical/utils';
 import {
   $getNearestNodeFromDOMNode,
   $getNodeByKey,
@@ -11,12 +11,14 @@ import {
   DROP_COMMAND,
   LexicalEditor,
 } from 'lexical';
-import { DragEvent as ReactDragEvent, useEffect, useRef, useState } from 'react';
+import { DragEvent as ReactDragEvent, useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 import { isHTMLElement } from '../../utils/guard';
 import { Point } from '../../utils/point';
 import { Rect } from '../../utils/rect';
+
+import useSaveNote from '../../../../../../hooks/useSaveNote';
 
 import './index.css';
 
@@ -163,12 +165,6 @@ function getBlockElement(
     }  
   }
 
-  // else if ((blockElem as any)?.children[0]?.className.startsWith('PlaygroundEditorTheme__listItem')) {
-  //   customMargin = `${(blockElem as any)?.clientHeight / 2 + 25}`
-  // }  
-    
-  // else customMargin = `${(blockElem as any)?.children[0]?.clientHeight / 2 + 25}`;
-
   return blockElem;
 }
 
@@ -222,7 +218,7 @@ function setTargetLine(
   mouseY: number,
   anchorElem: HTMLElement,
 ) {
-  const targetStyle = window.getComputedStyle(targetBlockElem);
+  // const targetStyle = window.getComputedStyle(targetBlockElem);
   const { top: targetBlockElemTop, height: targetBlockElemHeight } = targetBlockElem.getBoundingClientRect();
   const { top: anchorTop, width: anchorWidth } = anchorElem.getBoundingClientRect();
 
@@ -256,12 +252,23 @@ function useDraggableBlockMenu(
   anchorElem: HTMLElement,
   isEditable: boolean,
 ): JSX.Element {
+  let timer: ReturnType<typeof setTimeout> | null = null;
   const scrollerElem = anchorElem.parentElement;
+
   const menuRef = useRef<HTMLDivElement>(null);
   const targetLineRef = useRef<HTMLDivElement>(null);
   const isDraggingBlockRef = useRef<boolean>(false);
+  const { saveNoteFn } = useSaveNote();
 
   const [draggableBlockElem, setDraggableBlockElem] = useState<HTMLElement | null>(null);
+  
+  const delayedSaveNoteFn = useCallback(() => {
+    if(timer) clearTimeout(timer);
+    
+    timer = setTimeout(() => {
+      if(saveNoteFn) saveNoteFn(editor.getEditorState());
+    }, 2500);
+  }, [timer]);
 
   useEffect(() => {
     function onMouseMove(event: MouseEvent) {
@@ -347,6 +354,7 @@ function useDraggableBlockMenu(
       else targetNode.insertBefore(draggedNode);
 
       setDraggableBlockElem(null);
+      delayedSaveNoteFn();
 
       return true;
     }

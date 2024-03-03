@@ -30,16 +30,14 @@ function EmojiMenuItem({
   onClick,
   onMouseEnter,
   option,
-  showDivder
 }: {
   index: number;
   isSelected: boolean;
-  showDivder?: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   option: EmojiOption;
 }) {
-  let className = "!rounded-lg item bg-[#f8f8f8] text-gray-900 dark:!text-gray-300 hover:!bg-[#e1e1e1] dark:bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-3 !mx-[1.5px]";
+  let className = "cursor-pointer text-center w-12 !rounded-lg bg-[#f8f8f8] text-gray-900 dark:!text-gray-300 hover:!bg-[#e1e1e1] dark:bg-[#1c1d1e] dark:hover:!bg-[#323232] !py-1";
   if (isSelected) className += " !bg-[#bbbbbb] dark:!bg-[#323232]";
 
   return (
@@ -55,16 +53,10 @@ function EmojiMenuItem({
         onMouseEnter={onMouseEnter}
         onClick={onClick}
       >
-        <div className="flex flex-row space-x-2 ml-1 !truncate">
-          <span className="my-auto !text-[22px]">
-            {option.emoji}
-          </span>
-          <span className="text-sm">
-            {option.title}
-          </span>
-        </div>
+        <span className="my-auto !text-[26px]">
+          {option.emoji}
+        </span>
       </li>
-      {showDivder && (<div className="border border-transparent border-t-gray-700 mx-2"/>)}
     </>
   );
 }
@@ -80,7 +72,7 @@ type Emoji = {
   skin_tones?: boolean;
 };
 
-const MAX_EMOJI_SUGGESTION_COUNT = 20;
+const MAX_EMOJI_SUGGESTION_COUNT = 10000;
 
 export default function EmojiPickerPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -162,14 +154,14 @@ export default function EmojiPickerPlugin() {
         return anchorElementRef.current && options.length
           ? createPortal(
               <div
-                className={`typeahead-popover emoji-menu bg-[#f8f8f8] dark:!bg-[#1c1d1e] dark:hover:!bg-[#222222] !w-[13rem]
+                className={`rounded-xl bg-[#f8f8f8] dark:!bg-[#1c1d1e] !w-[250px] 
                   ${overflowXAxis && !overflowYAxis ? "!absolute !-left-52" 
                     : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5" 
                     : overflowXAxis && overflowYAxis ? "!absolute !-left-52 !-top-40" 
                     : undefined}
                 `}
               >
-                <ul className="max-h-[200px] xxs:!max-h-[180px] border border-gray-600">
+                <ul className="rounded-xl !max-h-[240px] xxs:!max-h-[180px] border border-gray-600 overflow-y-scroll flex flex-wrap px-1 py-1">
                   {options.map((option: EmojiOption, index) => (
                     <div key={option.key}>
                       <EmojiMenuItem
@@ -181,7 +173,6 @@ export default function EmojiPickerPlugin() {
                         }}
                         onMouseEnter={() => setHighlightedIndex(index)}
                         option={option}
-                        showDivder={index !== options.length - 1 ? true : false}
                       />
                     </div>
                   ))}
