@@ -39,6 +39,7 @@ import Placeholder from "../ui/Placeholder";
 import { CAN_USE_DOM } from "../shared/canUseDOM";
 import TwitterPlugin from "../plugins/TwitterPlugin";
 import YouTubePlugin from "../plugins/YouTubePlugin";
+import { LayoutPlugin } from '../plugins/LayoutPlugin/LayoutPlugin';
 
 import { useSettings } from "../context/SettingsContext";
 import SaveNoteContext from "../../../../../context/SaveNoteCtx";
@@ -144,6 +145,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
           {!readMode && <ToolbarPlugin />}
           <EquationsPlugin />
           <DragDropPaste />
+          <LayoutPlugin />
           <ComponentPickerPlugin />
           <AutoEmbedPlugin />
           <HashtagPlugin />

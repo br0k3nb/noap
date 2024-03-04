@@ -1448,32 +1448,6 @@ i.light {
   user-select: none;
 }
 
-.github-corner:hover .octo-arm {
-  animation: octocat-wave 560ms ease-in-out;
-}
-@keyframes octocat-wave {
-  0%,
-  100% {
-    transform: rotate(0);
-  }
-  20%,
-  60% {
-    transform: rotate(-25deg);
-  }
-  40%,
-  80% {
-    transform: rotate(10deg);
-  }
-}
-@media (max-width: 500px) {
-  .github-corner:hover .octo-arm {
-    animation: none;
-  }
-  .github-corner .octo-arm {
-    animation: octocat-wave 560ms ease-in-out;
-  }
-}
-
 .spacer {
   letter-spacing: -2px;
 }
@@ -1524,4 +1498,28 @@ hr.selected {
   white-space: pre-wrap;
   word-break: break-word;
   z-index: 3;
+}
+
+@media screen and (max-width: 1100px) {
+  .dropdown-button-text {
+    display: none !important;
+  }
+
+  .dialog-dropdown > .dropdown-button-text {
+    display: flex !important;
+  }
+
+  .font-size .dropdown-button-text {
+    display: flex !important;
+  }
+
+  .code-language .dropdown-button-text {
+    display: flex !important;
+  }
+}
+
+.dialog-dropdown {
+  background-color: #eee !important;
+  margin-bottom: 10px;
+  width: 100%;
 }

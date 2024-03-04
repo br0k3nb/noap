@@ -71,6 +71,8 @@ const theme: EditorThemeClasses = {
     ul: 'PlaygroundEditorTheme__ul dark:!text-inherit',
   },
   ltr: 'PlaygroundEditorTheme__ltr',
+  layoutContainer: 'PlaygroundEditorTheme__layoutContainer',
+  layoutItem: 'PlaygroundEditorTheme__layoutItem',
   mark: 'PlaygroundEditorTheme__mark',
   markOverlap: 'PlaygroundEditorTheme__markOverlap',
   paragraph: 'PlaygroundEditorTheme__paragraph',

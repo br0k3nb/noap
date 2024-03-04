@@ -26,11 +26,15 @@ import { StickyNode } from './StickyNode';
 import { TableNode as NewTableNode } from './TableNode';
 import { TweetNode } from './TweetNode';
 import { YouTubeNode } from './YouTubeNode';
+import { LayoutContainerNode } from './LayoutContainerNode';
+import { LayoutItemNode } from './LayoutItemNode';
 
 const NoapNodes: Array<Klass<LexicalNode>> = [
     HeadingNode,
     ListNode,
     ListItemNode,
+    LayoutContainerNode,
+    LayoutItemNode,
     QuoteNode,
     CodeNode,
     NewTableNode,

@@ -99,11 +99,13 @@ import indentIcon from '../../images/icons/indent.svg';
 import twitterIcon from '../../images/icons/tweet.svg';
 import youtubeIcon from '../../images/icons/youtube.svg';
 import figmaIcon from '../../images/icons/figma.svg';
+import columnsIcon from '../../images/icons/3-columns.svg';
 
 import CODE_LANGUAGE_FRIENDLY_NAME_MAP, { CODE_LANGUAGE_MAP } from '../../../../../../datasets/code_language_maps';
 import useUpdateViewport from "../../../../../../hooks/useUpdateViewport";
 import useUserData from "../../../../../../hooks/useUserData";
 import useSaveNote from "../../../../../../hooks/useSaveNote";
+import InsertLayoutDialog from "../LayoutPlugin/InsertLayoutDialog";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -1260,6 +1262,22 @@ export default function ToolbarPlugin() {
                   <div className="flex flex-row space-x-2 ml-3">
                     <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={collapsibleIcon} />
                     <span className="text-[15px] text-gray-900 dark:text-gray-300">Collapsible container</span>
+                  </div>
+                </DropDownItem>
+                <DropDownItem
+                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                  onClick={() => {
+                    showModal('Insert Columns Layout', (onClose) => (
+                      <InsertLayoutDialog
+                        activeEditor={activeEditor}
+                        onClose={onClose}
+                      />
+                    ));
+                  }}
+                >
+                  <div className="flex flex-row space-x-2 ml-3">
+                    <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={columnsIcon} />
+                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Columns Layout</span>
                   </div>
                 </DropDownItem>
                 {EmbedConfigs.map((embedConfig, index: number) => (
