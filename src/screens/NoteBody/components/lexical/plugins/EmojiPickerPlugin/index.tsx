@@ -133,6 +133,12 @@ export default function EmojiPickerPlugin() {
     [editor]
   );
 
+  const userAgent = navigator.userAgent;
+  let browserName = '';
+  
+  if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
+  else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
+
   return (
     <LexicalTypeaheadMenuPlugin
       onQueryChange={setQueryString}
@@ -154,14 +160,15 @@ export default function EmojiPickerPlugin() {
         return anchorElementRef.current && options.length
           ? createPortal(
               <div
-                className={`rounded-xl bg-[#f8f8f8] dark:!bg-[#1c1d1e] !w-[250px] 
+                className={`rounded-xl bg-[#f8f8f8] dark:!bg-[#1c1d1e] 
+                  ${browserName === 'chrome' ? "!w-[265px]" : '!w-[250px]'}
                   ${overflowXAxis && !overflowYAxis ? "!absolute !-left-52" 
                     : !overflowXAxis && overflowYAxis ? "!absolute !-top-[130px] !left-5" 
                     : overflowXAxis && overflowYAxis ? "!absolute !-left-52 !-top-40" 
                     : undefined}
                 `}
               >
-                <ul className="rounded-xl !max-h-[240px] xxs:!max-h-[180px] border border-gray-600 overflow-y-scroll flex flex-wrap px-1 py-1">
+                <ul className="rounded-xl !max-h-[240px] xxs:!max-h-[180px] border border-gray-600 overflow-y-scroll flex flex-wrap px-1 py-1  scrollbar scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
                   {options.map((option: EmojiOption, index) => (
                     <div key={option.key}>
                       <EmojiMenuItem
