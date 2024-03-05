@@ -105,7 +105,7 @@ export default function Home() {
               hasNextPage: pinHasNextPage
             }
           }
-        } = await api.get(`/notes/${notesState.page}/${_id}`, {
+        } = await api.get(`/notes/${currentPage}/${_id}`, {
           params: { 
             pinnedNotesPage: pinNotesState.page,
             search: delayedSearch,
@@ -150,8 +150,8 @@ export default function Home() {
         setSelectedNoteData(null);
         setNoteSettings((prevNoteSettings) => {
           return {
-              ...prevNoteSettings,
-              expanded: false
+            ...prevNoteSettings,
+            expanded: false
           }
         });
       } 
@@ -177,21 +177,21 @@ export default function Home() {
         } 
         else replaceLabels(docs);
       } catch (err: any) {
-          toastAlert({ icon: "error", title: err.message, timer: 3000 });
+        toastAlert({ icon: "error", title: err.message, timer: 3000 });
       }
     }  
   };
   
   const fetchSessions = async() => {
     try {
-        if(_id) {
-          const { data } = await api.get(`/get/sessions/${_id}`);
+      if(_id) {
+        const { data } = await api.get(`/get/sessions/${_id}`);
 
-          replaceSessions(data);
-        }
+        replaceSessions(data);
+      }
     } catch (err: any) {
-        console.log(err);
-        toastAlert({ icon: "error", title: err.message, timer: 2000 });
+      console.log(err);
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
     }
   };
 

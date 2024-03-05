@@ -28,25 +28,25 @@ export default function InsertLayoutDialog({
 
   return (
     <div className='flex flex-col space-y-5 w-[260px]'>
-        <div className="dropdown dropdown-bottom">
-            <div 
-                tabIndex={0} 
-                role="button"
-                className="rounded-xl text-center py-2 text-base font-normal normal-case border border-gray-600 w-full text-[16px] bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] hover:bg-[#cacaca] text-gray-900"
-            >
-                {buttonLabel}
-            </div>
-            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow rounded-box w-52 bg-[#dbdbdb] dark:bg-[#32353b] border border-gray-600 ">
-                {LAYOUTS.map(({ label, value }) => (
-                    <li key={value} onClick={() => setLayout(value)} className='dark:hover:!bg-[#222222] hover:bg-[#cacaca] rounded-lg'>
-                        <p className='!text-gray-900'>{label}</p>
-                    </li>
-                ))}
-            </ul>
+      <div className="dropdown dropdown-bottom">
+        <div 
+          tabIndex={0} 
+          role="button"
+          className="rounded-xl text-center py-2 text-base font-normal normal-case border border-gray-600 w-full text-[16px] bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:bg-[#cacaca] text-gray-900 dark:text-gray-300"
+        >
+          {buttonLabel}
         </div>
-        <button onClick={onClick} className='bg-green-600 rounded-full w-full text-white py-[6px] uppercase tracking-widest text-[14px] hover:bg-green-700 transition-colors duration-300 ease-in-out border border-gray-600'>
-            Insert
-        </button>
+        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow rounded-box w-52 bg-[#dbdbdb] dark:bg-[#181818] border border-gray-600 ">
+          {LAYOUTS.map(({ label, value }) => (
+            <li key={value} onClick={() => setLayout(value)} className='dark:hover:!bg-[#222222] hover:bg-[#cacaca] rounded-lg'>
+              <p className='!text-gray-900 dark:!text-gray-300'>{label}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <button onClick={onClick} className='bg-green-600 rounded-full w-full text-white py-[6px] uppercase tracking-widest text-[14px] hover:bg-green-700 transition-colors duration-300 ease-in-out border border-gray-600'>
+        Insert
+      </button>
     </div>
   );
 }

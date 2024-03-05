@@ -52,5 +52,5 @@ export const useInputMask = (mask = '') => {
     inputEl.setAttribute('placeholder', mask);
   }, [inputEl]);
 
-  return { ref, onKeyUp };
+  return { ref, onKeyUp, inputEl };
 };
