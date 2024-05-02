@@ -28,7 +28,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
 
     const { userData: { _id: userId, TFAEnabled }, setUserData } = useUserData();
-    const { ref: numberRef, onKeyUp: onKeyUpNumber, inputEl } = useInputMask("999-999");   
+    const { ref: numberRef, onKeyUp: onKeyUpNumber } = useInputMask("999-999");   
 
     const handleGenerateQrcode = async () => {
         setShowSvgLoader(true);
@@ -67,7 +67,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
             setShowSvgLoader(false);
             setIsVerified(true);
         } catch (err: any) {
-            (inputEl as HTMLInputElement).value = '';
+            (numberRef.current as HTMLInputElement).value = '';
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
             setShowSvgLoader(false);
         }
@@ -109,7 +109,7 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
     };
 
     const handleModalClose = () => {
-        (inputEl as HTMLInputElement).value = '';
+        (numberRef.current as HTMLInputElement).value = '';
         if(customCloseFn) customCloseFn();
     }
 

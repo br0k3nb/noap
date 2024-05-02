@@ -38,7 +38,7 @@ export default function Verify2FAModal({
     const token = customUserId ? customUserId : { _id };
     const { _id: userId } = token;
 
-    const { ref: numberRef, onKeyUp: onKeyUpNumber, inputEl } = useInputMask("999-999");
+    const { ref: numberRef, onKeyUp: onKeyUpNumber } = useInputMask("999-999");
     const navigate = useNavigate();
 
     const handleInputChange = (data: string) => {
@@ -62,11 +62,18 @@ export default function Verify2FAModal({
             
             if(setOpen) setOpen(false);
         } catch (err: any) {
-            (inputEl as HTMLInputElement).value = '';
+            (numberRef.current as HTMLInputElement).value = '';
             toastAlert({ icon: "error", title: err.message, timer: 2000 });
             setShowSvgLoader(false);
         }
     };
+
+    const onModalClose = () => {
+        setOpen && setOpen(false);
+        if(numberRef && (numberRef.current as HTMLInputElement).value) {
+            (numberRef.current as HTMLInputElement).value = '';
+        }
+    }
 
     return (
         <Modal
@@ -78,7 +85,7 @@ export default function Verify2FAModal({
                 titleWrapperClassName: "px-6",
                 titleCustomClassName: "xxs:text-[19.5px]",
                 modalWrapperClassName: "!px-0 xxs:w-[19rem] w-[22.5rem]",
-                onClose: () => customOnCloseFn ? customOnCloseFn() : setOpen && setOpen(false)
+                onClose: () => customOnCloseFn ? customOnCloseFn() : onModalClose()
             }}
         >
             <div className="px-6 mt-5">
@@ -101,6 +108,7 @@ export default function Verify2FAModal({
                             onKeyUp={onKeyUpNumber}
                             className="sign-text-inputs w-60 placeholder:text-center text-center dark:bg-stone-900 dark:text-gray-300 bg-[#dbdbdb] text-gray-900 h-10 border !border-gray-700 hover:!border-gray-600"
                             onChange={({currentTarget}) => handleInputChange(currentTarget.value)}
+                            autoFocus
                         />
                         <button
                             className={`text-white mt-2 px-3 w-60 py-2 ${showSvgLoader && "!px-[4.5rem] !py-[0.60rem]"} bg-green-600 hover:bg-green-700 font-normal rounded-full text-[15px] uppercase tracking-wide hover:tracking-widest border border-gray-700 transition-all duration-500 disabled:cursor-not-allowed disabled:!bg-green-700/60 disabled:text-gray-500 disabled:hover:tracking-wide`}

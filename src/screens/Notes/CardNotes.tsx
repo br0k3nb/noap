@@ -49,6 +49,7 @@ export default function CardNotes({
     const [viewPort, setViewPort] = useState({ width: window.innerWidth });
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+    const [openPinNoteCollapsable, setOpenPinNoteCollapsable] = useState(false);
 
     const { page } = notesState;
     const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
@@ -156,8 +157,8 @@ export default function CardNotes({
                                     <>
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
-                                                <div 
-                                                    className="xxs:ml-0 ml-3 hover:!border-[#404040] collapse border dark:border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-lg lg:ml-0 border-stone-300 dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                <div
+                                                    className="transition-all collapse xxs:ml-0 ml-3 dark:border-[#363636] border bg-[#eeeff1] dark:!bg-[#181818] !rounded-lg lg:ml-0 border-stone-300 dark:hover:border-[#404040] duration-200"
                                                     style={{
                                                         width: viewPort.width <= 1023 
                                                             ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 100)
@@ -167,10 +168,14 @@ export default function CardNotes({
                                                     }}
                                                 >
                                                     <input 
-                                                        readOnly
-                                                        type="checkbox"
-                                                        onClick={() => setPinWasClicked(!pinWasClicked)}
-                                                    />
+                                                        checked={openPinNoteCollapsable}
+                                                        type="checkbox" 
+                                                        className="peer" 
+                                                        onChange={() => {
+                                                            setPinWasClicked(!pinWasClicked);
+                                                            setOpenPinNoteCollapsable(!openPinNoteCollapsable);
+                                                        }}
+                                                    /> 
                                                     <div className="collapse-title">
                                                         <div className="!ml-6 mt-2 mb-2 flex flex-row space-x-2 justify-center items-center">
                                                             <p className="uppercase text-xs tracking-widest">Pinned notes</p>
@@ -187,10 +192,10 @@ export default function CardNotes({
                                                                         className="my-auto"
                                                                     />
                                                                 )}
-                                                            </div>
+                                                           </div>
                                                         </div>
                                                     </div>
-                                                    <div className="collapse-content">
+                                                    <div className="collapse-content"> 
                                                         <div className="flex flex-row flex-wrap my-5 gap-y-6 gap-x-3 justify-center items-center">
                                                             {pinnedNotes.map((pinnedNotes, idx) => {
                                                                 return (
@@ -210,14 +215,20 @@ export default function CardNotes({
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinPage > 1 ? false : true}
-                                                                    onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage - 1 })}
+                                                                    onClick={() => {
+                                                                        setOpenPinNoteCollapsable(true);
+                                                                        dispatchPinNotes({ type: "PAGE", payload: pinPage - 1 });
+                                                                    }}
                                                                 >
                                                                     previous page
                                                                 </button>
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                    disabled={pinPage ? false : true}
-                                                                    onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage + 1 })}
+                                                                    disabled={pinHasNextPage ? false : true}
+                                                                    onClick={() => {
+                                                                        setOpenPinNoteCollapsable(true);
+                                                                        dispatchPinNotes({ type: "PAGE", payload: pinPage + 1 });
+                                                                    }}
                                                                 >
                                                                     next page
                                                                 </button>

@@ -1,14 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 
 export const useInputMask = (mask = '') => {
-  const [inputEl, setInputEl] = useState<null | HTMLInputElement>(null);
-
-  const ref = useCallback((node: HTMLInputElement) => {
-    if (node) setInputEl(node);
-  }, []);
+  const inputRef = useRef<null | HTMLInputElement>(null);
 
   const onKeyUp = useCallback(() => {
-    if (!inputEl || !mask) return;
+    if (!inputRef.current || !mask) return;
 
     const separators = mask.match(/([^a-zA-Z0-9\*])/g) || [];
 
@@ -38,19 +34,20 @@ export const useInputMask = (mask = '') => {
         return acc;
       }, '');
 
-    if (/^[0-9]/.test(mask)) inputEl.value = inputEl.value.replace(/[^0-9]/g, '');
-    if (/^[a-zA-Z]/.test(mask)) inputEl.value = inputEl.value.replace(/[^a-zA-Z]/g, '');
+    if (/^[0-9]/.test(mask)) inputRef.current.value = inputRef.current.value.replace(/[^0-9]/g, '');
+    if (/^[a-zA-Z]/.test(mask)) inputRef.current.value = inputRef.current.value.replace(/[^a-zA-Z]/g, '');
 
-    inputEl.value = inputEl.value
+    inputRef.current.value = inputRef.current.value
       .substring(0, mask.replace(/([^a-zA-Z0-9\*])/g, '').length)
       .replace(regex, replacer);
-  }, [inputEl, mask]);
+  }, [inputRef.current, mask]);
 
   useEffect(() => {
-    if (!inputEl) return;
+    if (!inputRef.current) return;
 
-    inputEl.setAttribute('placeholder', mask);
-  }, [inputEl]);
+    inputRef.current.focus();
+    inputRef.current.setAttribute('placeholder', mask);
+  }, [inputRef.current]);
 
-  return { ref, onKeyUp, inputEl };
+  return { ref: inputRef, onKeyUp, inputRef };
 };
