@@ -91,6 +91,7 @@ export default function index({
   const [readMode, setReadMode] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
   const [renameNote, setRenameNote] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(false);
   const [showBottomBar, setShowBottomBar] = useState(true);
   const [openLabelModal, setOpenlabelModal] = useState(false);
   const [openNoteInfoModal, setOpenNoteInfoModal] = useState(false);
@@ -452,18 +453,19 @@ export default function index({
                   </>
                 )}
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none" />
-                <div className="dropdown hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px] cursor-pointer">
-                  <label tabIndex={0} className="cursor-pointer">
+                <div className={`dropdown ${openDropdown && " dropdown-open"} hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px] cursor-pointer`}>
+                  <div className="cursor-pointer" onClick={() => setOpenDropdown(!openDropdown)}>
                     <div
                       className="tooltip tooltip-right tooltip-right-color-controller"
                       data-tip="Actions"
                     >
                       <AiOutlineEllipsis size={24} className="mt-[3px]" />
                     </div>
-                  </label>
+                  </div>
                   <ul
                     tabIndex={0}
                     className="!pr-1 rounded-box !z-50 dropdown-content menu shadow bg-[#f8f8f8] dark:bg-[#1c1d1e] border border-gray-500"
+                    onMouseLeave={() => setOpenDropdown(false)}
                   >
                     <div className="pr-2 !w-[200px] xxs:!h-64 h-96 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300">
                       <li>

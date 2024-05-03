@@ -64,7 +64,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
-    const { noteSettings: { expanded, readMode, noteBackgroundColor } } = useNoteSettings();
+    const { noteSettings: { expanded, readMode, noteBackgroundColor, showBottomBar } } = useNoteSettings();
     const { 
       userData: {
         settings: {
@@ -84,6 +84,12 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     let timer: ReturnType<typeof setTimeout> | null = null;  
     const editorContainer = document.getElementById("editor-parent-container") as HTMLElement;
     
+    const { height: currentHeight, width: currentWidth } = currentScreenSize;
+    const BOTTOM_BAR_HEIGHT = 54;
+    const MEDIUM_SCREEN = currentWidth > 640;
+    const BIG_SCREEN = currentWidth > 1030;
+    const LARGE_SCREEN = currentWidth > 1430;
+    
     const triggerSaveOnKeyUp = (e: Event) => {
       //excluding function keys, alt & alt right, ctrl, arrows and other keys that shouldn't trigger the save function
       const excludedKeycodes = [0, 17, 18, 19, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 44, 45, 91, 92, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144, 145, 173, 174, 181, 182, 183];
@@ -91,9 +97,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       if(excludedKeycodes.every(v => v !== (e as KeyboardEvent).keyCode)) {
         if(timer) clearTimeout(timer);
 
-        timer = setTimeout(() => {
-          save(editor.getEditorState());
-        }, 2500);
+        timer = setTimeout(() => save(editor.getEditorState()), 2500);
       }
     };
     
@@ -119,23 +123,22 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       else editor.setEditable(true);
     }, [readMode]);
 
-    const editorHeight = currentScreenSize.width > 640 ? 
-      readMode ? currentScreenSize.height - 55 : currentScreenSize.height - 100
-      : currentScreenSize.height - 65;
+    const editorHeight = MEDIUM_SCREEN ? 
+      readMode ? currentHeight : currentHeight - 100
+      : (showBottomBar ? currentHeight - BOTTOM_BAR_HEIGHT : currentHeight - 5);
 
-    const tweentyPercentMarginOfScreen = currentScreenSize.width - ((currentScreenSize.width / 100) * 20);
-    const noteTextCondition = tweentyPercentMarginOfScreen < 1001 ? tweentyPercentMarginOfScreen : 1000;
+    const tweentyPercentMarginOfScreen = currentWidth - ((currentWidth / 100) * 20);
+    const noteTextCondition = tweentyPercentMarginOfScreen <= 1000 ? tweentyPercentMarginOfScreen : 1000;
 
     //for some reason, typescript is throwing an error if this code is not set as any.
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
     const getNavbar = document.getElementById("pc-navbar") as any;
     
     const baseStyle = {
-      marginTop: (currentScreenSize.width < 1030 && !readMode) ? 0 : !readMode ? 50 : 0,
-      marginBottom: (currentScreenSize.width < 1030 && !readMode) ? 86 : !readMode ? 80 : 0,
-      paddingRight: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-      paddingLeft: (globalNoteBackgroundColor && currentScreenSize.width > 640 ) ? 40 : 0,
-      minHeight: '1500px',
+      marginTop: BIG_SCREEN ? 50 : 0,
+      marginBottom: BIG_SCREEN ? 86 : 0,
+      paddingRight: MEDIUM_SCREEN ? 40 : 0,
+      paddingLeft: MEDIUM_SCREEN ? 40 : 0,
       backgroundColor: noteBackgroundColor ? noteBackgroundColor : globalNoteBackgroundColor ? globalNoteBackgroundColor : 'none',
     };
 
@@ -159,13 +162,14 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                 contentEditable={
                   <div className="editor dark:!bg-[#0f1011] bg-[#ffffff]" ref={ref}>
                     <div
-                      className={`!overflow-y-scroll overflow-x-hidden`}
+                      className="!overflow-y-scroll overflow-x-hidden"
                       id="editor-parent-container"
-                      style={!expanded && getNavbar?.checkVisibility() ? {
-                          width: currentScreenSize.width <= 1023 ? currentScreenSize.width : currentScreenSize.width  - 440,
+                      style={
+                        (!expanded && getNavbar?.checkVisibility()) ? {
+                          width: !BIG_SCREEN ? currentWidth : currentWidth - 440,
                           height: editorHeight
                         } : {
-                          width: currentScreenSize.width,
+                          width: currentWidth,
                           height: editorHeight
                         }
                       }  
@@ -173,21 +177,17 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                       <div                        
                         className="flex flex-col mx-auto py-10"
                         style={
-                          !expanded && getNavbar?.checkVisibility() ? {
+                          (!expanded && getNavbar?.checkVisibility()) ? {
                             ...baseStyle,
-                            width: noteTextExpanded && currentScreenSize.width > 1430 
-                              ? (globalNoteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
-                              : currentScreenSize.width - 435
+                            width: (noteTextExpanded && LARGE_SCREEN) ? noteTextCondition : currentWidth - 435
                           } : { 
                             ...baseStyle,
-                            width: noteTextExpanded && currentScreenSize.width > 1000 
-                              ? (globalNoteBackgroundColor ? noteTextCondition + 40 : noteTextCondition) 
-                              : currentScreenSize.width
+                            width: (noteTextExpanded && BIG_SCREEN) ? noteTextCondition : currentWidth
                           }
                         }
                       >
                         <div ref={customRef}>
-                            <ContentEditable />
+                          <ContentEditable />
                         </div>
                       </div>
                       {!readMode && (
@@ -197,17 +197,14 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                             save={save}
                             editor={editor}
                             saveSpinner={saveSpinner}
-                            currentScreenSize={currentScreenSize.width}
+                            currentScreenSize={currentWidth}
                           />
                         </div>
                       )}
                     </div>
                   </div>
                 }
-                
-                placeholder={
-                  !note.body.length ? <Placeholder customRef={customRef}>Enter some text</Placeholder> : null
-                }
+                placeholder={!note.body.length ? <Placeholder customRef={customRef}>Enter some text</Placeholder> : null}
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <FloatingTextFormatToolbarPlugin />
@@ -231,10 +228,9 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
               <TabFocusPlugin />
               <TabIndentationPlugin />
               <CollapsiblePlugin />
-
               {floatingAnchorElem && (
                 <>
-                  {currentScreenSize.width > 640 && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
+                  {MEDIUM_SCREEN && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
                   <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
                 </>
               )}
