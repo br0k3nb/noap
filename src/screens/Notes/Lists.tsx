@@ -13,7 +13,6 @@ import useNoteSettings from "../../hooks/useNoteSettings";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import Modal from "../../components/Modal";
-import Loader from "../../components/Loader";
 import no_notes_found from '../../assets/no_notes_found.svg';
 
 import moment from "moment";
@@ -46,9 +45,10 @@ export default function Lists({
  }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
     const [pageWasRefreshed, setPageWasRefreshed] = useState(false);
-    const [viewPort, setViewPort] = useState({ width: window.innerWidth });
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+    const [openPinNoteCollapsable, setOpenPinNoteCollapsable] = useState(false);
+    const [viewPort, setViewPort] = useState({ width: window.innerWidth, height: window.innerHeight });
 
     const { page } = notesState;
     const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
@@ -59,16 +59,17 @@ export default function Lists({
     const { setNoteSettings, noteSettings: { status } } = useNoteSettings();
     const goBackUrl = useGetUrl({ absolutePath: true, goToPageNumber: 1 });
     const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
-
+    
     useUpdateViewport(setViewPort, 500);
-
+    
+    const hours = (date: string) => moment(date).format("LT");
     const days = (date: string) => moment(date).format("ll");
-
+    const { width: currentWidth, height: currentHeight } = viewPort;
+    
     useEffect(() => {
         const fn = (e: Event) => {
             if(status && status === "saving") {
                 e.preventDefault();
-                console.log('fsidfhasjfhjadsfa');
                 setPageWasRefreshed(true);
                 setOpenConfirmationModal(true);
             }
@@ -111,6 +112,7 @@ export default function Lists({
     return (
         <div 
             className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-500 overflow-x-hidden"
+            style={{ height: currentHeight - 148 }}
         >
             <Modal
                 title="Hold up..."
@@ -143,33 +145,37 @@ export default function Lists({
                 </div>
             </Modal>
             {isFetching ? (
-                    <div className="flex flex-col items-center mt-14">
-                        <Loader />
+                    <div className="flex flex-col items-center mt-14 space-y-5">
+                        <span className="loading loading-spinner loading-lg" />
                         <p className="mt-2 text-xl animate-pulse">Loading notes...</p>
                     </div>
                 ) : (
                     <>
-                        {notesMetadata.length > 0 ? (
+                        {notesMetadata.length ? (
                             <div className="w-fit xxs:!w-screen lg:!w-[360px]">
-                                {!delayedSearch && (pinnedNotes.length > 0 && page === 1) && (
+                                {!delayedSearch && (pinnedNotes.length && page === 1) && (
                                     <>
-                                        <div className={`mt-5 !z-0`}>
+                                        <div className="mt-5">
                                             {showPinnedNotesInFolder ? (
                                                 <div 
-                                                    className="py-2 collapse border border-l-0 border-r-0 border-transparent bg-[#eeeff1] dark:!bg-[#181818] rounded-none border-stone-300 hover:!border-[#404040] dark:hover:border-[#404040] transition-all duration-700 ease-in-out"
+                                                    className="py-2 collapse border border-l-0 border-r-0 bg-[#eeeff1] dark:!bg-[#181818] rounded-none border-stone-300 dark:border-[#323232] dark:hover:border-[#404040] transition-all duration-200 ease-in-out"
                                                     style={{
-                                                        width: viewPort.width <= 1023 
-                                                            ? (viewPort.width <= 640 ? viewPort.width : viewPort.width - 50)
-                                                            : 378,
+                                                        width: currentWidth <= 1023 
+                                                        ? (currentWidth <= 640 ? currentWidth : currentWidth - 50)
+                                                        : 378,
                                                         zIndex: 0,
                                                         position: 'static'
                                                     }}
                                                 >
                                                     <input 
-                                                        readOnly
-                                                        type="checkbox"
-                                                        onClick={() => setPinWasClicked(!pinWasClicked)}
-                                                    />
+                                                        checked={openPinNoteCollapsable}
+                                                        type="checkbox" 
+                                                        className="peer" 
+                                                        onChange={() => {
+                                                            setPinWasClicked(!pinWasClicked);
+                                                            setOpenPinNoteCollapsable(!openPinNoteCollapsable);
+                                                        }}
+                                                    /> 
                                                     <div className="collapse-title !pr-20">
                                                         <div className="mt-2 mb-2 flex flex-row space-x-2 justify-center items-center">
                                                             <p className="uppercase text-xs tracking-widest my-auto">Pinned notes</p>
@@ -205,18 +211,24 @@ export default function Lists({
                                                                     />
                                                                 )
                                                             })} 
-                                                            <div className="flex flex-row items-center space-x-10 justify-center w-full mt-7">
+                                                            <div className="flex flex-row items-center space-x-10 justify-center w-full mt-5">
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
                                                                     disabled={pinPage > 1 ? false : true}
-                                                                    onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage - 1 })}
+                                                                    onClick={() => {
+                                                                        setOpenPinNoteCollapsable(true);
+                                                                        dispatchPinNotes({ type: "PAGE", payload: pinPage - 1 });
+                                                                    }}
                                                                 >
                                                                     previous page
                                                                 </button>
                                                                 <button 
                                                                     className="uppercase text-[11px] tracking-wide cursor-pointer hover:tracking-widest duration-300 border border-gray-600 py-2 px-3 rounded-full disabled:cursor-not-allowed disabled:tracking-wide disabled:text-gray-500"
-                                                                    disabled={pinPage ? false : true}
-                                                                    onClick={() => dispatchPinNotes({ type: "PAGE", payload: pinPage + 1 })}
+                                                                    disabled={pinHasNextPage ? false : true}
+                                                                    onClick={() => {
+                                                                        setOpenPinNoteCollapsable(true);
+                                                                        dispatchPinNotes({ type: "PAGE", payload: pinPage + 1 });
+                                                                    }}
                                                                 >
                                                                     next page
                                                                 </button>
@@ -274,7 +286,7 @@ export default function Lists({
                                     </>
                                 )}
                                 <div className="pl-0 pr-0 md:pr-5 lg:pr-0 lg:!pl-5 xl:!pl-5">
-                                    <div className="flex flex-row flex-wrap my-5 mb-36 justify-center items-center">
+                                    <div className="flex flex-row flex-wrap mt-5 mb-1 justify-center items-center">
                                         {notesMetadata.map((unpinnedNotes, idx) => {
                                             return (
                                                 <Cards  
@@ -346,7 +358,7 @@ export function Cards ({ note, idx, handleNoteClick, days, customWidth, customBo
             relative="path"
             to={`${baseUrl}/note/${_id}`}
             onClick={() => handleNoteClick(_id)}
-            className={`flex flex-wrap cursor-pointer`} 
+            className="flex flex-wrap cursor-pointer"
         >
             <div 
                 className={`
@@ -357,82 +369,77 @@ export function Cards ({ note, idx, handleNoteClick, days, customWidth, customBo
                     px-2
                 `}
             >
-                <div className={`flex flex-col px-2 !h-[110px]`}>
-                    <div>
-                        <p className="text-[16px] truncate">{noteName}</p>
-                        <div className="flex flex-row space-x-2">
-                            <div
-                                className={`
-                                    text-[14px] !w-[240px] xxs:w-[135px] line-clamp-2 h-[40px] my-auto
-                                    ${customBodyWidth ? customBodyWidth : customWidth && "!text-[14px] !w-[180px] xxs:!w-[122.5px] !pl-[5px]"}
-                                    ${image !== '' && "!w-[190px] xxs:!w-[122.5px]"}
-                                    ${!image && "!my-3"}
-                                `}
-                            >
-                                {body}
-                            </div>
-                            {image !== '' && (
-                                <img 
-                                    src={image}
-                                    className={`
-                                        ${customImageWidth && customImageWidth}
-                                        mt-2 dark:border-t-[#2f2f2f] border-t-[#d6d3d1] rounded-[6.5px] object-cover !h-[60px] xxs:!h-[3.52rem]
-                                    `}
-                                />
-                            )}
+                <div className="flex flex-col px-2 !h-[110px]">
+                    <p className="text-[16px] truncate">{noteName}</p>
+                    <div className="flex flex-row space-x-2">
+                        <div
+                            className={`
+                                text-[14px] !w-[240px] xxs:w-[135px] line-clamp-2 h-[40px] my-auto
+                                ${customBodyWidth ? customBodyWidth : customWidth && "!text-[14px] !w-[180px] xxs:!w-[122.5px] !pl-[5px]"}
+                                ${image !== '' && "!w-[190px] xxs:!w-[122.5px]"}
+                                ${!image && "!my-3"}
+                            `}
+                        >
+                            {body}
                         </div>
-                        <div className="flex flex-row space-x-2">
-                            <p 
+                        {image && (
+                            <img 
+                                src={image}
                                 className={`
-                                    my-auto w-[70px] text-xs tracking-tighter xxs:text-[11px] ${customWidth && "!px-3 !text-[11px] w-[85px]"}
-                                    ${(label && labelArraySize) && "border border-transparent border-r-gray-500"}
+                                    ${customImageWidth && customImageWidth}
+                                    mt-2 dark:border-t-[#2f2f2f] border-t-[#d6d3d1] rounded-[6.5px] object-cover !h-[60px] xxs:!h-[3.52rem]
                                 `}
-                            >
-                                {!updatedAt ? days(createdAt) : days(updatedAt)}
-                            </p>
-                            {(label && labelArraySize) && (
-                                <div className="">
-                                    {type === "default" ? (
-                                            <div className="flex space-x-1">
-                                                <p 
-                                                    className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
-                                                    style={{ 
-                                                        backgroundColor: color, 
-                                                        borderColor: color, 
-                                                        color: fontColor 
-                                                    }}
-                                                >
-                                                    {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
+                            />
+                        )}
+                    </div>
+                    <div className="flex flex-row space-x-3">
+                        <p 
+                            className="!pl-0 my-auto text-[11px] tracking-tighter"
+                        >
+                            {!updatedAt ? days(createdAt) : days(updatedAt)}
+                        </p>
+                        {(label && labelArraySize) && (
+                            <>
+                                {type === "default" ? (
+                                        <div className="flex space-x-1">
+                                            <p 
+                                                className="badge !text-[11px] badge-outline !py-1 uppercase text-xs tracking-wide"
+                                                style={{ 
+                                                    backgroundColor: color, 
+                                                    borderColor: color, 
+                                                    color: fontColor 
+                                                }}
+                                            >
+                                                {name && name.length > 16 ? name.slice(0, 11) + '...' : name}
+                                            </p>
+                                            {labelArraySize > 1 && (
+                                            <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
+                                                <p className="text-[9px] ml-[4.5px] mt-[4px]">
+                                                    {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize - 1)}
                                                 </p>
-                                                {labelArraySize > 1 && (
-                                                <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
-                                                    <p className="text-[9px] ml-[4.5px] mt-[4px]">
-                                                        {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize - 1)}
-                                                    </p>
-                                                </div>
-                                                )}
-                                            </div> 
-                                        ) : (
-                                            <div className="flex space-x-1">
-                                                <p 
-                                                    className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
-                                                    style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
-                                                >
-                                                    {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
-                                                </p>
-                                                {labelArraySize > 1 && (
-                                                <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
-                                                    <p className="text-[9px] ml-[4.5px] mt-[4px]">
-                                                        {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize - 1)}
-                                                    </p>
-                                                </div>
-                                                )}
                                             </div>
-                                        )
-                                    }
-                                </div>
-                            )}
-                        </div>
+                                            )}
+                                        </div> 
+                                    ) : (
+                                        <div className="flex space-x-1">
+                                            <p 
+                                                className="badge badge-outline !py-1 uppercase !text-[11px] tracking-wide"
+                                                style={{ backgroundColor: 'transparent !important', borderColor: color, color }}
+                                            >
+                                                {name && name.length > 14 ? name.slice(0, 14) + '...' : name}
+                                            </p>
+                                            {labelArraySize > 1 && (
+                                            <div className="rounded-full w-[22px] h-[21px] bg-gray-800 dark:!bg-[#343434] text-gray-300">
+                                                <p className="text-[9px] ml-[4.5px] mt-[4px]">
+                                                    {'+ ' + (labelArraySize > 9 ? 9 : labelArraySize - 1)}
+                                                </p>
+                                            </div>
+                                            )}
+                                        </div>
+                                    )
+                                }
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

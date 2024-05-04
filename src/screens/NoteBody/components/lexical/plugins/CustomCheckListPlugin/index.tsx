@@ -170,13 +170,16 @@ function findEditor(target: LexicalNode) {
   let node = target;
 
   while (node) {
+    // @ts-ignore internal field
     if (node.__lexicalEditor) {
+      // @ts-ignore internal field
       return node.__lexicalEditor;
     }
-
+    
+    //@ts-ignore
     node = node.parentNode;
   }
-
+  
   return null;
 }
 

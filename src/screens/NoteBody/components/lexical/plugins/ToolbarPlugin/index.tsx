@@ -1,4 +1,3 @@
-import type { LexicalEditor, NodeKey, EditorState } from "lexical";
 import type { LanguageNameWithIcon } from "../../../../../../datasets/code_language_maps";
 
 import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
@@ -35,24 +34,30 @@ import {
 import {
   $createParagraphNode,
   $getNodeByKey,
+  $getRoot,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
   $isTextNode,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
-  DEPRECATED_$isGridSelection,
-  INSERT_PARAGRAPH_COMMAND,
+  COMMAND_PRIORITY_NORMAL,
+  ElementFormatType,
   FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   INDENT_CONTENT_COMMAND,
+  INSERT_PARAGRAPH_COMMAND,
+  KEY_MODIFIER_COMMAND,
+  LexicalEditor,
+  LexicalNode,
+  NodeKey,
   OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
-  LexicalNode
-} from "lexical";
+} from 'lexical';
 
 import { IS_APPLE } from "../../shared/environment";
 
@@ -183,19 +188,19 @@ function BlockFormatDropDown({
   disabled?: boolean;
 }): JSX.Element {
   const formatParagraph = () => {
-    if (blockType !== "paragraph") {
-      editor.update(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) $setBlocksType(selection, () => $createParagraphNode());
-      });
-    }
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => $createParagraphNode());
+      }
+    });
   };
 
   const formatHeading = (headingSize: HeadingTagType) => {
     if (blockType !== headingSize) {
       editor.update(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) $setBlocksType(selection, () => $createHeadingNode(headingSize));
+        $setBlocksType(selection, () => $createHeadingNode(headingSize));
       });
     }
   };
@@ -216,10 +221,10 @@ function BlockFormatDropDown({
   };
 
   const formatQuote = () => {
-    if (blockType !== "quote") {
+    if (blockType !== 'quote') {
       editor.update(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) $setBlocksType(selection, () => $createQuoteNode());
+        $setBlocksType(selection, () => $createQuoteNode());
       });
     }
   };
@@ -228,16 +233,17 @@ function BlockFormatDropDown({
     if (blockType !== "code") {
       editor.update(() => {
         let selection = $getSelection();
-
-        if ($isRangeSelection(selection) ||DEPRECATED_$isGridSelection(selection)) {
-          if (selection.isCollapsed()) $setBlocksType(selection, () => $createCodeNode());
-          else {
+        if (selection !== null) {
+          if (selection.isCollapsed()) {
+            $setBlocksType(selection, () => $createCodeNode());
+          } else {
             const textContent = selection.getTextContent();
             const codeNode = $createCodeNode();
-
             selection.insertNodes([codeNode]);
             selection = $getSelection();
-            if ($isRangeSelection(selection)) selection.insertRawText(textContent);
+            if ($isRangeSelection(selection)) {
+              selection.insertRawText(textContent);
+            }
           }
         }
       });
@@ -632,6 +638,7 @@ export default function ToolbarPlugin() {
                 }
 
                 const language = $isCodeHighlightNode(element) ? 
+                  //@ts-ignore
                   (element.getParent() as LexicalNode).getLanguage() : element.getLanguage();
 
                 setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : "");

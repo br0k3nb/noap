@@ -7,6 +7,7 @@ import { VscAdd } from 'react-icons/vsc';
 
 import useGetUrl from "../../hooks/useGetUrl";
 import useNavbar from "../../hooks/useNavbar";
+import Tooltip from "../../components/Tooltip";
 import useSelectedNote from "../../hooks/useSelectedNote";
 import usePreventPageUpdateFromUrl from "../../hooks/usePreventPageUpdateFromUrl";
 
@@ -123,15 +124,15 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                             <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                                 <BsFilter size={25}/> 
                             </div>
-                            <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px]" data-tip="Search">
+                            <Tooltip text="Search" customClassName="before:!mr-[5px] after:!mr-[3px]" position="left">
                                 <button 
                                     type="button"
-                                    className="lg:hover:bg-[#dadada] lg:dark:hover:bg-stone-600 px-[7px] py-2 rounded"
+                                    className="hover:bg-[#dadada] dark:hover:bg-stone-600 px-[7px] py-2 rounded"
                                     onClick={() => handleSearchClick()}
                                 >
                                     <BsSearch size={18} />
                                 </button>
-                            </div>
+                            </Tooltip>
                             <button 
                                 type="button"
                                 className="sm:hidden px-[7px] py-2 rounded"

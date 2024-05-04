@@ -13,6 +13,7 @@ import useLabel from '../../../hooks/useLabel';
 
 import { toastAlert } from '../../../components/Alert';
 import SvgLoader from '../../../components/SvgLoader';
+import Tooltip from '../../../components/Tooltip';
 import Modal from '../../../components/Modal';
 
 import { motion } from 'framer-motion';
@@ -107,14 +108,14 @@ export default function SelectLabelModal({ labels, checked, setChecked, isFetchi
                         <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                             <BsFilter size={25}/> 
                         </div>
-                        <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px] before:text-[15px]" data-tip="Search">
-                            <div 
+                        <Tooltip position='left' customClassName=' before:!mr-[5px] after:!mr-[3px] before:text-[15px]' text='Search'>
+                            <div
                                 className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-600 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer"
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
                             </div>
-                        </div>
+                        </Tooltip>
                     </div>
                 </div>
                 <motion.div

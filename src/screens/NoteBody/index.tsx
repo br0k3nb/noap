@@ -1,5 +1,4 @@
 import TextEditor from "./components/lexical";
-import Loader from "../../components/Loader";
 
 import useNoteSettings from "../../hooks/useNoteSettings";
 import useSelectedNote from "../../hooks/useSelectedNote";
@@ -28,7 +27,7 @@ export default function NoteBody({ selectedNoteData, noteDataIsFetching }: Props
           className="h-screen flex flex-col items-center absolute top-[40%] mx-auto"
           style={{ width: (innerWidth > 640 && !expanded) ? innerWidth - 440 : innerWidth }}
         >
-          <Loader width={25} height={25} />
+          <span className="loading loading-spinner loading-lg mb-3" />
           <p className="mt-1 text-[22px] animate-pulse">Loading note...</p>
         </div>
       )}

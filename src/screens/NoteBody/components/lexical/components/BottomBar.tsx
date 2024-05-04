@@ -7,6 +7,7 @@ import { LexicalEditor, EditorState } from "lexical";
 import useRefetch from "../../../../../hooks/useRefetch";
 import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
+import Tooltip from "../../../../../components/Tooltip";
 import { toastAlert } from "../../../../../components/Alert";
 import ConfirmationModal from "../../../../../components/ConfirmationModal";
 
@@ -75,9 +76,9 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
             <div className="!mr-2">
               <div className="dropdown dropdown-top">
                 <label tabIndex={0}>
-                  <div className='tooltip tooltip-right tooltip-right-color-controller' data-tip="Label actions">
+                  <Tooltip text="Label actions" position="right">
                     <MdOutlineSettings size={30} className="px-1 rotate-180 bg-[#d9dbde] hover:bg-[#c9c9c9] dark:!bg-[#202020] rounded-full mt-[1px] cursor-pointer transition-all duration-300 ease-in-out"/>
-                  </div>
+                  </Tooltip>
                 </label>
                 <ul 
                   tabIndex={0}
@@ -151,7 +152,15 @@ export default function BottomBar({ save, editor, saveSpinner, note, currentScre
                               <p className="pt-[2px] !text-[11px] uppercase tracking-widest">
                                 {name.length > 30 ? name.slice(0, 30) + '...' : name.slice(0, 30)}
                               </p>
-                              <div className='tooltip tooltip-right' data-tip="Detach">
+                              <div 
+                                className={`
+                                  ${(showLoader && labelToDelete === _id) ? 
+                                    "tooltip tooltip-open tooltip-right tooltip-right-color-controller" 
+                                    : "tooltip tooltip-right tooltip-right-color-controller"
+                                  }
+                                `} 
+                                data-tip={`${(showLoader && labelToDelete === _id) ? "Detaching..." : "Detach"}`}
+                              >
                                 <BsXLg 
                                   size={20} 
                                   onClick={() => deleteLabel(_id)}

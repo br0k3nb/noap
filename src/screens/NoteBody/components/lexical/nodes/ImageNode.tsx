@@ -42,12 +42,10 @@ export type SerializedImageNode = Spread<
     altText: string;
     caption: SerializedEditor;
     height?: number;
-    maxWidth: number;
+    maxWidth?: number;
     showCaption: boolean;
     src: string;
     width?: number;
-    type: "image";
-    version: 1;
   },
   SerializedLexicalNode
 >;
@@ -55,8 +53,8 @@ export type SerializedImageNode = Spread<
 export class ImageNode extends DecoratorNode<JSX.Element> {
   __src: string;
   __altText: string;
-  __width: "inherit" | number;
-  __height: "inherit" | number;
+  __width: 'inherit' | number;
+  __height: 'inherit' | number;
   __showCaption: boolean;
   __caption: LexicalEditor;
   // Captions cannot yet be used within editor cells
@@ -70,7 +68,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return new ImageNode(
       node.__src,
       node.__altText,
-      node.__maxWidth,
+      //@ts-ignore
       node.__width,
       node.__height,
       node.__showCaption,
@@ -144,7 +142,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       altText: this.getAltText(),
       caption: this.__caption.toJSON(),
       height: this.__height === "inherit" ? 0 : this.__height,
-      maxWidth: this.__maxWidth,
       showCaption: this.__showCaption,
       src: this.getSrc(),
       type: "image",

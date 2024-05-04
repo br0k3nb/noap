@@ -13,7 +13,6 @@ import useNoteSettings from "../../hooks/useNoteSettings";
 import useUpdateViewport from "../../hooks/useUpdateViewport";
 
 import Modal from "../../components/Modal";
-import Loader from "../../components/Loader";
 import no_notes_found from '../../assets/no_notes_found.svg';
 
 import moment from "moment";
@@ -46,10 +45,10 @@ export default function CardNotes({
  }: Props) { 
     const [pinWasClicked, setPinWasClicked] = useState(false);
     const [pageWasRefreshed, setPageWasRefreshed] = useState(false);
-    const [viewPort, setViewPort] = useState({ width: window.innerWidth });
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
     const [openPinNoteCollapsable, setOpenPinNoteCollapsable] = useState(false);
+    const [viewPort, setViewPort] = useState({ width: window.innerWidth, height: window.innerHeight });
 
     const { page } = notesState;
     const { hasNextPage: pinHasNextPage, page: pinPage } = pinNotesState;
@@ -60,17 +59,17 @@ export default function CardNotes({
     const { setNoteSettings, noteSettings: { status } } = useNoteSettings();
     const goBackUrl = useGetUrl({ absolutePath: true, goToPageNumber: 1 });
     const { userData: { settings: { showPinnedNotesInFolder }} } = useUserData();
-
+    
     useUpdateViewport(setViewPort, 500);
-
+    
     const hours = (date: string) => moment(date).format("LT");
     const days = (date: string) => moment(date).format("ll");
-
+    const { width: currentWidth, height: currentHeight } = viewPort;
+    
     useEffect(() => {
         const fn = (e: Event) => {
             if(status && status === "saving") {
                 e.preventDefault();
-                console.log('fsidfhasjfhjadsfa');
                 setPageWasRefreshed(true);
                 setOpenConfirmationModal(true);
             }
@@ -112,7 +111,8 @@ export default function CardNotes({
 
     return (
         <div 
-            className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll h-screen scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300 !scrollbar-rounded overflow-x-hidden"
+            className="bg-[#f8f8f8] dark:bg-[#0f1011] text-gray-900 dark:text-gray-300 overflow-scroll scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300 !scrollbar-rounded overflow-x-hidden"
+            style={{ height: currentHeight - 148 }}
         >
             <Modal
                 title="Hold up..."
@@ -140,28 +140,28 @@ export default function CardNotes({
                             </div>
                         </div>
                         <p className="text-md uppercase tracking-wide animate-pulse">Saving...</p>
-                        <span className="loading loading-spinner loading-lg"/>
+                        <span className="loading loading-spinner loading-lg" />
                     </div>
                 </div>
             </Modal>
             {isFetching ? (
-                    <div className="flex flex-col items-center mt-14">
-                        <Loader />
+                    <div className="flex flex-col items-center mt-14 space-y-5">
+                        <span className="loading loading-spinner loading-lg" />
                         <p className="mt-2 text-xl animate-pulse">Loading notes...</p>
                     </div>
                 ) : (
                     <>
-                        {notesMetadata.length > 0 ? (
+                        {notesMetadata.length ? (
                             <div className="w-fit xxs:!w-screen lg:!w-[360px] mx-auto">
-                                {!delayedSearch && (pinnedNotes.length > 0 && page === 1) && (
+                                {!delayedSearch && (pinnedNotes.length && page === 1) && (
                                     <>
                                         <div className={`mt-7 ${showPinnedNotesInFolder && "xxs:ml-[0.6rem] ml-2"} !z-0`}>
                                             {showPinnedNotesInFolder ? (
                                                 <div
                                                     className="transition-all collapse xxs:ml-0 ml-3 dark:border-[#363636] border bg-[#eeeff1] dark:!bg-[#181818] !rounded-lg lg:ml-0 border-stone-300 dark:hover:border-[#404040] duration-200"
                                                     style={{
-                                                        width: viewPort.width <= 1023 
-                                                            ? (viewPort.width <= 640 ? viewPort.width - 19.5 : viewPort.width - 100)
+                                                        width: currentWidth <= 1023 
+                                                            ? (currentWidth <= 640 ? currentWidth - 19.5 : currentWidth - 100)
                                                             : 344,
                                                         zIndex: 0,
                                                         position: 'static'
@@ -282,14 +282,14 @@ export default function CardNotes({
                                                 ${showPinnedNotesInFolder && "mt-7 !mb-7"}
                                             `}
                                             style={{
-                                                width: viewPort.width <= 1023 
-                                                    ? (viewPort.width <= 640 ? viewPort.width - 45 : viewPort.width - 140)
+                                                width: currentWidth <= 1023 
+                                                    ? (currentWidth <= 640 ? currentWidth - 45 : currentWidth - 140)
                                                     : 330
                                             }}
                                         />
                                     </>
                                 )}
-                                <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-4 lg:gap-x-3 mb-48 xxs:mb-64 justify-center items-center">
+                                <div className="flex flex-row flex-wrap px-2 my-5 gap-y-6 gap-x-4 lg:gap-x-3 mb-12 justify-center items-center">
                                     {notesMetadata.map((unpinnedNotes, idx) => {
                                         return (
                                             <Cards  
@@ -359,10 +359,7 @@ export function Test ({ note, idx, handleNoteClick, days, hours, customWidth, no
             key={idx}
             relative="path"
             to={`${baseUrl}/note/${_id}`}
-            className={`
-                flex flex-wrap cursor-pointer 
-                ${(idx === noteArraySize - 1 && (noteArraySize - 1) % 2 == 0) && "mb-10"}
-            `} 
+            className="flex flex-wrap cursor-pointer"
             onClick={() => handleNoteClick(_id)}
         >
             <div 

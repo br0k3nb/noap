@@ -44,8 +44,9 @@ export const useInputMask = (mask = '') => {
 
   useEffect(() => {
     if (!inputRef.current) return;
+    //@ts-ignore
+    if(inputRef.current.checkVisibility()) inputRef.current.focus();
 
-    inputRef.current.focus();
     inputRef.current.setAttribute('placeholder', mask);
   }, [inputRef.current]);
 

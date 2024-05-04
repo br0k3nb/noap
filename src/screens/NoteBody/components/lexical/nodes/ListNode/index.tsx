@@ -1,4 +1,3 @@
-//@ts-ignore
 import type { SerializedListItemNode } from './LexicalListItemNode';
 import type { ListType, SerializedListNode } from './LexicalListNode';
 import type { LexicalCommand } from 'lexical';
@@ -31,6 +30,6 @@ export {
 };
 
 export const INSERT_UNORDERED_LIST_COMMAND: LexicalCommand<void> = createCommand('INSERT_UNORDERED_LIST_COMMAND');
-export const INSERT_ORDERED_LIST_COMMAND: LexicalCommand<void> = createCommand('INSERT_ORDERED_LIST_COMMAND');
-export const INSERT_CHECK_LIST_COMMAND: LexicalCommand<void> = createCommand('INSERT_CHECK_LIST_COMMAND');
-export const REMOVE_LIST_COMMAND: LexicalCommand<void> = createCommand('REMOVE_LIST_COMMAND');
+export const INSERT_ORDERED_LIST_COMMAND: LexicalCommand<void> = createCommand('INSERT_ORDERED_LIST_COMMAND',);
+export const INSERT_CHECK_LIST_COMMAND: LexicalCommand<void> = createCommand('INSERT_CHECK_LIST_COMMAND',);
+export const REMOVE_LIST_COMMAND: LexicalCommand<void> = createCommand('REMOVE_LIST_COMMAND',);

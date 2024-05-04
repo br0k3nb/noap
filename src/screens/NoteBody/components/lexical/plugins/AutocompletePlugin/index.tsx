@@ -1,4 +1,4 @@
-import type { GridSelection, NodeKey, NodeSelection, RangeSelection } from "lexical";
+import type { BaseSelection, NodeKey} from 'lexical';
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isAtNodeEnd } from "@lexical/selection";
@@ -33,7 +33,7 @@ export const uuid = Math.random()
   .substr(0, 5);
 
 // TODO lookup should be custom
-function $search(selection: null | RangeSelection | NodeSelection | GridSelection): [boolean, string] {
+function $search(selection: null | BaseSelection): [boolean, string] {
   if (!$isRangeSelection(selection) || !selection.isCollapsed()) return [false, ""];
 
   const node = selection.getNodes()[0];

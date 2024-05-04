@@ -43,6 +43,7 @@ import useRefetch from "../../hooks/useRefetch";
 import useGetUrl from "../../hooks/useGetUrl";
 
 import api from "../../services/api";
+import Tooltip from "../../components/Tooltip";
 import { toastAlert } from "../../components/Alert";
 
 import ColorPicker from "../NoteBody/components/lexical/ui/ColorPicker";
@@ -379,10 +380,7 @@ export default function index({
             />
             <div className="flex flex-row justify-between mt-0 py-[7.5px] px-2 mb-[4.8px]">
               <div className="flex flex-row mb-1 mt-1">
-                <div
-                  className="tooltip tooltip-right tooltip-right-color-controller"
-                  data-tip={`${!expanded ? "Expand note" : "Minimize note"}`}
-                >
+                <Tooltip text={`${!expanded ? "Expand note" : "Minimize note"}`} position="right">
                   <Link
                     onClick={() => handleExpand()}
                     to={`${innerWidth < 1030 ? getUrlWithoutNoteId : ""}`}
@@ -397,7 +395,7 @@ export default function index({
                       </div>
                     )}
                   </Link>
-                </div>
+                </Tooltip>              
                 {innerWidth > 1030 && (
                   <>
                     <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none" />
@@ -455,12 +453,9 @@ export default function index({
                 <div className="mx-2 border border-transparent !border-r-gray-600 !h-[20px] mt-[5px] p-0 !rounded-none" />
                 <div className={`dropdown ${openDropdown && " dropdown-open"} hover:bg-[#dadada] dark:hover:bg-stone-600 rounded h-[1.92rem] px-[3.5px] cursor-pointer`}>
                   <div className="cursor-pointer" onClick={() => setOpenDropdown(!openDropdown)}>
-                    <div
-                      className="tooltip tooltip-right tooltip-right-color-controller"
-                      data-tip="Actions"
-                    >
+                    <Tooltip text="Actions" position="right">
                       <AiOutlineEllipsis size={24} className="mt-[3px]" />
-                    </div>
+                    </Tooltip>
                   </div>
                   <ul
                     tabIndex={0}

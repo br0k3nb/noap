@@ -327,7 +327,6 @@ function onDragStart(event: DragEvent): boolean {
         caption: node.__caption,
         height: node.__height,
         key: node.getKey(),
-        maxWidth: node.__maxWidth,
         showCaption: node.__showCaption,
         src: node.__src,
         width: node.__width,

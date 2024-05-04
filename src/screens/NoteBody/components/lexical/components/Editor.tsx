@@ -7,9 +7,10 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { EditorState } from "lexical";
+import { EditorState, LexicalEditor } from "lexical";
 
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 import AutoEmbedPlugin from "../plugins/AutoEmbedPlugin";
@@ -44,7 +45,6 @@ import { LayoutPlugin } from '../plugins/LayoutPlugin/LayoutPlugin';
 import { useSettings } from "../context/SettingsContext";
 import SaveNoteContext from "../../../../../context/SaveNoteCtx";
 
-import useEvent from "../../../../../hooks/useEvent";
 import useUserData from "../../../../../hooks/useUserData";
 import useNoteSettings from "../../../../../hooks/useNoteSettings";
 
@@ -77,12 +77,12 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
+    const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
     const { settings: { isRichText } } = useSettings();
     const customRef = useRef(null);
 
-    let timer: ReturnType<typeof setTimeout> | null = null;  
-    const editorContainer = document.getElementById("editor-parent-container") as HTMLElement;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     
     const { height: currentHeight, width: currentWidth } = currentScreenSize;
     const BOTTOM_BAR_HEIGHT = 54;
@@ -90,18 +90,13 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const BIG_SCREEN = currentWidth > 1030;
     const LARGE_SCREEN = currentWidth > 1430;
     
-    const triggerSaveOnKeyUp = (e: Event) => {
-      //excluding function keys, alt & alt right, ctrl, arrows and other keys that shouldn't trigger the save function
-      const excludedKeycodes = [0, 17, 18, 19, 20, 27, 33, 34, 35, 36, 37, 38, 39, 40, 44, 45, 91, 92, 93, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144, 145, 173, 174, 181, 182, 183];
-
-      if(excludedKeycodes.every(v => v !== (e as KeyboardEvent).keyCode)) {
+    const onEditorChange = (eS: EditorState, e: LexicalEditor, tags: Set<string>) => {
+      if(tags) {
         if(timer) clearTimeout(timer);
-
+  
         timer = setTimeout(() => save(editor.getEditorState()), 2500);
       }
-    };
-    
-    useEvent(editorContainer, 'keyup', triggerSaveOnKeyUp);
+    }
 
     useEffect(() => {
       const updateViewPortWidth = () => {
@@ -156,6 +151,11 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
           <EmojiPickerPlugin />
           <AutoLinkPlugin />
           <AutoFocusPlugin />
+          <OnChangePlugin 
+            onChange={onEditorChange}
+            ignoreHistoryMergeTagChange={true}
+            ignoreSelectionChange={true}
+          />
           {isRichText && (
             <>
               <RichTextPlugin
@@ -231,7 +231,10 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
               {floatingAnchorElem && (
                 <>
                   {MEDIUM_SCREEN && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
-                  <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} />
+                  <FloatingLinkEditorPlugin 
+                    anchorElem={floatingAnchorElem}
+                    setIsLinkEditMode={setIsLinkEditMode}
+                  />
                 </>
               )}
             </>

@@ -8,6 +8,7 @@ import { AiFillTags } from 'react-icons/ai';
 import { motion } from "framer-motion";
 
 import SvgLoader from "../../../../../components/SvgLoader";
+import Tooltip from "../../../../../components/Tooltip";
 import useLabel from "../../../../../hooks/useLabel";
 
 type Props = {
@@ -66,14 +67,14 @@ export default function ListLabels({
                         <div className="px-1 py-1 rounded cursor-not-allowed text-gray-500"> 
                             <BsFilter size={25}/> 
                         </div>
-                        <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px] before:text-[15px]" data-tip="Search">
+                        <Tooltip text="Search" customClassName="before:!mr-[5px] after:!mr-[3px] before:text-[15px]" position="left">
                             <div 
-                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-600 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer" 
+                                className="px-[5px] pt-[4px] pb-[7px] hover:bg-[#dadada] dark:hover:bg-stone-600 rounded-lg transition-colors duration-300 ease-in-out cursor-pointer"
                                 onClick={() => handleShowSearchBar()}
                             >
                                 <BsSearch size={22} className="pt-[4px] cursor-pointer" />
                             </div>
-                        </div>
+                        </Tooltip>
                     </div>
                 </div>
                 <motion.div

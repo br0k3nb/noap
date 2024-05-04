@@ -1,13 +1,21 @@
-import type { ListNode } from './index';
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+import type {ListNode} from './';
 import type {
+  BaseSelection,
   DOMConversionMap,
   DOMConversionOutput,
+  DOMExportOutput,
   EditorConfig,
   EditorThemeClasses,
-  GridSelection,
   LexicalNode,
   NodeKey,
-  NodeSelection,
   ParagraphNode,
   RangeSelection,
   SerializedElementNode,
@@ -26,17 +34,14 @@ import {
   $isParagraphNode,
   $isRangeSelection,
   ElementNode,
+  LexicalEditor,
 } from 'lexical';
 import invariant from '../../shared/invariant';
+import normalizeClassNames from '../../shared/normalizeClassNames';
 
-import { $createListNode, $isListNode } from './index';
-import {
-  $handleIndent,
-  $handleOutdent,
-  mergeLists,
-  updateChildrenListItemValue,
-} from './formatList';
-import { isNestedListNode } from './utils';
+import {$createListNode, $isListNode} from './';
+import {$handleIndent, $handleOutdent, mergeLists} from './formatList';
+import {isNestedListNode} from './utils';
 
 export type SerializedListItemNode = Spread<
   {
@@ -46,8 +51,11 @@ export type SerializedListItemNode = Spread<
   SerializedElementNode
 >;
 
+/** @noInheritDoc */
 export class ListItemNode extends ElementNode {
+  /** @internal */
   __value: number;
+  /** @internal */
   __checked?: boolean;
 
   static getType(): string {
@@ -93,9 +101,12 @@ export class ListItemNode extends ElementNode {
 
   static transform(): (node: LexicalNode) => void {
     return (node: LexicalNode) => {
+      invariant($isListItemNode(node), 'node is not a ListItemNode');
+      if (node.__checked == null) {
+        return;
+      }
       const parent = node.getParent();
       if ($isListNode(parent)) {
-        updateChildrenListItemValue(parent);
         if (parent.getListType() !== 'check' && node.getChecked() != null) {
           node.setChecked(undefined);
         }
@@ -119,6 +130,14 @@ export class ListItemNode extends ElementNode {
     node.setFormat(serializedNode.format);
     node.setDirection(serializedNode.direction);
     return node;
+  }
+
+  exportDOM(editor: LexicalEditor): DOMExportOutput {
+    const element = this.createDOM(editor._config);
+    element.style.textAlign = this.getFormatType();
+    return {
+      element,
+    };
   }
 
   exportJSON(): SerializedListItemNode {
@@ -156,7 +175,9 @@ export class ListItemNode extends ElementNode {
     }
     this.setIndent(0);
     const list = this.getParentOrThrow();
-    if (!$isListNode(list)) return replaceWithNode;
+    if (!$isListNode(list)) {
+      return replaceWithNode;
+    }
     if (list.__first === this.getKey()) {
       list.insertBefore(replaceWithNode);
     } else if (list.__last === this.getKey()) {
@@ -174,6 +195,10 @@ export class ListItemNode extends ElementNode {
       replaceWithNode.insertAfter(newList);
     }
     if (includeChildren) {
+      invariant(
+        $isElementNode(replaceWithNode),
+        'includeChildren should only be true for ElementNodes',
+      );
       this.getChildren().forEach((child: LexicalNode) => {
         replaceWithNode.append(child);
       });
@@ -195,32 +220,13 @@ export class ListItemNode extends ElementNode {
       );
     }
 
+    if ($isListItemNode(node)) {
+      return super.insertAfter(node, restoreSelection);
+    }
+
     const siblings = this.getNextSiblings();
 
-    if ($isListItemNode(node)) {
-      const after = super.insertAfter(node, restoreSelection);
-      const afterListNode = node.getParentOrThrow();
-
-      if ($isListNode(afterListNode)) {
-        updateChildrenListItemValue(afterListNode);
-      }
-
-      return after;
-    }
-
-    if ($isListNode(node)) {
-      let child = node;
-      const children = node.getChildren<ListNode>();
-
-      for (let i = children.length - 1; i >= 0; i--) {
-        child = children[i];
-
-        this.insertAfter(child, restoreSelection);
-      }
-
-      return child;
-    }
-
+    // Split the lists and insert the node in between them
     listNode.insertAfter(node, restoreSelection);
 
     if (siblings.length !== 0) {
@@ -247,12 +253,6 @@ export class ListItemNode extends ElementNode {
     ) {
       mergeLists(prevSibling.getFirstChild(), nextSibling.getFirstChild());
       nextSibling.remove();
-    } else if (nextSibling) {
-      const parent = nextSibling.getParent();
-
-      if ($isListNode(parent)) {
-        updateChildrenListItemValue(parent);
-      }
     }
   }
 
@@ -278,13 +278,15 @@ export class ListItemNode extends ElementNode {
 
     if (listNode.getChildrenSize() === 1) {
       if (isIndented) {
+        // if the list node is nested, we just want to remove it,
+        // effectively unindenting it.
         listNode.remove();
         listNodeParent.select();
-
       } else {
         listNode.insertBefore(paragraph);
         listNode.remove();
-
+        // If we have selection on the list item, we'll need to move it
+        // to the paragraph
         const anchor = selection.anchor;
         const focus = selection.focus;
         const key = paragraph.getKey();
@@ -367,19 +369,6 @@ export class ListItemNode extends ElementNode {
     return this;
   }
 
-  insertBefore(nodeToInsert: LexicalNode): LexicalNode {
-    if ($isListItemNode(nodeToInsert)) {
-      const parent = this.getParentOrThrow();
-
-      if ($isListNode(parent)) {
-        const siblings = this.getNextSiblings();
-        updateChildrenListItemValue(parent, siblings);
-      }
-    }
-
-    return super.insertBefore(nodeToInsert);
-  }
-
   canInsertAfter(node: LexicalNode): boolean {
     return $isListItemNode(node);
   }
@@ -392,10 +381,7 @@ export class ListItemNode extends ElementNode {
     return $isParagraphNode(node) || $isListItemNode(node);
   }
 
-  extractWithChild(
-    child: LexicalNode,
-    selection: RangeSelection | NodeSelection | GridSelection,
-  ): boolean {
+  extractWithChild(child: LexicalNode, selection: BaseSelection): boolean {
     if (!$isRangeSelection(selection)) {
       return false;
     }
@@ -435,8 +421,7 @@ function $setListItemThemeClassNames(
   }
 
   if (listItemClassName !== undefined) {
-    const listItemClasses = listItemClassName.split(' ');
-    classesToAdd.push(...listItemClasses);
+    classesToAdd.push(...normalizeClassNames(listItemClassName));
   }
 
   if (listTheme) {
@@ -461,7 +446,7 @@ function $setListItemThemeClassNames(
   }
 
   if (nestedListItemClassName !== undefined) {
-    const nestedListItemClasses = nestedListItemClassName.split(' ');
+    const nestedListItemClasses = normalizeClassNames(nestedListItemClassName);
 
     if (node.getChildren().some((child) => $isListNode(child))) {
       classesToAdd.push(...nestedListItemClasses);

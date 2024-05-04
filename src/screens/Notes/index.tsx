@@ -64,7 +64,7 @@ export default function Notes({
     return (
         <div 
             className={`
-                overflow-hidden h-screen w-screen lg:max-w-[380px] border-r border-stone-300 dark:border-[#404040] bg-[#f8f8f8] dark:!bg-[#0f1011]
+                overflow-hidden w-screen h-screen lg:max-w-[380px] border-r border-stone-300 dark:border-[#404040] bg-[#f8f8f8] dark:!bg-[#0f1011]
                 ${expanded && "hidden"}
             `}
         >

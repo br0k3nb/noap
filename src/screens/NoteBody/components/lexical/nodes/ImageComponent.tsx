@@ -1,12 +1,11 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
 import type {
-  GridSelection,
+  BaseSelection,
+  LexicalCommand,
   LexicalEditor,
   NodeKey,
-  NodeSelection,
-  RangeSelection,
-} from "lexical";
+} from 'lexical';
 
 import "./ImageNode.css";
 
@@ -34,6 +33,7 @@ import {
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
   SELECTION_CHANGE_COMMAND,
+  createCommand
 } from "lexical";
 
 import { motion } from "framer-motion";
@@ -57,6 +57,7 @@ import Modal from "../../../../../components/Modal";
 import useUpdateViewport from "../../../../../hooks/useUpdateViewport";
 
 const imageCache = new Set();
+export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> = createCommand('RIGHT_CLICK_IMAGE_COMMAND');
 
 function useSuspenseImage(src: string) {
   if (!imageCache.has(src)) {
@@ -144,10 +145,11 @@ export default function ImageComponent({
   const [hover, setHover] = useState(false);
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
-  const [selection, setSelection] = useState<RangeSelection | NodeSelection | GridSelection | null>(null);
+  const [selection, setSelection] = useState<BaseSelection | null>(null);
   const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth, height: innerHeight });
 
   useUpdateViewport(setCurrentScreenSize, 500);
+
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {

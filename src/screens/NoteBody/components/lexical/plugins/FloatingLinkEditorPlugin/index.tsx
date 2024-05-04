@@ -1,303 +1,401 @@
-import "./index.css";
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 
-import {
-  $isAutoLinkNode,
-  $isLinkNode,
-  TOGGLE_LINK_COMMAND,
-} from "@lexical/link";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $findMatchingParent, mergeRegister } from "@lexical/utils";
+import './index.css';
+
+import {$isCodeHighlightNode} from '@lexical/code';
+import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import {mergeRegister} from '@lexical/utils';
 import {
   $getSelection,
+  $isParagraphNode,
   $isRangeSelection,
-  COMMAND_PRIORITY_CRITICAL,
-  COMMAND_PRIORITY_HIGH,
+  $isTextNode,
   COMMAND_PRIORITY_LOW,
-  GridSelection,
-  KEY_ESCAPE_COMMAND,
+  FORMAT_TEXT_COMMAND,
   LexicalEditor,
-  NodeSelection,
-  RangeSelection,
   SELECTION_CHANGE_COMMAND,
-} from "lexical";
-import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
-import * as React from "react";
-import { createPortal } from "react-dom";
+} from 'lexical';
+import {Dispatch, useCallback, useEffect, useRef, useState} from 'react';
+import * as React from 'react';
+import {createPortal} from 'react-dom';
 
-import { getSelectedNode } from "../../utils/getSelectedNode";
-import { setFloatingElemPositionForLinkEditor } from "../../utils/setFloatingElemPositionForLinkEditor";
-import { sanitizeUrl } from "../../utils/url";
+import {getDOMRangeRect} from '../../utils/getDOMRangeRect';
+import {getSelectedNode} from '../../utils/getSelectedNode';
+import {setFloatingElemPosition} from '../../utils/setFloatingElemPosition';
+import {INSERT_INLINE_COMMAND} from '../CommentPlugin';
 
-function FloatingLinkEditor({
+function TextFormatFloatingToolbar({
   editor,
-  isLink,
-  setIsLink,
   anchorElem,
+  isLink,
+  isBold,
+  isItalic,
+  isUnderline,
+  isCode,
+  isStrikethrough,
+  isSubscript,
+  isSuperscript,
+  setIsLinkEditMode,
 }: {
   editor: LexicalEditor;
-  isLink: boolean;
-  setIsLink: Dispatch<boolean>;
   anchorElem: HTMLElement;
+  isBold: boolean;
+  isCode: boolean;
+  isItalic: boolean;
+  isLink: boolean;
+  isStrikethrough: boolean;
+  isSubscript: boolean;
+  isSuperscript: boolean;
+  isUnderline: boolean;
+  setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element {
-  const editorRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [editedLinkUrl, setEditedLinkUrl] = useState("");
-  const [isEditMode, setEditMode] = useState(false);
-  const [lastSelection, setLastSelection] = useState<
-    RangeSelection | GridSelection | NodeSelection | null
-  >(null);
+  const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
-  const updateLinkEditor = useCallback(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      const node = getSelectedNode(selection);
-      const parent = node.getParent();
-      if ($isLinkNode(parent)) {
-        setLinkUrl(parent.getURL());
-      } else if ($isLinkNode(node)) {
-        setLinkUrl(node.getURL());
-      } else {
-        setLinkUrl("");
+  const insertLink = useCallback(() => {
+    if (!isLink) {
+      setIsLinkEditMode(true);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, 'https://');
+    } else {
+      setIsLinkEditMode(false);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    }
+  }, [editor, isLink, setIsLinkEditMode]);
+
+  const insertComment = () => {
+    editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
+  };
+
+  function mouseMoveListener(e: MouseEvent) {
+    if (
+      popupCharStylesEditorRef?.current &&
+      (e.buttons === 1 || e.buttons === 3)
+    ) {
+      if (popupCharStylesEditorRef.current.style.pointerEvents !== 'none') {
+        const x = e.clientX;
+        const y = e.clientY;
+        const elementUnderMouse = document.elementFromPoint(x, y);
+
+        if (!popupCharStylesEditorRef.current.contains(elementUnderMouse)) {
+          // Mouse is not over the target element => not a normal click, but probably a drag
+          popupCharStylesEditorRef.current.style.pointerEvents = 'none';
+        }
       }
     }
-    const editorElem = editorRef.current;
-    const nativeSelection = window.getSelection();
-    const activeElement = document.activeElement;
+  }
+  function mouseUpListener(e: MouseEvent) {
+    if (popupCharStylesEditorRef?.current) {
+      if (popupCharStylesEditorRef.current.style.pointerEvents !== 'auto') {
+        popupCharStylesEditorRef.current.style.pointerEvents = 'auto';
+      }
+    }
+  }
 
-    if (editorElem === null) {
+  useEffect(() => {
+    if (popupCharStylesEditorRef?.current) {
+      document.addEventListener('mousemove', mouseMoveListener);
+      document.addEventListener('mouseup', mouseUpListener);
+
+      return () => {
+        document.removeEventListener('mousemove', mouseMoveListener);
+        document.removeEventListener('mouseup', mouseUpListener);
+      };
+    }
+  }, [popupCharStylesEditorRef]);
+
+  const updateTextFormatFloatingToolbar = useCallback(() => {
+    const selection = $getSelection();
+
+    const popupCharStylesEditorElem = popupCharStylesEditorRef.current;
+    const nativeSelection = window.getSelection();
+
+    if (popupCharStylesEditorElem === null) {
       return;
     }
 
     const rootElement = editor.getRootElement();
-
     if (
       selection !== null &&
       nativeSelection !== null &&
+      !nativeSelection.isCollapsed &&
       rootElement !== null &&
-      rootElement.contains(nativeSelection.anchorNode) &&
-      editor.isEditable()
+      rootElement.contains(nativeSelection.anchorNode)
     ) {
-      const domRect: DOMRect | undefined =
-        nativeSelection.focusNode?.parentElement?.getBoundingClientRect();
-      if (domRect) {
-        domRect.y += 40;
-        setFloatingElemPositionForLinkEditor(domRect, editorElem, anchorElem);
-      }
-      setLastSelection(selection);
-    } else if (!activeElement || activeElement.className !== "link-input") {
-      if (rootElement !== null) {
-        setFloatingElemPositionForLinkEditor(null, editorElem, anchorElem);
-      }
-      setLastSelection(null);
-      setEditMode(false);
-      setLinkUrl("");
-    }
+      const rangeRect = getDOMRangeRect(nativeSelection, rootElement);
 
-    return true;
-  }, [anchorElem, editor]);
+      setFloatingElemPosition(
+        rangeRect,
+        popupCharStylesEditorElem,
+        anchorElem,
+        //@ts-ignore
+        isLink,
+      );
+    }
+  }, [editor, anchorElem, isLink]);
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
 
     const update = () => {
       editor.getEditorState().read(() => {
-        updateLinkEditor();
+        updateTextFormatFloatingToolbar();
       });
     };
 
-    window.addEventListener("resize", update);
-
+    window.addEventListener('resize', update);
     if (scrollerElem) {
-      scrollerElem.addEventListener("scroll", update);
+      scrollerElem.addEventListener('scroll', update);
     }
 
     return () => {
-      window.removeEventListener("resize", update);
-
+      window.removeEventListener('resize', update);
       if (scrollerElem) {
-        scrollerElem.removeEventListener("scroll", update);
+        scrollerElem.removeEventListener('scroll', update);
       }
     };
-  }, [anchorElem.parentElement, editor, updateLinkEditor]);
+  }, [editor, updateTextFormatFloatingToolbar, anchorElem]);
 
   useEffect(() => {
+    editor.getEditorState().read(() => {
+      updateTextFormatFloatingToolbar();
+    });
     return mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
+      editor.registerUpdateListener(({editorState}) => {
         editorState.read(() => {
-          updateLinkEditor();
+          updateTextFormatFloatingToolbar();
         });
       }),
 
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         () => {
-          updateLinkEditor();
-          return true;
-        },
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand(
-        KEY_ESCAPE_COMMAND,
-        () => {
-          if (isLink) {
-            setIsLink(false);
-            return true;
-          }
+          updateTextFormatFloatingToolbar();
           return false;
         },
-        COMMAND_PRIORITY_HIGH
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
-  }, [editor, updateLinkEditor, setIsLink, isLink]);
-
-  useEffect(() => {
-    editor.getEditorState().read(() => {
-      updateLinkEditor();
-    });
-  }, [editor, updateLinkEditor]);
-
-  useEffect(() => {
-    if (isEditMode && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isEditMode]);
-
-  const monitorInputInteraction = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleLinkSubmission();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setEditMode(false);
-    }
-  };
-
-  const handleLinkSubmission = () => {
-    if (lastSelection !== null) {
-      if (linkUrl !== "") {
-        editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl(editedLinkUrl));
-      }
-      setEditMode(false);
-    }
-  };
+  }, [editor, updateTextFormatFloatingToolbar]);
 
   return (
-    <div ref={editorRef} className="link-editor">
-      {!isLink ? null : isEditMode ? (
+    <div ref={popupCharStylesEditorRef} className="floating-text-format-popup">
+      {editor.isEditable() && (
         <>
-          <input
-            ref={inputRef}
-            className="link-input"
-            value={editedLinkUrl}
-            onChange={(event) => {
-              setEditedLinkUrl(event.target.value);
-            }}
-            onKeyDown={(event) => {
-              monitorInputInteraction(event);
-            }}
-          />
-          <div>
-            <div
-              className="link-cancel"
-              role="button"
-              tabIndex={0}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                setEditMode(false);
-              }}
-            />
-
-            <div
-              className="link-confirm"
-              role="button"
-              tabIndex={0}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={handleLinkSubmission}
-            />
-          </div>
-        </>
-      ) : (
-        <div className="link-view">
-          <a href={linkUrl} target="_blank" rel="noopener noreferrer">
-            {linkUrl}
-          </a>
-          <div
-            className="link-edit"
-            role="button"
-            tabIndex={0}
-            onMouseDown={(event) => event.preventDefault()}
+          <button
+            type="button"
             onClick={() => {
-              setEditedLinkUrl(linkUrl);
-              setEditMode(true);
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
             }}
-          />
-        </div>
+            className={'popup-item spaced ' + (isBold ? 'active' : '')}
+            aria-label="Format text as bold">
+            <i className="format bold" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
+            }}
+            className={'popup-item spaced ' + (isItalic ? 'active' : '')}
+            aria-label="Format text as italics">
+            <i className="format italic" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
+            }}
+            className={'popup-item spaced ' + (isUnderline ? 'active' : '')}
+            aria-label="Format text to underlined">
+            <i className="format underline" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
+            }}
+            className={'popup-item spaced ' + (isStrikethrough ? 'active' : '')}
+            aria-label="Format text with a strikethrough">
+            <i className="format strikethrough" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
+            }}
+            className={'popup-item spaced ' + (isSubscript ? 'active' : '')}
+            title="Subscript"
+            aria-label="Format Subscript">
+            <i className="format subscript" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
+            }}
+            className={'popup-item spaced ' + (isSuperscript ? 'active' : '')}
+            title="Superscript"
+            aria-label="Format Superscript">
+            <i className="format superscript" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
+            }}
+            className={'popup-item spaced ' + (isCode ? 'active' : '')}
+            aria-label="Insert code block">
+            <i className="format code" />
+          </button>
+          <button
+            type="button"
+            onClick={insertLink}
+            className={'popup-item spaced ' + (isLink ? 'active' : '')}
+            aria-label="Insert link">
+            <i className="format link" />
+          </button>
+        </>
       )}
+      <button
+        type="button"
+        onClick={insertComment}
+        className={'popup-item spaced insert-comment'}
+        aria-label="Insert comment">
+        <i className="format add-comment" />
+      </button>
     </div>
   );
 }
 
-function useFloatingLinkEditorToolbar(
+function useFloatingTextFormatToolbar(
   editor: LexicalEditor,
-  anchorElem: HTMLElement
+  anchorElem: HTMLElement,
+  setIsLinkEditMode: Dispatch<boolean>,
 ): JSX.Element | null {
-  const [activeEditor, setActiveEditor] = useState(editor);
+  const [isText, setIsText] = useState(false);
   const [isLink, setIsLink] = useState(false);
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isSubscript, setIsSubscript] = useState(false);
+  const [isSuperscript, setIsSuperscript] = useState(false);
+  const [isCode, setIsCode] = useState(false);
 
-  const updateToolbar = useCallback(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
+  const updatePopup = useCallback(() => {
+    editor.getEditorState().read(() => {
+      // Should not to pop up the floating toolbar when using IME input
+      if (editor.isComposing()) {
+        return;
+      }
+      const selection = $getSelection();
+      const nativeSelection = window.getSelection();
+      const rootElement = editor.getRootElement();
+
+      if (
+        nativeSelection !== null &&
+        (!$isRangeSelection(selection) ||
+          rootElement === null ||
+          !rootElement.contains(nativeSelection.anchorNode))
+      ) {
+        setIsText(false);
+        return;
+      }
+
+      if (!$isRangeSelection(selection)) {
+        return;
+      }
+
       const node = getSelectedNode(selection);
-      const linkParent = $findMatchingParent(node, $isLinkNode);
-      const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
 
-      // We don't want this menu to open for auto links.
-      if (linkParent != null && autoLinkParent == null) {
+      // Update text format
+      setIsBold(selection.hasFormat('bold'));
+      setIsItalic(selection.hasFormat('italic'));
+      setIsUnderline(selection.hasFormat('underline'));
+      setIsStrikethrough(selection.hasFormat('strikethrough'));
+      setIsSubscript(selection.hasFormat('subscript'));
+      setIsSuperscript(selection.hasFormat('superscript'));
+      setIsCode(selection.hasFormat('code'));
+
+      // Update links
+      const parent = node.getParent();
+      if ($isLinkNode(parent) || $isLinkNode(node)) {
         setIsLink(true);
       } else {
         setIsLink(false);
       }
-    }
-  }, []);
+
+      if (
+        !$isCodeHighlightNode(selection.anchor.getNode()) &&
+        selection.getTextContent() !== ''
+      ) {
+        setIsText($isTextNode(node) || $isParagraphNode(node));
+      } else {
+        setIsText(false);
+      }
+
+      const rawTextContent = selection.getTextContent().replace(/\n/g, '');
+      if (!selection.isCollapsed() && rawTextContent === '') {
+        setIsText(false);
+        return;
+      }
+    });
+  }, [editor]);
+
+  useEffect(() => {
+    document.addEventListener('selectionchange', updatePopup);
+    return () => {
+      document.removeEventListener('selectionchange', updatePopup);
+    };
+  }, [updatePopup]);
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        editorState.read(() => {
-          updateToolbar();
-        });
+      editor.registerUpdateListener(() => {
+        updatePopup();
       }),
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
-        (_payload, newEditor) => {
-          updateToolbar();
-          setActiveEditor(newEditor);
-          return false;
-        },
-        COMMAND_PRIORITY_CRITICAL
-      )
+      editor.registerRootListener(() => {
+        if (editor.getRootElement() === null) {
+          setIsText(false);
+        }
+      }),
     );
-  }, [editor, updateToolbar]);
+  }, [editor, updatePopup]);
+
+  if (!isText) {
+    return null;
+  }
 
   return createPortal(
-    <FloatingLinkEditor
-      editor={activeEditor}
-      isLink={isLink}
+    <TextFormatFloatingToolbar
+      editor={editor}
       anchorElem={anchorElem}
-      setIsLink={setIsLink}
+      isLink={isLink}
+      isBold={isBold}
+      isItalic={isItalic}
+      isStrikethrough={isStrikethrough}
+      isSubscript={isSubscript}
+      isSuperscript={isSuperscript}
+      isUnderline={isUnderline}
+      isCode={isCode}
+      setIsLinkEditMode={setIsLinkEditMode}
     />,
-    anchorElem
+    anchorElem,
   );
 }
 
-export default function FloatingLinkEditorPlugin({
+export default function FloatingTextFormatToolbarPlugin({
   anchorElem = document.body,
+  setIsLinkEditMode,
 }: {
   anchorElem?: HTMLElement;
+  setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  return useFloatingLinkEditorToolbar(editor, anchorElem);
+  return useFloatingTextFormatToolbar(editor, anchorElem, setIsLinkEditMode);
 }

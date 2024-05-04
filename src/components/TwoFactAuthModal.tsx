@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction, useEffect } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 
 import api from "../services/api";
@@ -6,6 +6,7 @@ import useUserData from "../hooks/useUserData";
 import { useInputMask } from "../hooks/useInputMask";
 
 import Modal from "./Modal";
+import Tooltip from "./Tooltip";
 import SvgLoader from "./SvgLoader";
 import { toastAlert } from "./Alert";
 import ConfirmationModal from "./ConfirmationModal";
@@ -15,7 +16,7 @@ import qrCodePlaceholder from "../assets/qrcode_placeholder.svg";
 
 type TwoFactAuthModalType = {
     open: boolean;
-    customCloseFn?: () => any;
+    customCloseFn: () => any;
     setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -109,8 +110,8 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
     };
 
     const handleModalClose = () => {
-        (numberRef.current as HTMLInputElement).value = '';
-        if(customCloseFn) customCloseFn();
+        if(numberRef.current) (numberRef.current as HTMLInputElement).value = '';
+        customCloseFn();
     }
 
     return (
@@ -297,27 +298,27 @@ export default function TwoFactAuthModal ({ open, setOpen, customCloseFn } : Two
                         </div>
                     )}
                     <div className={`flex flex-row justify-between mt-3 ${((TFAEnabled && !isVerified) || (TFAEnabled && isVerified)) && "!hidden"}`}>
-                        <button 
-                            className="text-xs uppercase bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-[#ebebeb] disabled:opacity-70"
-                            onClick={() => setPage(page - 1)}
-                            disabled={!page ? true : false}
-                        >
-                            <div className="tooltip tooltip-right before:!normal-case" data-tip="Previous page">
-                                <BsArrowLeft size={20} className="pt-1 text-gray-900 dark:text-gray-300"/>
-                            </div>
-                        </button>
-                        <button
-                            className="text-xs uppercase bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:!bg-[#323232] dark:hover:!bg-[#232323] px-3 py-[0.60rem] rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-[#ebebeb] disabled:opacity-70"
-                            disabled={page === 2 || (page === 1 && !qrcodeImage) ? true : false}
-                            onClick={() => setPage(page + 1)}
-                        >
-                            <div 
-                                className="tooltip tooltip-left before:!normal-case" 
-                                data-tip={`${(page == 1 && !qrcodeImage) ? "Generate a QR code to go to the next page" : "Next page"}`}
+                        <Tooltip text="Previous page" position="right">
+                            <button 
+                                className="text-xs uppercase bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:!bg-[#323232] dark:hover:!bg-[#232323] p-3 rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-[#ebebeb] disabled:opacity-70"
+                                onClick={() => setPage(page - 1)}
+                                disabled={!page ? true : false}
                             >
-                                <BsArrowRight size={20} className="pt-1 text-gray-900 dark:text-gray-300"/>
-                            </div>
-                        </button>
+                                <BsArrowLeft size={20} className="text-gray-900 dark:text-gray-300"/>
+                            </button>
+                        </Tooltip>
+                        <Tooltip 
+                            text={`${(page == 1 && !qrcodeImage) ? "Generate a QR code to go to the next page" : "Next page"}`} 
+                            position="left"
+                        >
+                            <button
+                                className="text-xs uppercase bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:!bg-[#323232] dark:hover:!bg-[#232323] p-3 rounded-full transition-all duration-300 disabled:cursor-not-allowed disabled:bg-[#ebebeb] disabled:opacity-70"
+                                disabled={page === 2 || (page === 1 && !qrcodeImage) ? true : false}
+                                onClick={() => setPage(page + 1)}
+                            >
+                                <BsArrowRight size={20} className="text-gray-900 dark:text-gray-300"/>
+                            </button>
+                        </Tooltip>
                     </div>
                 </div>
             </Modal>
