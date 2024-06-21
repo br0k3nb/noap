@@ -44,7 +44,9 @@ export default function SettingsModal({ open, setOpen }: Props) {
     const [showSPNIFLoader, setShowSPNIFLoader] = useState(false);
     const [showThemeLoader, setShowThemeLoader] = useState(false);
     const [showOpenDoorIcon, setShowOpenDoorIcon] = useState(false);
+    const [goToLastOpenedNote, setGoToLastOpenedNote] = useState(false);
     const [openAccSettingsModal, setOpenAccSettingsModal] = useState(false);
+    const [goToLastOpenedNoteLoader, setGoToLastOpenedNoteLoader] = useState(false);
     const [showNoteVisualizationLoader, setShowNoteVisualizationLoader] = useState(false);
     const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
     const [openSessionModal, setOpenSessionModal] = useState(false);
@@ -163,6 +165,30 @@ export default function SettingsModal({ open, setOpen }: Props) {
             }
         }
     };
+
+    const handleLastOpenedNoteOnLogin = async (value: boolean) => {
+        setGoToLastOpenedNoteLoader(true);
+        setGoToLastOpenedNote(value);
+        try {
+            await api.patch(`/settings/onLoginGoToLastOpenedNote/${_id}`, { onLoginGoToLastOpenedNote: value });
+
+            setUserData(prevUserData => {
+                return {
+                    ...prevUserData,
+                    settings: {
+                        ...prevUserData.settings,
+                        onLoginGoToLastOpenedNote: value
+                    }
+                }
+            });
+
+        } catch (err: any) {
+            console.log(err);
+            toastAlert({ icon: 'error', title: err.message, timer: 3000 });
+        } finally {
+            setGoToLastOpenedNoteLoader(false);
+        }
+    }
 
     const handleTFAClick = () => {
         setOpen(false);
@@ -339,6 +365,20 @@ export default function SettingsModal({ open, setOpen }: Props) {
                                 checked={noteTextExpanded ? noteTextExpanded : false}
                                 className={`toggle ${showNTCLoader && "cursor-not-allowed"}`}
                                 onChange={() => handleNoteTextCondition()}
+                            />
+                        </label>
+                        <label className="label tracking-widest !mb-0 !py-0">
+                            <div className="flex flex-row space-x-2">
+                                <span className="label-text uppercase text-xs xxs:!text-[11px] text-gray-900 dark:text-gray-300">
+                                    {goToLastOpenedNoteLoader ? "Loading..." : "go to last opened note on login"}
+                                </span>
+                            </div>
+                            <input 
+                                type="checkbox" 
+                                disabled={showSPNIFLoader ? true : false}
+                                checked={goToLastOpenedNote ? goToLastOpenedNote : false}
+                                className={`toggle ${showSPNIFLoader && "cursor-not-allowed"}`}
+                                onChange={(e) => handleLastOpenedNoteOnLogin(e.target.checked)}
                             />
                         </label>
                         <label className="label tracking-widest !py-0 flex flex-col space-y-2 justify-start items-start !mt-[19px]">

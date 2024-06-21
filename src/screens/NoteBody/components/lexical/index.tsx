@@ -13,6 +13,7 @@ import EditorTheme from "./themes/EditorTheme";
 import useRefetch from "../../../../hooks/useRefetch";
 import useSelectedNote from "../../../../hooks/useSelectedNote";
 import useNoteSettings from "../../../../hooks/useNoteSettings";
+import useUserData from "../../../../hooks/useUserData";
 
 import api from "../../../../services/api";
 
@@ -29,6 +30,7 @@ export default function App({ noteData }: Props): JSX.Element {
 
   const [saveSpinner, setSaveSpinner] = useState(false);
   
+  const { userData: { _id: userId } } = useUserData();
   const { setNoteSettings }  = useNoteSettings();
   const { selectedNote } = useSelectedNote();
   const { fetchNotes } = useRefetch();
@@ -36,6 +38,13 @@ export default function App({ noteData }: Props): JSX.Element {
   useEffect(() => { 
     lastSelectedNotes.current = selectedNote 
   }, [selectedNote]);
+
+  useEffect(() => {
+    async function patchLastSelectedNote() {
+      await api.patch(`/lastOpenedNote/${userId}`, { lastOpenedNote: selectedNote });
+    }
+    patchLastSelectedNote();
+  }, [selectedNote])
     
   const saveNote = async (currentState: EditorState) => {
     setSaveSpinner(true);

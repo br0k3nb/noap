@@ -74,10 +74,11 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       }
     } = useUserData();
 
+    const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+    const [rootElWasTouched, setRootElWasTouched] = useState(false);
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
-    const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
 
     const { settings: { isRichText } } = useSettings();
     const customRef = useRef(null);
@@ -89,9 +90,22 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const MEDIUM_SCREEN = currentWidth > 640;
     const BIG_SCREEN = currentWidth > 1030;
     const LARGE_SCREEN = currentWidth > 1430;
+
+    const getRootEditorEl = document.getElementById("ContentEditable__root");
     
+    useEffect(() => {
+      let timer: ReturnType<typeof setTimeout> | null = null;
+
+      getRootEditorEl?.addEventListener('click', () => {
+        if(timer) clearTimeout(timer);
+
+        timer = setTimeout(() => setRootElWasTouched(true), 200);
+      });
+    }, [getRootEditorEl])
+
     const onEditorChange = (eS: EditorState, e: LexicalEditor, tags: Set<string>) => {
-      if(tags) {
+      if(tags && rootElWasTouched) {
+        console.log(rootElWasTouched);
         if(timer) clearTimeout(timer);
   
         timer = setTimeout(() => save(editor.getEditorState()), 2500);
@@ -99,18 +113,24 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     }
 
     useEffect(() => {
+      let viewportTimeout: ReturnType<typeof setTimeout> | null = null;
+
       const updateViewPortWidth = () => {
         const isNextSmallWidthViewport = CAN_USE_DOM && matchMedia("(max-width: 1025px)").matches;
       
         if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);
-        setTimeout(() => setCurrentScreenSize({ width: innerWidth, height: innerHeight }));
+        viewportTimeout = setTimeout(() => setCurrentScreenSize({ width: innerWidth, height: innerHeight }));
       };
 
       updateViewPortWidth();
       addEventListener("resize", updateViewPortWidth);
-      setTimeout(() => setFloatingAnchorElem(ref?.current));
+      const floatingAnchorElTimout = setTimeout(() => setFloatingAnchorElem(ref?.current));
 
-      return () => removeEventListener("resize", updateViewPortWidth);
+      return () => (
+        removeEventListener("resize", updateViewPortWidth),
+        clearTimeout(floatingAnchorElTimout),
+        clearTimeout(viewportTimeout as ReturnType<typeof setTimeout>)
+      )
     }, [isSmallWidthViewport, expanded]);
 
     useEffect(() => {

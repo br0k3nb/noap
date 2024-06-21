@@ -93,8 +93,10 @@ export default function SignIn() {
 
         const { TFAEnabled } = data;
 
-        if(TFAEnabled) setOpenTFAModal(true);
-        else navigate(`/notes/page/1`);
+        if(TFAEnabled) return setOpenTFAModal(true);
+
+        if(data?.lastOpenedNote && data?.settings?.onLoginGoToLastOpenedNote) navigate(`/notes/page/1/note/${data.lastOpenedNote}`);
+        else navigate(`/notes/page/1`)
 
         setSvgLoader("");
       } 
