@@ -63,7 +63,6 @@ import { IS_APPLE } from "../../shared/environment";
 
 import useModal from "../../hooks/useModal";
 
-// import { $createStickyNode } from "../../nodes/StickyNode";
 import DropDown, { DropDownItem } from "../../ui/DropDown";
 import ColorPicker from "../../ui/ColorPicker";
 import { getSelectedNode } from "../../utils/getSelectedNode";
@@ -89,11 +88,10 @@ import superscriptIcon from '../../images/icons/type-superscript.svg';
 import strikethroughIcon from '../../images/icons/type-strikethrough.svg';
 import clearFormattingIcon from '../../images/icons/trash.svg';
 import horizontalRuleIcon from '../../images/icons/horizontal-rule.svg';
-import excalidrawIcon from '../../images/icons/diagram-2.svg';
+import excalidrawIcon from '../../images/icons/diagram-2.svg';  
 import imageIcon from '../../images/icons/file-image.svg';
 // import poolIcon from '../../images/icons/card-checklist.svg';
 import equationIcon from '../../images/icons/plus-slash-minus.svg';
-// import stickyIcon from '../../images/icons/sticky.svg';
 import collapsibleIcon from '../../images/icons/caret-right-fill.svg';
 import leftAlignIcon from '../../images/icons/text-left.svg';
 import centerAlignIcon from '../../images/icons/text-center.svg';
@@ -251,27 +249,17 @@ function BlockFormatDropDown({
   };
 
   const default_dropdown_item_classname = "rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]";
-
-  const userAgent = navigator.userAgent;
-  let browserName;
-  
-  if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
-  else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
-
   const { userData: { settings: { theme } } } = useUserData();
 
   return (
     <DropDown
       disabled={disabled}
-      modalClassName={`
-        w-44 h-72 overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 
-        ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-      `}
+      modalClassName="w-44 h-[303px] rounded-lg"
       buttonClassName="toolbar-item block-controls"
       buttonIconClassName={`icon ${theme === 'dark' && "comp-picker"} ${blockType}`}
       buttonLabel={blockTypeToBlockName[blockType]}
     >
-      <div className="my-2">
+      <div className="my-2 h-[288px] overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 scrollbar-thin">
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "paragraph")} 
           onClick={formatParagraph}
@@ -281,7 +269,6 @@ function BlockFormatDropDown({
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Normal</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.40rem] mx-auto" />
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "h1")} 
           onClick={() => formatHeading("h1")}
@@ -291,7 +278,6 @@ function BlockFormatDropDown({
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Heading 1</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "h2")} 
           onClick={() => formatHeading("h2")}
@@ -301,7 +287,6 @@ function BlockFormatDropDown({
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Heading 2</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "h3")} 
           onClick={() => formatHeading("h3")}
@@ -311,21 +296,18 @@ function BlockFormatDropDown({
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Heading 3</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
         <DropDownItem className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "bullet")} onClick={formatBulletList}>
           <div className="flex flex-row space-x-2 ml-3">
             <img className={`w-[19px] h-5 mt-[1.5px] ${theme === 'dark' && "comp-picker"}`} src={bulletListIcon} />
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Bullet List</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
         <DropDownItem className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "number")} onClick={formatNumberedList}>
           <div className="flex flex-row space-x-2 ml-3">
             <img className={`w-[19px] h-5 mt-[1.5px] ${theme === 'dark' && "comp-picker"}`} src={orderdListIcon}/>
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Numbered List</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "check")} 
           onClick={formatCheckList}
@@ -335,7 +317,6 @@ function BlockFormatDropDown({
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Check List</span>
           </div>
         </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "quote")} 
           onClick={formatQuote}
@@ -344,8 +325,7 @@ function BlockFormatDropDown({
             <img className={`w-[19px] h-5 mt-[1.5px] ${theme === 'dark' && "comp-picker"}`} src={quoteIcon} />
             <span className="text-[15px] text-gray-900 dark:text-gray-300">Quote</span>
           </div>
-        </DropDownItem>
-        <div className="h-[1px] border border-transparent border-t-gray-600 w-[9.30rem] mx-auto" />
+        </DropDownItem>      
         <DropDownItem 
           className={default_dropdown_item_classname + " " + dropDownActiveClass(blockType === "code")} 
           onClick={formatCode}
@@ -412,29 +392,19 @@ function FontDropDown({
     const getFontSize = reg.exec(fontSize);
     return getFontSize && getFontSize[0]
   }
-      
-  const userAgent = navigator.userAgent;
-  let browserName;
-  
-  if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
-  else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
   const { userData: { settings: { theme } } } = useUserData();
 
   return (
     <DropDown
-      modalClassName={`
-        !max-h-[290px] overflow-scroll scrollbar-track-transparent  dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 px-2
-        ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-        ${isFontSizeModal && "!w-[4.5rem] overflow-x-hidden"}
-      `}
+      modalClassName={`!max-h-[315px] rounded-lg ${isFontSizeModal && "!w-[4.5rem] overflow-x-hidden"}`}
       disabled={disabled}
       buttonClassName={`toolbar-item  ` + style}
       buttonLabel={isFontSizeModal ? parseFontSizeToNumber(value) as string : value}
       buttonIconClassName={!isFontSizeModal ? `icon block-type font-family ${theme === 'dark' && "comp-picker"}` : ""}
       useCustomButton={isFontSizeModal ? true : false}
     >
-      <div className="my-2">
+      <div className="!max-h-[295px] my-2 overflow-y-scroll scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 px-2 scrollbar-thin">
         {(!isFontSizeModal ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
           ([option, text], index: number) => (
             <DropDownItem
@@ -873,14 +843,7 @@ export default function ToolbarPlugin() {
   //for some reason, typescript is throwing an error if this code is not set as any.
   //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
   const getNavbar = document.getElementById("pc-navbar") as any;
-
   useUpdateViewport(setScreenSize, 500);
-
-  const userAgent = navigator.userAgent;
-  let browserName;
-  
-  if(userAgent.match(/chrome|chromium|crios/i)) browserName = "chrome";
-  else if(userAgent.match(/firefox|fxios/i)) browserName = "firefox";
 
   const customCodeButtonLabel = (
     <div className="px-2 flex flex-row space-x-2 text-gray-900 dark:text-gray-300">
@@ -956,12 +919,9 @@ export default function ToolbarPlugin() {
             buttonClassName="toolbar-item code-language"
             customButtonLabelClassName={"border-none !h-10"}
             buttonLabel={getLanguageFriendlyName(codeLanguage)}
-            modalClassName={`
-              w-40 h-72 overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
-              ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-            `}
+            modalClassName="w-40 h-[300px] rounded-lg"
           >
-            <div className="my-2">
+            <div className="my-2 h-[288px] overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 scrollbar-thin">
               {CODE_LANGUAGE_OPTIONS.map(([value, langObj], index) => {
                 return (
                   <div key={value}>
@@ -1097,16 +1057,13 @@ export default function ToolbarPlugin() {
               title="bg color"
             />
             <DropDown
-              modalClassName={`
-              w-[191px] overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
-              ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-            `}     
+              modalClassName="w-[191px] rounded-lg"
               disabled={!isEditable}
               buttonClassName="toolbar-item spaced"
               buttonLabel=""
               buttonIconClassName={`icon dropdown-more ${theme === 'dark' && 'comp-picker'}`}
             >
-              <div className="my-2">
+              <div className="my-2 px-[10px]">
                 <DropDownItem
                   onClick={() => {
                     activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
@@ -1168,15 +1125,12 @@ export default function ToolbarPlugin() {
             <Divider />
             <DropDown
               disabled={!isEditable}
-              modalClassName={`
-                w-56 h-72 overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
-                ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-              `}
+              modalClassName="w-56 h-[303px] rounded-lg"
               buttonClassName="toolbar-item spaced"
               buttonLabel="Insert"
               buttonIconClassName={`icon plus ${theme === 'dark' && 'comp-picker'}`}
             >
-              <div className="my-2">
+              <div className="my-2 h-[288px] overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 scrollbar-thin">
                 <DropDownItem 
                   className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                   onClick={() => {
@@ -1203,7 +1157,6 @@ export default function ToolbarPlugin() {
                 </DropDownItem>
                 <DropDownItem
                   className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  // onClick={() => showModal('Insert Image', (onClose) => <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />)}
                   onClick={() => setOpenInsertImageModal(true)}
                 >
                   <div className="flex flex-row space-x-2 ml-3">
@@ -1244,21 +1197,6 @@ export default function ToolbarPlugin() {
                     <span className="text-[15px] text-gray-900 dark:text-gray-300">Equation</span>
                   </div>
                 </DropDownItem>
-                {/* <DropDownItem
-                  className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 !mt-[1px] !py-[11px]"
-                  onClick={() => {
-                    editor.update(() => {
-                      const root = $getRoot();
-                      const stickyNode = $createStickyNode(0, 0);
-                      root.append(stickyNode);
-                    });
-                  }}
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme !== 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={stickyIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Sticky Note</span>
-                  </div>
-                </DropDownItem> */}
                 <DropDownItem 
                   className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
                   onClick={() => {
@@ -1312,15 +1250,12 @@ export default function ToolbarPlugin() {
         <Divider />
         <DropDown
           disabled={!isEditable}
-          modalClassName={`
-            w-44 h-72 overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800
-            ${browserName === "chrome" ? "scrollbar-thin" : "scrollbar"}
-          `}
+          modalClassName="w-44 h-[305px] rounded-lg"
           buttonLabel="Align"
           buttonIconClassName={`icon left-align ${theme === 'dark' && 'comp-picker'}`}
           buttonClassName="toolbar-item spaced alignment"        
         >
-          <div className="my-2">
+          <div className="my-2 h-[288px] overflow-y-scroll overflow-x-hidden px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 scrollbar-thin">
             <DropDownItem 
               className="rounded-lg !w-[9.90rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
               onClick={() => {

@@ -24,7 +24,8 @@ function PortalImpl({
     let modalOverlayElement: HTMLElement | null = null;
 
     const handler = (event: KeyboardEvent) => {
-      if (event.keyCode === 27) onClose();
+      const escKey = 27;
+      if (event.keyCode === escKey) onClose();
     };
 
     const clickOutsideHandler = (event: MouseEvent) => {
@@ -55,7 +56,7 @@ function PortalImpl({
       <div 
         tabIndex={-1} 
         ref={modalRef}
-        className="Modal__modal bg-[#f8f8f8] dark:bg-[#0f1011] border !border-gray-700 dark:!border-[#404040] !shadow-none xxs:!max-w-xs px-0" 
+        className="Modal__modal bg-[#f8f8f8] dark:bg-[#0f1011] !shadow-none xxs:!max-w-xs px-0" 
       >
         <div className="flex justify-between pb-4 border border-transparent border-b-gray-600 dark:border-b-[#404040]">
           <h2 className="text-gray-900 dark:text-gray-300 text-[15px] uppercase tracking-widest py-1 px-6">{title}</h2>

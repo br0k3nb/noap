@@ -8,13 +8,14 @@ type UserDataType = {
     TFAEnabled?: boolean;
     googleAccount?: boolean;
     settings: {
-      globalNoteBackgroundColor?: string;
-      showPinnedNotesInFolder?: boolean;
-      noteBackgroundColor?: string;
-      noteTextExpanded?: boolean;
-      noteVisualization?: string;
-      language?: string;
-      theme: string;
+        onLoginGoToLastOpenedNote?: boolean;
+        globalNoteBackgroundColor?: string;
+        showPinnedNotesInFolder?: boolean;
+        noteBackgroundColor?: string;
+        noteTextExpanded?: boolean;
+        noteVisualization?: string;
+        language?: string;
+        theme: string;
     }
 };
 

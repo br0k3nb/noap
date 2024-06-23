@@ -110,7 +110,7 @@ function DropDownItems({
   return (
     <DropDownContext.Provider value={contextValue}>
       <div 
-        className={`dropdown-lexical ${modalClassName && modalClassName} !border !border-gray-500 bg-[#f8f8f8] dark:bg-[#1c1d1e]`} 
+        className={`dropdown-lexical ${modalClassName && modalClassName} bg-[#f8f8f8] dark:bg-[#1c1d1e]`} 
         ref={dropDownRef} 
         onKeyDown={handleKeyDown}
       >
@@ -181,6 +181,7 @@ export default function DropDown({
         }
         if (!button.contains(target as Node)) setShowDropDown(false);
       };
+
       //@ts-ignore
       document.addEventListener('click', handle);
       //@ts-ignore

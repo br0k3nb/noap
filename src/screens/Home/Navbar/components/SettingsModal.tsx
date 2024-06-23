@@ -32,6 +32,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                 noteTextExpanded,
                 noteVisualization,
                 showPinnedNotesInFolder,
+                onLoginGoToLastOpenedNote
             }
         }, 
         setUserData 
@@ -376,7 +377,7 @@ export default function SettingsModal({ open, setOpen }: Props) {
                             <input 
                                 type="checkbox" 
                                 disabled={showSPNIFLoader ? true : false}
-                                checked={goToLastOpenedNote ? goToLastOpenedNote : false}
+                                checked={(goToLastOpenedNote || onLoginGoToLastOpenedNote) ? true : false}
                                 className={`toggle ${showSPNIFLoader && "cursor-not-allowed"}`}
                                 onChange={(e) => handleLastOpenedNoteOnLogin(e.target.checked)}
                             />

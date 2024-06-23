@@ -19,10 +19,8 @@
     min-width: 300px;
     display: flex;
     flex-grow: 0px;
-    background-color: #fff;
     flex-direction: column;
-    position: relative;
-    box-shadow: 0 0 20px 0 #444;
+    position: relative;    
     border-radius: 10px;
   }
   .Modal__title {

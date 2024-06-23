@@ -199,9 +199,11 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                         style={
                           (!expanded && getNavbar?.checkVisibility()) ? {
                             ...baseStyle,
+                            minHeight: '750px',
                             width: (noteTextExpanded && LARGE_SCREEN) ? noteTextCondition : currentWidth - 435
                           } : { 
                             ...baseStyle,
+                            minHeight: '750px',
                             width: (noteTextExpanded && BIG_SCREEN) ? noteTextCondition : currentWidth
                           }
                         }
