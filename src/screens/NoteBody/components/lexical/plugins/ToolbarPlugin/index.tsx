@@ -863,7 +863,7 @@ export default function ToolbarPlugin() {
 
   return (
     <>
-      {openInsertImageModal && ( 
+      {openInsertImageModal && (
         <InsertImageModal
           open={openInsertImageModal}
           setOpen={setOpenInsertImageModal}

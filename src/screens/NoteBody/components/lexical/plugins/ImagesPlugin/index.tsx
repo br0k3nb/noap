@@ -36,6 +36,8 @@ import TextInput from "../../ui/TextInput";
 import { toastAlert } from "../../../../../../components/Alert";
 import Modal from "../../../../../../components/Modal";
 
+import ImageEditor from '../ImageEditorPlugin/';
+
 import useSaveNote from "../../../../../../hooks/useSaveNote";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
@@ -47,9 +49,16 @@ export const INSERT_IMAGE_COMMAND = createCommand("INSERT_IMAGE_COMMAND");
 
 type InsertImageDialogBodyType = {
   onClick: (payload: InsertImagePayload) => void;
+  setSrc: Dispatch<SetStateAction<string>>;
+  setMode: Dispatch<SetStateAction<"url" | "file" | "edit" | null>>;
+  src: string;
 };
 
-export function InsertImageUriDialogBody({ onClick }: InsertImageDialogBodyType) {
+type InsertImageUriDialogBodyType = {
+  onClick: (payload: InsertImagePayload) => void;
+}
+
+export function InsertImageUriDialogBody({ onClick }: InsertImageUriDialogBodyType) {
   const [src, setSrc] = useState("");
   const [imageIsLoading, setImageIsLoading] = useState(true);
   const [urlIsAValidImage, setUrlIsAValidImage] = useState(false);
@@ -110,8 +119,7 @@ export function InsertImageUriDialogBody({ onClick }: InsertImageDialogBodyType)
   );
 }
 
-export function InsertImageUploadedDialogBody({ onClick }: InsertImageDialogBodyType) {
-  const [src, setSrc] = useState("");
+export function InsertImageUploadedDialogBody({ onClick, src, setSrc, setMode }: InsertImageDialogBodyType) {
   const [loader, setLoader] = useState(false);
 
   const loadImage = (files: FileList | null) => {
@@ -149,12 +157,8 @@ export function InsertImageUploadedDialogBody({ onClick }: InsertImageDialogBody
   };
 
   return (
-    <div
-      className={`
-        cursor-default pr-2 pl-3 xxs:!px-0 ${src && "xxs:max-h-[400px] md:max-h-[500px] max-h-[600px] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"}`
-      }
-    >
-      <div className="w-[360px] xxs:w-[275px] mx-auto">
+    <div className="cursor-default pr-2 pl-3 xxs:!px-0">
+      <div className={`mx-auto ${src ? "w-[650px] xxs:w-[275px]" : "w-[330px] xxs:w-[275px]"}`}>
         <FileInput
           label="Upload image"
           onChange={loadImage}
@@ -169,12 +173,25 @@ export function InsertImageUploadedDialogBody({ onClick }: InsertImageDialogBody
           <img
             src={src}
             alt="Selected image"
-            className="max-w-[360px] xxs:max-w-[17rem] xxs:mx-auto"
+            className="max-w-[650px] xxs:max-w-[17rem] xxs:mx-auto"
             draggable={false}
           />
         </>
       )}
-      <div className="w-full xxs:w-[275px] mx-auto mt-5">
+      {src && (
+        <div className="w-full xxs:w-[275px] mx-auto mt-5">
+          <button 
+            className="border border-gray-700 text-black dark:text-white rounded-full hover:tracking-widest transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loader && true}
+            onClick={() => setMode('edit')}
+          >
+            {loader ? (
+              <p className="animate-pulse text-gray-300">Loading...</p>
+            ) : "edit image"}
+          </button>
+        </div>
+      )}
+      <div className={`w-full xxs:w-[275px] mx-auto ${!src && "mt-5"}`}>
         <button 
           className="my-3 text-white rounded-full bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out px-2 py-2 text-[15px] uppercase tracking-wide w-full disabled:opacity-50 disabled:hover:bg-green-600 disabled:cursor-not-allowed"
           disabled={(!src || loader) && true}
@@ -197,7 +214,8 @@ type InsertImageModalType = {
 }
 
 export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType) {
-  const [mode, setMode] = useState<null | "url" | "file">(null);
+  const [mode, setMode] = useState<null | "url" | "file" | "edit">(null);
+  const [src, setSrc] = useState("");
   const hasModifier = useRef(false);
 
   useEffect(() => {
@@ -213,46 +231,71 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
     setOpen(false);
   };
 
+  const tuiLoadImageButton = document.getElementsByClassName("tui-image-editor-controls-buttons");
+
+  useEffect(() => {
+    if(tuiLoadImageButton.length) {
+      console.log(tuiLoadImageButton);
+
+      const loadButton = (tuiLoadImageButton[0] as HTMLDivElement).firstChild as HTMLDivElement;
+      loadButton.className = 'flex hidden'
+    }
+  }, [tuiLoadImageButton])
+
+
   return (
     <Modal
       open={true}
       setOpen={setOpen}
-      title="Insert image"
+      title={`${mode === 'edit' ? 'Edit image' : 'Insert image'}`}
       options={{
-        modalWrapperClassName: `${mode ? "w-[27.2rem]" : "w-[22rem]"} xxs:!w-[21.5rem] !px-0 overflow-y-hidden`,
+        modalWrapperClassName: `${((mode === 'file' && src) || mode === 'url') ? "w-[45rem] !max-w-none" : mode === 'edit' ? 'w-full !h-full !max-h-none !max-w-none rounded-none' : "w-[25rem]"} xxs:!w-[21.5rem] !px-0 overflow-y-hidden`,
         titleWrapperClassName: "!px-6",
         showGoBackButton: mode ? true : false,
-        goBackButtonAction: () => setMode(null),
+        goBackButtonAction: () => setMode(mode === 'edit' ? 'file' : null),
       }}
     >
-      <div className="px-6 mt-5">
-        {!mode && (
-          <DialogButtonsList>
-            <Button
-              data-test-id="image-modal-option-url"
-              className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
-              onClick={() => setMode("url")}
-            >
-              <div className="flex w-[54px] justify-between">
-                <span>URL</span> 
-                <BsLink size={20} />
-              </div>
-            </Button>
-            <Button
-              data-test-id="image-modal-option-file"
-              className="!mb-2 bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
-              onClick={() => setMode("file")}
-            >
-              <div className="flex w-[55px] justify-between">
-                <span>File</span> 
-                <BsFillFolderSymlinkFill size={17} className="mt-[2px]" />
-              </div>
-            </Button>
-          </DialogButtonsList>
-        )}
-        {mode === "url" && <InsertImageUriDialogBody onClick={onClick} />}
-        {mode === "file" && <InsertImageUploadedDialogBody onClick={onClick} />}
-      </div>
+      {mode !== 'edit' ? (
+        <div className={`px-6 pt-5 pb-3 ${src && "xxs:max-h-[400px] md:max-h-[500px] !max-h-[800px] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"}`}>
+          {!mode && (
+            <DialogButtonsList>
+              <Button
+                data-test-id="image-modal-option-url"
+                className="bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+                onClick={() => setMode("url")}
+              >
+                <div className="flex w-[54px] justify-between">
+                  <span>URL</span> 
+                  <BsLink size={20} />
+                </div>
+              </Button>
+              <Button
+                data-test-id="image-modal-option-file"
+                className="!mb-2 bg-[#dbdbdb] dark:bg-[#181818] dark:hover:!bg-[#222222] hover:!bg-[#cecece] text-gray-900 border border-stone-400 dark:border-[#404040] dark:text-gray-300 transition-all ease-in-out duration-300 uppercase text-[14px] tracking-widest flex items-center justify-center"
+                onClick={() => setMode("file")}
+              >
+                <div className="flex w-[55px] justify-between">
+                  <span>File</span> 
+                  <BsFillFolderSymlinkFill size={17} className="mt-[2px]" />
+                </div>
+              </Button>
+            </DialogButtonsList>
+          )}
+          {mode === "url" && <InsertImageUriDialogBody onClick={onClick} />}
+          {mode === "file" && <InsertImageUploadedDialogBody onClick={onClick} src={src} setSrc={setSrc} setMode={setMode} />}
+        </div>
+      ) : (
+        <div style={{ height: innerHeight - 80 }}>
+          <ImageEditor 
+            includeUI={{
+              loadImage: { path: src, name: 'image' },
+              menuBarPosition: 'right',
+              theme: { 'common.bisize.width': '0px', 'common.bisize.height': '0px' }
+            }}
+            usageStatistics={false}
+          />
+        </div>
+      )}
     </Modal>
   )
 }
