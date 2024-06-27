@@ -2,11 +2,11 @@ import axios from 'axios';
 import { useEffect } from 'react'
 import useAuth from '../hooks/useAuth';
 
-const api = axios.create({ baseURL: `http://localhost:3002/` });
+// const api = axios.create({ baseURL: `http://localhost:3002/` });
 
 // const api = axios.create({ baseURL: `https://noap-backend.onrender.com/` });
 
-// const api = axios.create({ baseURL: `https://noap-backend.vercel.app/` });
+const api = axios.create({ baseURL: `https://noap-backend.vercel.app/` });
 
 const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
     const auth = useAuth();
