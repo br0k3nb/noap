@@ -1,5 +1,5 @@
 import extend from 'tui-code-snippet/object/extend';
-import { keyMirror } from '@/util';
+import { keyMirror } from '../util';
 
 const types = keyMirror('UN_IMPLEMENTATION', 'NO_COMPONENT_NAME');
 const messages = {

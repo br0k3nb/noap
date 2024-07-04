@@ -2,9 +2,9 @@ import { fabric } from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import isExisty from 'tui-code-snippet/type/isExisty';
 import forEach from 'tui-code-snippet/collection/forEach';
-import Component from '@/interface/component';
-import { stamp } from '@/util';
-import { componentNames, eventNames as events, fObjectOptions } from '@/consts';
+import Component from '../interface/component';
+import { stamp } from '../util';
+import { componentNames, eventNames as events, fObjectOptions } from '../consts';
 
 const defaultStyles = {
   fill: '#000000',

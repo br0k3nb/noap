@@ -1,9 +1,9 @@
-import Range from '@/ui/tools/range';
-import Colorpicker from '@/ui/tools/colorpicker';
-import Submenu from '@/ui/submenuBase';
-import templateHtml from '@/ui/template/submenu/text';
-import { assignmentForDestroy } from '@/util';
-import { defaultTextRangeValues, eventNames, selectorNames } from '@/consts';
+import Range from './tools/range';
+import Colorpicker from './tools/colorpicker';
+import Submenu from './submenuBase';
+import templateHtml from './template/submenu/text';
+import { assignmentForDestroy } from '../util';
+import { defaultTextRangeValues, eventNames, selectorNames } from '../consts';
 
 /**
  * Crop ui class

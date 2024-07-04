@@ -1,5 +1,5 @@
-import DrawingMode from '@/interface/drawingMode';
-import { drawingModes, componentNames as components } from '@/consts';
+import DrawingMode from '../interface/drawingMode';
+import { drawingModes, componentNames as components } from '../consts';
 
 /**
  * ShapeDrawingMode class

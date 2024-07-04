@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState, useCallback } from "react";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
@@ -35,6 +35,7 @@ import TextInput from "../../ui/TextInput";
 
 import { toastAlert } from "../../../../../../components/Alert";
 import Modal from "../../../../../../components/Modal";
+import ConfirmationModal from "../../../../../../components/ConfirmationModal";
 
 import ImageEditor from '../ImageEditorPlugin/';
 
@@ -56,6 +57,25 @@ type InsertImageDialogBodyType = {
 
 type InsertImageUriDialogBodyType = {
   onClick: (payload: InsertImagePayload) => void;
+}
+
+type EditButtonType = {
+  mode: null | "url" | "file" | "edit"; 
+  saveFn: (payload: InsertImagePayload) => void;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  setMode: Dispatch<SetStateAction<"url" | "file" | "edit" | null>>;
+  setSrc: Dispatch<SetStateAction<string>>;
+}
+
+type ImagesPlugin = {
+  captionsEnabled?: boolean;
+}
+
+type InsertImageModalType = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  onClose?: () => void;
+  activeEditor: LexicalEditor;
 }
 
 export function InsertImageUriDialogBody({ onClick }: InsertImageUriDialogBodyType) {
@@ -206,16 +226,11 @@ export function InsertImageUploadedDialogBody({ onClick, src, setSrc, setMode }:
   );
 }
 
-type InsertImageModalType = {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  onClose?: () => void;
-  activeEditor: LexicalEditor;
-}
-
 export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType) {
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [mode, setMode] = useState<null | "url" | "file" | "edit">(null);
   const [src, setSrc] = useState("");
+
   const hasModifier = useRef(false);
 
   useEffect(() => {
@@ -231,17 +246,9 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
     setOpen(false);
   };
 
-  const tuiLoadImageButton = document.getElementsByClassName("tui-image-editor-controls-buttons");
-
-  useEffect(() => {
-    if(tuiLoadImageButton.length) {
-      console.log(tuiLoadImageButton);
-
-      const loadButton = (tuiLoadImageButton[0] as HTMLDivElement).firstChild as HTMLDivElement;
-      loadButton.className = 'flex hidden'
-    }
-  }, [tuiLoadImageButton])
-
+  const handleKeyPress = (e: KeyboardEvent) => {
+    if (e.keyCode === 27) setOpenConfirmationModal(true);
+  };
 
   return (
     <Modal
@@ -252,9 +259,41 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
         modalWrapperClassName: `${((mode === 'file' && src) || mode === 'url') ? "w-[45rem] !max-w-none" : mode === 'edit' ? 'w-full !h-full !max-h-none !max-w-none rounded-none' : "w-[25rem]"} xxs:!w-[21.5rem] !px-0 overflow-y-hidden`,
         titleWrapperClassName: "!px-6",
         showGoBackButton: mode ? true : false,
-        goBackButtonAction: () => setMode(mode === 'edit' ? 'file' : null),
+        goBackButtonAction: () => {
+          setMode(mode === 'edit' ? 'file' : null);
+          if(mode === "file") setSrc('');
+        },
+        customKeyboardPressHandler: (e) => handleKeyPress(e),
+        customTopActionButton: (
+          <EditButton 
+            mode={mode} 
+            saveFn={onClick} 
+            setMode={setMode} 
+            setOpen={setOpen} 
+            setSrc={setSrc}
+          />
+        )
       }}
     >
+      {(openConfirmationModal && mode === 'edit') && (
+        <ConfirmationModal
+          mainText="Are you sure you want to leave the editor ?"
+          open={openConfirmationModal}
+          setOpen={setOpenConfirmationModal}
+          options={{
+            actionButtonText: "Close",
+            cancelButtonText: "Keep editing",
+            subText: "All unsaved changes will be lost!",
+            subTextClassName: "px-6",
+            actionButtonsWrapperClassName: "border border-transparent border-t-[#4b5563] pt-4",
+            modalWrapperClassName: "!pb-[15px]"
+          }}
+          actionButtonFn={() => {
+            setOpenConfirmationModal(false);
+            setOpen(false);
+          }}
+        />
+      )}
       {mode !== 'edit' ? (
         <div className={`px-6 pt-5 pb-3 ${src && "xxs:max-h-[400px] md:max-h-[500px] !max-h-[800px] overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300"}`}>
           {!mode && (
@@ -265,7 +304,7 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
                 onClick={() => setMode("url")}
               >
                 <div className="flex w-[54px] justify-between">
-                  <span>URL</span> 
+                  <span>URL</span>
                   <BsLink size={20} />
                 </div>
               </Button>
@@ -300,8 +339,33 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
   )
 }
 
-type ImagesPlugin = {
-  captionsEnabled?: boolean;
+export function EditButton ({ mode, saveFn, setOpen, setMode, setSrc } : EditButtonType) {
+  const handleClick = () => {
+    setTimeout(() => {
+      const imageEl = document.getElementById("edited-image-from-tui-editor");
+
+      if(imageEl) {
+        saveFn({ src: (imageEl as HTMLImageElement).src, altText: '' })        
+        setOpen(false);
+        setMode(null);
+        setSrc('');
+      }
+    }, 200);
+  }
+
+  return (
+    <div 
+      className={`mx-2 mt-[2px] ${mode !== "edit" && "!hidden"}`}
+      onClick={() => handleClick()}
+    >
+      <button 
+        id="tui-image-editor-download-btn" 
+        className="bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out hover:tracking-widest border hover border-[#4b5563] px-3 dark:text-white text-black tracking-wide text-[17px] rounded-full"
+      >
+        Save
+      </button>
+    </div>
+  )
 }
 
 export default function ImagesPlugin({ captionsEnabled } : ImagesPlugin): JSX.Element | null {
@@ -320,6 +384,7 @@ export default function ImagesPlugin({ captionsEnabled } : ImagesPlugin): JSX.El
           const imageNode = $createImageNode(payload);
           $insertNodes([imageNode]);
           if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
+            //@ts-ignore
             $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
           }
 

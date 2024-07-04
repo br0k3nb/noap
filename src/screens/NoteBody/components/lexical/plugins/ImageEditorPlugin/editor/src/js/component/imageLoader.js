@@ -1,5 +1,5 @@
-import Component from '@/interface/component';
-import { componentNames, rejectMessages } from '@/consts';
+import Component from '../interface/component';
+import { componentNames, rejectMessages } from '../consts';
 
 const imageOption = {
   padding: 0,

@@ -1,5 +1,4 @@
-import isUndefined from '../../snippets/type/isUndefined';
-import forEach from 'tui-code-snippet/collection/forEach';
+import isUndefined from 'tui-code-snippet/type/isUndefined';
 import sendHostname from 'tui-code-snippet/request/sendHostname';
 import extend from 'tui-code-snippet/object/extend';
 import isString from 'tui-code-snippet/type/isString';
@@ -12,13 +11,48 @@ import {
   SHAPE_FILL_TYPE,
   SHAPE_TYPE,
   emptyCropRectValues,
-} from '@/consts';
+} from './consts';
 
 const FLOATING_POINT_DIGIT = 2;
 const CSS_PREFIX = 'tui-image-editor-';
 const { min, max } = Math;
 let hostnameSent = false;
 let lastId = 0;
+
+function forEachOwnProperties(obj, iteratee, context) {
+  var key;
+
+  context = context || null;
+
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (iteratee.call(context, obj[key], key, obj) === false) {
+        break;
+      }
+    }
+  }
+}
+
+function forEachArray(arr, iteratee, context) {
+  var index = 0;
+  var len = arr.length;
+
+  context = context || null;
+
+  for (; index < len; index += 1) {
+    if (iteratee.call(context, arr[index], index, arr) === false) {
+      break;
+    }
+  }
+}
+
+function forEach(obj, iteratee, context) {
+  if (obj instanceof Array) {
+    forEachArray(obj, iteratee, context);
+  } else {
+    forEachOwnProperties(obj, iteratee, context);
+  }
+}
 
 export function stamp(obj) {
   if (!obj.__fe_id) {

@@ -1,4 +1,4 @@
-import errorMessage from '@/factory/errorMessage';
+import errorMessage from '../factory/errorMessage';
 
 const createMessage = errorMessage.create;
 const errorTypes = errorMessage.types;

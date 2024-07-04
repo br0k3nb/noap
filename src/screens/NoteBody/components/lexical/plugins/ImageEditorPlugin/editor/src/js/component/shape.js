@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
-import Component from '@/interface/component';
-import resizeHelper from '@/helper/shapeResizeHelper';
+import Component from '../interface/component';
+import resizeHelper from '../helper/shapeResizeHelper';
 import {
   getFillImageFromShape,
   rePositionFilterTypeFillImage,
@@ -9,14 +9,14 @@ import {
   makeFillPatternForFilter,
   makeFilterOptionFromFabricImage,
   resetFillPatternCanvas,
-} from '@/helper/shapeFilterFillHelper';
+} from '../helper/shapeFilterFillHelper';
 import {
   changeOrigin,
   getCustomProperty,
   getFillTypeFromOption,
   getFillTypeFromObject,
   isShape,
-} from '@/util';
+} from '../util';
 import {
   rejectMessages,
   eventNames,
@@ -25,7 +25,7 @@ import {
   fObjectOptions,
   SHAPE_DEFAULT_OPTIONS,
   SHAPE_FILL_TYPE,
-} from '@/consts';
+} from '../consts';
 
 const SHAPE_INIT_OPTIONS = extend(
   {

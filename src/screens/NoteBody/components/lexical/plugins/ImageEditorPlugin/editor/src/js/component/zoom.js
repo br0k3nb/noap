@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
-import Component from '@/interface/component';
-import { clamp } from '@/util';
-import { componentNames, eventNames, keyCodes, zoomModes } from '@/consts';
+import Component from '../interface/component';
+import { clamp } from '../util';
+import { componentNames, eventNames, keyCodes, zoomModes } from '../consts';
 
 const MOUSE_MOVE_THRESHOLD = 10;
 const DEFAULT_SCROLL_OPTION = {

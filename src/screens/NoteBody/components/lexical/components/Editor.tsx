@@ -105,7 +105,6 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
     const onEditorChange = (eS: EditorState, e: LexicalEditor, tags: Set<string>) => {
       if(tags && rootElWasTouched) {
-        console.log(rootElWasTouched);
         if(timer) clearTimeout(timer);
   
         timer = setTimeout(() => save(editor.getEditorState()), 2500);

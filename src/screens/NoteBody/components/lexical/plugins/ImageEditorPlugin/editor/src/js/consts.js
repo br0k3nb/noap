@@ -1,4 +1,4 @@
-import { keyMirror } from '@/util';
+import { keyMirror } from './util';
 
 /**
  * Help features for zoom

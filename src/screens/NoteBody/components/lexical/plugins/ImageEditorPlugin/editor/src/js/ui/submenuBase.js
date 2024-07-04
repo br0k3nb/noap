@@ -1,5 +1,5 @@
 import CustomEvents from 'tui-code-snippet/customEvents/customEvents';
-import { eventNames } from '@/consts';
+import { eventNames } from '../consts';
 
 /**
  * Submenu Base Class

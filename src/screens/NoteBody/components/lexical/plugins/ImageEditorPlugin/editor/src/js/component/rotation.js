@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
-import Component from '@/interface/component';
-import { componentNames } from '@/consts';
+import Component from '../interface/component';
+import { componentNames } from '../consts';
 
 /**
  * Image Rotation component

@@ -1,7 +1,7 @@
 import forEach from 'tui-code-snippet/collection/forEach';
-import Submenu from '@/ui/submenuBase';
-import templateHtml from '@/ui/template/submenu/crop';
-import { assignmentForDestroy } from '@/util';
+import Submenu from './submenuBase';
+import templateHtml from './template/submenu/crop';
+import { assignmentForDestroy } from '../util';
 
 /**
  * Crop ui class

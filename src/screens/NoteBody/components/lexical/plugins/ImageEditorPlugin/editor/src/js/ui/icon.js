@@ -1,9 +1,9 @@
 import forEach from 'tui-code-snippet/collection/forEach';
-import Colorpicker from '@/ui/tools/colorpicker';
-import Submenu from '@/ui/submenuBase';
-import templateHtml from '@/ui/template/submenu/icon';
-import { isSupportFileApi, assignmentForDestroy } from '@/util';
-import { defaultIconPath, eventNames, selectorNames } from '@/consts';
+import Colorpicker from './tools/colorpicker';
+import Submenu from './submenuBase';
+import templateHtml from './template/submenu/icon';
+import { isSupportFileApi, assignmentForDestroy } from '../util';
+import { defaultIconPath, eventNames, selectorNames } from '../consts';
 
 /**
  * Icon ui class

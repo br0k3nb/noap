@@ -1,8 +1,8 @@
 import isString from 'tui-code-snippet/type/isString';
 import CustomEvents from 'tui-code-snippet/customEvents/customEvents';
-import commandFactory from '@/factory/command';
-import { isFunction } from '@/util';
-import { eventNames, rejectMessages } from '@/consts';
+import commandFactory from './factory/command';
+import { isFunction } from './util';
+import { eventNames, rejectMessages } from './consts';
 
 /**
  * Invoker

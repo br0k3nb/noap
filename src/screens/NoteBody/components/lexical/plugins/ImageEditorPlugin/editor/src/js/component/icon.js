@@ -1,8 +1,8 @@
 import { fabric } from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import forEach from 'tui-code-snippet/collection/forEach';
-import Component from '@/interface/component';
-import { eventNames as events, rejectMessages, componentNames, fObjectOptions } from '@/consts';
+import Component from '../interface/component';
+import { eventNames as events, rejectMessages, componentNames, fObjectOptions } from '../consts';
 
 const pathMap = {
   arrow: 'M 0 90 H 105 V 120 L 160 60 L 105 0 V 30 H 0 Z',

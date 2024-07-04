@@ -1,4 +1,4 @@
-import Command from '@/interface/command';
+import Command from '../interface/command';
 
 const commands = {};
 

@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
-import { clamp } from '@/util';
-import { eventNames as events, keyCodes } from '@/consts';
+import { clamp } from '../util';
+import { eventNames as events, keyCodes } from '../consts';
 
 const CORNER_TYPE_TOP_LEFT = 'tl';
 const CORNER_TYPE_TOP_RIGHT = 'tr';

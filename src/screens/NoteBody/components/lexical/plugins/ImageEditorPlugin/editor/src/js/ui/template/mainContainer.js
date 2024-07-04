@@ -10,9 +10,6 @@ export default ({
     <div class="tui-image-editor-main-container" style="${commonStyle}">
         <div class="tui-image-editor-header" style="${headerStyle}">
             <div class="tui-image-editor-header-buttons">
-                <button class="tui-image-editor-download-btn" style="${downloadButtonStyle}">
-                    ${locale.localize('Save')}
-                </button>
             </div>
         </div>
         <div class="tui-image-editor-main">

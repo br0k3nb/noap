@@ -1,4 +1,4 @@
-import forEachOwnProperties from '../../snippets/collection/forEachOwnProperties';
+import forEachOwnProperties from 'tui-code-snippet/collection/forEachOwnProperties';
 import commandFactory from '../factory/command';
 import { componentNames, rejectMessages, commandNames } from '../consts';
 

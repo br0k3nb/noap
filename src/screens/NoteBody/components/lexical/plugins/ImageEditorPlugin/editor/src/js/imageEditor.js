@@ -3,20 +3,20 @@ import extend from 'tui-code-snippet/object/extend';
 import isUndefined from 'tui-code-snippet/type/isUndefined';
 import forEach from 'tui-code-snippet/collection/forEach';
 import CustomEvents from 'tui-code-snippet/customEvents/customEvents';
-import Invoker from '@/invoker';
-import UI from '@/ui';
-import action from '@/action';
-import commandFactory from '@/factory/command';
-import Graphics from '@/graphics';
-import { makeSelectionUndoData, makeSelectionUndoDatum } from '@/helper/selectionModifyHelper';
-import { sendHostName, getObjectType } from '@/util';
+import Invoker from './invoker';
+import UI from './ui';
+import action from './action';
+import commandFactory from './factory/command';
+import Graphics from './graphics';
+import { makeSelectionUndoData, makeSelectionUndoDatum } from './helper/selectionModifyHelper';
+import { sendHostName, getObjectType } from './util';
 import {
   eventNames as events,
   commandNames as commands,
   keyCodes,
   rejectMessages,
   OBJ_TYPE,
-} from '@/consts';
+} from './consts';
 
 const {
   MOUSE_DOWN,

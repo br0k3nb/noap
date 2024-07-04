@@ -1,10 +1,12 @@
 import extend from 'tui-code-snippet/object/extend';
 import forEach from 'tui-code-snippet/collection/forEach';
-import style from '@/ui/template/style';
-import standardTheme from '@/ui/theme/standard';
-import { styleLoad } from '@/util';
+import style from '../template/style';
+import standardTheme from '../theme/standard';
+import { styleLoad } from '../../util';
 
-import icon from '@svg/default.svg';
+import icons from '../../../../../../../datasets/imagePluginIcons';
+import icon from '../../../svg/default.svg';
+import fs from 'node:fs';
 
 /**
  * Theme manager
@@ -175,9 +177,7 @@ class Theme {
   _loadDefaultSvgIcon() {
     if (!document.getElementById('tui-image-editor-svg-default-icons')) {
       const parser = new DOMParser();
-      const encodedURI = icon.replace(/data:image\/svg\+xml;base64,/, '');
-      const dom = parser.parseFromString(atob(encodedURI), 'text/xml');
-
+      const dom = parser.parseFromString(icons, 'text/xml');
       document.body.appendChild(dom.documentElement);
     }
   }

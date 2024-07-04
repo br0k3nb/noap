@@ -1,8 +1,8 @@
 import { fabric } from 'fabric';
 import forEach from 'tui-code-snippet/collection/forEach';
 import extend from 'tui-code-snippet/object/extend';
-import resizeHelper from '@/helper/shapeResizeHelper';
-import { capitalizeString, flipObject, setCustomProperty, getCustomProperty } from '@/util';
+import resizeHelper from '../helper/shapeResizeHelper';
+import { capitalizeString, flipObject, setCustomProperty, getCustomProperty } from '../util';
 
 const FILTER_OPTION_MAP = {
   pixelate: 'blocksize',

@@ -4,7 +4,7 @@ import {
   setCachedUndoDataForDimension,
   makeSelectionUndoData,
   makeSelectionUndoDatum,
-} from '@/helper/selectionModifyHelper';
+} from '../helper/selectionModifyHelper';
 
 const { TEXT } = componentNames;
 

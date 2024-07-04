@@ -1,8 +1,8 @@
 import { fabric } from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
-import Component from '@/interface/component';
-import ArrowLine from '@/extension/arrowLine';
-import { eventNames, componentNames, fObjectOptions } from '@/consts';
+import Component from '../interface/component';
+import ArrowLine from '../extension/arrowLine';
+import { eventNames, componentNames, fObjectOptions } from '../consts';
 
 /**
  * Line

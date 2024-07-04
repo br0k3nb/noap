@@ -1,6 +1,6 @@
 import extend from 'tui-code-snippet/object/extend';
-import Component from '@/interface/component';
-import { componentNames, rejectMessages } from '@/consts';
+import Component from '../interface/component';
+import { componentNames, rejectMessages } from '../consts';
 
 /**
  * Flip

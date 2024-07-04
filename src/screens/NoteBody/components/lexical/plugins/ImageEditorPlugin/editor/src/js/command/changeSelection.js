@@ -1,6 +1,6 @@
 import commandFactory from '../factory/command';
 import { commandNames } from '../consts';
-import { getCachedUndoDataForDimension } from '../../helper/selectionModifyHelper';
+import { getCachedUndoDataForDimension } from '../helper/selectionModifyHelper';
 
 const command = {
   name: commandNames.CHANGE_SELECTION,

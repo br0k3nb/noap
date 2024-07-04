@@ -1,5 +1,5 @@
 import extend from 'tui-code-snippet/object/extend';
-import errorMessage from '@/factory/errorMessage';
+import errorMessage from '../factory/errorMessage';
 
 const createMessage = errorMessage.create;
 const errorTypes = errorMessage.types;

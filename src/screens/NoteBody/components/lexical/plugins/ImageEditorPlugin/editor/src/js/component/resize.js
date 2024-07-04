@@ -1,5 +1,5 @@
-import Component from '@/interface/component';
-import { componentNames } from '@/consts';
+import Component from '../interface/component';
+import { componentNames } from '../consts';
 
 /**
  * Resize components

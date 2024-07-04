@@ -1,7 +1,7 @@
 import forEach from 'tui-code-snippet/collection/forEach';
 import CustomEvents from 'tui-code-snippet/customEvents/customEvents';
-import { toInteger, clamp } from '@/util';
-import { keyCodes } from '@/consts';
+import { toInteger, clamp } from '../../util';
+import { keyCodes } from '../../consts';
 
 const INPUT_FILTER_REGEXP = /(-?)([0-9]*)[^0-9]*([0-9]*)/g;
 

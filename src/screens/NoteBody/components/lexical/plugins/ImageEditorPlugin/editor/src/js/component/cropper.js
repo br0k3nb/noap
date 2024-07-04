@@ -1,9 +1,9 @@
 import { fabric } from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
-import Component from '@/interface/component';
-import Cropzone from '@/extension/cropzone';
-import { keyCodes, componentNames, CROPZONE_DEFAULT_OPTIONS } from '@/consts';
-import { clamp, fixFloatingPoint } from '@/util';
+import Component from '../interface/component';
+import Cropzone from '../extension/cropzone';
+import { keyCodes, componentNames, CROPZONE_DEFAULT_OPTIONS } from '../consts';
+import { clamp, fixFloatingPoint } from '../util';
 
 const MOUSE_MOVE_THRESHOLD = 10;
 const DEFAULT_OPTION = {

@@ -2,12 +2,12 @@ import isUndefined from 'tui-code-snippet/type/isUndefined';
 import extend from 'tui-code-snippet/object/extend';
 import forEach from 'tui-code-snippet/collection/forEach';
 import { fabric } from 'fabric';
-import Component from '@/interface/component';
-import { rejectMessages, componentNames } from '@/consts';
-import Mask from '@/extension/mask';
-import Sharpen from '@/extension/sharpen';
-import Emboss from '@/extension/emboss';
-import ColorFilter from '@/extension/colorFilter';
+import Component from '../interface/component';
+import { rejectMessages, componentNames } from '../consts';
+import Mask from '../extension/mask';
+import Sharpen from '../extension/sharpen';
+import Emboss from '../extension/emboss';
+import ColorFilter from '../extension/colorFilter';
 
 const { filters } = fabric.Image;
 

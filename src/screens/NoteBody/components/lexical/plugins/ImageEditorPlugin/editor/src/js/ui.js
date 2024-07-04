@@ -1,30 +1,30 @@
 import CustomEvents from 'tui-code-snippet/customEvents/customEvents';
 import extend from 'tui-code-snippet/object/extend';
 import forEach from 'tui-code-snippet/collection/forEach';
-import { getSelector, assignmentForDestroy, cls, getHistoryTitle, isSilentCommand } from '@/util';
+import { getSelector, assignmentForDestroy, cls, getHistoryTitle, isSilentCommand } from './util';
 import {
   ZOOM_HELP_MENUS,
   COMMAND_HELP_MENUS,
   DELETE_HELP_MENUS,
   eventNames,
   HELP_MENUS,
-} from '@/consts';
-import mainContainer from '@/ui/template/mainContainer';
-import controls from '@/ui/template/controls';
+} from './consts';
+import mainContainer from './ui/template/mainContainer';
+import controls from './ui/template/controls';
 
-import Theme from '@/ui/theme/theme';
-import Shape from '@/ui/shape';
-import Crop from '@/ui/crop';
-import Resize from '@/ui/resize';
-import Flip from '@/ui/flip';
-import Rotate from '@/ui/rotate';
-import Text from '@/ui/text';
-import Mask from '@/ui/mask';
-import Icon from '@/ui/icon';
-import Draw from '@/ui/draw';
-import Filter from '@/ui/filter';
-import History from '@/ui/history';
-import Locale from '@/ui/locale/locale';
+import Theme from './ui/theme/theme';
+import Shape from './ui/shape';
+import Crop from './ui/crop';
+import Resize from './ui/resize';
+import Flip from './ui/flip';
+import Rotate from './ui/rotate';
+import Text from './ui/text';
+import Mask from './ui/mask';
+import Icon from './ui/icon';
+import Draw from './ui/draw';
+import Filter from './ui/filter';
+import History from './ui/history';
+import Locale from './ui/locale/locale';
 
 const SUB_UI_COMPONENT = {
   Shape,
@@ -337,15 +337,19 @@ class Ui {
    * @param {string|HTMLElement} element - Wrapper's element or selector
    * @private
    */
-  _makeUiElement(element) {
+  _makeUiElement(element) { 
     let selectedElement;
+
+    // console.log(element.nodeType);
 
     if (element.nodeType) {
       selectedElement = element;
     } else {
       selectedElement = document.querySelector(element);
     }
+
     const selector = getSelector(selectedElement);
+    const customDownloadButtonEl = document.getElementById("tui-image-editor-download-btn");
 
     selectedElement.classList.add('tui-image-editor-container');
     selectedElement.innerHTML =
@@ -376,8 +380,8 @@ class Ui {
     this._menuBarElement = selector('.tui-image-editor-menu');
     this._subMenuElement = selector('.tui-image-editor-submenu');
     this._buttonElements = {
-      download: this._selectedElement.querySelectorAll('.tui-image-editor-download-btn'),
-      load: this._selectedElement.querySelectorAll('.tui-image-editor-load-btn'),
+      download: customDownloadButtonEl,
+      // load: this._selectedElement.querySelectorAll('.tui-image-editor-load-btn'),
     };
 
     this._addHelpMenus();
@@ -563,9 +567,7 @@ class Ui {
    */
   _addDownloadEvent() {
     this.eventHandler.download = () => this._actions.main.download();
-    forEach(this._buttonElements.download, (element) => {
-      element.addEventListener('click', this.eventHandler.download);
-    });
+    this._buttonElements.download.addEventListener('click', this.eventHandler.download);
   }
 
   _removeDownloadEvent() {
@@ -578,23 +580,23 @@ class Ui {
    * Add load event
    * @private
    */
-  _addLoadEvent() {
-    this.eventHandler.loadImage = (event) => this._actions.main.load(event.target.files[0]);
+  // _addLoadEvent() {
+  //   this.eventHandler.loadImage = (event) => this._actions.main.load(event.target.files[0]);
 
-    forEach(this._buttonElements.load, (element) => {
-      element.addEventListener('change', this.eventHandler.loadImage);
-    });
-  }
+  //   forEach(this._buttonElements.load, (element) => {
+  //     element.addEventListener('change', this.eventHandler.loadImage);
+  //   });
+  // }
 
-  /**
-   * Remove load event
-   * @private
-   */
-  _removeLoadEvent() {
-    forEach(this._buttonElements.load, (element) => {
-      element.removeEventListener('change', this.eventHandler.loadImage);
-    });
-  }
+  // /**
+  //  * Remove load event
+  //  * @private
+  //  */
+  // _removeLoadEvent() {
+  //   forEach(this._buttonElements.load, (element) => {
+  //     element.removeEventListener('change', this.eventHandler.loadImage);
+  //   });
+  // }
 
   /**
    * Add menu event
@@ -677,7 +679,7 @@ class Ui {
   _removeUiEvent() {
     this._removeHelpActionEvent();
     this._removeDownloadEvent();
-    this._removeLoadEvent();
+    // this._removeLoadEvent();
     this._removeMainMenuEvent();
     this._historyMenu.removeEvent();
   }
@@ -706,7 +708,7 @@ class Ui {
       });
     }
 
-    this._addLoadEvent();
+    // this._addLoadEvent();
 
     const gridVisual = document.createElement('div');
 

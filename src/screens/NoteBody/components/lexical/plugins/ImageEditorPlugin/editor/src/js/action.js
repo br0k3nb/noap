@@ -1,7 +1,9 @@
 import extend from 'tui-code-snippet/object/extend';
-import Imagetracer from '@/helper/imagetracer';
-import { isSupportFileApi, base64ToBlob, toInteger, isEmptyCropzone, includes } from '@/util';
-import { eventNames, historyNames, drawingModes, drawingMenuNames, zoomModes } from '@/consts';
+import Imagetracer from './helper/imagetracer';
+import { isSupportFileApi, base64ToBlob, toInteger, isEmptyCropzone, includes } from './util';
+import { eventNames, historyNames, drawingModes, drawingMenuNames, zoomModes } from './consts';
+
+let timer = null;
 
 export default {
   /**
@@ -148,20 +150,22 @@ export default {
         },
         download: () => {
           const dataURL = this.toDataURL();
-          let imageName = this.getImageName();
-          let blob, type, w;
+          
+          // const wrapper = document.getElementById("modal-actions");
+          if(timer) clearTimeout(timer);
 
-          if (isSupportFileApi() && window.saveAs) {
-            blob = base64ToBlob(dataURL);
-            type = blob.type.split('/')[1];
-            if (imageName.split('.').pop() !== type) {
-              imageName += `.${type}`;
-            }
-            saveAs(blob, imageName); // eslint-disable-line
-          } else {
-            w = window.open();
-            w.document.body.innerHTML = `<img src='${dataURL}'>`;
-          }
+          timer = setTimeout(() => {
+            const hiddenImageEl = document.createElement('img');          
+            hiddenImageEl.id = 'edited-image-from-tui-editor'
+            hiddenImageEl.src = dataURL;
+
+            document.body.appendChild(hiddenImageEl);
+          }, 100);
+          // hiddenImageEl.className = 'edited-image-from-tui-editor';
+          // hiddenImageEl.width = '0px';
+          // hiddenImageEl.height = '0px';
+
+          // wrapper.appendChild(hiddenImageEl);
         },
         history: (event) => {
           this.ui.toggleHistoryMenu(event);

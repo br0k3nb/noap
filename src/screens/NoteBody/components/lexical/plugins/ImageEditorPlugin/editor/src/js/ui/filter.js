@@ -1,12 +1,12 @@
 import forEach from 'tui-code-snippet/collection/forEach';
 import forEachArray from 'tui-code-snippet/collection/forEachArray';
 import isExisty from 'tui-code-snippet/type/isExisty';
-import Colorpicker from '@/ui/tools/colorpicker';
-import Range from '@/ui/tools/range';
-import Submenu from '@/ui/submenuBase';
-import templateHtml from '@/ui/template/submenu/filter';
-import { toInteger, toCamelCase, assignmentForDestroy } from '@/util';
-import { defaultFilterRangeValues as FILTER_RANGE, eventNames, selectorNames } from '@/consts';
+import Colorpicker from './tools/colorpicker';
+import Range from './tools/range';
+import Submenu from './submenuBase';
+import templateHtml from './template/submenu/filter';
+import { toInteger, toCamelCase, assignmentForDestroy } from '../util';
+import { defaultFilterRangeValues as FILTER_RANGE, eventNames, selectorNames } from '../consts';
 
 const PICKER_CONTROL_HEIGHT = '130px';
 const BLEND_OPTIONS = ['add', 'diff', 'subtract', 'multiply', 'screen', 'lighten', 'darken'];

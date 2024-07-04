@@ -1,10 +1,10 @@
 import forEachArray from 'tui-code-snippet/collection/forEachArray';
-import Colorpicker from '@/ui/tools/colorpicker';
-import Range from '@/ui/tools/range';
-import Submenu from '@/ui/submenuBase';
-import templateHtml from '@/ui/template/submenu/shape';
-import { toInteger, assignmentForDestroy } from '@/util';
-import { defaultShapeStrokeValues, eventNames, selectorNames } from '@/consts';
+import Colorpicker from './tools/colorpicker';
+import Range from './tools/range';
+import Submenu from './submenuBase';
+import templateHtml from './template/submenu/shape';
+import { toInteger, assignmentForDestroy } from '../util';
+import { defaultShapeStrokeValues, eventNames, selectorNames } from '../consts';
 
 const SHAPE_DEFAULT_OPTION = {
   stroke: '#ffbb3b',

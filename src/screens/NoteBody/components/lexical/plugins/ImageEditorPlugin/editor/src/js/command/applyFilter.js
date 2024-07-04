@@ -1,4 +1,4 @@
-import extend from '../../../snippets/object/extend';
+import extend from 'tui-code-snippet/object/extend';
 import commandFactory from '../factory/command';
 import { componentNames, rejectMessages, commandNames } from '../consts';
 
