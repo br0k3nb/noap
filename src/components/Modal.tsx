@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect } from "react"
+import { Dispatch, ReactNode, SetStateAction, useEffect } from "react"
 
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { AiOutlineClose } from 'react-icons/ai';
@@ -18,6 +18,8 @@ type Props = {
         modalWrapperStyle?: object;
         modalWrapperClassName?: string;
         goBackButtonAction?: () => void;
+        customKeyboardPressHandler?: (ev: KeyboardEvent) => void;
+        customTopActionButton?: ReactNode
     };
 }
 
@@ -44,11 +46,15 @@ export default function Modal({ children, open, setOpen, title, options }: Props
             if(targetId === "noap-modal-overlay" && setOpen) setOpen(false);
         };
 
-        addEventListener("keydown", handleKeyDown);
         addEventListener("click", handleMouseClick);
 
+        if(options?.customKeyboardPressHandler) addEventListener("keydown", options?.customKeyboardPressHandler);
+        else addEventListener("keydown", handleKeyDown);
+
         return () => {
-            removeEventListener("keydown", handleKeyDown);
+            if(options?.customKeyboardPressHandler) removeEventListener("keydown", options?.customKeyboardPressHandler);
+            else removeEventListener("keydown", handleKeyDown);
+            
             removeEventListener("click", handleMouseClick);
         }
     }, []);
@@ -80,7 +86,8 @@ export default function Modal({ children, open, setOpen, title, options }: Props
                                 {title}
                             </h3> 
                         )}
-                        <div className="flex flex-row justify-between space-x-2">
+                        <div className="flex flex-row justify-between space-x-2" id="modal-actions">
+                            {options?.customTopActionButton && (options?.customTopActionButton)}
                             {(showGoBackButton && goBackButtonAction) && (
                                 <div className="tooltip tooltip-left tooltip-left-color-controller before:!mr-[5px] after:!mr-[3px] before:text-[15px]" data-tip="Go back">
                                     <div 

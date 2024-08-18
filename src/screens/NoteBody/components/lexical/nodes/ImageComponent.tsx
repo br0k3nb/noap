@@ -9,6 +9,10 @@ import type {
 
 import "./ImageNode.css";
 
+import { EmojiNode } from './EmojiNode';
+import { KeywordNode } from './KeywordNode';
+import { HashtagNode } from '@lexical/hashtag';
+import { LinkNode } from '@lexical/link';
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
 import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
@@ -24,22 +28,28 @@ import {
   $getNodeByKey,
   $getSelection,
   $isNodeSelection,
+  $isRangeSelection,
   $setSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
+  createCommand,
   DRAGSTART_COMMAND,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
   KEY_ENTER_COMMAND,
   KEY_ESCAPE_COMMAND,
   SELECTION_CHANGE_COMMAND,
-  createCommand
-} from "lexical";
+  LineBreakNode,
+  ParagraphNode,
+  RootNode,
+  TextNode,
+} from 'lexical';
 
 import { motion } from "framer-motion";
 
 import { BsTrash, BsThreeDotsVertical, BsFillFileEarmarkArrowDownFill } from 'react-icons/bs';
 import { AiOutlineFullscreen } from 'react-icons/ai';
+import { RiImageEditLine } from "react-icons/ri";
 
 import { createWebsocketProvider } from "../collaboration";
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
@@ -50,14 +60,18 @@ import MentionsPlugin from "../plugins/MentionsPlugin";
 import ContentEditable from "../ui/ContentEditable";
 import ImageResizer from "../ui/ImageResizer";
 import Placeholder from "../ui/Placeholder";
-import { $isImageNode } from "./ImageNode";
+import { $isImageNode, ImageNode } from "./ImageNode";
 
 import Modal from "../../../../../components/Modal";
+import EditImageModal from "../plugins/ImageEditorPlugin/EditImageModal";
 
 import useUpdateViewport from "../../../../../hooks/useUpdateViewport";
 
+import type { InsertImagePayload } from "../plugins/ImagesPlugin";
+
 const imageCache = new Set();
 export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> = createCommand('RIGHT_CLICK_IMAGE_COMMAND');
+export const UPDATE_IMAGE_COMMAND: LexicalCommand<any> = createCommand('UPDATE_IMAGE_COMMAND');
 
 function useSuspenseImage(src: string) {
   if (!imageCache.has(src)) {
@@ -147,11 +161,11 @@ export default function ImageComponent({
   const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
   const [selection, setSelection] = useState<BaseSelection | null>(null);
   const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth, height: innerHeight });
+  const [openEditImageModal, setOpenEditImageModal] = useState(false);
 
   useUpdateViewport(setCurrentScreenSize, 500);
 
-
-  const onDelete = useCallback(
+  const $onDelete = useCallback(
     (payload: KeyboardEvent) => {
       if (isSelected && $isNodeSelection($getSelection())) {
         const event: KeyboardEvent = payload;
@@ -166,7 +180,7 @@ export default function ImageComponent({
     [isSelected, nodeKey, setSelected]
   );
 
-  const onEnter = useCallback(
+  const $onEnter = useCallback(
     (event: KeyboardEvent) => {
       const latestSelection = $getSelection();
       const buttonElem = buttonRef.current;
@@ -176,13 +190,15 @@ export default function ImageComponent({
         latestSelection.getNodes().length === 1
       ) {
         if (showCaption) {
+          // Move focus into nested editor
           $setSelection(null);
           event.preventDefault();
           if(caption) caption.focus();
           return true;
-        } 
-
-        else if (buttonElem !== null && buttonElem !== document.activeElement) {
+        } else if (
+          buttonElem !== null &&
+          buttonElem !== document.activeElement
+        ) {
           event.preventDefault();
           buttonElem.focus();
           return true;
@@ -190,25 +206,28 @@ export default function ImageComponent({
       }
       return false;
     },
-    [caption, isSelected, showCaption]
+    [caption, isSelected, showCaption],
   );
 
-  const onEscape = useCallback(
+  const $onEscape = useCallback(
     (event: KeyboardEvent) => {
-      if (activeEditorRef.current === caption || buttonRef.current === event.target) {
+      if (
+        activeEditorRef.current === caption ||
+        buttonRef.current === event.target
+      ) {
         $setSelection(null);
-
         editor.update(() => {
           setSelected(true);
           const parentRootElement = editor.getRootElement();
-
-          if (parentRootElement !== null) parentRootElement.focus();
+          if (parentRootElement !== null) {
+            parentRootElement.focus();
+          }
         });
         return true;
       }
       return false;
     },
-    [caption, editor, setSelected]
+    [caption, editor, setSelected],
   );
 
   const onMouseClick = (payload: MouseEvent) => {
@@ -216,7 +235,7 @@ export default function ImageComponent({
     
     if((event.target as any)?.id && (event.target as any)?.id === 'delete') {
       const ev = new KeyboardEvent('keypress', { key: 'Delete', keyCode: 46 });
-      onDelete(ev);
+      $onDelete(ev);
     }
 
     if (isResizing) return true;
@@ -232,10 +251,66 @@ export default function ImageComponent({
     }
 
     return false;
-  }
+  };
+
+  const onClick = useCallback(
+    (payload: MouseEvent) => {
+      const event = payload;
+
+      if (isResizing) {
+        return true;
+      }
+      if (event.target === imageRef.current) {
+        if (event.shiftKey) {
+          setSelected(!isSelected);
+        } else {
+          clearSelection();
+          setSelected(true);
+        }
+        return true;
+      }
+
+      return false;
+    },
+    [isResizing, isSelected, setSelected, clearSelection],
+  );
+
+  const onRightClick = useCallback(
+    (event: MouseEvent): void => {
+      editor.getEditorState().read(() => {
+        const latestSelection = $getSelection();
+        const domElement = event.target as HTMLElement;
+        if (
+          domElement.tagName === 'IMG' &&
+          $isRangeSelection(latestSelection) &&
+          latestSelection.getNodes().length === 1
+        ) {
+          editor.dispatchCommand(
+            RIGHT_CLICK_IMAGE_COMMAND,
+            event as MouseEvent,
+          );
+        }
+      });
+    },
+    [editor],
+  );
+
+  const onImageUpdate = useCallback((payload: string) => {
+    if(payload) {
+      const node = $getNodeByKey(nodeKey);
+      
+      if (node && $isImageNode(node)) {
+        const imageNode = node as ImageNode
+        imageNode.setSrc(payload);
+      }
+    } 
+    return false;
+  }, [nodeKey])
 
   useEffect(() => {
     let isMounted = true;
+    const rootElement = editor.getRootElement();
+
     const unregister = mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
         if (isMounted) setSelection(editorState.read(() => $getSelection()));
@@ -246,9 +321,23 @@ export default function ImageComponent({
           activeEditorRef.current = activeEditor;
           return false;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand<MouseEvent>(CLICK_COMMAND, onMouseClick, COMMAND_PRIORITY_LOW),
+      editor.registerCommand<MouseEvent>(
+        CLICK_COMMAND,
+        onClick,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand<MouseEvent>(
+        RIGHT_CLICK_IMAGE_COMMAND,
+        onClick,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand(
+        UPDATE_IMAGE_COMMAND,
+        onImageUpdate,
+        COMMAND_PRIORITY_LOW,
+      ),
       editor.registerCommand(
         DRAGSTART_COMMAND,
         (event) => {
@@ -262,14 +351,18 @@ export default function ImageComponent({
         },
         COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(KEY_DELETE_COMMAND, onDelete, COMMAND_PRIORITY_LOW),
-      editor.registerCommand(KEY_BACKSPACE_COMMAND, onDelete, COMMAND_PRIORITY_LOW),
-      editor.registerCommand(KEY_ENTER_COMMAND, onEnter, COMMAND_PRIORITY_LOW),
-      editor.registerCommand(KEY_ESCAPE_COMMAND, onEscape, COMMAND_PRIORITY_LOW)
+      editor.registerCommand(KEY_DELETE_COMMAND, $onDelete, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(KEY_BACKSPACE_COMMAND, $onDelete, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(KEY_ENTER_COMMAND, $onEnter, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(KEY_ESCAPE_COMMAND, $onEscape, COMMAND_PRIORITY_LOW)
     );
+
+    rootElement?.addEventListener('contextmenu', onRightClick);
+
     return () => {
       isMounted = false;
       unregister();
+      rootElement?.removeEventListener('contextmenu', onRightClick);
     };
   }, [
     clearSelection,
@@ -277,10 +370,12 @@ export default function ImageComponent({
     isResizing,
     isSelected,
     nodeKey,
-    onDelete,
-    onEnter,
-    onEscape,
-    setSelected
+    $onDelete,
+    $onEnter,
+    $onEscape,
+    onClick,
+    onRightClick,
+    setSelected,
   ]);
 
   const setShowCaption = () => {
@@ -325,6 +420,10 @@ export default function ImageComponent({
 
     a.click();
     a.remove();
+  };
+
+  const dispatchImageUpdateEvent = ({ src }: InsertImagePayload) => {
+    if(src) editor.dispatchCommand(UPDATE_IMAGE_COMMAND, src);
   }
 
   const resizeBar = typeof width === "number" && width <= 257;
@@ -349,6 +448,12 @@ export default function ImageComponent({
           width={currentScreenSize.width - 100}
         />
       </Modal>
+      <EditImageModal
+        image={src}
+        open={openEditImageModal}
+        setOpen={setOpenEditImageModal}
+        onImageEdit={({ src, altText }) => dispatchImageUpdateEvent({ src, altText })}
+      />
       <div 
         onMouseEnter={() => setHover(true)} 
         onMouseLeave={() => setHover(false)}
@@ -385,6 +490,17 @@ export default function ImageComponent({
                     <li className="text-xs uppercase tracking-widest">
                       <a className="active:!bg-gray-trasparent hover:cursor-not-allowed bg-gray-700/70">Move down</a>
                     </li> */}
+                     <li className="text-xs uppercase tracking-widest">
+                      <a 
+                        className="hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
+                        onClick={() => setOpenEditImageModal(true)}
+                      >
+                        <div className="flex flex-row space-x-2 !text-gray-900 dark:!text-gray-300">
+                          <span className="my-auto text-[11px] text-inherit">Edit</span>
+                          <RiImageEditLine size={16}/>
+                        </div>
+                      </a>
+                    </li>
                     <li className="text-xs uppercase tracking-widest">
                       <a 
                         className="hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
@@ -440,7 +556,19 @@ export default function ImageComponent({
         </div>
         {(showCaption && caption) && (
           <div className="image-caption-container rounded-b-lg">
-            <LexicalNestedComposer initialEditor={caption}>
+            <LexicalNestedComposer 
+              initialEditor={caption}
+              initialNodes={[
+                RootNode,
+                TextNode,
+                LineBreakNode,
+                ParagraphNode,
+                LinkNode,
+                EmojiNode,
+                HashtagNode,
+                KeywordNode,
+              ]}
+            >
               <AutoFocusPlugin />
               <MentionsPlugin />
               <LinkPlugin />
@@ -455,12 +583,8 @@ export default function ImageComponent({
                 />
               ) : ( <HistoryPlugin externalHistoryState={historyState} /> )}
               <RichTextPlugin
-                contentEditable={ 
-                  <ContentEditable className="ImageNode__contentEditable !object-cover" />
-                }
-                placeholder={
-                  <Placeholder className="ImageNode__placeholder"> Enter a caption... </Placeholder>
-                }
+                contentEditable={<ContentEditable className="ImageNode__contentEditable !object-cover" />}
+                placeholder={<Placeholder className="ImageNode__placeholder"> Enter a caption... </Placeholder>}
                 ErrorBoundary={LexicalErrorBoundary}
               />
             </LexicalNestedComposer>

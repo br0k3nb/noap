@@ -28,7 +28,8 @@ import {
   $findMatchingParent, 
   $getNearestBlockElementAncestorOrThrow,  
   $getNearestNodeOfType, 
-  mergeRegister
+  mergeRegister,
+  $isEditorIsNestedEditor,
 } from "@lexical/utils";
 
 import {
@@ -460,6 +461,7 @@ export default function ToolbarPlugin() {
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isSubscript, setIsSubscript] = useState(false);
   const [isSuperscript, setIsSuperscript] = useState(false);
+  const [isImageCaption, setIsImageCaption] = useState(false);
   const [isCode, setIsCode] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -488,10 +490,21 @@ export default function ToolbarPlugin() {
   const [modal, showModal] = useModal();
   const { userData: { settings: { theme } } } = useUserData();
 
-  const updateToolbar = useCallback(() => {
+  const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
 
     if ($isRangeSelection(selection)) {
+      if (activeEditor !== editor && $isEditorIsNestedEditor(activeEditor)) {
+        const rootElement = activeEditor.getRootElement();
+        setIsImageCaption(
+          !!rootElement?.parentElement?.classList.contains(
+            'image-caption-container',
+          ),
+        );
+      } else {
+        setIsImageCaption(false);
+      }
+
       const anchorNode = selection.anchor.getNode();
 
       let element =
@@ -584,13 +597,12 @@ export default function ToolbarPlugin() {
         }
       }
     }
-  }, [activeEditor, lastSelectedFontFamily, lastSelectedFontColor]);
+  }, [activeEditor, lastSelectedFontFamily, lastSelectedFontColor, editor]);
 
   useEffect(() => {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
       (_payload, newEditor) => {
-        updateToolbar();
         setActiveEditor(newEditor);
         const selection = $getSelection();
 
@@ -669,11 +681,19 @@ export default function ToolbarPlugin() {
           }
         });
 
+        $updateToolbar();
+
         return false;
       },
       COMMAND_PRIORITY_CRITICAL
     );
-  }, [editor, updateToolbar, prevNodeKey, fontColor, fontFamily]);
+  }, [editor, $updateToolbar, prevNodeKey, fontColor, fontFamily]);
+
+  useEffect(() => {
+    activeEditor.getEditorState().read(() => {
+      $updateToolbar();
+    });
+  }, [activeEditor, $updateToolbar]);
 
   useEffect(() => {
     return activeEditor.registerCommand(
@@ -689,13 +709,13 @@ export default function ToolbarPlugin() {
       },
       COMMAND_PRIORITY_CRITICAL
     );
-  }, [activeEditor, fontColor, fontFamily, updateToolbar]);
+  }, [activeEditor, fontColor, fontFamily, $updateToolbar]);
 
   useEffect(() => {
     return mergeRegister(
       editor.registerEditableListener((editable) => setIsEditable(editable)),
       activeEditor.registerUpdateListener(({ editorState }) => {
-        editorState.read(() => updateToolbar());
+        editorState.read(() => $updateToolbar());
       }),
       activeEditor.registerCommand(
         CAN_UNDO_COMMAND,
@@ -714,7 +734,7 @@ export default function ToolbarPlugin() {
         COMMAND_PRIORITY_CRITICAL
       )
     );
-  }, [activeEditor, editor, updateToolbar]);
+  }, [activeEditor, editor, $updateToolbar]);
 
   const applyStyleText = useCallback(
     (styles: Record<string, string>) => {
@@ -778,11 +798,18 @@ export default function ToolbarPlugin() {
   );
 
   const insertLink = useCallback(() => {
-    if (!isLink) editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
-    else editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-
-    delayedSaveNoteFn();
-  }, [editor, isLink]);
+    if (!isLink) {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+      activeEditor.dispatchCommand(
+        TOGGLE_LINK_COMMAND,
+        sanitizeUrl('https://'),
+      );
+    } else {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    }
+  
+  }, [activeEditor, isLink]);
 
   const onCodeLanguageSelect = useCallback(
     (value: string) => {
@@ -861,9 +888,12 @@ export default function ToolbarPlugin() {
     </div>
   );  
 
+  const canViewerSeeInsertDropdown = !isImageCaption;
+  const canViewerSeeInsertCodeButton = !isImageCaption;
+
   return (
     <>
-      {openInsertImageModal && ( 
+      {openInsertImageModal && (
         <InsertImageModal
           open={openInsertImageModal}
           setOpen={setOpenInsertImageModal}
@@ -1017,18 +1047,20 @@ export default function ToolbarPlugin() {
             >
               <i className={`format underline ${theme === "dark" && 'comp-picker'}`} />
             </button>
-            <button
-              disabled={!isEditable}
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
-                delayedSaveNoteFn();
-              }}
-              className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isCode ? "active" : "")}
-              title="Insert code block"
-              aria-label="Insert code block"
-            >
-              <i className={`format code ${theme === "dark" && 'comp-picker'}`} />
-            </button>
+            {canViewerSeeInsertCodeButton && (
+              <button
+                disabled={!isEditable}
+                onClick={() => {
+                  activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+                  delayedSaveNoteFn();
+                }}
+                className={"toolbar-item spaced dark:hover:!bg-[#404040] hover:!bg-[#e1e1e1] " + (isCode ? "active" : "")}
+                title="Insert code block"
+                aria-label="Insert code block"
+              >
+                <i className={`format code ${theme === "dark" && 'comp-picker'}`} />
+              </button>
+            )}
             <button
               disabled={!isEditable}
               onClick={insertLink}
@@ -1122,129 +1154,133 @@ export default function ToolbarPlugin() {
                 </DropDownItem>
               </div>
             </DropDown>
-            <Divider />
-            <DropDown
-              disabled={!isEditable}
-              modalClassName="w-56 h-[303px] rounded-lg"
-              buttonClassName="toolbar-item spaced"
-              buttonLabel="Insert"
-              buttonIconClassName={`icon plus ${theme === 'dark' && 'comp-picker'}`}
-            >
-              <div className="my-2 h-[288px] overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 scrollbar-thin">
-                <DropDownItem 
-                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => {
-                    activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
-                    delayedSaveNoteFn();
-                  }} 
+            {canViewerSeeInsertCodeButton && (
+              <>
+                <Divider />
+                <DropDown
+                  disabled={!isEditable}
+                  modalClassName="w-56 h-[303px] rounded-lg"
+                  buttonClassName="toolbar-item spaced"
+                  buttonLabel="Insert"
+                  buttonIconClassName={`icon plus ${theme === 'dark' && 'comp-picker'}`}
                 >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={horizontalRuleIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Horizontal Rule</span>
-                  </div>
-                </DropDownItem>
-                <DropDownItem
-                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => {
-                    activeEditor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined);
-                    delayedSaveNoteFn();
-                  }}
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={excalidrawIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Excalidraw</span>
-                  </div>
-                </DropDownItem>
-                <DropDownItem
-                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => setOpenInsertImageModal(true)}
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={imageIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Image</span>
-                  </div>
-                </DropDownItem>
-                {/* <DropDownItem
-                  className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 !mt-[1px] !py-[11px]"
-                  onClick={() => showModal("Insert Poll", (onClose) => <InsertPollDialog activeEditor={activeEditor} onClose={onClose} />)}
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme !== 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={poolIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Poll</span>
-                  </div>
-                </DropDownItem> */}
-                <DropDownItem
-                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => {
-                    showModal(
-                      "Insert Equation", 
-                      (onClose) => {
-                        return (
-                          <InsertEquationDialog 
-                            activeEditor={activeEditor} 
-                            onClose={onClose} 
-                          />
+                  <div className="my-2 h-[288px] overflow-y-scroll px-2 scrollbar-track-transparent dark:scrollbar-thumb-gray-500 scrollbar-thumb-gray-800 scrollbar-thin">
+                    <DropDownItem 
+                      className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                      onClick={() => {
+                        activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
+                        delayedSaveNoteFn();
+                      }} 
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={horizontalRuleIcon} />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Horizontal Rule</span>
+                      </div>
+                    </DropDownItem>
+                    <DropDownItem
+                      className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                      onClick={() => {
+                        activeEditor.dispatchCommand(INSERT_EXCALIDRAW_COMMAND, undefined);
+                        delayedSaveNoteFn();
+                      }}
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={excalidrawIcon} />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Excalidraw</span>
+                      </div>
+                    </DropDownItem>
+                    <DropDownItem
+                      className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                      onClick={() => setOpenInsertImageModal(true)}
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={imageIcon} />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Image</span>
+                      </div>
+                    </DropDownItem>
+                    {/* <DropDownItem
+                      className="rounded-lg !w-[12.80rem] hover:!bg-gray-700 !mt-[1px] !py-[11px]"
+                      onClick={() => showModal("Insert Poll", (onClose) => <InsertPollDialog activeEditor={activeEditor} onClose={onClose} />)}
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img className={`${theme !== 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={poolIcon} />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Poll</span>
+                      </div>
+                    </DropDownItem> */}
+                    <DropDownItem
+                      className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                      onClick={() => {
+                        showModal(
+                          "Insert Equation", 
+                          (onClose) => {
+                            return (
+                              <InsertEquationDialog 
+                                activeEditor={activeEditor} 
+                                onClose={onClose} 
+                              />
+                            )
+                          }
                         )
-                      }
-                    )
-                  }}
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img 
-                      className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} 
-                      src={equationIcon} 
-                    />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Equation</span>
+                      }}
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img 
+                          className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} 
+                          src={equationIcon} 
+                        />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Equation</span>
+                      </div>
+                    </DropDownItem>
+                    <DropDownItem 
+                      className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                      onClick={() => {
+                        editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined);
+                        delayedSaveNoteFn();
+                      }} 
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={collapsibleIcon} />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Collapsible container</span>
+                      </div>
+                    </DropDownItem>
+                    <DropDownItem
+                      className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                      onClick={() => {
+                        showModal('Insert Columns Layout', (onClose) => (
+                          <InsertLayoutDialog
+                            activeEditor={activeEditor}
+                            onClose={onClose}
+                          />
+                        ));
+                      }}
+                    >
+                      <div className="flex flex-row space-x-2 ml-3">
+                        <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={columnsIcon} />
+                        <span className="text-[15px] text-gray-900 dark:text-gray-300">Columns Layout</span>
+                      </div>
+                    </DropDownItem>
+                    {EmbedConfigs.map((embedConfig, index: number) => (
+                      <DropDownItem
+                        key={embedConfig.type}
+                        className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
+                        onClick={() => {
+                          activeEditor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type)
+                          delayedSaveNoteFn();
+                        }}
+                      >
+                        <div className="flex flex-row space-x-2 ml-3">
+                          <img 
+                            className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} 
+                            src={!index ? twitterIcon : index === 1 ? youtubeIcon : figmaIcon} 
+                          />
+                          <span className="text-[15px] text-gray-900 dark:text-gray-300">{embedConfig.contentName}</span>
+                        </div>
+                      </DropDownItem>
+                    ))}
                   </div>
-                </DropDownItem>
-                <DropDownItem 
-                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => {
-                    editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined);
-                    delayedSaveNoteFn();
-                  }} 
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={collapsibleIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Collapsible container</span>
-                  </div>
-                </DropDownItem>
-                <DropDownItem
-                  className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                  onClick={() => {
-                    showModal('Insert Columns Layout', (onClose) => (
-                      <InsertLayoutDialog
-                        activeEditor={activeEditor}
-                        onClose={onClose}
-                      />
-                    ));
-                  }}
-                >
-                  <div className="flex flex-row space-x-2 ml-3">
-                    <img className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} src={columnsIcon} />
-                    <span className="text-[15px] text-gray-900 dark:text-gray-300">Columns Layout</span>
-                  </div>
-                </DropDownItem>
-                {EmbedConfigs.map((embedConfig, index: number) => (
-                  <DropDownItem
-                    key={embedConfig.type}
-                    className="rounded-lg !w-[12.80rem] hover:!bg-[#cacaca] dark:hover:!bg-[#323232] !mt-[1px] !py-[11px]"
-                    onClick={() => {
-                      activeEditor.dispatchCommand(INSERT_EMBED_COMMAND, embedConfig.type)
-                      delayedSaveNoteFn();
-                    }}
-                  >
-                    <div className="flex flex-row space-x-2 ml-3">
-                      <img 
-                        className={`${theme === 'dark' && 'comp-picker'} w-[20px] h-5 mt-[1px]`} 
-                        src={!index ? twitterIcon : index === 1 ? youtubeIcon : figmaIcon} 
-                      />
-                      <span className="text-[15px] text-gray-900 dark:text-gray-300">{embedConfig.contentName}</span>
-                    </div>
-                  </DropDownItem>
-                ))}
-              </div>
-            </DropDown>
+                </DropDown>
+              </>
+            )}
           </>
         )}
         <Divider />
