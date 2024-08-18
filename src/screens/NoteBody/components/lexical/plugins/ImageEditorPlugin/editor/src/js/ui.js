@@ -539,9 +539,7 @@ class Ui {
     const { target } = event;
     const item = target.closest(`.${HISTORY_PANEL_CLASS_NAME}`);
 
-    if (item) {
-      return;
-    }
+    if (item) return;
 
     const historyButtonClassList = this._buttonElements[HISTORY_MENU].classList;
 
@@ -571,9 +569,7 @@ class Ui {
   }
 
   _removeDownloadEvent() {
-    forEach(this._buttonElements.download, (element) => {
-      element.removeEventListener('click', this.eventHandler.download);
-    });
+    this._buttonElements.download.removeEventListener('click', this.eventHandler.download);
   }
 
   /**

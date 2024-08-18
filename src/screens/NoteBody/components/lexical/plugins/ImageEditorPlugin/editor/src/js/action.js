@@ -148,25 +148,7 @@ export default {
             })
             ['catch']((message) => Promise.reject(message));
         },
-        download: () => {
-          const dataURL = this.toDataURL();
-          
-          // const wrapper = document.getElementById("modal-actions");
-          if(timer) clearTimeout(timer);
-
-          timer = setTimeout(() => {
-            const hiddenImageEl = document.createElement('img');          
-            hiddenImageEl.id = 'edited-image-from-tui-editor'
-            hiddenImageEl.src = dataURL;
-
-            document.body.appendChild(hiddenImageEl);
-          }, 100);
-          // hiddenImageEl.className = 'edited-image-from-tui-editor';
-          // hiddenImageEl.width = '0px';
-          // hiddenImageEl.height = '0px';
-
-          // wrapper.appendChild(hiddenImageEl);
-        },
+        download: () => this.toDataURL(),
         history: (event) => {
           this.ui.toggleHistoryMenu(event);
         },
@@ -578,42 +560,44 @@ export default {
       },
       /* eslint-disable complexity */
       objectActivated: (obj) => {
-        this.activeObjectId = obj.id;
-
         this.ui.changeHelpButtonEnabled('delete', true);
         this.ui.changeHelpButtonEnabled('deleteAll', true);
 
-        if (obj.type === 'cropzone') {
-          this.ui.crop.changeApplyButtonStatus(true);
-        } else if (['rect', 'circle', 'triangle'].indexOf(obj.type) > -1) {
-          this.stopDrawingMode();
-          if (this.ui.submenu !== 'shape') {
-            this.ui.changeMenu('shape', false, false);
-          }
-          this.ui.shape.setShapeStatus({
-            strokeColor: obj.stroke,
-            strokeWidth: obj.strokeWidth,
-            fillColor: obj.fill,
-          });
+        if(obj) {
+          this.activeObjectId = obj.id;
 
-          this.ui.shape.setMaxStrokeValue(Math.min(obj.width, obj.height));
-        } else if (obj.type === 'path' || obj.type === 'line') {
-          if (this.ui.submenu !== 'draw') {
-            this.ui.changeMenu('draw', false, false);
-            this.ui.draw.changeStandbyMode();
+          if (obj.type === 'cropzone') {
+            this.ui.crop.changeApplyButtonStatus(true);
+          } else if (['rect', 'circle', 'triangle'].indexOf(obj.type) > -1) {
+            this.stopDrawingMode();
+            if (this.ui.submenu !== 'shape') {
+              this.ui.changeMenu('shape', false, false);
+            }
+            this.ui.shape.setShapeStatus({
+              strokeColor: obj.stroke,
+              strokeWidth: obj.strokeWidth,
+              fillColor: obj.fill,
+            });
+  
+            this.ui.shape.setMaxStrokeValue(Math.min(obj.width, obj.height));
+          } else if (obj.type === 'path' || obj.type === 'line') {
+            if (this.ui.submenu !== 'draw') {
+              this.ui.changeMenu('draw', false, false);
+              this.ui.draw.changeStandbyMode();
+            }
+          } else if (['i-text', 'text'].indexOf(obj.type) > -1) {
+            if (this.ui.submenu !== 'text') {
+              this.ui.changeMenu('text', false, false);
+            }
+  
+            this.ui.text.setTextStyleStateOnAction(obj);
+          } else if (obj.type === 'icon') {
+            this.stopDrawingMode();
+            if (this.ui.submenu !== 'icon') {
+              this.ui.changeMenu('icon', false, false);
+            }
+            this.ui.icon.setIconPickerColor(obj.fill);
           }
-        } else if (['i-text', 'text'].indexOf(obj.type) > -1) {
-          if (this.ui.submenu !== 'text') {
-            this.ui.changeMenu('text', false, false);
-          }
-
-          this.ui.text.setTextStyleStateOnAction(obj);
-        } else if (obj.type === 'icon') {
-          this.stopDrawingMode();
-          if (this.ui.submenu !== 'icon') {
-            this.ui.changeMenu('icon', false, false);
-          }
-          this.ui.icon.setIconPickerColor(obj.fill);
         }
       },
       /* eslint-enable complexity */

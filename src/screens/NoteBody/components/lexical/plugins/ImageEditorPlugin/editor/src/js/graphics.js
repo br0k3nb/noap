@@ -65,6 +65,7 @@ class Graphics {
      * @type {fabric.Image}
      */
     this.canvasImage = null;
+    this.imageBase64Url = this.toDataURL;
 
     /**
      * Max width of canvas elements
@@ -1305,34 +1306,36 @@ class Graphics {
    * @returns {Object} properties object
    */
   createObjectProperties(obj) {
-    const predefinedKeys = [
-      'left',
-      'top',
-      'width',
-      'height',
-      'fill',
-      'stroke',
-      'strokeWidth',
-      'opacity',
-      'angle',
-    ];
-    const props = {
-      id: stamp(obj),
-      type: obj.type,
-    };
-
-    extend(props, getProperties(obj, predefinedKeys));
-
-    if (includes(['i-text', 'text'], obj.type)) {
-      extend(props, this._createTextProperties(obj, props));
-    } else if (includes(['rect', 'triangle', 'circle'], obj.type)) {
-      const shapeComp = this.getComponent(components.SHAPE);
-      extend(props, {
-        fill: shapeComp.makeFillPropertyForUserEvent(obj),
-      });
+    if(obj) {
+      const predefinedKeys = [
+        'left',
+        'top',
+        'width',
+        'height',
+        'fill',
+        'stroke',
+        'strokeWidth',
+        'opacity',
+        'angle',
+      ];
+      const props = {
+        id: stamp(obj),
+        type: obj.type,
+      };
+  
+      extend(props, getProperties(obj, predefinedKeys));
+  
+      if (includes(['i-text', 'text'], obj.type)) {
+        extend(props, this._createTextProperties(obj, props));
+      } else if (includes(['rect', 'triangle', 'circle'], obj.type)) {
+        const shapeComp = this.getComponent(components.SHAPE);
+        extend(props, {
+          fill: shapeComp.makeFillPropertyForUserEvent(obj),
+        });
+      }
+  
+      return props;
     }
-
-    return props;
   }
 
   /**

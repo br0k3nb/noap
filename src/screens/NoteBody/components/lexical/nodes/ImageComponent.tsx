@@ -9,10 +9,10 @@ import type {
 
 import "./ImageNode.css";
 
-import {EmojiNode} from './EmojiNode';
-import {KeywordNode} from './KeywordNode';
-import {HashtagNode} from '@lexical/hashtag';
-import {LinkNode} from '@lexical/link';
+import { EmojiNode } from './EmojiNode';
+import { KeywordNode } from './KeywordNode';
+import { HashtagNode } from '@lexical/hashtag';
+import { LinkNode } from '@lexical/link';
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
 import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
@@ -60,14 +60,18 @@ import MentionsPlugin from "../plugins/MentionsPlugin";
 import ContentEditable from "../ui/ContentEditable";
 import ImageResizer from "../ui/ImageResizer";
 import Placeholder from "../ui/Placeholder";
-import { $isImageNode } from "./ImageNode";
+import { $isImageNode, ImageNode } from "./ImageNode";
 
 import Modal from "../../../../../components/Modal";
+import EditImageModal from "../plugins/ImageEditorPlugin/EditImageModal";
 
 import useUpdateViewport from "../../../../../hooks/useUpdateViewport";
 
+import type { InsertImagePayload } from "../plugins/ImagesPlugin";
+
 const imageCache = new Set();
 export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> = createCommand('RIGHT_CLICK_IMAGE_COMMAND');
+export const UPDATE_IMAGE_COMMAND: LexicalCommand<any> = createCommand('UPDATE_IMAGE_COMMAND');
 
 function useSuspenseImage(src: string) {
   if (!imageCache.has(src)) {
@@ -157,24 +161,9 @@ export default function ImageComponent({
   const [openFullscreenModal, setOpenFullscreenModal] = useState(false);
   const [selection, setSelection] = useState<BaseSelection | null>(null);
   const [currentScreenSize, setCurrentScreenSize] = useState({ width: innerWidth, height: innerHeight });
+  const [openEditImageModal, setOpenEditImageModal] = useState(false);
 
   useUpdateViewport(setCurrentScreenSize, 500);
-
-  // const $onDelete = useCallback(
-  //   (payload: KeyboardEvent) => {
-  //     if (isSelected && $isNodeSelection($getSelection())) {
-  //       const event: KeyboardEvent = payload;
-  //       event.preventDefault();
-  //       const node = $getNodeByKey(nodeKey);
-  //       if ($isImageNode(node)) {
-  //         node.remove();
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   },
-  //   [isSelected, nodeKey],
-  // );
 
   const $onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -306,6 +295,18 @@ export default function ImageComponent({
     [editor],
   );
 
+  const onImageUpdate = useCallback((payload: string) => {
+    if(payload) {
+      const node = $getNodeByKey(nodeKey);
+      
+      if (node && $isImageNode(node)) {
+        const imageNode = node as ImageNode
+        imageNode.setSrc(payload);
+      }
+    } 
+    return false;
+  }, [nodeKey])
+
   useEffect(() => {
     let isMounted = true;
     const rootElement = editor.getRootElement();
@@ -324,12 +325,17 @@ export default function ImageComponent({
       ),
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
-        onMouseClick,
+        onClick,
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<MouseEvent>(
         RIGHT_CLICK_IMAGE_COMMAND,
         onClick,
+        COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand(
+        UPDATE_IMAGE_COMMAND,
+        onImageUpdate,
         COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
@@ -414,6 +420,10 @@ export default function ImageComponent({
 
     a.click();
     a.remove();
+  };
+
+  const dispatchImageUpdateEvent = ({ src }: InsertImagePayload) => {
+    if(src) editor.dispatchCommand(UPDATE_IMAGE_COMMAND, src);
   }
 
   const resizeBar = typeof width === "number" && width <= 257;
@@ -438,6 +448,12 @@ export default function ImageComponent({
           width={currentScreenSize.width - 100}
         />
       </Modal>
+      <EditImageModal
+        image={src}
+        open={openEditImageModal}
+        setOpen={setOpenEditImageModal}
+        onImageEdit={({ src, altText }) => dispatchImageUpdateEvent({ src, altText })}
+      />
       <div 
         onMouseEnter={() => setHover(true)} 
         onMouseLeave={() => setHover(false)}
@@ -477,7 +493,7 @@ export default function ImageComponent({
                      <li className="text-xs uppercase tracking-widest">
                       <a 
                         className="hover:!bg-[#e6e6e6] dark:hover:!bg-[#222222]"
-                        // onClick={() => donwloadImage(src)}
+                        onClick={() => setOpenEditImageModal(true)}
                       >
                         <div className="flex flex-row space-x-2 !text-gray-900 dark:!text-gray-300">
                           <span className="my-auto text-[11px] text-inherit">Edit</span>

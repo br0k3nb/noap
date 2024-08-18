@@ -1,6 +1,6 @@
 //custom made funcional component for the TUI editor
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react';
 import TuiImageEditor from './editor/src';
 import './editor/src/editor.css';
 
@@ -59,6 +59,8 @@ type ThemeConfig = {
 };
 
 type ImageEditorType = {
+    editorInstance: TuiImageEditor | null;
+    setEditorInstance: Dispatch<SetStateAction<TuiImageEditor | null>>;
     includeUI: {
         loadImage?: {
             path: string;
@@ -91,20 +93,19 @@ type ImageEditorType = {
 
 export default function ImageEditor (props: ImageEditorType) {
     const rootEl = useRef(null);
-    const [imageEditorInstance, setImageEditorInstace] = useState<TuiImageEditor | null>(null);
-
+    
     useEffect(() => {
         const initialize = () => {
-            if(rootEl.current) setImageEditorInstace(new TuiImageEditor(rootEl.current, { ...props }));
+            if(rootEl.current) props.setEditorInstance(new TuiImageEditor(rootEl.current, { ...props }));
         }
 
         initialize();
-        bindEventHandlers(props) ;
+        bindEventHandlers(props);
 
         return () => {
             unbindEventHandlers();
-            if(imageEditorInstance) (imageEditorInstance as TuiImageEditor).destroy();
-            if(imageEditorInstance) setImageEditorInstace(null);
+            if(props.editorInstance) (props.editorInstance as TuiImageEditor).destroy();
+            if(props.editorInstance) props.setEditorInstance(null);
         }
     }, [rootEl.current]);
 

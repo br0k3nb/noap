@@ -170,7 +170,7 @@ class ImageEditor {
     );
 
     this.mode = null;
-
+    this.getData = this?._graphics?.toDataURL;
     this.activeObjectId = null;
 
     /**
@@ -280,7 +280,7 @@ class ImageEditor {
 
     if (applyGroupSelectionStyle) {
       this.on('selectionCreated', (eventTarget) => {
-        if (eventTarget.type === 'activeSelection') {
+        if (eventTarget && eventTarget.type === 'activeSelection') {
           eventTarget.set(selectionStyle);
         }
       });
@@ -1515,6 +1515,7 @@ class ImageEditor {
    * });
    */
   toDataURL(options) {
+    // console.log(this._graphics.toDataURL(options), 'inside image editor class');
     return this._graphics.toDataURL(options);
   }
 

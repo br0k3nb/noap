@@ -55,13 +55,15 @@ function forEach(obj, iteratee, context) {
 }
 
 export function stamp(obj) {
-  if (!obj.__fe_id) {
-    lastId += 1;
-    // eslint-disable-next-line camelcase
-    obj.__fe_id = lastId;
+  if(obj) {
+    if (!obj.__fe_id) {
+      lastId += 1;
+      // eslint-disable-next-line camelcase
+      obj.__fe_id = lastId;
+    }
+  
+    return obj.__fe_id;
   }
-
-  return obj.__fe_id;
 }
 
 export function hasStamp(obj) {
@@ -127,17 +129,19 @@ export function makeStyleText(styleObj) {
  * @returns {Object} properties object
  */
 export function getProperties(obj, keys) {
-  const props = {};
-  const { length } = keys;
-  let i = 0;
-  let key;
-
-  for (i = 0; i < length; i += 1) {
-    key = keys[i];
-    props[key] = obj[key];
+  if(obj) {
+    const props = {};
+    const { length } = keys;
+    let i = 0;
+    let key;
+  
+    for (i = 0; i < length; i += 1) {
+      key = keys[i];
+      props[key] = obj[key];
+    }
+  
+    return props;
   }
-
-  return props;
 }
 
 /**

@@ -24,6 +24,7 @@ import Compressor from 'compressorjs';
 import imageCompression from 'browser-image-compression';
 
 import { BsLink, BsFillFolderSymlinkFill } from 'react-icons/bs';
+import { FaRegSave } from "react-icons/fa";
 
 import { CAN_USE_DOM } from "../../shared/canUseDOM";
   
@@ -38,6 +39,7 @@ import Modal from "../../../../../../components/Modal";
 import ConfirmationModal from "../../../../../../components/ConfirmationModal";
 
 import ImageEditor from '../ImageEditorPlugin/';
+import TuiImageEditor from '../ImageEditorPlugin/editor/src';
 
 import useSaveNote from "../../../../../../hooks/useSaveNote";
 
@@ -57,14 +59,6 @@ type InsertImageDialogBodyType = {
 
 type InsertImageUriDialogBodyType = {
   onClick: (payload: InsertImagePayload) => void;
-}
-
-type EditButtonType = {
-  mode: null | "url" | "file" | "edit"; 
-  saveFn: (payload: InsertImagePayload) => void;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  setMode: Dispatch<SetStateAction<"url" | "file" | "edit" | null>>;
-  setSrc: Dispatch<SetStateAction<string>>;
 }
 
 type ImagesPlugin = {
@@ -228,6 +222,7 @@ export function InsertImageUploadedDialogBody({ onClick, src, setSrc, setMode }:
 
 export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType) {
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+  const [imageEditorInstance, setImageEditorInstance] = useState<TuiImageEditor | null>(null);
   const [mode, setMode] = useState<null | "url" | "file" | "edit">(null);
   const [src, setSrc] = useState("");
 
@@ -265,12 +260,13 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
         },
         customKeyboardPressHandler: (e) => handleKeyPress(e),
         customTopActionButton: (
-          <EditButton 
-            mode={mode} 
-            saveFn={onClick} 
-            setMode={setMode} 
-            setOpen={setOpen} 
+          <EditButton
+            mode={mode}
+            saveFn={onClick}
+            setMode={setMode}
+            setOpen={setOpen}
             setSrc={setSrc}
+            imageEditorInstance={imageEditorInstance}
           />
         )
       }}
@@ -325,7 +321,9 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
         </div>
       ) : (
         <div style={{ height: innerHeight - 80 }}>
-          <ImageEditor 
+          <ImageEditor
+            editorInstance={imageEditorInstance}
+            setEditorInstance={setImageEditorInstance}
             includeUI={{
               loadImage: { path: src, name: 'image' },
               menuBarPosition: 'right',
@@ -339,30 +337,44 @@ export function InsertImageModal({ setOpen, activeEditor }: InsertImageModalType
   )
 }
 
-export function EditButton ({ mode, saveFn, setOpen, setMode, setSrc } : EditButtonType) {
-  const handleClick = () => {
-    setTimeout(() => {
-      const imageEl = document.getElementById("edited-image-from-tui-editor");
+type EditButtonType = {
+  mode: null | "url" | "file" | "edit"; 
+  saveFn: (payload: InsertImagePayload) => void;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  setMode: Dispatch<SetStateAction<"url" | "file" | "edit" | null>>;
+  setSrc: Dispatch<SetStateAction<string>>;
+  imageEditorInstance: TuiImageEditor | null;
+}
 
-      if(imageEl) {
-        saveFn({ src: (imageEl as HTMLImageElement).src, altText: '' })        
-        setOpen(false);
-        setMode(null);
-        setSrc('');
-      }
-    }, 200);
+type eventHandlerType = {
+  download: () => string;
+}
+
+export function EditButton ({ mode, saveFn, setOpen, setMode, setSrc, imageEditorInstance } : EditButtonType) {
+  const handleClick = () => {
+    if(imageEditorInstance && (imageEditorInstance.ui?.eventHandler as eventHandlerType).download) {
+      const src = (imageEditorInstance.ui?.eventHandler as eventHandlerType).download();
+
+      saveFn({ src, altText: '' });
+      setOpen(false);
+      setMode(null);
+      setSrc('');
+    }
   }
 
   return (
     <div 
-      className={`mx-2 mt-[2px] ${mode !== "edit" && "!hidden"}`}
+      className={`transition-all duration-300 ease-in-out hover:tracking-wide bg-[#ffffff] border border-gray-500 text-gray-900 dark:text-gray-200 px-3 rounded-full bg-inherit hover:bg-green-700 py-1 ${mode !== "edit" && "!hidden"}`}
       onClick={() => handleClick()}
     >
-      <button 
-        id="tui-image-editor-download-btn" 
+      <button
+        id="tui-image-editor-download-btn"
         className="bg-green-600 hover:bg-green-700 transition-all duration-300 ease-in-out hover:tracking-widest border hover border-[#4b5563] px-3 dark:text-white text-black tracking-wide text-[17px] rounded-full"
       >
-        Save
+        <div className="flex flex-row space-x-2 text-[13.5px] uppercase">
+          <p>Save image</p>
+          <FaRegSave size={19} />
+        </div>
       </button>
     </div>
   )
