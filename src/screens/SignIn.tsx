@@ -209,9 +209,9 @@ export default function SignIn() {
                       Doesn't have an account ?
                       <a href="/sign-up" className="text-red-600 ml-1 hover:text-red-700"> Sign Up </a>
                     </p>
-                    <a href="/help" className="text-gray-300 hover:text-red-600 transition-all duration-300 ease-in-out">
+{/*                     <a href="/help" className="text-gray-300 hover:text-red-600 transition-all duration-300 ease-in-out">
                       Problems logging in ?
-                    </a>
+                    </a> */}
                   </div>
                 </div>
               </form>
