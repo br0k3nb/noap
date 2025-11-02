@@ -54,7 +54,7 @@ import "../index.css";
 
 type Props = {
   note: NoteData;
-  saveSpinner: boolean;  
+  saveSpinner: boolean;
   save: (currentState: EditorState) => Promise<void>;
 };
 
@@ -65,12 +65,12 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const { historyState } = useSharedHistoryContext();
 
     const { noteSettings: { expanded, readMode, noteBackgroundColor, showBottomBar } } = useNoteSettings();
-    const { 
+    const {
       userData: {
         settings: {
           noteTextExpanded,
           globalNoteBackgroundColor
-        } 
+        }
       }
     } = useUserData();
 
@@ -84,7 +84,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const customRef = useRef(null);
 
     let timer: ReturnType<typeof setTimeout> | null = null;
-    
+
     const { height: currentHeight, width: currentWidth } = currentScreenSize;
     const BOTTOM_BAR_HEIGHT = 54;
     const MEDIUM_SCREEN = currentWidth > 640;
@@ -92,7 +92,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const LARGE_SCREEN = currentWidth > 1430;
 
     const getRootEditorEl = document.getElementById("ContentEditable__root");
-    
+
     useEffect(() => {
       let timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -106,7 +106,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const onEditorChange = (eS: EditorState, e: LexicalEditor, tags: Set<string>) => {
       if(tags && rootElWasTouched) {
         if(timer) clearTimeout(timer);
-  
+
         timer = setTimeout(() => save(editor.getEditorState()), 2500);
       }
     }
@@ -116,7 +116,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
 
       const updateViewPortWidth = () => {
         const isNextSmallWidthViewport = CAN_USE_DOM && matchMedia("(max-width: 1025px)").matches;
-      
+
         if (isNextSmallWidthViewport !== isSmallWidthViewport) setIsSmallWidthViewport(isNextSmallWidthViewport);
         viewportTimeout = setTimeout(() => setCurrentScreenSize({ width: innerWidth, height: innerHeight }));
       };
@@ -137,7 +137,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
       else editor.setEditable(true);
     }, [readMode]);
 
-    const editorHeight = MEDIUM_SCREEN ? 
+    const editorHeight = MEDIUM_SCREEN ?
       readMode ? currentHeight : currentHeight - 100
       : (showBottomBar ? currentHeight - BOTTOM_BAR_HEIGHT : currentHeight - 5);
 
@@ -147,7 +147,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     //for some reason, typescript is throwing an error if this code is not set as any.
     //it's saying that the checkVisibility method does not exist in type HTMLElement, which is not true, since HTMLElement extends Element.
     const getNavbar = document.getElementById("pc-navbar") as any;
-    
+
     const baseStyle = {
       marginTop: BIG_SCREEN ? 50 : 0,
       marginBottom: BIG_SCREEN ? 86 : 0,
@@ -170,7 +170,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
           <EmojiPickerPlugin />
           <AutoLinkPlugin />
           <AutoFocusPlugin />
-          <OnChangePlugin 
+          <OnChangePlugin
             onChange={onEditorChange}
             ignoreHistoryMergeTagChange={true}
             ignoreSelectionChange={true}
@@ -191,16 +191,16 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                           width: currentWidth,
                           height: editorHeight
                         }
-                      }  
+                      }
                     >
-                      <div                        
+                      <div
                         className="flex flex-col mx-auto py-10"
                         style={
                           (!expanded && getNavbar?.checkVisibility()) ? {
                             ...baseStyle,
                             minHeight: '750px',
                             width: (noteTextExpanded && LARGE_SCREEN) ? noteTextCondition : currentWidth - 435
-                          } : { 
+                          } : {
                             ...baseStyle,
                             minHeight: '750px',
                             width: (noteTextExpanded && BIG_SCREEN) ? noteTextCondition : currentWidth
@@ -213,7 +213,7 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
                       </div>
                       {!readMode && (
                         <div className="xxs:mt-20">
-                          <BottomBar 
+                          <BottomBar
                             note={note}
                             save={save}
                             editor={editor}
@@ -249,15 +249,15 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
               <TabFocusPlugin />
               <TabIndentationPlugin />
               <CollapsiblePlugin />
-              {floatingAnchorElem && (
+              {/* {floatingAnchorElem && (
                 <>
                   {MEDIUM_SCREEN && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
-                  <FloatingLinkEditorPlugin 
+                  <FloatingLinkEditorPlugin
                     anchorElem={floatingAnchorElem}
                     setIsLinkEditMode={setIsLinkEditMode}
                   />
                 </>
-              )}
+              )} */}
             </>
           )}
         </SaveNoteContext>

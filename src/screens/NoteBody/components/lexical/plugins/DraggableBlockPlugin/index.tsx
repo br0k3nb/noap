@@ -86,9 +86,9 @@ function getBlockElement(
 ): HTMLElement | null {
   const anchorElementRect = anchorElem.getBoundingClientRect();
   const topLevelNodeKeys = getTopLevelNodeKeys(editor);
-  
+
   let blockElem: HTMLElement | null = null;
-  
+
   editor.getEditorState().read(() => {
     if (useEdgeAsDefault) {
       const [firstNode, lastNode] = [
@@ -116,13 +116,13 @@ function getBlockElement(
 
     let index = getCurrentIndex(topLevelNodeKeys.length);
     let direction = Indeterminate;
-    
+
     while (index >= 0 && index < topLevelNodeKeys.length) {
       const key = topLevelNodeKeys[index];
       const elem = editor.getElementByKey(key);
 
       if (elem === null) break;
-      
+
       const point = new Point(event.x, event.y);
       const domRect = Rect.fromDOM(elem);
       const { marginTop, marginBottom } = getCollapsedMargins(elem);
@@ -138,7 +138,7 @@ function getBlockElement(
         result,
         reason: {isOnTopSide, isOnBottomSide},
       } = rect.contains(point);
-      
+
       if (result) {
         blockElem = elem;
         prevIndex = index;
@@ -150,7 +150,7 @@ function getBlockElement(
         else if (isOnBottomSide) direction = Downward
         else direction = Infinity;
       }
-      
+
       index += direction;
     }
   });
@@ -162,7 +162,7 @@ function getBlockElement(
       customMargin = `${(blockElem as HTMLElement)?.clientHeight / 8}`;
     } else if ((blockElem as any)?.children[0]?.parentElement.className.startsWith("PlaygroundEditorTheme__paragraph")) {
       customMargin = `${(blockElem as any)?.clientHeight / 2 + 30}`;
-    }  
+    }
   }
 
   return blockElem;
@@ -261,10 +261,10 @@ function useDraggableBlockMenu(
   const { saveNoteFn } = useSaveNote();
 
   const [draggableBlockElem, setDraggableBlockElem] = useState<HTMLElement | null>(null);
-  
+
   const delayedSaveNoteFn = useCallback(() => {
     if(timer) clearTimeout(timer);
-    
+
     timer = setTimeout(() => {
       if(saveNoteFn) saveNoteFn(editor.getEditorState());
     }, 2500);
@@ -327,7 +327,7 @@ function useDraggableBlockMenu(
 
     function onDrop(event: DragEvent): boolean {
       if (!isDraggingBlockRef.current) return false;
-      
+
       const [isFileTransfer] = eventFiles(event);
 
       if (isFileTransfer) return false;
@@ -350,11 +350,11 @@ function useDraggableBlockMenu(
       const {top, height} = targetBlockElem.getBoundingClientRect();
       const shouldInsertAfter = pageY - top > height / 2;
 
-      if (shouldInsertAfter) targetNode.insertAfter(draggedNode);      
+      if (shouldInsertAfter) targetNode.insertAfter(draggedNode);
       else targetNode.insertBefore(draggedNode);
 
       setDraggableBlockElem(null);
-      delayedSaveNoteFn();
+      // delayedSaveNoteFn();
 
       return true;
     }
@@ -381,7 +381,7 @@ function useDraggableBlockMenu(
   function onDragStart(event: ReactDragEvent<HTMLDivElement>): void {
     const dataTransfer = event.dataTransfer;
     if (!dataTransfer || !draggableBlockElem) return;
-  
+
     setDragImage(dataTransfer, draggableBlockElem);
     let nodeKey = '';
 
@@ -403,8 +403,8 @@ function useDraggableBlockMenu(
   const rootEditorDiv = document.getElementsByClassName("ContentEditable__root")[0];
   const editorWidth = rootEditorDiv.clientWidth;
 
-  const { x } = rootEditorDiv.getBoundingClientRect();  
-  
+  const { x } = rootEditorDiv.getBoundingClientRect();
+
   return createPortal(
     <>
       <div
@@ -413,20 +413,20 @@ function useDraggableBlockMenu(
         draggable={true}
         onDragStart={onDragStart}
         style={
-          (customMargin && Number(customMargin)) ? { 
+          (customMargin && Number(customMargin)) ? {
             marginTop: Number(customMargin),
             left:  x - 460 < 0 ? 0 : x - 460
-          } : { 
-            left:  x - 460 < 0 ? 0 : x - 460 
+          } : {
+            left:  x - 460 < 0 ? 0 : x - 460
           }
         }
         onDragEnd={onDragEnd}
       >
         <div className={isEditable ? 'icon rounded-sm' : ''} />
       </div>
-      <div 
+      <div
         className="draggable-block-target-line"
-        style={{ 
+        style={{
           maxWidth: editorWidth - 50,
           left: x - 440
         }}
