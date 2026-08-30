@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { toggleLink, TOGGLE_LINK_COMMAND, LinkNode } from '@lexical/link';
+import { $toggleLink, TOGGLE_LINK_COMMAND, LinkNode } from '@lexical/link';
 
 import { COMMAND_PRIORITY_LOW, PASTE_COMMAND, $getSelection, $isElementNode, $isRangeSelection } from "lexical";
 
@@ -18,12 +18,12 @@ export default function LinkPlugin() {
 
     return mergeRegister(editor.registerCommand(TOGGLE_LINK_COMMAND, payload => {
       if (payload === null) {
-        toggleLink(payload);
+        $toggleLink(payload);
         return true;
       } 
       else if (typeof payload === 'string') {
         if (validateUrl === undefined || validateUrl(payload)) {
-          toggleLink(payload);
+          $toggleLink(payload);
           return true;
         }
 
@@ -31,7 +31,7 @@ export default function LinkPlugin() {
       } 
       else {
         const { url, target, rel, title } = payload;
-        toggleLink(url, { rel, target, title });
+        $toggleLink(url, { rel, target, title });
 
         return true;
       }

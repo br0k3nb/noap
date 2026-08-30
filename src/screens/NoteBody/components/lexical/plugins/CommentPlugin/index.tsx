@@ -30,7 +30,7 @@ import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
@@ -704,9 +704,14 @@ function CommentsPanel({
 }
 
 function useCollabAuthorName(): string {
-  const collabContext = useCollaborationContext();
-  const { yjsDocMap, name } = collabContext;
-  return yjsDocMap.has("comments") ? name : "Playground User";
+  let yjsDocMap: Map<string, any> | undefined;
+  let name = "Playground User";
+  try {
+    const collabContext = useCollaborationContext();
+    yjsDocMap = collabContext.yjsDocMap;
+    name = collabContext.name ?? name;
+  } catch {}
+  return yjsDocMap?.has("comments") ? name : "Playground User";
 }
 
 export default function CommentPlugin({
@@ -714,7 +719,10 @@ export default function CommentPlugin({
 }: {
   providerFactory?: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
 }): JSX.Element {
-  const collabContext = useCollaborationContext();
+  let collabContext: any = null;
+  try {
+    collabContext = useCollaborationContext();
+  } catch {}
   const [editor] = useLexicalComposerContext();
   const commentStore = useMemo(() => new CommentStore(editor), [editor]);
   const comments = useCommentStore(commentStore);
@@ -725,10 +733,10 @@ export default function CommentPlugin({
   const [activeIDs, setActiveIDs] = useState<Array<string>>([]);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const { yjsDocMap } = collabContext;
+  const yjsDocMap = collabContext?.yjsDocMap;
 
   useEffect(() => {
-    if (providerFactory) {
+    if (providerFactory && yjsDocMap) {
       const provider = providerFactory("comments", yjsDocMap);
       return commentStore.registerCollaboration(provider);
     }

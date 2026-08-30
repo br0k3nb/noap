@@ -1,6 +1,6 @@
 import { useState, useRef, useReducer, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 import { toastAlert } from "../../components/Alert";
@@ -127,12 +127,15 @@ export default function Home() {
         });
     
         replacePinNotes(pinDocs);
-        return replace(docs);
+        replace(docs);
+        return { docs, pinDocs };
       } catch (err: any) {       
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
         console.log(err);
+        return null;
       } 
     }
+    return null;
   };
 
   const fetchSelectedNoteData = async () => {
@@ -143,6 +146,7 @@ export default function Home() {
         });
 
         setSelectedNoteData(note);
+        return note;
       } catch (err: any) {
         console.log(err);
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
@@ -154,8 +158,10 @@ export default function Home() {
             expanded: false
           }
         });
+        return null;
       } 
     }
+    return null;
   };
 
   const fetchLabels = async () => {
@@ -176,10 +182,13 @@ export default function Home() {
           appendLabels(docs);
         } 
         else replaceLabels(docs);
+        return docs;
       } catch (err: any) {
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
+        return null;
       }
-    }  
+    }
+    return null;
   };
   
   const fetchSessions = async() => {
@@ -188,11 +197,14 @@ export default function Home() {
         const { data } = await api.get(`/get/sessions/${_id}`);
 
         replaceSessions(data);
+        return data;
       }
     } catch (err: any) {
       console.log(err);
       toastAlert({ icon: "error", title: err.message, timer: 2000 });
+      return null;
     }
+    return null;
   };
 
   const addNewNote = async () => {
@@ -245,21 +257,28 @@ export default function Home() {
     }
   };
 
-  const { isFetching } = useQuery(
-    ["verifyUser", delayedSearch, notesState.page, currentPage, pinNotesState.page, _id, preventPageUpdateFromUrl], 
-    fetchNotesMetadata,
-    { refetchInterval: 300000, refetchOnWindowFocus: false }
-  );
-
-  const { isFetching: noteDataIsFetching } = useQuery(["fetchNoteData", selectedNote, _id], fetchSelectedNoteData, {
-    refetchOnWindowFocus: false
+  const { isFetching } = useQuery({
+    queryKey: ["verifyUser", delayedSearch, notesState.page, currentPage, pinNotesState.page, _id, preventPageUpdateFromUrl],
+    queryFn: fetchNotesMetadata,
+    refetchInterval: 300000,
+    refetchOnWindowFocus: false,
   });
 
-  const { isFetching: labelIsFetching } = useQuery(["fetchLabels", delayedSearchLabel, labelsState.page, _id], fetchLabels, {
-    refetchOnWindowFocus: false 
+  const { isFetching: noteDataIsFetching } = useQuery({
+    queryKey: ["fetchNoteData", selectedNote, _id],
+    queryFn: fetchSelectedNoteData,
+    refetchOnWindowFocus: false,
   });
 
-  const { isFetching: sessionIsFetching } = useQuery(["fetch-sessions"], fetchSessions, { 
+  const { isFetching: labelIsFetching } = useQuery({
+    queryKey: ["fetchLabels", delayedSearchLabel, labelsState.page, _id],
+    queryFn: fetchLabels,
+    refetchOnWindowFocus: false,
+  });
+
+  const { isFetching: sessionIsFetching } = useQuery({
+    queryKey: ["fetch-sessions"],
+    queryFn: fetchSessions,
     refetchInterval: 300000,
     refetchOnWindowFocus: true,
   });

@@ -61,7 +61,11 @@ export default function ActionsPlugin(): JSX.Element {
   const [ connected, setConnected ] = useState(false);
   const [ isEditorEmpty, setIsEditorEmpty ] = useState(true);
   const [ modal, showModal ] = useModal();
-  const { isCollabActive } = useCollaborationContext();
+  let isCollabActive = false;
+  try {
+    const ctx = useCollaborationContext();
+    isCollabActive = ctx.isCollabActive;
+  } catch {}
 
   useEffect(() => {
     return mergeRegister(

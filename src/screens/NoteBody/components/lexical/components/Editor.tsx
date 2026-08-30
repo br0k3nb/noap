@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, forwardRef } from "react";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { CheckListPlugin } from "../plugins/CustomCheckListPlugin";
 import { ListPlugin } from '../plugins/CustomListPlugin';
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -56,11 +56,12 @@ type Props = {
   note: NoteData;
   saveSpinner: boolean;
   save: (currentState: EditorState) => Promise<void>;
+  lastSavedJSONRef?: { current: string | null };
 };
 
 const defaultScreenSize = { width: innerWidth, height: innerHeight };
 
-const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
+const Editor = forwardRef(({ save, saveSpinner, note, lastSavedJSONRef }: Props, ref: any) => {
     const [editor] = useLexicalComposerContext();
     const { historyState } = useSharedHistoryContext();
 
@@ -75,7 +76,6 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     } = useUserData();
 
     const [isLinkEditMode, setIsLinkEditMode] = useState(false);
-    const [rootElWasTouched, setRootElWasTouched] = useState(false);
     const [isSmallWidthViewport, setIsSmallWidthViewport] = useState<boolean>(false);
     const [currentScreenSize, setCurrentScreenSize] = useState<any>(defaultScreenSize);
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
@@ -83,33 +83,77 @@ const Editor = forwardRef(({ save, saveSpinner, note }: Props, ref: any) => {
     const { settings: { isRichText } } = useSettings();
     const customRef = useRef(null);
 
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const rootElTouchedRef = useRef(false);
+    const saveRef = useRef(save);
+    const noteIdRef = useRef(note._id);
+
+    saveRef.current = save;
+    noteIdRef.current = note._id;
+
+    useEffect(() => {
+      rootElTouchedRef.current = false;
+
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+      }
+    }, [note._id]);
+
+    useEffect(() => {
+      const markTouched = () => { rootElTouchedRef.current = true; };
+
+      const registerListeners = (rootEl: HTMLElement | null) => {
+        if (!rootEl) return;
+        rootEl.addEventListener('click', markTouched);
+        rootEl.addEventListener('keydown', markTouched);
+      };
+
+      registerListeners(editor.getRootElement());
+
+      return editor.registerRootListener((nextRoot, prevRoot) => {
+        if (prevRoot) {
+          prevRoot.removeEventListener('click', markTouched);
+          prevRoot.removeEventListener('keydown', markTouched);
+        }
+        registerListeners(nextRoot);
+      });
+    }, [editor]);
+
+    useEffect(() => {
+      return () => {
+        if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      };
+    }, []);
+
+    const onEditorChange = (eS: EditorState, e: LexicalEditor, tags: Set<string>) => {
+      if (!rootElTouchedRef.current) return;
+      if (tags.has("history-merge") || tags.has("collaboration")) return;
+
+      const scheduledForNote = noteIdRef.current;
+
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+
+      saveTimerRef.current = setTimeout(() => {
+        saveTimerRef.current = null;
+        if (scheduledForNote !== noteIdRef.current) return;
+
+        const currentState = editor.getEditorState();
+        const currentJSON = JSON.stringify(currentState);
+
+        if (lastSavedJSONRef && lastSavedJSONRef.current === currentJSON) return;
+
+        if (lastSavedJSONRef) lastSavedJSONRef.current = currentJSON;
+
+        saveRef.current(currentState);
+      }, 2000);
+    }
 
     const { height: currentHeight, width: currentWidth } = currentScreenSize;
     const BOTTOM_BAR_HEIGHT = 54;
     const MEDIUM_SCREEN = currentWidth > 640;
     const BIG_SCREEN = currentWidth > 1030;
     const LARGE_SCREEN = currentWidth > 1430;
-
-    const getRootEditorEl = document.getElementById("ContentEditable__root");
-
-    useEffect(() => {
-      let timer: ReturnType<typeof setTimeout> | null = null;
-
-      getRootEditorEl?.addEventListener('click', () => {
-        if(timer) clearTimeout(timer);
-
-        timer = setTimeout(() => setRootElWasTouched(true), 200);
-      });
-    }, [getRootEditorEl])
-
-    const onEditorChange = (eS: EditorState, e: LexicalEditor, tags: Set<string>) => {
-      if(tags && rootElWasTouched) {
-        if(timer) clearTimeout(timer);
-
-        timer = setTimeout(() => save(editor.getEditorState()), 2500);
-      }
-    }
 
     useEffect(() => {
       let viewportTimeout: ReturnType<typeof setTimeout> | null = null;

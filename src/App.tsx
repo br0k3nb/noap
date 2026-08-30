@@ -1,5 +1,5 @@
 import RoutesApp from "./routes/Routes";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import "./index.css";
 

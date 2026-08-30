@@ -1,11 +1,11 @@
-import type {TableOfContentsEntry} from '@lexical/react/LexicalTableOfContents';
+import type {TableOfContentsEntry} from '@lexical/react/LexicalTableOfContentsPlugin';
 import type {HeadingTagType} from '@lexical/rich-text';
 import type {NodeKey} from 'lexical';
 
 import './index.css';
 
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import LexicalTableOfContents from '@lexical/react/LexicalTableOfContents';
+import {TableOfContentsPlugin as LexicalTableOfContents} from '@lexical/react/LexicalTableOfContentsPlugin';
 import {useEffect, useRef, useState} from 'react';
 
 const MARGIN_ABOVE_EDITOR = 624;

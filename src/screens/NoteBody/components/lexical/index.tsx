@@ -46,64 +46,86 @@ export default function App({ noteData }: Props): JSX.Element {
     patchLastSelectedNote();
   }, [selectedNote])
     
-  const saveNote = async (currentState: EditorState) => {
+  const savingRef = useRef(false);
+  const pendingStateRef = useRef<EditorState | null>(null);
+  const lastSavedJSONRef = useRef<string | null>(null);
+
+  const performSave = async (currentState: EditorState) => {
+    if (!editorRef?.current || !currentState || !selectedNote) return;
+
     setSaveSpinner(true);
 
-    if(!editorRef?.current) throw new Error("Editor error!");
-    else {
-      let imageSrc = '';
-      const body = (editorRef?.current.firstChild as HTMLElement).children[0].innerHTML;
-  
-      const findImages = body.match(/<img[^>]+>/gm);
-      const removeAllHTMLTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
-      const addSpaceBeforeCaptalLetters = removeAllHTMLTags.replace(/(?<=[a-z])(?=[A-Z0-9])/g, ' ').trim().toString().slice(0,136);
-      const removeImageActionMenuText = addSpaceBeforeCaptalLetters.replace(/✕Download Fullscreen Delete/g, "");
-      const removeLoadingStatusText = removeImageActionMenuText.replace(/loading\.\.\./g, "");
-      const removeBottomBarText = removeLoadingStatusText.replace(/Detach all labels No labels attached!Save note Confirmation✕Are you sure you want to remove all labels attached to this note\?This action will only detach labels from this note!Cancel Delete/gm, "");
-  
-      if(findImages && findImages.length) {
-        const regToGetSrcFromImg = new RegExp(/<img.*?src=["|'](.*?)["|']/);
-        const srcFromImg = regToGetSrcFromImg.exec(findImages[0]) as RegExpExecArray;
-  
-        imageSrc = srcFromImg[1];
-      }
-      
-      try {
-        if (currentState) {
-          setNoteSettings((prevSettings) => {
-            return {
-              ...prevSettings,
-              status: "saving"
-            }
-          });
+    let imageSrc = '';
+    const body = (editorRef?.current.firstChild as HTMLElement).children[0].innerHTML;
 
-          const state = JSON.stringify(currentState);
-          const { data: { message } } = await api.patch("/edit",
-            {
-              body: removeBottomBarText ? removeBottomBarText : '',
-              image: imageSrc,
-              state: state,
-              _id: selectedNote,
-              stateId: noteData.state._id
-            }
-          );
-          
-          fetchNotes();
-          setSaveSpinner(false);
-          
-          toastAlert({ icon: "success", title: message, timer: 2000 });
+    const findImages = body.match(/<img[^>]+>/gm);
+    const removeAllHTMLTags = body.replace(/<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g, "");
+    const addSpaceBeforeCaptalLetters = removeAllHTMLTags.replace(/(?<=[a-z])(?=[A-Z0-9])/g, ' ').trim().toString().slice(0,136);
+    const removeImageActionMenuText = addSpaceBeforeCaptalLetters.replace(/✕Download Fullscreen Delete/g, "");
+    const removeLoadingStatusText = removeImageActionMenuText.replace(/loading\.\.\./g, "");
+    const removeBottomBarText = removeLoadingStatusText.replace(/Detach all labels No labels attached!Save note Confirmation✕Are you sure you want to remove all labels attached to this note\?This action will only detach labels from this note!Cancel Delete/gm, "");
+
+    if(findImages && findImages.length) {
+      const regToGetSrcFromImg = new RegExp(/<img.*?src=["|'](.*?)["|']/);
+      const srcFromImg = regToGetSrcFromImg.exec(findImages[0]) as RegExpExecArray;
+
+      imageSrc = srcFromImg[1];
+    }
+
+    try {
+      setNoteSettings((prevSettings) => {
+        return {
+          ...prevSettings,
+          status: "saving"
         }
-      } catch (err: any) {
-        console.log(err);
-        toastAlert({ icon: "error", title: err.message, timer: 2000 });
-      } finally {
-        setNoteSettings((prevSettings) => {
-          return {
-            ...prevSettings,
-            status: "editing"
-          }
-        });
-      }
+      });
+
+      lastSavedJSONRef.current = JSON.stringify(currentState);
+
+      const state = JSON.stringify(currentState);
+      const { data: { message } } = await api.patch("/edit",
+        {
+          body: removeBottomBarText ? removeBottomBarText : '',
+          image: imageSrc,
+          state: state,
+          _id: selectedNote,
+          stateId: noteData.state._id
+        }
+      );
+
+      fetchNotes();
+
+      toastAlert({ icon: "success", title: message, timer: 2000 });
+    } catch (err: any) {
+      console.log(err);
+      toastAlert({ icon: "error", title: err.message, timer: 2000 });
+    } finally {
+      setSaveSpinner(false);
+      setNoteSettings((prevSettings) => {
+        return {
+          ...prevSettings,
+          status: "editing"
+        }
+      });
+    }
+  };
+
+  const saveNote = async (currentState: EditorState) => {
+    if (savingRef.current) {
+      pendingStateRef.current = currentState;
+      return;
+    }
+
+    savingRef.current = true;
+    try {
+      await performSave(currentState);
+    } finally {
+      savingRef.current = false;
+
+      const pending = pendingStateRef.current;
+      pendingStateRef.current = null;
+
+      if (pending) saveNote(pending);
     }
   };
 
@@ -123,6 +145,7 @@ export default function App({ noteData }: Props): JSX.Element {
         const editorState = editor.parseEditorState((noteData.state.state));
         editor.setEditorState(editorState);
         editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
+        lastSavedJSONRef.current = JSON.stringify(editor.getEditorState());
       }); 
     }
   };
@@ -140,6 +163,7 @@ export default function App({ noteData }: Props): JSX.Element {
                 ref={editorRef} 
                 save={saveNote}
                 saveSpinner={saveSpinner} 
+                lastSavedJSONRef={lastSavedJSONRef}
               />
             </div>
           </SharedAutocompleteContext>

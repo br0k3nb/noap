@@ -1,7 +1,7 @@
 import type {ElementNode, LexicalEditor} from 'lexical';
 
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import useLexicalEditable from '@lexical/react/useLexicalEditable';
+import {useLexicalEditable} from '@lexical/react/useLexicalEditable';
 import {
   $deleteTableColumn__EXPERIMENTAL,
   $deleteTableRow__EXPERIMENTAL,
@@ -271,7 +271,7 @@ function TableActionMenu({
 
         const tableSelection = getTableObserverFromTableElement(tableElement);
         if (tableSelection !== null) {
-          tableSelection.clearHighlight();
+          (tableSelection as any).$clearHighlight();
         }
 
         tableNode.markDirty();

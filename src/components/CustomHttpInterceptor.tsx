@@ -2,11 +2,31 @@ import axios from 'axios';
 import { useEffect } from 'react'
 import useAuth from '../hooks/useAuth';
 
-// const api = axios.create({ baseURL: `http://localhost:3002/` });
+const getApiUrl = () => {
+  // Allow easy local testing via .env:
+  //   VITE_API_URL=http://localhost:3002  (or http://0.0.0.0:3002 / http://127.0.0.1:3002)
+  // Also supports legacy VITE_BACKEND_URL
+  // Note: backend binds to 0.0.0.0:3002, but browsers should use localhost/127.0.0.1, not 0.0.0.0
+  const envUrl = (import.meta.env.VITE_API_URL ?? import.meta.env.VITE_BACKEND_URL)?.trim();
+  if (envUrl) {
+    return envUrl.replace(/\/+$/, '');
+  }
+  // Sensible defaults: localhost in dev (backend listens on 0.0.0.0:3002), vercel in production
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3002';
+  }
+  return 'https://noap-backend.vercel.app';
+};
 
-// const api = axios.create({ baseURL: `https://noap-backend.onrender.com/` });
+const API_URL = getApiUrl();
 
-const api = axios.create({ baseURL: `https://noap-backend.vercel.app/` });
+// Optional dev log to confirm which backend is used
+if (import.meta.env.DEV) {
+  // eslint-disable-next-line no-console
+  console.log(`[noap] API baseURL → ${API_URL}`);
+}
+
+const api = axios.create({ baseURL: API_URL });
 
 const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
     const auth = useAuth();

@@ -1,6 +1,6 @@
 import type { SettingName } from "../appSettings";
 
-import { Context } from "react";
+import type { Context } from "react";
 import {
   createContext,
   ReactNode,

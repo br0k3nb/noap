@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { exportToCanvas } from "@excalidraw/excalidraw";
-import { ExcalidrawElement, NonDeleted } from "@excalidraw/excalidraw/types/element/types";
-import { AppState } from "@excalidraw/excalidraw/types/types";
+// @ts-ignore - Excalidraw types path uses package exports mapping, may not be resolved by TS in some configs
+import type { ExcalidrawElement, NonDeleted } from "@excalidraw/excalidraw/types/element/types";
+// @ts-ignore
+import type { AppState } from "@excalidraw/excalidraw/types/types";
 
 type ImageType = "svg" | "canvas";
 
