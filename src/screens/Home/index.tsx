@@ -69,6 +69,12 @@ export default function Home() {
       // Keystroke search uses history.replaceState, which doesn't touch
       // router params and therefore never retriggers this effect.
       setPreventPageUpdateFromUrl(false);
+      // A search typed but never cleared must not leak into other views:
+      // without this, paging away keeps the stale filter behind (empty
+      // pages) while the URL looks like a plain page.
+      // Reads the render-fresh notesState.search; deps stay [searchInUrl]
+      // on purpose (see SelectedNoteCtx for the same pattern).
+      if (notesState.search) dispatchNotes({ type: 'SEARCH', payload: '' });
     }
   }, [searchInUrl]);
 

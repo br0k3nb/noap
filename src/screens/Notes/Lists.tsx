@@ -144,7 +144,7 @@ export default function Lists({
                     </div>
                 </div>
             </Modal>
-            {isFetching ? (
+            {isFetching && !notesMetadata.length ? (
                     <div className="flex flex-col items-center mt-14 space-y-5">
                         <span className="loading loading-spinner loading-lg" />
                         <p className="mt-2 text-xl animate-pulse">Loading notes...</p>

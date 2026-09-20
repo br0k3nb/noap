@@ -70,12 +70,19 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
     };
 
     const handleNextPageClick = () => {
-        dispatchNotes({ type: 'PAGE', payload: ++notesState.page });
+        // Pagination is never a search-typing flow: sync page state from the
+        // URL on fetch instead of suppressing it, and clear any stale filter
+        // left behind by an uncleared search box.
+        setPreventPageUpdateFromUrl(false);
+        if (notesState.search) dispatchNotes({ type: 'SEARCH', payload: '' });
+        dispatchNotes({ type: 'PAGE', payload: notesState.page + 1 });
         setSelectedNote('');
     };
 
     const handlePrevPageClick = () => {
-        dispatchNotes({ type: 'PAGE', payload: --notesState.page });
+        setPreventPageUpdateFromUrl(false);
+        if (notesState.search) dispatchNotes({ type: 'SEARCH', payload: '' });
+        dispatchNotes({ type: 'PAGE', payload: notesState.page - 1 });
         setSelectedNote('');
     }
 
