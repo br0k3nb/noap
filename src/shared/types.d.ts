@@ -74,7 +74,8 @@ declare type Sessions = {
   readonly sessions: {
     _id: string;
     userId: string;
-    token: string;
+    /** Set by the backend for the session of the calling request. */
+    current?: boolean;
     expAt: number;
     ip: string;
     browserData: string;

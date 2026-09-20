@@ -7,6 +7,7 @@ import { useInputMask } from "../hooks/useInputMask";
 import { toastAlert } from './Alert';
 import SvgLoader from './SvgLoader';
 import api from '../services/api';
+import { fetchPublicIp } from '../services/ip';
 import Modal from "./Modal";
 
 type Props = {
@@ -49,9 +50,12 @@ export default function Verify2FAModal({
 
     const handleVerifyButton = async () => {
         setShowSvgLoader(true);
-        
+
         try {
-            const { data: { message }} = await api.post("/2fa/verify", { userId, TFACode });
+            // The pending-login cookie (if any) binds this code to the login
+            // it belongs to; identifier feeds the minted session's metadata.
+            const identifier = await fetchPublicIp();
+            const { data: { message }} = await api.post("/2fa/verify", { userId, TFACode, identifier });
 
             toastAlert({ icon: "success", title: message, timer: 4000 });
             setShowSvgLoader(false);

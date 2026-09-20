@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from "react-hook-form";
 import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 import { FcGoogle } from "react-icons/fc";
 import { HiOutlineMail } from "react-icons/hi";
@@ -29,7 +30,7 @@ export default function SignIn() {
 
   const [svgLoader, setSvgLoader] = useState("");
   const [openTFAModal, setOpenTFAModal] = useState(false);
-  const [userData, setUserData] = useState({ _id: "", token: "" });
+  const [userData, setUserData] = useState({ _id: "" });
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -41,7 +42,9 @@ export default function SignIn() {
   const fetchGoogleAccountData = async ({ access_token }: { access_token: string }) => {
     setSvgLoader("google");
     try {
-      const { data: { email, id, name } } = await api.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
+      // Bare axios: the shared `api` instance must not attach the session
+      // JWT to third-party requests.
+      const { data: { email, id, name } } = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -50,18 +53,23 @@ export default function SignIn() {
         }
       );
 
-      const { data: ip } = await api.get('https://whats-my-ip-delta.vercel.app/');
+      let ip = "";
+      try {
+        ({ data: ip } = await axios.get('https://whats-my-ip-delta.vercel.app/', { timeout: 6000 }));
+        if (typeof ip !== "string") ip = "";
+      } catch {
+        ip = "";
+      }
 
-      const { 
+      const {
         data: {
           _id,
-          token,
           settings,
           TFAEnabled,
           googleAccount,
           name: userName
         }
-      } = await api.post("/sign-in/google", { email, name, id, identifier: ip });
+      } = await api.post("/sign-in/google", { email, name, id, identifier: ip, access_token });
 
       setSvgLoader("");
 
@@ -69,7 +77,21 @@ export default function SignIn() {
         document.documentElement.classList.add("dark");
       }
 
-      localStorage.setItem("@NOAP:SYSTEM", token);
+      // The session (or the 2FA-pending proof) arrives as an HttpOnly
+      // cookie — nothing is stored in JavaScript.
+      if (TFAEnabled) {
+        // Password-equivalent proven, 2FA still pending: collect the code.
+        setUserData({ _id });
+        setUserDataContext({
+          _id,
+          settings,
+          TFAEnabled,
+          googleAccount,
+          name: userName
+        });
+        return setOpenTFAModal(true);
+      }
+
       setUserDataContext({
         _id,
         settings,
@@ -111,8 +133,10 @@ export default function SignIn() {
   };
 
   const userTFAAuth = () => {
-    localStorage.setItem("@NOAP:SYSTEM", userData.token);
+    // The 2FA step minted the session cookie server-side; re-verify to load
+    // the profile (covers both email and Google pending logins).
     auth.setUserLoggedIn(true);
+    auth.reverifySession();
   };
 
   return (

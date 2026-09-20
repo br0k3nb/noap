@@ -18,6 +18,7 @@ import api from '../services/api';
 export default function LoginHelp() {
   const [timer, setTimer] = useState('');
   const [userId, setUserId] = useState('');
+  const [resetToken, setResetToken] = useState('');
   const [loader, setLoader] = useState(false);
   const [wasChanged, setWasChanged] = useState(false);
   const [needHelpWith, setNeedHelpWith] = useState("");
@@ -59,10 +60,13 @@ export default function LoginHelp() {
     reset({code: ''});
 
     try {
-      const {data: { message }} = await api.post('/verify-otp', { userId, otp: code });
+      const {data: { message, resetToken: otpResetToken }} = await api.post('/verify-otp', { userId, otp: code });
+      // Short-lived proof of email ownership: required by /change-pass and
+      // /2fa/remove when called without a session.
+      if (otpResetToken) setResetToken(otpResetToken);
       toastAlert({icon: 'success', title: message, timer: 2000});
 
-      if(needHelpWith === "2fa") unlink2FA(userId);
+      if(needHelpWith === "2fa") unlink2FA(userId, otpResetToken);
       else {
         setTriggerCode('verified');
         setLoader(false);
@@ -73,9 +77,9 @@ export default function LoginHelp() {
     }
   }
 
-  const unlink2FA = async (userId : string) => {
+  const unlink2FA = async (userId : string, otpResetToken?: string) => {
     try {
-      const {data: { message }} = await api.post("/2fa/remove", { userId });
+      const {data: { message }} = await api.post("/2fa/remove", { userId, resetToken: otpResetToken || resetToken });
       toastAlert({icon: 'success', title: message, timer: 2000});
 
       setTriggerCode('verified');
@@ -94,7 +98,7 @@ export default function LoginHelp() {
         return toastAlert({icon: 'error', title: "Passwords don't match!", timer: 2500});
       }
 
-      const {data: { message }} = await api.patch('/change-pass', { userId, password });
+      const {data: { message }} = await api.patch('/change-pass', { userId, password, resetToken });
       toastAlert({icon: 'success', title: message, timer: 2000});
 
       setWasChanged(true);

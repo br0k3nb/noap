@@ -1,11 +1,11 @@
 import { useState, Dispatch, SetStateAction } from 'react';
-import { useNavigate } from "react-router-dom";
 import { UseFormRegister, UseFormHandleSubmit, FieldValues, FieldErrors, UseFormReset } from "react-hook-form";
 
 import { toastAlert } from '../../../Alert';
 import SvgLoader from '../../../SvgLoader';
 
 import api from '../../../../services/api';
+import useAuth from '../../../../hooks/useAuth';
 
 type Props = {
   _id: string;
@@ -21,7 +21,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
     const [showSvgLoader, setshowSvgLoader] = useState(false);
     const [redirect, setRedirect] = useState(false);
 
-    const navigate = useNavigate();
+    const { signOut } = useAuth();
 
     const handleAccountConversion = async ({ password, confirmPassword }: FieldValues) => {
         setshowSvgLoader(true);
@@ -32,7 +32,7 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
             return toastAlert({ icon: 'error', title: "Passwords don't match!", timer: 2500 });
           }
           
-          const convertAccount = await api.patch(`/convert/account/email}`, { password, _id });
+          const convertAccount = await api.patch(`/convert/account/email`, { password, _id });
           toastAlert({ icon: 'success', title: `${convertAccount.data.message}`, timer: 3000 });
     
           setshowSvgLoader(false);
@@ -40,8 +40,9 @@ export default function IsGoogleAccount({ register, reset, handleSubmit, errors,
           reset({ password: '', confirmPassword: '' });
     
           setTimeout(() => {
-            navigate('/');
-            window.localStorage.removeItem("@NOAP:SYSTEM");
+            // Conversion changes the credential type: terminate the session
+            // (clears the HttpOnly cookie) and force a fresh sign-in.
+            signOut();
           }, 2000);
         } catch (err: any) {
           setshowSvgLoader(false);

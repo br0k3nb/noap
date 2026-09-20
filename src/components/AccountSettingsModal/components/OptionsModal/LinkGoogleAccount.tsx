@@ -1,19 +1,20 @@
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 
 import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 import { toastAlert } from '../../../Alert';
 import SvgLoader from '../../../SvgLoader';
 
 import api from '../../../../services/api';
+import useAuth from '../../../../hooks/useAuth';
 
 export default function LinkGoogleAccount({ _id } : { _id: string }) {
     const [showSvgLoader, setshowSvgLoader] = useState(false);
     const [redirect, setRedirect] = useState(false);
 
-    const navigate = useNavigate();
+    const { signOut } = useAuth();
 
     const linkGAcc = useGoogleLogin({
         onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -25,7 +26,9 @@ export default function LinkGoogleAccount({ _id } : { _id: string }) {
 
         try {
             if (codeResponse) {
-            const userData = await api.get(
+            // Bare axios (no credentials): the backend cookie and Google
+            // token must never mix.
+            const userData = await axios.get(
             `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`,
                 {
                     headers: {
@@ -44,8 +47,9 @@ export default function LinkGoogleAccount({ _id } : { _id: string }) {
             setRedirect(true);
 
             setTimeout(() => {
-                navigate('/');
-                localStorage.removeItem("@NOAP:SYSTEM");
+                // Conversion changes the credential type: terminate the
+                // session (clears the HttpOnly cookie) and force re-login.
+                signOut();
             }, 2000);
         }
         } catch (err: any) {

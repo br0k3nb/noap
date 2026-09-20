@@ -35,8 +35,6 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
     const [disconnectAllSessionsLoader, setDisconnectAllSessionsLoader] = useState(false);
     const [openTerminateAllConfirmationModal, setOpenTerminateAllConfirmationModal] = useState(false);
 
-    const token = localStorage.getItem("@NOAP:SYSTEM") || "{}";
-
     const days = (date: string) => moment(date).format("ll");
     
     const handleDisconnectSession = async (sessionId: string) => {
@@ -139,11 +137,11 @@ export default function SessionModal({ open, setOpen, closeFn }: Props) {
                                             )}
                                         </figure>
                                         <div className="card-body !py-5">
-                                            {(session.token === token && innerWidth > 640) ? (
+                                            {(session.current && innerWidth > 640) ? (
                                                 <span className="absolute bg-green-600 text-white rounded-full px-2 py-1 text-[11px] uppercase tracking-wide right-2 top-2">
                                                     Current session
-                                                </span> 
-                                            ) : (session.token === token && innerWidth <= 640) && (
+                                                </span>
+                                            ) : (session.current && innerWidth <= 640) && (
                                                 <div 
                                                     className="absolute right-2 top-3 h-4 w-4 tooltip tooltip-left tooltip-left-color-controller rounded-full bg-green-600" 
                                                     data-tip="Current session"
