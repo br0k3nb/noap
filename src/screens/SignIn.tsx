@@ -5,7 +5,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 
 import { FcGoogle } from "react-icons/fc";
-import { HiOutlineMail } from "react-icons/hi";
+import { HiOutlineEye, HiOutlineEyeOff, HiOutlineMail } from "react-icons/hi";
 
 import { motion } from "framer-motion";
 
@@ -29,6 +29,7 @@ export default function SignIn() {
   const { errors } = formState;
 
   const [svgLoader, setSvgLoader] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [openTFAModal, setOpenTFAModal] = useState(false);
   const [userData, setUserData] = useState({ _id: "" });
 
@@ -185,16 +186,29 @@ export default function SignIn() {
                   <p className="text-red-500 ml-1 uppercase text-xs tracking-widest">
                     {errors.password?.message as string}
                   </p>
-                  <input
-                    type="password"
-                    className="sign-text-inputs"
-                    placeholder="Password"
-                    {...register("password", {
-                      required: "Password is required!",
-                      minLength: { value: 6, message: "Password is too short!"},
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="sign-text-inputs !pr-11"
+                      placeholder="Password"
+                      autoComplete="current-password"
+                      {...register("password", {
+                        required: "Password is required!",
+                        minLength: { value: 6, message: "Password is too short!"},
                       maxLength: { value: 16, message: "Too many characters!"}
                     })}
                   />
+                    <button
+                      type="button"
+                      aria-pressed={showPassword}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      title={showPassword ? "Hide password" : "Show password"}
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-200 transition-colors"
+                    >
+                      {showPassword ? <HiOutlineEyeOff size={22} /> : <HiOutlineEye size={22} />}
+                    </button>
+                  </div>
                 </div>
                 <div className="text-center">
                   <button
