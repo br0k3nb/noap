@@ -26,7 +26,12 @@ export default function SelectedNoteContext({ children }: SelectedNoteContextPro
     const [noteIdInUrl] = useGetUrl({ getNoteIdInUrl: true });
 
     useEffect(() => {
-        if(noteIdInUrl && !selectedNote) {
+        // Sync selection from the URL. Compares against the current selection
+        // (not just emptiness) so note-to-note navigation without remount
+        // can't leave a stale note selected. Deps stay [noteIdInUrl] on
+        // purpose: reacting to programmatic selection changes here would
+        // revert click-driven selections back to the stale URL value.
+        if(noteIdInUrl && noteIdInUrl !== selectedNote) {
             setSelectedNote(noteIdInUrl as string);
             setNoteSettings((prevNoteSettings) => {
                 return {

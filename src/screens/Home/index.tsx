@@ -49,7 +49,7 @@ export default function Home() {
   const { navbar } = useNavbar();
   const { userData: { _id } } = useUserData();
   const { selectedNote, setSelectedNote } = useSelectedNote();
-  const { preventPageUpdateFromUrl } = usePreventPageUpdateFromUrl();
+  const { preventPageUpdateFromUrl, setPreventPageUpdateFromUrl } = usePreventPageUpdateFromUrl();
   const { noteSettings: { expanded: noteIsExpanded }, setNoteSettings } = useNoteSettings();
   const [currentPage, searchInUrl] = useGetUrl({ getPageInUrl: true, getSearchQueryInUrl: true });
 
@@ -63,6 +63,12 @@ export default function Home() {
       setTimeout(() => {
         dispatchNotes({ type: 'SEARCH', payload: searchInUrl });
       }, 1000);
+    } else {
+      // Leaving search via real navigation (the provider now survives route
+      // changes, so a stale flag would desync page state from the URL).
+      // Keystroke search uses history.replaceState, which doesn't touch
+      // router params and therefore never retriggers this effect.
+      setPreventPageUpdateFromUrl(false);
     }
   }, [searchInUrl]);
 

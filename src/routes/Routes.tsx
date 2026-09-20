@@ -30,8 +30,6 @@ export default function RoutesApp() {
 }
 
 export function CustomRoutes() {
-  const auth = useAuth();
-
   return (
     <AxiosInterceptor>
       <Routes>
@@ -40,43 +38,13 @@ export function CustomRoutes() {
           path="/notes/page/:page"
           element={<ProtectedRoute />}
         >
-          <Route 
-            index element={ 
-              auth.isLoading ? <GlobalLoader/> :  (
-                <PreventUpdatePageFromUrlContext>
-                  <Home />
-                </PreventUpdatePageFromUrlContext>
-              )
-            } 
-          />
-          <Route 
-            path='note/:noteId' 
-            element={ 
-              auth.isLoading ? <GlobalLoader/> : (
-                <NoteSettingsContext>
-                  <SelectedNoteContext>
-                    <PreventUpdatePageFromUrlContext>
-                      <Home /> 
-                    </PreventUpdatePageFromUrlContext>
-                  </SelectedNoteContext>
-                </NoteSettingsContext>
-              )
-            }
-          />
-          <Route 
-            path='search/:search' 
-            element={
-              auth.isLoading ? <GlobalLoader/> : (
-                <NoteSettingsContext>
-                  <SelectedNoteContext>
-                    <PreventUpdatePageFromUrlContext>
-                      <Home /> 
-                    </PreventUpdatePageFromUrlContext>
-                  </SelectedNoteContext>
-                </NoteSettingsContext>
-              )
-            }
-          />
+          {/* All branches share one layout element type so switching between
+              page / note / search views preserves the Home subtree (state,
+              queries, editor) instead of remounting the entire page. Only the
+              notes query refetches, scoped to its container. */}
+          <Route index element={ <NotesLayout /> } />
+          <Route path='note/:noteId' element={ <NotesLayout /> } />
+          <Route path='search/:search' element={ <NotesLayout /> } />
         </Route>
         <Route path="/help" element={ <LoginHelp /> } />
         <Route path="/sign-up" element={ <SignUp /> } />
@@ -84,4 +52,20 @@ export function CustomRoutes() {
       </Routes>
     </AxiosInterceptor>
   )
+}
+
+function NotesLayout() {
+  const auth = useAuth();
+
+  if (auth.isLoading) return <GlobalLoader />;
+
+  return (
+    <NoteSettingsContext>
+      <SelectedNoteContext>
+        <PreventUpdatePageFromUrlContext>
+          <Home />
+        </PreventUpdatePageFromUrlContext>
+      </SelectedNoteContext>
+    </NoteSettingsContext>
+  );
 }
