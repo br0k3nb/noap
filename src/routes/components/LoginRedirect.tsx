@@ -7,9 +7,10 @@ import GlobalLoader from "../../components/GlobalLoader";
 export default function LoginRedirect() {
   const auth = useAuth();
 
-  // Same reason as ProtectedRoute: don't flash the sign-in form while the
-  // stored session is still being verified after a refresh.
-  if (auth.isLoading) return <GlobalLoader />;
+  // Wait only for the boot-time session check. Gating on the general
+  // `isLoading` flag unmounts the sign-in form on every submit (it flips
+  // during sign-in attempts too), wiping typed credentials on failure.
+  if (auth.isVerifying) return <GlobalLoader />;
 
   return <> {auth.userIsLoggedIn ? <Navigate to={`/notes/page/1`} /> : <SignIn />} </>
 }

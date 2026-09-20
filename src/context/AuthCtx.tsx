@@ -47,6 +47,10 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
     // Always verify on boot: the session lives in an HttpOnly cookie that
     // JavaScript cannot inspect, so only the backend can confirm it.
     const [loading, setLoading] = useState(true);
+    // Boot-only verification flag. Route guards must wait on THIS, not on
+    // `loading`: sign-in attempts also flip `loading`, and unmounting the
+    // sign-in form mid-request wipes the typed email/password on failure.
+    const [isVerifying, setIsVerifying] = useState(true);
     const [verifyRound, setVerifyRound] = useState(0);
 
     const navigate = useNavigate();
@@ -78,7 +82,10 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
         let cancelled = false;
 
         const isLoggedIn = async () => {
-            if (!cancelled && mountedRef.current) setLoading(true);
+            if (!cancelled && mountedRef.current) {
+                setLoading(true);
+                setIsVerifying(true);
+            }
 
             // One-time migration: a leftover pre-cookie JWT is offered in the
             // body; on success the backend sets the cookie and we delete the
@@ -111,7 +118,10 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
                     setUserLoggedIn(false);
                 }
             } finally {
-                if (!cancelled && mountedRef.current) setLoading(false);
+                if (!cancelled && mountedRef.current) {
+                    setLoading(false);
+                    setIsVerifying(false);
+                }
             }
         };
         isLoggedIn();
@@ -122,6 +132,10 @@ export default function AuthContext({ children }: { children: JSX.Element }) {
     const authActions = {
         userIsLoggedIn: userLoggedIn,
         isLoading: loading,
+        // True only while the boot-time session verification is running.
+        // Unlike `isLoading` (also flipped by sign-in attempts), waiting on
+        // this never unmounts the sign-in form mid-request.
+        isVerifying,
         /** Re-run session verification (e.g. after 2FA mints the session). */
         reverifySession: () => setVerifyRound((n) => n + 1),
         signIn: async ({ email, password, callback }: SignInType)  => {
