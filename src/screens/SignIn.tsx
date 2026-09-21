@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, FieldValues } from "react-hook-form";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { startAuthentication, browserSupportsWebAuthn } from "@simplewebauthn/browser";
 
 import { FcGoogle } from "react-icons/fc";
 import { HiOutlineEye, HiOutlineEyeOff, HiOutlineMail } from "react-icons/hi";
+import { MdFingerprint } from "react-icons/md";
 
 import { motion } from "framer-motion";
 
@@ -14,6 +16,7 @@ import { toastAlert } from "../components/Alert";
 import SvgLoader from "../components/SvgLoader";
 
 import api from "../services/api";
+import { fetchPublicIp } from "../services/ip";
 import useAuth from "../hooks/useAuth";
 
 import note from "../assets/main.svg";
@@ -28,10 +31,17 @@ export default function SignIn() {
   const { handleSubmit, register, formState } = useForm();
   const { errors } = formState;
 
+  const passkeyInFlight = useRef(false);
   const [svgLoader, setSvgLoader] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [openTFAModal, setOpenTFAModal] = useState(false);
   const [userData, setUserData] = useState({ _id: "" });
+
+  const passkeySupported =
+    typeof window !== "undefined" &&
+    window.isSecureContext &&
+    typeof window.PublicKeyCredential !== "undefined" &&
+    browserSupportsWebAuthn();
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => fetchGoogleAccountData(codeResponse),
@@ -107,8 +117,61 @@ export default function SignIn() {
     }
   };
 
-  const handleForm = async ({ email, password }: FieldValues) => {
-    setSvgLoader("email");
+  const signInWithPasskey = async () => {
+    if (svgLoader !== "" || passkeyInFlight.current) return;
+    passkeyInFlight.current = true;
+    setSvgLoader("passkey");
+
+    try {
+      // Discoverable (usernameless) ceremony: the browser offers the
+      // accounts registered on this device for our RP ID.
+      const { data: { options, stateToken } } = await api.post("/passkeys/auth/start", {});
+      const assertion = await startAuthentication({ optionsJSON: options });
+
+      const identifier = await fetchPublicIp();
+      const { data } = await api.post("/passkeys/auth/finish", { assertion, stateToken, identifier });
+
+      setSvgLoader("");
+
+      if(!data.settings?.theme || (data.settings.theme && data.settings.theme === 'dark')) {
+        document.documentElement.classList.add("dark");
+      }
+
+      // The session arrives as an HttpOnly cookie — nothing stored locally.
+      // UV-missing assertions on TFA accounts fall through to the 2FA step.
+      if (data.TFAEnabled) {
+        setUserData({ _id: data._id });
+        setUserDataContext({
+          _id: data._id,
+          settings: data.settings,
+          TFAEnabled: true,
+          googleAccount: data.googleAccount,
+          name: data.name
+        });
+        return setOpenTFAModal(true);
+      }
+
+      setUserDataContext({
+        _id: data._id,
+        settings: data.settings,
+        TFAEnabled: data.TFAEnabled,
+        googleAccount: data.googleAccount,
+        name: data.name
+      });
+      auth.setUserLoggedIn(true);
+    } catch (err: any) {
+      setSvgLoader("");
+      // Dismissing the browser ceremony is not an error worth a toast.
+      const msg = `${err?.name || ""} ${err?.code || ""} ${err?.message || ""}`;
+      if (/abort|cancel|notallowed|not_allowed/i.test(msg)) return;
+      toastAlert({ icon: "error", title: err?.message || "Passkey sign-in failed", timer: 3000 });
+    } finally {
+      passkeyInFlight.current = false;
+      setSvgLoader("");
+    }
+  };
+
+  const handleForm = async ({ email, password }: FieldValues) => {    setSvgLoader("email");
 
     const callback = (data: any, err: any) => {
       if (!err && data) {
@@ -214,12 +277,12 @@ export default function SignIn() {
                   <button
                     // prevent sending the form clicking in the sign in with email after clicking in the sign with google button
                     type={svgLoader === "googe" ? "button" : "submit"}
-                    disabled={svgLoader === "google" && true}
+                    disabled={(svgLoader === "google" || svgLoader === "passkey") && true}
                     className="trasition-all duration-300 uppercase rounded-full shadow-md text-sm w-full bg-red-700/90 text-white py-[9.5px] disabled:!bg-red-800/60 disabled:cursor-not-allowed hover:bg-red-800"
                   >
                     {svgLoader === "email" ? (
                       <SvgLoader options={{ showLoadingText: true }} />
-                    ) : (svgLoader == "google" || svgLoader === "") && (
+                    ) : (svgLoader == "google" || svgLoader == "passkey" || svgLoader === "") && (
                       <div className="flex flex-row items-center justify-center text-[15px] py-[0.060rem] tracking-wide !text-white">
                         <span>Sign in with email</span>
                         <HiOutlineMail size={23} className="ml-2" />
@@ -229,19 +292,36 @@ export default function SignIn() {
                   <p className="text-sm uppercase tracking-widest text-gray-400 my-3"> OR </p>
                   <button
                     type="button"
-                    disabled={svgLoader === "email" && true}
+                    disabled={(svgLoader === "email" || svgLoader === "passkey") && true}
                     onClick={() => (svgLoader === 'google' || svgLoader === "") && login()}
                     className="disabled:!bg-gray-200/80 disabled:cursor-not-allowed text-gray-900 mb-5 bg-[#eeeff1] trasition-all duration-300 ease-in-out uppercase rounded-full text-sm w-full py-2 hover:bg-[#cdcdcf]"
                   >
                     {svgLoader === "google" ? (
                       <SvgLoader options={{ showLoadingText: true, LoaderClassName: "!text-black" }} />
-                    ) : (svgLoader === "email" || svgLoader === "") && (
+                    ) : (svgLoader === "email" || svgLoader === "passkey" || svgLoader === "") && (
                       <div className="flex items-center justify-center">
                         <span className="">Sign in with Google</span>
                         <FcGoogle size={26} className="ml-2" />
                       </div>
                     )}
                   </button>
+                  {passkeySupported && (
+                    <button
+                      type="button"
+                      disabled={svgLoader !== ""}
+                      onClick={signInWithPasskey}
+                      className="disabled:!bg-gray-200/80 disabled:cursor-not-allowed text-gray-900 mb-5 bg-[#eeeff1] trasition-all duration-300 ease-in-out uppercase rounded-full text-sm w-full py-2 hover:bg-[#cdcdcf]"
+                    >
+                      {svgLoader === "passkey" ? (
+                        <SvgLoader options={{ showLoadingText: true, LoaderClassName: "!text-black" }} />
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <span className="">Sign in with passkey</span>
+                          <MdFingerprint size={26} className="ml-2" />
+                        </div>
+                      )}
+                    </button>
+                  )}
                   <div className="flex flex-col justify-between text-[12px] xxs:text-[10px] mt-2 space-y-2 uppercase tracking-widest">
                     <p className="text-gray-300">
                       Doesn't have an account ?

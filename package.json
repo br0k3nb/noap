@@ -27,6 +27,7 @@
     "@lexical/utils": "^0.49.0",
     "@lexical/yjs": "^0.49.0",
     "@react-oauth/google": "^0.13.5",
+    "@simplewebauthn/browser": "^14.0.0",
     "@tanstack/react-query": "^5.90.2",
     "@types/katex": "^0.16.8",
     "@types/lodash-es": "^4.17.12",

@@ -53,6 +53,8 @@ const AUTH_MANAGED_PATHS = [
   "/change-pass",
   "/2fa/verify",
   "/2fa/remove",
+  "/passkeys/auth/start",
+  "/passkeys/auth/finish",
 ];
 
 const isAuthManaged = (url?: string): boolean => {

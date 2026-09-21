@@ -8,6 +8,7 @@ import useUserData from '../../../../hooks/useUserData';
 import ChangePassword from './ChangePassword';
 import LinkGoogleAccount from './LinkGoogleAccount';
 import IsGoogleAccount from './IsGoogleAccount';
+import Passkeys from './Passkeys';
 
 type Props = {
   handleSubmit: UseFormHandleSubmit<FieldValues>;
@@ -58,6 +59,17 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
       })
     };
 
+    const handleClickPasskeys = () => {
+      setChangeAccountInfo("passkeys");
+      setShowGoBackButton(true);
+      setGoBackButtonAction({
+        action: () => {
+          setChangeAccountInfo('');
+          setGoBackButtonAction({ action: null })
+        }
+      })
+    };
+
     const modalProps = {
         open,
         setOpen,
@@ -92,6 +104,12 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
                 <span className="py-4"> Link a Google account </span>
               </button>
               <button
+                className="py-[13.5px] bg-[#dbdbdb] hover:bg-[#c0c0c0] dark:bg-[#32353b] dark:hover:!bg-[#222222] transition-all duration-500 ease-in-out rounded-3xl text-sm uppercase tracking-wide hover:tracking-widest"
+                onClick={() => handleClickPasskeys()}
+              >
+                <span className="py-4"> Passkeys </span>
+              </button>
+              <button
                 className="py-[13.5px] cursor-not-allowed bg-[#dbdbdb] dark:bg-[#32353b] dark:hover:!bg-[#222222] opacity-30 rounded-3xl text-sm uppercase tracking-widest"
                 disabled={true}
               >
@@ -103,6 +121,8 @@ export default function OptionsModal({ open, setOpen, register, handleSubmit, re
             <ChangePassword {...changePasswordModalProps} />
         ) : changeAccountInfo === "google" && !googleAccount ? (
             <LinkGoogleAccount _id={ _id }/>
+        ) : changeAccountInfo === "passkeys" ? (
+            <Passkeys />
         ) : (
             <IsGoogleAccount {...IsGoogleAccountProps} />
         )}
