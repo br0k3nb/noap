@@ -9,8 +9,8 @@ interface RefetchType {
 interface Props extends RefetchType {
     children: ReactNode,
     isFetching: boolean;
-    fetchNotes: () => Promise<void>;
-    fetchSelectedNote?: () => Promise<void>;
+    fetchNotes: () => Promise<unknown>;
+    fetchSelectedNote?: () => Promise<unknown>;
 }
 
 const defaultValue = {

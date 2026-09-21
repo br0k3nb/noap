@@ -100,52 +100,67 @@ export default function Home() {
 
   //using these refs to prevent appending the same array two times
   const fetchedLabels = useRef(false);
+  // Monotonic id of the latest issued notes fetch. Resolutions from older
+  // flights must not touch state (last-resolver-wins clobbering).
+  const notesFetchSeq = useRef(0);
 
-  const fetchNotesMetadata = async () => {
+  const fetchNotesMetadata = async ({ signal }: { signal?: AbortSignal } = {}) => {
+    // Only the latest flight may apply its results. Combined with the abort
+    // signal below, a slow stale response (e.g. an old search returning
+    // empty, or a superseded page) can never overwrite fresh data.
+    const mySeq = ++notesFetchSeq.current;
+    const isLatest = () => mySeq === notesFetchSeq.current;
+
     if(!preventPageUpdateFromUrl) {
       dispatchNotes({ type: "PAGE", payload: currentPage });
     }
 
     if(_id) {
       try {
-        const { 
-          data: { 
+        const {
+          data: {
             notes: { docs, totalDocs, hasNextPage },
-            pinnedNotes: { 
+            pinnedNotes: {
               docs: pinDocs,
               totalDocs: totalPinnedDocs,
               hasNextPage: pinHasNextPage
             }
           }
         } = await api.get(`/notes/${currentPage}/${_id}`, {
-          params: { 
+          params: {
             pinnedNotesPage: pinNotesState.page,
             search: delayedSearch,
             limit: 10
-          }
+          },
+          signal,
         });
-  
-        dispatchNotes({ 
+
+        // Superseded (or aborted after resolving): drop silently.
+        if (!isLatest()) return null;
+
+        dispatchNotes({
           type: "TOTAL_DOCS_AND_NEXT_PAGE",
           payload: { totalDocs, hasNextPage }
         });
 
         dispatchPinNotes({
           type: "TOTAL_DOCS_AND_NEXT_PAGE",
-          payload: { 
-            totalDocs: totalPinnedDocs, 
-            hasNextPage: pinHasNextPage 
+          payload: {
+            totalDocs: totalPinnedDocs,
+            hasNextPage: pinHasNextPage
           }
         });
-    
+
         replacePinNotes(pinDocs);
         replace(docs);
         return { docs, pinDocs };
-      } catch (err: any) {       
+      } catch (err: any) {
+        // Aborted by a newer flight: silent by design (not an error).
+        if (err?.code === "ERR_CANCELED" || err?.name === "CanceledError") return null;
         toastAlert({ icon: "error", title: err.message, timer: 3000 });
         console.log(err);
         return null;
-      } 
+      }
     }
     return null;
   };
@@ -271,7 +286,9 @@ export default function Home() {
 
   const { isFetching } = useQuery({
     queryKey: ["verifyUser", delayedSearch, notesState.page, currentPage, pinNotesState.page, _id, preventPageUpdateFromUrl],
-    queryFn: fetchNotesMetadata,
+    // Forward React Query's abort signal so superseded flights are really
+    // cancelled instead of resolving late and clobbering fresh results.
+    queryFn: ({ signal }) => fetchNotesMetadata({ signal }),
     refetchInterval: 300000,
     refetchOnWindowFocus: false,
   });

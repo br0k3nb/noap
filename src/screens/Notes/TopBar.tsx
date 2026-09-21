@@ -47,6 +47,7 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
         setShowSearch(showSearch ? false : true);
 
         if(search && showSearch) {
+            setPreventPageUpdateFromUrl(false);
             dispatchNotes({ type: 'SEARCH', payload: "" });
             history.replaceState({}, "", "/notes/page/1");
         }
@@ -174,11 +175,11 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                             <MdKeyboardDoubleArrowLeft size={18} className="cursor-not-allowed" />
                         </button>
                     ) : (
-                        <Link 
+                        <Link
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
-                            onClick={() => !isFetching && handlePrevPageClick()}
+                            onClick={() => handlePrevPageClick()}
                             to={search ?`${backwardPage}/search/${search}` : backwardPage as string}
-                        > 
+                        >
                             <MdKeyboardDoubleArrowLeft className="text-gray-900 dark:text-gray-300" />
                         </Link>
                     )}
@@ -193,11 +194,11 @@ export default function NoteTopBar({ dispatchNotes, pinNotesState, notesState, a
                             />
                         </button>
                     ) : (
-                        <Link 
+                        <Link
                             className="btn bg-[#f8f8f8] dark:!bg-[#0f1011] hover:!bg-[#f8f8f8] !border-transparent text-lg transition-all duration-300 ease-in-out hover:!text-2xl"
-                            onClick={() => !isFetching && handleNextPageClick()}
+                            onClick={() => handleNextPageClick()}
                             to={search ?`${getFowardPage()}/search/${search}` : forwardPage as string }
-                        > 
+                        >
                             <MdKeyboardDoubleArrowRight className="text-gray-900 dark:text-gray-300" />
                         </Link>
                     )}
