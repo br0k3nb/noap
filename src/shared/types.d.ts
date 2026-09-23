@@ -93,3 +93,59 @@ declare type Sessions = {
     createdAt: string;
   }[];
 };
+
+declare type ActivityTrigger = {
+  /** "HH:MM" (24h) — time of day the reminder fires (America/Recife). */
+  time: string;
+  /** "DD/MM/YYYY" — day of the one-shot "once" trigger. */
+  date?: string;
+  /** Reserved for a future "weekly" trigger: 0 (Sunday) - 6 (Saturday). */
+  weekdays?: number[];
+};
+
+declare type Activity = {
+  _id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  /** Recurrence kind of the trigger: "daily" today, more kinds later. */
+  triggerType: string;
+  trigger: ActivityTrigger;
+  enabled: boolean;
+  /**
+   * Hex id of the note acting as this activity's recurring todo list.
+   * When set, checking items off + "Mark done" records the current
+   * occurrence, and the note resets its checkboxes at the next occurrence.
+   */
+  noteId?: string | null;
+  /**
+   * Occurrence keys already rolled over (checkboxes reset). "YYYY-MM-DD"
+   * for daily, "DD/MM/YYYY" for once — newest last, deduped server-side.
+   */
+  seenOccurrences?: string[];
+  /**
+   * "DD/MM/YYYY" days the user marked done (answered the attached note).
+   * Drives the streak + progress UI. Never shrinks, one entry per
+   * occurrence (deduped server-side).
+   */
+  doneDates?: string[];
+  /** RFC3339 timestamp of the last notification fired by any device. */
+  lastTriggeredAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+};
+
+declare type ActivityProgress = {
+  noteId?: string | null;
+  doneDates: string[];
+  seenOccurrences: string[];
+  currentStreak: number;
+  totalCompletions: number;
+  doneToday: boolean;
+  today: string;
+  lastDone?: string;
+};
+
+declare type Activities = {
+  readonly activities: Activity[];
+};

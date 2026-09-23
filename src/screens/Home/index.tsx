@@ -9,6 +9,7 @@ import Notes from "../Notes";
 import Nav from "./Navbar";
 import NoteBody from "../NoteBody";
 import NoteToolbar from "../NoteActionsToolbar";
+import ActivityNotificationScheduler from "../../components/ActivityNotificationScheduler";
 
 import api from "../../services/api";
 
@@ -339,6 +340,7 @@ export default function Home() {
 
   return (
     <div className="!h-screen">
+      <ActivityNotificationScheduler />
       <NavbarContext>
         <LabelsCtx {...navLabelCtxProps}>
           <SessionsContext

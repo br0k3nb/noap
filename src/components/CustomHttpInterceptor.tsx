@@ -79,8 +79,11 @@ const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
                 const requestUrl = (error?.config?.url ?? "") as string;
 
                 if ((errorStatus >= 500 && errorStatus <= 599)){
-                    //(500 - 599) = Server error responses
-                    return Promise.reject({ message: "Server error, please try again or later" });
+                    //(500 - 599) = Server error responses.
+                    // Carry the status through: callers (e.g. the push
+                    // subscribe flow) need to tell "backend not configured"
+                    // (503) apart from a real server fault (500).
+                    return Promise.reject({ message: "Server error, please try again or later", status: errorStatus });
                 }
 
                 if(error?.code === "ERR_NETWORK") {

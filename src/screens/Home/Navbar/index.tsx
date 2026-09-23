@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FieldArrayWithId } from 'react-hook-form';
 
 import { 
+  BsBellFill,
   BsJournalPlus, 
   BsTagFill,
   BsGearWide, 
@@ -19,6 +20,7 @@ import ConfirmationModal from '../../../components/ConfirmationModal';
 import SettingsModal from './components/SettingsModal';
 import SvgLoader from '../../../components/SvgLoader';
 import LabelModal from './components/LabelModal';
+import ActivitiesModal from './components/ActivitiesModal';
 
 import logo from '../../../assets/logo/logo-white-no-bg.png';
 import logoN from '../../../assets/logo/logo-white-no-bg-just-N.png';
@@ -31,6 +33,7 @@ type NavProps = {
 
 export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
   const [openLabelModal, setOpenLabelModal] = useState(false);
+  const [openActivitiesModal, setOpenActivitiesModal] = useState(false);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [openSignOutConfirmationModal, setOpenSignOutConfirmationModal] = useState(false);
   const [deviceScreenSize, setDeviceScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
@@ -51,6 +54,10 @@ export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
         open={openLabelModal}
         setOpen={setOpenLabelModal} 
         labels={labels}
+      />
+      <ActivitiesModal
+        open={openActivitiesModal}
+        setOpen={setOpenActivitiesModal}
       />
       <ConfirmationModal
         open={openSignOutConfirmationModal}
@@ -109,6 +116,17 @@ export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
                     onClick={() => setOpenLabelModal(true)}
                   >
                     <BsTagFill className="text-black dark:text-gray-300" size={23} />
+                  </a>
+                </div>
+                <div 
+                  className="tooltip tooltip-right tooltip-right-color-controller"
+                  data-tip="Activities"
+                >
+                  <a
+                    className="flex items-center justify-center w-[60px] h-12 mt-2 dark:hover:!bg-[#323232] hover:bg-[#bebebe] hover:text-gray-300 border border-transparent border-r-stone-300 dark:border-r-[#404040]"
+                    onClick={() => setOpenActivitiesModal(true)}
+                  >
+                    <BsBellFill className="text-black dark:text-gray-300" size={21} />
                   </a>
                 </div>
                 {/* <button
@@ -183,6 +201,16 @@ export default function Nav({ showSvgLoader, addNewNote, labels }: NavProps) {
                   <div className="flex flex-row space-x-2 cursor-pointer">
                     <BsTagFill size={20} />
                     <p className='ml-2 text-[13px] uppercase tracking-widest'>Labels</p>
+                  </div>
+                </a>
+                <div className="!bg-gray-600 h-[1px] w-[2.50rem] my-3 mx-auto"/>
+                <a 
+                  className="py-2 rounded px-6" 
+                  onClick={() => setOpenActivitiesModal(true)}
+                >
+                  <div className="flex flex-row cursor-pointer">
+                    <BsBellFill size={20} />
+                    <p className='ml-2 text-[13px] uppercase tracking-widest'>Activities</p>
                   </div>
                 </a>
                 <div className="!bg-gray-600 h-[1px] w-[2.50rem] my-3 mx-auto"/>

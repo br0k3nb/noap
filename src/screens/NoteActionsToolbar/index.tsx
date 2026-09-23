@@ -14,6 +14,7 @@ import {
   AiFillEdit,
   AiFillDelete,
   AiFillInfoCircle,
+  AiFillCheckCircle,
   AiOutlineEllipsis,
   AiOutlineFullscreen,
   AiOutlineFullscreenExit,
@@ -35,6 +36,7 @@ import RenameNoteModal from "./components/RenameNoteModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import SelectLabelModal from "./components/SelectLabelModal";
 import NoteImageModal from "./components/NoteImageModal";
+import RecurringTodoPanel from "./components/RecurringTodoPanel";
 
 import useNoteSettings from "../../hooks/useNoteSettings";
 import useSelectedNote from "../../hooks/useSelectedNote";
@@ -98,6 +100,7 @@ export default function index({
   const [openNoteInfoModal, setOpenNoteInfoModal] = useState(false);
   const [openNoteImageModal, setOpenNoteImageModal] = useState(false);
   const [openChangeNoteBackgroundModal, setOpenChangeNoteBackgroundModal] = useState(false);
+  const [openRecurringTodoModal, setOpenRecurringTodoModal] = useState(false);
 
   const { notesMetadata, append, remove, deleteNote, fetchNotesMetadata } = notes;
   const { appendPinNotes, dispatchPinNotes, pinNotesMetadata, pinNotesState, removePinNotes } = pinNotes;
@@ -589,6 +592,23 @@ export default function index({
                           </label>
                         </button>
                         <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none" />
+                        <button
+                          className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
+                          onClick={() => {
+                            setOpenDropdown(false);
+                            setOpenRecurringTodoModal(true);
+                          }}
+                        >
+                          <label className="text-gray-900 dark:text-gray-300 cursor-pointer">
+                            <div className="flex flex-row space-x-2">
+                              <p className="py-2 text-xs uppercase tracking-widest">
+                                Recurring todo
+                              </p>
+                              <AiFillCheckCircle size={20} className="my-auto" />
+                            </div>
+                          </label>
+                        </button>
+                        <div className="mx-2 border border-transparent !border-b-gray-700 dark:!border-b-[#404040] !h-[1px] p-0 !rounded-none" />
                         <a
                           className="active:!bg-[#c1c1c1] hover:!bg-[#e2e2e2] dark:hover:!bg-[#323232] dark:active:!bg-[#404040]"
                           onClick={() => setOpenChangeNoteBackgroundModal(true)}
@@ -683,6 +703,20 @@ export default function index({
               setRenameNote={setRenameNote}
               showLoader={showLoader}
             />
+            <Modal
+              open={openRecurringTodoModal}
+              setOpen={setOpenRecurringTodoModal}
+              title="Recurring todo"
+              options={{
+                titleWrapperClassName: "!px-6",
+                modalWrapperClassName:
+                  "max-h-[min(27rem,85vh)] px-0 w-[27rem] xxs:!w-[21rem] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-900 dark:scrollbar-thumb-gray-300",
+              }}
+            >
+              <div className="px-8 mt-5 pb-6">
+                <RecurringTodoPanel noteId={selectedNoteData?._id} />
+              </div>
+            </Modal>
             <Modal
               open={openChangeNoteBackgroundModal}
               setOpen={setOpenChangeNoteBackgroundModal}
