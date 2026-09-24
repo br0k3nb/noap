@@ -1,3 +1,4 @@
+import * as fabric from 'fabric';
 import Component from '../interface/component';
 import { componentNames, rejectMessages } from '../consts';
 
@@ -61,22 +62,17 @@ class ImageLoader extends Component {
       return Promise.reject(rejectMessages.loadImage);
     }
 
-    return new Promise((resolve, reject) => {
+    const imagePromise = typeof img === 'string' ? fabric.Image.fromURL(img, imageOption) : Promise.resolve(img);
+
+    return imagePromise.then((image) => {
+      if (!image || !image.getElement()) {
+        return Promise.reject(rejectMessages.loadingImageFailed);
+      }
+
       const canvas = this.getCanvas();
-
-      canvas.setBackgroundImage(
-        img,
-        () => {
-          const oImage = canvas.backgroundImage;
-
-          if (oImage && oImage.getElement()) {
-            resolve(oImage);
-          } else {
-            reject(rejectMessages.loadingImageFailed);
-          }
-        },
-        imageOption
-      );
+      canvas.backgroundImage = image;
+      canvas.requestRenderAll();
+      return image;
     });
   }
 }

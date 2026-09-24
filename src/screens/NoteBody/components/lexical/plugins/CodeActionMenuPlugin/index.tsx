@@ -6,9 +6,11 @@ import { $getNearestNodeFromDOMNode } from "lexical";
 import {
   $isCodeNode,
   CodeNode,
-  getLanguageFriendlyName,
-  normalizeCodeLang,
 } from "@lexical/code";
+import {
+  getLanguageFriendlyName,
+  normalizeCodeLanguage,
+} from "@lexical/code-prism";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 import { CopyButton } from "./components/CopyButton";
@@ -113,7 +115,7 @@ function CodeActionMenuContainer({ anchorElem }: { anchorElem: HTMLElement }): J
       }
     });
   });
-  const normalizedLang = normalizeCodeLang(lang);
+  const normalizedLang = normalizeCodeLanguage(lang);
   const codeFriendlyName = getLanguageFriendlyName(lang);
 
   return (

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import Component from '../interface/component';
 import { componentNames } from '../consts';
 
@@ -64,7 +64,9 @@ class Rotation extends Component {
     canvas.forEachObject((obj) => {
       const objCenter = obj.getCenterPoint();
       const radian = fabric.util.degreesToRadians(angleDiff);
-      const newObjCenter = fabric.util.rotatePoint(objCenter, oldImageCenter, radian);
+      const relativeCenter = objCenter.subtract(oldImageCenter);
+      const rotatedCenter = fabric.util.rotateVector(relativeCenter, radian);
+      const newObjCenter = rotatedCenter.add(oldImageCenter);
 
       obj.set({
         left: newObjCenter.x - centerDiff.x,

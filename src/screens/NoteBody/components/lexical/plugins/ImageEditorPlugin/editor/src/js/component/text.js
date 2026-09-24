@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import isExisty from 'tui-code-snippet/type/isExisty';
 import forEach from 'tui-code-snippet/collection/forEach';
@@ -116,7 +116,7 @@ class Text extends Component {
     });
 
     canvas.forEachObject((obj) => {
-      if (obj.type === 'i-text') {
+      if (obj instanceof fabric.IText) {
         this.adjustOriginPosition(obj, 'start');
       }
     });
@@ -134,7 +134,7 @@ class Text extends Component {
     canvas.defaultCursor = 'default';
 
     canvas.forEachObject((obj) => {
-      if (obj.type === 'i-text') {
+      if (obj instanceof fabric.IText) {
         if (obj.text === '') {
           canvas.remove(obj);
         } else {
@@ -522,7 +522,7 @@ class Text extends Component {
   _fireAddText(fEvent) {
     const obj = fEvent.target;
     const e = fEvent.e || {};
-    const originPointer = this.getCanvas().getPointer(e);
+    const originPointer = this.getCanvas().getScenePoint(e);
 
     if (!obj) {
       this.fire(events.ADD_TEXT, {

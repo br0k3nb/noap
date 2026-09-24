@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import Component from '../interface/component';
 import { componentNames } from '../consts';
 

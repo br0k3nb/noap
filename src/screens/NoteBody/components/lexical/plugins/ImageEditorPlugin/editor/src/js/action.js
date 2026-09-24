@@ -1,3 +1,4 @@
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import Imagetracer from './helper/imagetracer';
 import { isSupportFileApi, base64ToBlob, toInteger, isEmptyCropzone, includes } from './util';
@@ -585,7 +586,7 @@ export default {
               this.ui.changeMenu('draw', false, false);
               this.ui.draw.changeStandbyMode();
             }
-          } else if (['i-text', 'text'].indexOf(obj.type) > -1) {
+          } else if (obj instanceof fabric.IText || obj.type === 'text') {
             if (this.ui.submenu !== 'text') {
               this.ui.changeMenu('text', false, false);
             }
@@ -621,7 +622,7 @@ export default {
         }
       },
       objectScaled: (obj) => {
-        if (['i-text', 'text'].indexOf(obj.type) > -1) {
+        if (obj instanceof fabric.IText || obj.type === 'text') {
           this.ui.text.fontSize = toInteger(obj.fontSize);
         } else if (['rect', 'circle', 'triangle'].indexOf(obj.type) >= 0) {
           const { width, height } = obj;

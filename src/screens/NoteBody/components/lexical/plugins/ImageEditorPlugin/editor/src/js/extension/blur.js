@@ -1,13 +1,14 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 
 /**
  * Blur object
  * @class Blur
- * @extends {fabric.Image.filters.Convolute}
+ * @extends {fabric.filters.Convolute}
  * @ignore
  */
-const Blur = fabric.util.createClass(
-  fabric.Image.filters.Convolute,
+const Blur = createFabricClass(
+  fabric.filters.Convolute,
   /** @lends Convolute.prototype */ {
     /**
      * Filter type

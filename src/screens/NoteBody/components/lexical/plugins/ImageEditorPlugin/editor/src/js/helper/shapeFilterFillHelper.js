@@ -1,4 +1,5 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import filters from '../filters';
 import forEach from 'tui-code-snippet/collection/forEach';
 import extend from 'tui-code-snippet/object/extend';
 import resizeHelper from '../helper/shapeResizeHelper';
@@ -547,7 +548,7 @@ function makeFillImage(copiedCanvasElement, currentCanvasImageAngle, filterOptio
 
   forEach(extend({}, ...filterOption), (value, key) => {
     const fabricFilterClassName = capitalizeString(key);
-    const filter = new fabric.Image.filters[fabricFilterClassName]({
+    const filter = new filters[fabricFilterClassName]({
       [FILTER_OPTION_MAP[key]]: value,
     });
     fillImage.filters.push(filter);

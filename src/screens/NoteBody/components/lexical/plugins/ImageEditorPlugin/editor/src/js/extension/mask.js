@@ -1,35 +1,32 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 
 /**
  * Mask object
  * @class Mask
- * @extends {fabric.Image.filters.BlendImage}
+ * @extends {fabric.filters.BaseFilter}
  * @ignore
  */
-const Mask = fabric.util.createClass(
-  fabric.Image.filters.BlendImage,
+const Mask = createFabricClass(
+  fabric.filters.BaseFilter,
   /** @lends Mask.prototype */ {
+    type: 'Mask',
+
     /**
      * Apply filter to canvas element
      * @param {Object} pipelineState - Canvas element to apply filter
      * @override
      */
-    applyTo(pipelineState) {
+    applyTo2d({ imageData, sourceWidth: width, sourceHeight: height }) {
       if (!this.mask) {
         return;
       }
 
-      const canvas = pipelineState.canvasEl;
-      const { width, height } = canvas;
       const maskCanvasEl = this._createCanvasOfMask(width, height);
-      const ctx = canvas.getContext('2d');
       const maskCtx = maskCanvasEl.getContext('2d');
-      const imageData = ctx.getImageData(0, 0, width, height);
 
-      this._drawMask(maskCtx, canvas, ctx);
+      this._drawMask(maskCtx);
       this._mapData(maskCtx, imageData, width, height);
-
-      pipelineState.imageData = imageData;
     },
 
     /**

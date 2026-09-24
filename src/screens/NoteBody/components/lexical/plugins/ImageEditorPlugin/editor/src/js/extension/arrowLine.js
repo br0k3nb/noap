@@ -1,11 +1,12 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 
 const ARROW_ANGLE = 30;
 const CHEVRON_SIZE_RATIO = 2.7;
 const TRIANGLE_SIZE_RATIO = 1.7;
 const RADIAN_CONVERSION_VALUE = 180;
 
-const ArrowLine = fabric.util.createClass(
+const ArrowLine = createFabricClass(
   fabric.Line,
   /** @lends Convolute.prototype */ {
     /**
@@ -166,7 +167,8 @@ const ArrowLine = fabric.util.createClass(
 
       return [distance * Math.cos(radian) + x, distance * Math.sin(radian) + y];
     },
-  }
+  },
+  { register: false }
 );
 
 export default ArrowLine;

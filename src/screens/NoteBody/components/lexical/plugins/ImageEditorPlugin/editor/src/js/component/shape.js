@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import Component from '../interface/component';
 import resizeHelper from '../helper/shapeResizeHelper';
@@ -154,8 +154,8 @@ export default class Shape extends Component {
       'mouse:down': this._handlers.mousedown,
     });
 
-    fabric.util.addListener(document, 'keydown', this._handlers.keydown);
-    fabric.util.addListener(document, 'keyup', this._handlers.keyup);
+    document.addEventListener('keydown', this._handlers.keydown);
+    document.addEventListener('keyup', this._handlers.keyup);
   }
 
   /**
@@ -175,8 +175,8 @@ export default class Shape extends Component {
       'mouse:down': this._handlers.mousedown,
     });
 
-    fabric.util.removeListener(document, 'keydown', this._handlers.keydown);
-    fabric.util.removeListener(document, 'keyup', this._handlers.keyup);
+    document.removeEventListener('keydown', this._handlers.keydown);
+    document.removeEventListener('keyup', this._handlers.keyup);
   }
 
   /**
@@ -226,7 +226,8 @@ export default class Shape extends Component {
 
       this._bindEventOnShape(shapeObj);
 
-      canvas.add(shapeObj).setActiveObject(shapeObj);
+      canvas.add(shapeObj);
+      canvas.setActiveObject(shapeObj);
 
       this._resetPositionFillFilter(shapeObj);
 
@@ -406,7 +407,7 @@ export default class Shape extends Component {
         self._resetPositionFillFilter(this);
       },
       scaling(fEvent) {
-        const pointer = canvas.getPointer(fEvent.e);
+        const pointer = canvas.getScenePoint(fEvent.e);
         const currentObj = self._shapeObj;
 
         canvas.setCursor('crosshair');
@@ -430,7 +431,7 @@ export default class Shape extends Component {
 
     if (!this._isSelected && !this._shapeObj) {
       const canvas = this.getCanvas();
-      this._startPoint = canvas.getPointer(fEvent.e);
+      this._startPoint = canvas.getScenePoint(fEvent.e);
 
       canvas.on({
         'mouse:move': this._handlers.mousemove,
@@ -446,7 +447,7 @@ export default class Shape extends Component {
    */
   _onFabricMouseMove(fEvent) {
     const canvas = this.getCanvas();
-    const pointer = canvas.getPointer(fEvent.e);
+    const pointer = canvas.getScenePoint(fEvent.e);
     const startPointX = this._startPoint.x;
     const startPointY = this._startPoint.y;
     const width = startPointX - pointer.x;

@@ -2,7 +2,8 @@ import type { LanguageNameWithIcon } from "../../../../../../datasets/code_langu
 
 import { useCallback, useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 
-import { $createCodeNode, $isCodeNode, getLanguageFriendlyName, $isCodeHighlightNode,  } from "@lexical/code";
+import { $createCodeNode, $isCodeNode, $isCodeHighlightNode } from "@lexical/code";
+import { getLanguageFriendlyName } from "@lexical/code-prism";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { 
   $isListNode, 

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import Component from '../interface/component';
 import Cropzone from '../extension/cropzone';
@@ -105,8 +105,8 @@ class Cropper extends Component {
     canvas.selection = false;
     canvas.defaultCursor = 'crosshair';
 
-    fabric.util.addListener(document, 'keydown', this._listeners.keydown);
-    fabric.util.addListener(document, 'keyup', this._listeners.keyup);
+    document.addEventListener('keydown', this._listeners.keydown);
+    document.addEventListener('keyup', this._listeners.keyup);
   }
 
   /**
@@ -129,8 +129,8 @@ class Cropper extends Component {
 
     this._cropzone = null;
 
-    fabric.util.removeListener(document, 'keydown', this._listeners.keydown);
-    fabric.util.removeListener(document, 'keyup', this._listeners.keyup);
+    document.removeEventListener('keydown', this._listeners.keydown);
+    document.removeEventListener('keyup', this._listeners.keyup);
   }
 
   /**
@@ -156,7 +156,7 @@ class Cropper extends Component {
     }
 
     canvas.selection = false;
-    const coord = canvas.getPointer(fEvent.e);
+    const coord = canvas.getScenePoint(fEvent.e);
 
     this._startX = coord.x;
     this._startY = coord.y;
@@ -174,7 +174,7 @@ class Cropper extends Component {
    */
   _onFabricMouseMove(fEvent) {
     const canvas = this.getCanvas();
-    const pointer = canvas.getPointer(fEvent.e);
+    const pointer = canvas.getScenePoint(fEvent.e);
     const { x, y } = pointer;
     const cropzone = this._cropzone;
 

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import Component from '../interface/component';
 import { clamp } from '../util';
 import { componentNames, eventNames, keyCodes, zoomModes } from '../consts';
@@ -131,16 +131,16 @@ class Zoom extends Component {
    * Attach zoom keyboard events
    */
   attachKeyboardZoomEvents() {
-    fabric.util.addListener(document, KEY_DOWN, this._listeners.keydown);
-    fabric.util.addListener(document, KEY_UP, this._listeners.keyup);
+    document.addEventListener(KEY_DOWN, this._listeners.keydown);
+    document.addEventListener(KEY_UP, this._listeners.keyup);
   }
 
   /**
    * Detach zoom keyboard events
    */
   detachKeyboardZoomEvents() {
-    fabric.util.removeListener(document, KEY_DOWN, this._listeners.keydown);
-    fabric.util.removeListener(document, KEY_UP, this._listeners.keyup);
+    document.removeEventListener(KEY_DOWN, this._listeners.keydown);
+    document.removeEventListener(KEY_UP, this._listeners.keyup);
   }
 
   /**
@@ -311,7 +311,7 @@ class Zoom extends Component {
 
     canvas.selection = false;
 
-    this._startPoint = canvas.getPointer(e);
+    this._startPoint = canvas.getScenePoint(e);
     this.zoomArea.set({ width: 0, height: 0 });
 
     const { moveZoom, stopZoom } = this._listeners;
@@ -328,7 +328,7 @@ class Zoom extends Component {
    */
   _onMouseMoveWithZoomMode({ e }) {
     const canvas = this.getCanvas();
-    const pointer = canvas.getPointer(e);
+    const pointer = canvas.getScenePoint(e);
     const { x, y } = pointer;
     const { zoomArea, _startPoint } = this;
     const deltaX = Math.abs(x - _startPoint.x);
@@ -545,7 +545,7 @@ class Zoom extends Component {
 
     canvas.selection = false;
 
-    this._startHandPoint = canvas.getPointer(e);
+    this._startHandPoint = canvas.getScenePoint(e);
 
     const { moveHand, stopHand } = this._listeners;
     canvas.on({
@@ -561,7 +561,7 @@ class Zoom extends Component {
    */
   _onMouseMoveWithHandMode({ e }) {
     const canvas = this.getCanvas();
-    const { x, y } = canvas.getPointer(e);
+    const { x, y } = canvas.getScenePoint(e);
     const deltaX = x - this._startHandPoint.x;
     const deltaY = y - this._startHandPoint.y;
 

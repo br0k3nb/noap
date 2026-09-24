@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 
 /**
@@ -36,7 +36,7 @@ export function getCachedUndoDataForDimension() {
 export function makeSelectionUndoData(obj, undoDatumMaker) {
   let undoData;
 
-  if (obj.type === 'activeSelection') {
+  if (obj instanceof fabric.ActiveSelection) {
     undoData = obj.getObjects().map((item) => {
       const { angle, left, top, scaleX, scaleY, width, height } = item;
 

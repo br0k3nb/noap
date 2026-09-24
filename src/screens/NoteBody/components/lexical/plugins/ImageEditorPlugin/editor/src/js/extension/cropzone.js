@@ -1,4 +1,5 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 import extend from 'tui-code-snippet/object/extend';
 import { clamp } from '../util';
 import { eventNames as events, keyCodes } from '../consts';
@@ -52,7 +53,7 @@ function getScaleBasis(diffX, diffY) {
  * @extends {fabric.Rect}
  * @ignore
  */
-const Cropzone = fabric.util.createClass(
+const Cropzone = createFabricClass(
   fabric.Rect,
   /** @lends Cropzone.prototype */ {
     /**
@@ -64,7 +65,6 @@ const Cropzone = fabric.util.createClass(
      */
     initialize(canvas, options, extendsOptions) {
       options = extend(options, extendsOptions);
-      options.type = 'cropzone';
 
       this.callSuper('initialize', options);
       this._addEventHandler();
@@ -95,8 +95,8 @@ const Cropzone = fabric.util.createClass(
         moving: this._onMoving.bind(this),
         scaling: this._onScaling.bind(this),
       });
-      fabric.util.addListener(document, 'keydown', this._onKeyDown.bind(this));
-      fabric.util.addListener(document, 'keyup', this._onKeyUp.bind(this));
+      document.addEventListener('keydown', this._onKeyDown.bind(this));
+      document.addEventListener('keyup', this._onKeyUp.bind(this));
     },
     _renderCropzone(ctx) {
       const cropzoneDashLineWidth = 7;
@@ -336,7 +336,7 @@ const Cropzone = fabric.util.createClass(
      */
     _onScaling(fEvent) {
       const selectedCorner = fEvent.transform.corner;
-      const pointer = this.canvas.getPointer(fEvent.e);
+      const pointer = this.canvas.getScenePoint(fEvent.e);
       const settings = this._calcScalingSizeFromPointer(pointer, selectedCorner);
 
       // On scaling cropzone,
@@ -562,6 +562,10 @@ const Cropzone = fabric.util.createClass(
         this._withShiftKey = false;
       }
     },
+  },
+  {
+    type: 'Cropzone',
+    getSuperArgs: ([, options, extendsOptions]) => [extend(options, extendsOptions)],
   }
 );
 

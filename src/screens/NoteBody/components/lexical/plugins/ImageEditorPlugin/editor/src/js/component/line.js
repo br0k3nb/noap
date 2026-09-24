@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import Component from '../interface/component';
 import ArrowLine from '../extension/arrowLine';
@@ -122,7 +122,7 @@ class Line extends Component {
    */
   _onFabricMouseDown(fEvent) {
     const canvas = this.getCanvas();
-    const { x, y } = canvas.getPointer(fEvent.e);
+    const { x, y } = canvas.getScenePoint(fEvent.e);
     const points = [x, y, x, y];
 
     this._line = new ArrowLine(points, {
@@ -151,7 +151,7 @@ class Line extends Component {
    */
   _onFabricMouseMove(fEvent) {
     const canvas = this.getCanvas();
-    const pointer = canvas.getPointer(fEvent.e);
+    const pointer = canvas.getScenePoint(fEvent.e);
 
     this._line.set({
       x2: pointer.x,

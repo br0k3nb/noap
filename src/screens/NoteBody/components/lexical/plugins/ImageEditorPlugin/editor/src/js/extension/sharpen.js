@@ -1,13 +1,14 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 
 /**
  * Sharpen object
  * @class Sharpen
- * @extends {fabric.Image.filters.Convolute}
+ * @extends {fabric.filters.Convolute}
  * @ignore
  */
-const Sharpen = fabric.util.createClass(
-  fabric.Image.filters.Convolute,
+const Sharpen = createFabricClass(
+  fabric.filters.Convolute,
   /** @lends Convolute.prototype */ {
     /**
      * Filter type

@@ -1,8 +1,14 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import extend from 'tui-code-snippet/object/extend';
 import forEach from 'tui-code-snippet/collection/forEach';
 import Component from '../interface/component';
 import { eventNames as events, rejectMessages, componentNames, fObjectOptions } from '../consts';
+
+class IconPath extends fabric.Path {
+  static type = 'icon';
+}
+
+fabric.classRegistry.setClass(IconPath);
 
 const pathMap = {
   arrow: 'M 0 90 H 105 V 120 L 160 60 L 105 0 V 30 H 0 Z',
@@ -118,7 +124,6 @@ class Icon extends Component {
       icon.set(
         extend(
           {
-            type: 'icon',
             fill: this._oColor,
           },
           selectionStyle,
@@ -127,7 +132,8 @@ class Icon extends Component {
         )
       );
 
-      canvas.add(icon).setActiveObject(icon);
+      canvas.add(icon);
+      canvas.setActiveObject(icon);
 
       resolve(this.graphics.createObjectProperties(icon));
     });
@@ -176,7 +182,7 @@ class Icon extends Component {
    * @returns {fabric.Path} Path object
    */
   _createIcon(path) {
-    return new fabric.Path(path);
+    return new IconPath(path);
   }
 
   /**
@@ -187,7 +193,7 @@ class Icon extends Component {
   _onFabricMouseDown(fEvent) {
     const canvas = this.getCanvas();
 
-    this._startPoint = canvas.getPointer(fEvent.e);
+    this._startPoint = canvas.getScenePoint(fEvent.e);
     const { x: left, y: top } = this._startPoint;
 
     this.add(this._type, {
@@ -212,7 +218,7 @@ class Icon extends Component {
     if (!this._icon) {
       return;
     }
-    const moveOriginPointer = canvas.getPointer(fEvent.e);
+    const moveOriginPointer = canvas.getScenePoint(fEvent.e);
 
     const scaleX = (moveOriginPointer.x - this._startPoint.x) / this._icon.width;
     const scaleY = (moveOriginPointer.y - this._startPoint.y) / this._icon.height;

@@ -1,13 +1,14 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 
 /**
  * Emboss object
  * @class Emboss
- * @extends {fabric.Image.filters.Convolute}
+ * @extends {fabric.filters.Convolute}
  * @ignore
  */
-const Emboss = fabric.util.createClass(
-  fabric.Image.filters.Convolute,
+const Emboss = createFabricClass(
+  fabric.filters.Convolute,
   /** @lends Convolute.prototype */ {
     /**
      * Filter type

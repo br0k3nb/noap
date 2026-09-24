@@ -1,20 +1,10 @@
 import isUndefined from 'tui-code-snippet/type/isUndefined';
 import extend from 'tui-code-snippet/object/extend';
 import forEach from 'tui-code-snippet/collection/forEach';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import Component from '../interface/component';
 import { rejectMessages, componentNames } from '../consts';
-import Mask from '../extension/mask';
-import Sharpen from '../extension/sharpen';
-import Emboss from '../extension/emboss';
-import ColorFilter from '../extension/colorFilter';
-
-const { filters } = fabric.Image;
-
-filters.Mask = Mask;
-filters.Sharpen = Sharpen;
-filters.Emboss = Emboss;
-filters.ColorFilter = ColorFilter;
+import filters from '../filters';
 
 /**
  * Filter
@@ -138,11 +128,8 @@ class Filter extends Component {
    * @private
    */
   _apply(sourceImg, callback) {
-    sourceImg.filters.push();
-    const result = sourceImg.applyFilters();
-    if (result) {
-      callback();
-    }
+    sourceImg.applyFilters();
+    callback();
   }
 
   /**
@@ -166,7 +153,7 @@ class Filter extends Component {
     let filterObj;
     // capitalize first letter for matching with fabric image filter name
     const fabricType = this._getFabricFilterType(type);
-    const ImageFilter = fabric.Image.filters[fabricType];
+    const ImageFilter = filters[fabricType];
     if (ImageFilter) {
       filterObj = new ImageFilter(options);
       filterObj.options = options;

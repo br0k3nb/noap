@@ -1,13 +1,14 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { createFabricClass } from '../fabric';
 
 /**
  * ColorFilter object
  * @class ColorFilter
- * @extends {fabric.Image.filters.BaseFilter}
+ * @extends {fabric.filters.BaseFilter}
  * @ignore
  */
-const ColorFilter = fabric.util.createClass(
-  fabric.Image.filters.BaseFilter,
+const ColorFilter = createFabricClass(
+  fabric.filters.BaseFilter,
   /** @lends BaseFilter.prototype */ {
     /**
      * Filter type
@@ -39,10 +40,7 @@ const ColorFilter = fabric.util.createClass(
      * @param {Object} canvas Canvas object passed by fabric
      */
     // eslint-disable-next-line complexity
-    applyTo(canvas) {
-      const { canvasEl } = canvas;
-      const context = canvasEl.getContext('2d');
-      const imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height);
+    applyTo2d({ imageData, ctx: context }) {
       const { data } = imageData;
       const { threshold } = this;
       let filterColor = fabric.Color.sourceFromHex(this.color);
